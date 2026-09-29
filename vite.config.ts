@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
       strictPort: false
     },
     build: {
+      outDir: isAdmin ? 'dist-admin' : 'dist',
       rollupOptions: {
         output: {
           manualChunks(id) {
