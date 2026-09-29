@@ -106,15 +106,17 @@ class ClubStore {
     this.clientUser = user;
     this.clientSubTab = 'MAP';
     this.currentRole = 'CLIENT';
-    if (this.activeClubId !== businessId) {
-      this.activeClubId = businessId;
-      const evts = this.events.filter(e => e.club_id === businessId);
+    const matchingClub = this.clubs.find(c => c.id === businessId || c.slug === businessId);
+    const resolvedClubId = matchingClub ? matchingClub.id : businessId;
+    if (this.activeClubId !== resolvedClubId) {
+      this.activeClubId = resolvedClubId;
+      const evts = this.events.filter(e => e.club_id === resolvedClubId);
       if (evts.length > 0) this.activeEventId = evts[0].id;
       this.initFirebase();
     }
     this.addAuditLog({
-      club_id: businessId, actor: user.name, role: 'client', action: 'CLIENT_LOGIN',
-      details: `Portal de cliente activo en ${businessId}`
+      club_id: resolvedClubId, actor: user.name, role: 'client', action: 'CLIENT_LOGIN',
+      details: `Portal de cliente activo en ${resolvedClubId}`
     });
     this.persistAndNotify();
   }

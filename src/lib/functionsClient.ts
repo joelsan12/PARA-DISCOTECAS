@@ -8,7 +8,8 @@ import {
   getAppCheckToken,
   isAppCheckConfigured,
   isFirebaseConfigured,
-  useEmulators
+  useEmulators,
+  useFunctionsEmulator
 } from './firebase';
 
 export type FunctionsClientErrorCode = 'functions/not-deployed' | 'functions/unavailable' | 'functions/error';
@@ -40,7 +41,9 @@ function isNotDeployedCode(code: string): boolean {
     || code === 'unimplemented'
     || code === 'functions/not-found'
     || code === 'functions/unimplemented'
-    || code === 'app/not-found';
+    || code === 'app/not-found'
+    || code === 'unavailable'
+    || code === 'functions/unavailable';
 }
 
 function toClientMessage(error: unknown, functionName: string): string {
@@ -49,9 +52,16 @@ function toClientMessage(error: unknown, functionName: string): string {
   if (code === 'unauthenticated') return 'La verificación de seguridad falló. Revisa la configuración de App Check.';
   if (code === 'permission-denied') return 'No tienes permisos para esta operación.';
   if (code === 'failed-precondition') return 'El servicio no está listo para esta operación.';
-  if (code === 'unavailable') return 'El servicio de Nightflow no está disponible en este momento.';
+  if (code === 'unavailable' || code === 'functions/unavailable') return 'El servicio de Nightflow no está disponible en este momento.';
   if (code === 'deadline-exceeded') return 'La solicitud tardó demasiado. Revisa tu conexión e inténtalo nuevamente.';
-  if (error instanceof Error && error.message) return error.message;
+  if (code === 'internal' || code === 'functions/internal') return 'El servicio no está disponible en este momento. Inténtalo nuevamente.';
+  if (error instanceof Error && error.message) {
+    const msg = error.message.trim();
+    if (msg.toLowerCase().includes('internal') || msg.includes('[0]')) {
+      return 'El servicio no está disponible temporalmente.';
+    }
+    return msg;
+  }
   return `No pudimos completar la operación (${functionName}).`;
 }
 
@@ -61,7 +71,7 @@ function getFunctionsClient(): Functions {
   }
   if (!cachedFunctions) {
     cachedFunctions = getFunctions(app, functionsRegion);
-    if (useEmulators) {
+    if (useFunctionsEmulator) {
       connectFunctionsEmulator(cachedFunctions, emulatorHost, functionsEmulatorPort);
       console.info('🧪 [Functions] Conectado al emulador en', `${emulatorHost}:${functionsEmulatorPort}`);
     }
@@ -85,15 +95,29 @@ export async function callFunctions<T>(functionName: string, data: unknown): Pro
     return result.data;
   } catch (error) {
     const code = readErrorCode(error);
+    const message = error instanceof Error ? error.message : '';
+    const isNetworkOrConnectionError =
+      code === 'internal'
+      || code === 'unavailable'
+      || message.toLowerCase().includes('internal')
+      || message.toLowerCase().includes('failed to fetch')
+      || message.toLowerCase().includes('network');
+
     if (isNotDeployedCode(code)) {
       throw new FunctionsClientError(`La función ${functionName} no está desplegada.`, 'functions/not-deployed');
+    }
+    if (isNetworkOrConnectionError) {
+      throw new FunctionsClientError(
+        `El servicio de Nightflow (${functionName}) no está disponible en este momento.`,
+        'functions/unavailable'
+      );
     }
     throw new FunctionsClientError(toClientMessage(error, functionName), 'functions/error');
   }
 }
 
 function cloudFunctionsUrl(functionName: string): string {
-  if (useEmulators) {
+  if (useFunctionsEmulator) {
     return `http://${emulatorHost}:${functionsEmulatorPort}/${firebaseConfig.projectId}/${functionsRegion}/${functionName}`;
   }
   return `https://${functionsRegion}-${firebaseConfig.projectId}.cloudfunctions.net/${functionName}`;
@@ -153,7 +177,12 @@ export async function callFunctionWithHttpFallback<T>(
   try {
     return await callFunctions<T>(functionName, data);
   } catch (error) {
-    if (!(error instanceof FunctionsClientError) || error.code !== 'functions/not-deployed') throw error;
+    if (
+      !(error instanceof FunctionsClientError) ||
+      (error.code !== 'functions/not-deployed' && error.code !== 'functions/unavailable')
+    ) {
+      throw error;
+    }
     return callFunctionsHttp<T>(httpFunctionName, data);
   }
 }

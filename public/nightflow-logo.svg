@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 48" width="230" height="48" fill="none">
+  <defs>
+    <linearGradient id="nf-logo-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8E7" />
+      <stop offset="45%" stop-color="#E5B54F" />
+      <stop offset="100%" stop-color="#B88220" />
+    </linearGradient>
+    <filter id="nf-logo-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#E5B54F" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Símbolos juntos entrelazados (sin caja contenedora) -->
+  <g transform="translate(0, 0)" filter="url(#nf-logo-glow)">
+    <path d="M14 35C14 20 21 11 25 11C29 11 29 19 24.5 27.5" stroke="url(#nf-logo-gold)" stroke-width="3.8" stroke-linecap="round" />
+    <path d="M23.5 20.5C19 29 19 37 23 37C27 37 34 28 34 13" stroke="url(#nf-logo-gold)" stroke-width="3.8" stroke-linecap="round" />
+    <circle cx="24" cy="24" r="2.4" fill="#FFFDF5" />
+  </g>
+
+  <!-- Tipografía de Lujo -->
+  <g transform="translate(48, 12)">
+    <text x="0" y="15" fill="#F4F4F6" font-family="'Outfit', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="800" letter-spacing="0.22em">NIGHTFLOW</text>
+    <text x="1" y="27" fill="#E5B54F" font-family="'Outfit', -apple-system, BlinkMacSystemFont, sans-serif" font-size="7.5" font-weight="700" letter-spacing="0.26em">VIP HOSPITALITY NETWORK</text>
+  </g>
+</svg>

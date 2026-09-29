@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { ShieldCheck, Lock, Mail, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react';
 import { signInAdminWithPassword } from '../../lib/adminAuth';
+import { NightflowLogoMark } from '../common/NightflowLogo';
 
 interface Props {
   onSuccess?: () => void;
@@ -151,6 +152,10 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
       }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <NightflowLogoMark size={48} theme="cyan" style={{ margin: '0 auto' }} />
+          </div>
+
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',

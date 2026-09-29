@@ -1,8 +1,9 @@
-import { Crown, Fingerprint, KeyRound, QrCode, RefreshCw, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Fingerprint, KeyRound, QrCode, RefreshCw, ShieldCheck, ShieldAlert } from 'lucide-react';
 import type { Reservation, Club, ClubEvent } from '../../../types';
 import { formatUsd } from '../../../lib/formatUsd';
 import { esTableZone } from '../../../lib/esLabels';
 import { ROTATION_SECONDS, TOKEN_TTL_SECONDS, useTicketPass } from '../../../lib/ticketPass';
+import { NightflowLogoMark } from '../../common/NightflowLogo';
 
 interface Props {
   reservation: Reservation;
@@ -83,8 +84,8 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
         paddingBottom: '12px'
       }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Crown size={14} color="#e5b54f" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <NightflowLogoMark size={20} theme="gold" />
             <span className="font-brand" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#fff', letterSpacing: '0.02em' }}>
               {club.name}
             </span>

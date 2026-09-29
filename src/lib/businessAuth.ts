@@ -33,7 +33,7 @@ const OTP_FUNCTIONS_NOT_DEPLOYED_MESSAGE = 'El servicio de códigos de acceso (C
 
 export type BusinessOtpMethod = Exclude<CustomerAuthMethod, 'password'>;
 export type BusinessAuthMode = 'login' | 'register';
-export type BusinessOtpTransport = 'functions' | 'firebase';
+export type BusinessOtpTransport = 'functions' | 'firebase' | 'demo';
 
 const OTP_CHANNEL_BY_METHOD: Record<BusinessOtpMethod, OtpChallengeRequest['channel']> = {
   email_otp: 'email',
@@ -70,7 +70,7 @@ export interface CompleteBusinessOtpInput {
 
 export interface BusinessOtpChallenge extends OtpChallengeResponse {
   method: BusinessOtpMethod;
-  transport?: BusinessOtpTransport | 'demo';
+  transport?: BusinessOtpTransport;
   demoCode?: string;
 }
 
@@ -126,9 +126,18 @@ const authErrorMessages: Record<string, string> = {
   'auth/weak-password': 'Usa una contraseña de al menos 6 caracteres.',
   'auth/too-many-requests': 'Demasiados intentos. Espera un momento para continuar.',
   'auth/network-request-failed': 'No pudimos conectar con Firebase. Revisa tu conexión.',
+  'auth/configuration-not-found': 'Firebase Authentication aún no está activado en la consola de Firebase para este proyecto.',
+  'auth/user-not-found': 'No existe una cuenta registrada con este correo.',
+  'auth/wrong-password': 'La contraseña ingresada es incorrecta.',
   'auth/invalid-phone-number': 'Ingresa un número de teléfono válido.',
   'auth/operation-not-allowed': 'Este método de acceso aún no está habilitado en Firebase.',
-  'auth/captcha-check-failed': 'La verificación de seguridad expiró. Inténtalo nuevamente.'
+  'auth/captcha-check-failed': 'La verificación de seguridad expiró. Inténtalo nuevamente.',
+  'auth/api-key-not-valid': 'La clave de API de Firebase no es válida.',
+  'auth/internal-error': 'Ocurrió un error interno en el servicio de autenticación.',
+  'auth/quota-exceeded': 'Se ha excedido la cuota de operaciones del servicio de autenticación.',
+  'auth/project-not-found': 'El proyecto de Firebase no fue encontrado.',
+  'auth/app-not-authorized': 'Esta aplicación no está autorizada para usar Firebase Authentication.',
+  'auth/user-disabled': 'Esta cuenta ha sido inhabilitada por un administrador.'
 };
 
 const getErrorCode = (error: unknown): string => {
@@ -140,6 +149,7 @@ const getErrorCode = (error: unknown): string => {
 const throwAuthError = (error: unknown, fallback: string): never => {
   if (error instanceof BusinessAuthError) throw error;
   const code = getErrorCode(error);
+  console.error(`[BusinessAuth] Error de autenticación (${code || 'unknown'}):`, error);
   throw new BusinessAuthError(authErrorMessages[code] ?? fallback, code || 'business-auth/unknown');
 };
 
@@ -291,6 +301,9 @@ const writeDemoUser = (user: BusinessAuthUser): void => {
   if (!BUSINESS_DEMO_ENABLED || !canUseLocalStorage()) return;
   try {
     window.localStorage.setItem(DEMO_AUTH_STORAGE_KEY, JSON.stringify(user));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nightflow:auth-changed', { detail: user }));
+    }
   } catch {
     return;
   }
@@ -300,6 +313,9 @@ const clearDemoUser = (): void => {
   if (!BUSINESS_DEMO_ENABLED || !canUseLocalStorage()) return;
   try {
     window.localStorage.removeItem(DEMO_AUTH_STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nightflow:auth-changed', { detail: null }));
+    }
   } catch {
     return;
   }
@@ -403,8 +419,8 @@ export function isBusinessAuthConfigured(): boolean {
 }
 
 export function getCurrentBusinessUser(): BusinessAuthUser | null {
-  if (isFirebaseConfigured) {
-    return auth?.currentUser ? toBusinessAuthUser(auth.currentUser) : null;
+  if (isFirebaseConfigured && auth?.currentUser) {
+    return toBusinessAuthUser(auth.currentUser);
   }
   return readDemoUser();
 }
@@ -412,13 +428,52 @@ export function getCurrentBusinessUser(): BusinessAuthUser | null {
 export function subscribeToBusinessAuth(listener: (user: BusinessAuthUser | null) => void): () => void {
   const firebaseAuth = auth;
   if (isFirebaseConfigured && firebaseAuth) {
-    return onAuthStateChanged(firebaseAuth, (user) => listener(user ? toBusinessAuthUser(user) : null));
+    const initial = getCurrentBusinessUser();
+    if (initial) {
+      listener(initial);
+    }
+    const unsubscribeFirebase = onAuthStateChanged(firebaseAuth, (user) => {
+      if (user) {
+        listener(toBusinessAuthUser(user));
+      } else if (BUSINESS_DEMO_ENABLED) {
+        listener(readDemoUser());
+      } else {
+        listener(null);
+      }
+    });
+
+    const handleLocalChange = () => {
+      if (!firebaseAuth.currentUser && BUSINESS_DEMO_ENABLED) {
+        listener(readDemoUser());
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('nightflow:auth-changed', handleLocalChange);
+    }
+
+    return () => {
+      unsubscribeFirebase();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('nightflow:auth-changed', handleLocalChange);
+      }
+    };
   }
-  if (!isFirebaseConfigured && BUSINESS_DEMO_ENABLED) {
+
+  if (BUSINESS_DEMO_ENABLED) {
     listener(readDemoUser());
-  } else {
-    listener(null);
+    const handleLocalChange = () => listener(readDemoUser());
+    if (typeof window !== 'undefined') {
+      window.addEventListener('nightflow:auth-changed', handleLocalChange);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('nightflow:auth-changed', handleLocalChange);
+      }
+    };
   }
+
+  listener(null);
   return () => undefined;
 }
 
@@ -464,6 +519,12 @@ export async function signInBusinessCustomerWithPassword(
       const credential = await signInWithEmailAndPassword(firebaseAuth, normalizedEmail, password);
       return resultFromUser(credential.user, 'password');
     } catch (error) {
+      const code = getErrorCode(error);
+      if (BUSINESS_DEMO_ENABLED && (code === 'auth/network-request-failed' || code === 'auth/configuration-not-found')) {
+        console.warn(`⚠️ [BusinessAuth] Firebase Auth (${code}); usando sesión demo en DEV.`);
+        const existing = getDemoOrFirebaseUser('password', normalizedEmail);
+        return resultFromBusinessUser(existing ?? createDemoUser(normalizedEmail, 'password'), 'password');
+      }
       throwAuthError(error, 'No pudimos iniciar sesión con Firebase.');
     }
   }
@@ -494,6 +555,11 @@ export async function registerBusinessCustomerWithPassword(input: {
       await updateFirebaseDisplayName(credential.user, displayName);
       return resultFromUser(credential.user, 'password');
     } catch (error) {
+      const code = getErrorCode(error);
+      if (BUSINESS_DEMO_ENABLED && (code === 'auth/network-request-failed' || code === 'auth/configuration-not-found')) {
+        console.warn(`⚠️ [BusinessAuth] Firebase Auth (${code}); usando usuario demo en DEV.`);
+        return resultFromBusinessUser(createDemoUser(normalizedEmail, 'password', displayName), 'password');
+      }
       throwAuthError(error, 'No pudimos crear tu cuenta con Firebase.');
     }
   }
@@ -566,7 +632,10 @@ const requestOtpViaFunctions = async (
       transport: 'functions'
     };
   } catch (error) {
-    if (error instanceof FunctionsClientError && error.code === 'functions/not-deployed') {
+    if (
+      error instanceof FunctionsClientError &&
+      (error.code === 'functions/not-deployed' || error.code === 'functions/unavailable')
+    ) {
       if (!import.meta.env.DEV) {
         throw new BusinessAuthError(OTP_FUNCTIONS_NOT_DEPLOYED_MESSAGE, 'business-auth/functions-not-deployed');
       }
@@ -591,6 +660,36 @@ export async function startBusinessOtp(input: StartBusinessOtpInput): Promise<Bu
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
   const viaFunctions = await requestOtpViaFunctions(input, identifier);
   if (viaFunctions) return viaFunctions;
+
+  if (BUSINESS_DEMO_ENABLED) {
+    pendingChallenges.set(challengeId, {
+      businessId: input.businessId,
+      identifier,
+      method,
+      challengeId,
+      expiresAt: Date.parse(expiresAt),
+      transport: 'demo'
+    });
+    if (method === 'email_otp') {
+      writeStoredEmailChallenge({
+        businessId: input.businessId,
+        identifier,
+        method: 'email_otp',
+        challengeId,
+        expiresAt,
+        transport: 'demo'
+      });
+    }
+    return {
+      challengeId,
+      expiresAt,
+      retryAfterSeconds: 45,
+      method,
+      transport: 'demo',
+      demoCode: DEMO_OTP_CODE
+    };
+  }
+
   const firebaseAuth = getFirebaseAuth();
   if (firebaseAuth) {
     if (!import.meta.env.DEV) {
@@ -630,34 +729,7 @@ export async function startBusinessOtp(input: StartBusinessOtpInput): Promise<Bu
     }
     return { challengeId, expiresAt, retryAfterSeconds: 45, method, transport: 'firebase' };
   }
-  if (!BUSINESS_DEMO_ENABLED) {
-    throw new BusinessAuthError('La autenticación no está disponible en producción.', 'business-auth/unavailable');
-  }
-  pendingChallenges.set(challengeId, {
-    businessId: input.businessId,
-    identifier,
-    method,
-    challengeId,
-    expiresAt: Date.parse(expiresAt)
-  });
-  if (method === 'email_otp') {
-    writeStoredEmailChallenge({
-      businessId: input.businessId,
-      identifier,
-      method: 'email_otp',
-      challengeId,
-      expiresAt,
-      transport: 'firebase'
-    });
-  }
-  return {
-    challengeId,
-    expiresAt,
-    retryAfterSeconds: 45,
-    method,
-    transport: 'demo',
-    demoCode: DEMO_OTP_CODE
-  };
+  throw new BusinessAuthError('La autenticación no está disponible en producción.', 'business-auth/unavailable');
 }
 
 const verifyOtpViaFunctions = async (
@@ -692,7 +764,10 @@ const verifyOtpViaFunctions = async (
       }
     );
   } catch (error) {
-    if (error instanceof FunctionsClientError && error.code === 'functions/not-deployed') {
+    if (
+      error instanceof FunctionsClientError &&
+      (error.code === 'functions/not-deployed' || error.code === 'functions/unavailable')
+    ) {
       if (!import.meta.env.DEV) {
         throw new BusinessAuthError(OTP_FUNCTIONS_NOT_DEPLOYED_MESSAGE, 'business-auth/functions-not-deployed');
       }
@@ -762,7 +837,7 @@ export async function completeBusinessOtp(input: CompleteBusinessOtpInput): Prom
   const viaFunctions = await verifyOtpViaFunctions(challenge, input, code);
   if (viaFunctions) return viaFunctions;
   const firebaseAuth = getFirebaseAuth();
-  if (firebaseAuth) {
+  if (firebaseAuth && challenge.transport === 'firebase') {
     if (challenge.method === 'email_otp') {
       try {
         const linkUrl = typeof window === 'undefined' ? '' : window.location.href;

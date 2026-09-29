@@ -2,6 +2,7 @@ import type { ClientUser, Reservation } from '../../../types';
 import { formatEcuadorPhone } from '../../../lib/formatEcuador';
 import { esVipTier } from '../../../lib/esLabels';
 import { CheckCircle2, ArrowRight, LogOut, QrCode, Crown } from 'lucide-react';
+import { NightflowLogoMark } from '../../common/NightflowLogo';
 
 interface Props {
   clientUser: ClientUser;
@@ -48,22 +49,25 @@ export const VipProfileCard = ({
           </span>
         </div>
 
-        <span style={{
-          padding: '4px 10px',
-          borderRadius: '9999px',
-          background: 'rgba(229, 181, 79, 0.2)',
-          border: '1px solid rgba(229, 181, 79, 0.4)',
-          color: '#e5b54f',
-          fontSize: '0.7rem',
-          fontWeight: 800,
-          letterSpacing: '0.05em',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}>
-          <Crown size={12} />
-          <span>{esVipTier(clientUser.tier)}</span>
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <NightflowLogoMark size={22} theme="gold" />
+          <span style={{
+            padding: '4px 10px',
+            borderRadius: '9999px',
+            background: 'rgba(229, 181, 79, 0.2)',
+            border: '1px solid rgba(229, 181, 79, 0.4)',
+            color: '#e5b54f',
+            fontSize: '0.7rem',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+            <Crown size={12} />
+            <span>{esVipTier(clientUser.tier)}</span>
+          </span>
+        </div>
       </div>
 
       {/* Latest active pass if available */}

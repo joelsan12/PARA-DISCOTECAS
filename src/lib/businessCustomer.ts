@@ -159,7 +159,10 @@ export async function ensureBusinessCustomerProfile(
   const viaFunction = await ensureViaCloudFunction(normalizedBusinessId, normalizedIdentity, marketingConsent);
   if (viaFunction) return viaFunction;
 
-  return ensureViaClientRules(normalizedBusinessId, normalizedIdentity);
+  const viaClient = await ensureViaClientRules(normalizedBusinessId, normalizedIdentity);
+  if (viaClient) return viaClient;
+
+  return import.meta.env.DEV ? buildProfile(normalizedBusinessId, normalizedIdentity) : null;
 }
 
 export async function getBusinessCustomerProfile(

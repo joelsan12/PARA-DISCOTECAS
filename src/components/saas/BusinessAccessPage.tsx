@@ -31,8 +31,15 @@ const authMethods = [
 ];
 
 const errorMessage = (error: unknown): string => {
-  if (error instanceof BusinessAuthError) return error.message;
-  return 'No pudimos completar el acceso. Inténtalo nuevamente.';
+  const message = error instanceof BusinessAuthError
+    ? error.message
+    : error instanceof Error
+      ? error.message
+      : 'No pudimos completar el acceso. Inténtalo nuevamente.';
+  if (message.toLowerCase().includes('internal') || message.includes('[0]')) {
+    return 'El servicio de acceso no está disponible en este momento. Inténtalo nuevamente en unos minutos.';
+  }
+  return message;
 };
 
 function AccessNotFound() {
@@ -149,10 +156,19 @@ export function BusinessAccessPage() {
     try {
       await ensureProfile(result.user);
       setUser(result.user);
+      store.setBusinessPortalSession(business.id, {
+        id: result.user.uid,
+        name: result.user.displayName || result.user.email?.split('@')[0] || 'Invitado Nightflow',
+        phone: result.user.phone || '',
+        ...(result.user.email ? { email: result.user.email } : {}),
+        auth_provider: 'phone_otp',
+        tier: 'SILVER',
+        created_at: result.user.createdAt
+      });
       setSubmitState('success');
       redirectTimer.current = window.setTimeout(() => {
         navigate(`/negocio/${business.slug}/app`, { replace: true });
-      }, 850);
+      }, 500);
     } catch (profileError) {
       setSubmitState('idle');
       setError(errorMessage(profileError));
@@ -312,7 +328,24 @@ export function BusinessAccessPage() {
                 <h3>Bienvenido de vuelta, {user.displayName || 'invitado'}.</h3>
                 <p>Tu espacio en {business.name} está listo: mesas, reservas y pase en un solo lugar.</p>
               </div>
-              <button className="saas-button saas-button--gold" type="button" onClick={() => navigate(`/negocio/${business.slug}/app`)}>Entrar a mi portal <ArrowRight size={16} /></button>
+              <button
+                className="saas-button saas-button--gold"
+                type="button"
+                onClick={() => {
+                  store.setBusinessPortalSession(business.id, {
+                    id: user.uid,
+                    name: user.displayName || user.email?.split('@')[0] || 'Invitado Nightflow',
+                    phone: user.phone || '',
+                    ...(user.email ? { email: user.email } : {}),
+                    auth_provider: 'phone_otp',
+                    tier: 'SILVER',
+                    created_at: user.createdAt
+                  });
+                  navigate(`/negocio/${business.slug}/app`);
+                }}
+              >
+                Entrar a mi portal <ArrowRight size={16} />
+              </button>
             </div>
           ) : (
             <>

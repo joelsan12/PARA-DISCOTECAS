@@ -193,6 +193,19 @@
   letter-spacing: 0.24em;
 }
 
+.saas-logo__vip-badge {
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--saas-gold);
+  background: rgba(230, 184, 106, 0.12);
+  border: 1px solid rgba(230, 184, 106, 0.3);
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .saas-logo__copy small {
   color: var(--saas-dim);
   font-size: 7px;

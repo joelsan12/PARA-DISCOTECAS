@@ -1,6 +1,7 @@
 import { useClubStore } from '../../store/clubStore';
 import { LayoutDashboard, ScanLine, ExternalLink, ShieldCheck, ChevronDown, Building2, LogOut, User } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
+import { NightflowLogoMark } from './NightflowLogo';
 
 interface AdminNavbarProps {
   currentView: 'DASHBOARD' | 'DOOR' | 'SUPER_ADMIN';
@@ -45,36 +46,43 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
     }}>
       {/* Left: Brand + Active Club Dropdown */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: '#00f0ff',
-            boxShadow: '0 0 12px #00f0ff',
-          }} />
-          <span className="font-brand" style={{
-            fontWeight: 800,
-            fontSize: '1.05rem',
-            letterSpacing: '0.06em',
-            background: 'linear-gradient(135deg, #ffffff 40%, #00f0ff 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            NIGHTFLOW
-          </span>
-          <span style={{
-            fontSize: '0.62rem',
-            fontWeight: 800,
-            padding: '2px 6px',
-            borderRadius: '4px',
-            background: 'rgba(0, 240, 255, 0.1)',
-            color: '#00f0ff',
-            border: '1px solid rgba(0, 240, 255, 0.25)',
-            letterSpacing: '0.05em',
-          }}>
-            PORTAL CORPORATIVO
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <NightflowLogoMark size={32} theme="cyan" />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="font-brand" style={{
+                fontWeight: 800,
+                fontSize: '1.02rem',
+                letterSpacing: '0.12em',
+                background: 'linear-gradient(135deg, #ffffff 40%, #00f0ff 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                NIGHTFLOW
+              </span>
+              <span style={{
+                fontSize: '0.58rem',
+                fontWeight: 800,
+                padding: '1px 5px',
+                borderRadius: '3px',
+                background: 'rgba(0, 240, 255, 0.12)',
+                color: '#00f0ff',
+                border: '1px solid rgba(0, 240, 255, 0.3)',
+                letterSpacing: '0.06em',
+              }}>
+                VIP
+              </span>
+            </div>
+            <span style={{
+              fontSize: '0.55rem',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              color: 'rgba(0, 240, 255, 0.8)',
+              textTransform: 'uppercase',
+            }}>
+              Portal Corporativo
+            </span>
+          </div>
         </div>
 
         {/* Club Selector (solo si puede ver dashboard de clubs) */}

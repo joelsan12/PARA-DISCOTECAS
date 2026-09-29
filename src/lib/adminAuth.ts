@@ -39,7 +39,8 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
     // 1. Check if user is SuperAdmin in users/{uid}
     const userDocRef = doc(db, 'users', user.uid);
     const userSnapshot = await getDoc(userDocRef);
-    if (userSnapshot.exists() && userSnapshot.data()?.superAdmin === true) {
+    const userData = userSnapshot.exists() ? userSnapshot.data() : null;
+    if (userData?.superAdmin === true) {
       return {
         uid: user.uid,
         email: user.email || '',
@@ -50,9 +51,10 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
       };
     }
 
-    // 2. Check if user is staff in currentClubId
-    if (currentClubId) {
-      const staffDocRef = doc(db, 'businesses', currentClubId, 'staff', user.uid);
+    // 2. Check if user is staff in targetClubId (users/{uid}.businessId -> staff/{uid}.ACTIVE)
+    const targetClubId = (userData?.businessId as string | undefined) || currentClubId || 'club-sensorial';
+    if (targetClubId) {
+      const staffDocRef = doc(db, 'businesses', targetClubId, 'staff', user.uid);
       const staffSnapshot = await getDoc(staffDocRef);
       if (staffSnapshot.exists()) {
         const data = staffSnapshot.data();
@@ -65,7 +67,7 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
             displayName: data.name || user.displayName || user.email?.split('@')[0] || 'Staff',
             role,
             isSuperAdmin: false,
-            clubId: currentClubId,
+            clubId: targetClubId,
             staffRole: rawRole as AdminStaffSession['staffRole']
           };
         }

@@ -6,6 +6,7 @@ import type { ClientUser } from '../../types';
 import { findBusinessBySlug } from '../../lib/businessDirectory';
 import { useBusinessDirectory } from '../../lib/useBusinessDirectory';
 import {
+  getCurrentBusinessUser,
   signOutBusinessCustomer,
   subscribeToBusinessAuth,
   type BusinessAuthUser
@@ -77,8 +78,8 @@ export function BusinessPortalPage() {
   const business = useMemo(() => findBusinessBySlug(entries, slug), [slug, entries]);
   const store = useClubStore();
   const navigate = useNavigate();
-  const [authUser, setAuthUser] = useState<BusinessAuthUser | null>(null);
-  const [authReady, setAuthReady] = useState(false);
+  const [authUser, setAuthUser] = useState<BusinessAuthUser | null>(() => getCurrentBusinessUser());
+  const [authReady, setAuthReady] = useState(() => Boolean(getCurrentBusinessUser()));
 
   useEffect(() => subscribeToBusinessAuth((nextUser) => {
     setAuthUser(nextUser);
@@ -91,28 +92,25 @@ export function BusinessPortalPage() {
     }
   }, [authReady, authUser, business, navigate]);
 
-  const needsSessionSync = Boolean(
-    business
-    && authUser
-    && (store.activeClubId !== business.id || store.clientUser?.id !== authUser.uid)
-  );
-
   useEffect(() => {
-    if (!business || !authUser || !needsSessionSync) return;
-    let cancelled = false;
-    void ensureBusinessCustomerProfile(business.id, {
-      uid: authUser.uid,
-      displayName: authUser.displayName,
-      email: authUser.email,
-      phone: authUser.phone
-    })
-      .catch(() => null)
-      .then((profile) => {
-        if (cancelled) return;
-        store.setBusinessPortalSession(business.id, toClientUser(authUser, profile));
-      });
-    return () => { cancelled = true; };
-  }, [authUser, business, needsSessionSync, store]);
+    if (!business || !authUser) return;
+    if (store.activeClubId !== business.id || store.clientUser?.id !== authUser.uid) {
+      store.setBusinessPortalSession(business.id, toClientUser(authUser, null));
+      let cancelled = false;
+      void ensureBusinessCustomerProfile(business.id, {
+        uid: authUser.uid,
+        displayName: authUser.displayName,
+        email: authUser.email,
+        phone: authUser.phone
+      })
+        .catch(() => null)
+        .then((profile) => {
+          if (cancelled || !profile) return;
+          store.setBusinessPortalSession(business.id, toClientUser(authUser, profile));
+        });
+      return () => { cancelled = true; };
+    }
+  }, [authUser, business, store]);
 
   const handleSignOut = () => {
     void signOutBusinessCustomer()
@@ -125,7 +123,6 @@ export function BusinessPortalPage() {
 
   if (!business) return <PortalNotFound />;
   if (!authReady || !authUser) return <PortalBusy business={business} />;
-  if (store.activeClubId !== business.id) return <PortalBusy business={business} />;
 
   return (
     <ClientPortalApp

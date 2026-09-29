@@ -28,7 +28,15 @@ export const appCheckProviderName = (env.VITE_APPCHECK_PROVIDER || 'recaptcha_v3
 export const appCheckDebugToken = env.DEV ? (env.VITE_APPCHECK_DEBUG_TOKEN || '') : '';
 export const functionsRegion = (env.VITE_FUNCTIONS_REGION || 'us-central1').toLowerCase();
 
-export const useEmulators = env.DEV === 'true' || Boolean(env.DEV) || env.VITE_USE_EMULATORS === '1';
+export const useEmulators = env.VITE_USE_EMULATORS === '1'
+  || env.VITE_USE_EMULATORS === 'true'
+  || Boolean(env.DEV);
+export const useAuthEmulator = env.VITE_USE_AUTH_EMULATOR === '1'
+  || env.VITE_USE_AUTH_EMULATOR === 'true'
+  || Boolean(env.DEV);
+export const useFunctionsEmulator = env.VITE_USE_FUNCTIONS_EMULATOR === '1'
+  || env.VITE_USE_FUNCTIONS_EMULATOR === 'true'
+  || Boolean(env.DEV);
 export const emulatorHost = (env.VITE_EMULATOR_HOST || '127.0.0.1').split(':')[0] || '127.0.0.1';
 export const functionsEmulatorPort = Number(env.VITE_FUNCTIONS_EMULATOR_PORT || 5001);
 
@@ -53,8 +61,11 @@ if (isFirebaseConfigured) {
     auth = getAuth(app);
     if (useEmulators && db) {
       connectFirestoreEmulator(db, emulatorHost, 8080);
-      if (auth) connectAuthEmulator(auth, `http://${emulatorHost}:9099`, { disableWarnings: true });
-      console.info('🧪 [Firebase] Conectado a emuladores locales en', emulatorHost);
+      if (auth && useAuthEmulator) {
+        connectAuthEmulator(auth, `http://${emulatorHost}:9099`, { disableWarnings: true });
+        console.info('🧪 [Firebase] Conectado a Auth emulator en', `http://${emulatorHost}:9099`);
+      }
+      console.info('🧪 [Firebase] Conectado a emulador Firestore en', emulatorHost);
     } else {
       console.info('🔥 [Firebase] ¡Conectado con éxito al proyecto:', firebaseConfig.projectId);
     }

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import type { BusinessDirectoryEntry, FavoriteBusiness } from '../../types/saas';
 import { getBusinessTypeShortLabel } from '../../lib/businessDirectory';
 import { useFavorites } from './useFavorites';
+import { NightflowLogoMark } from '../common/NightflowLogo';
 
 interface SaasLogoProps {
   compact?: boolean;
@@ -13,9 +14,12 @@ interface SaasLogoProps {
 export function SaasLogo({ compact = false }: SaasLogoProps) {
   return (
     <Link className={`saas-logo${compact ? ' saas-logo--compact' : ''}`} to="/" aria-label="Nightflow, directorio de experiencias">
-      <span className="saas-logo__mark">N</span>
+      <NightflowLogoMark size={compact ? 28 : 34} theme="gold" />
       <span className="saas-logo__copy">
-        <strong>NIGHTFLOW</strong>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <strong>NIGHTFLOW</strong>
+          <span className="saas-logo__vip-badge">VIP</span>
+        </span>
         <small>PRIVATE HOSPITALITY NETWORK</small>
       </span>
     </Link>

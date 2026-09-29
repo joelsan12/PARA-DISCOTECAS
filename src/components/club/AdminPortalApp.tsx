@@ -6,7 +6,8 @@ import { SuperAdminDashboard } from '../superadmin/SuperAdminDashboard';
 import { AdminNavbar } from '../common/AdminNavbar';
 import { AdminLoginView } from './AdminLoginView';
 import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState } from '../../lib/adminAuth';
-import { ExternalLink, ShieldCheck, Loader2 } from 'lucide-react';
+import { ExternalLink, ShieldCheck } from 'lucide-react';
+import { NightflowLogoMark } from '../common/NightflowLogo';
 
 type AdminView = 'DASHBOARD' | 'DOOR' | 'SUPER_ADMIN';
 
@@ -52,26 +53,27 @@ export function AdminPortalApp() {
         color: '#fff',
         gap: '16px'
       }}>
-        <div style={{
-          width: '50px',
-          height: '50px',
-          borderRadius: '50%',
-          background: 'rgba(0, 240, 255, 0.1)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 25px rgba(0, 240, 255, 0.2)'
-        }}>
-          <Loader2 size={24} color="#00f0ff" className="spin" />
-        </div>
-        <div style={{ textAlign: 'center' }}>
-          <p className="font-brand" style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.04em', margin: 0 }}>
-            NIGHTFLOW VIP
-          </p>
-          <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
-            Verificando credenciales corporativas en el servidor...
-          </span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+          <div style={{ position: 'relative' }}>
+            <NightflowLogoMark size={52} theme="cyan" />
+            <div style={{
+              position: 'absolute',
+              inset: '-6px',
+              borderRadius: '16px',
+              border: '2px solid rgba(0, 240, 255, 0.4)',
+              borderTopColor: 'transparent',
+              animation: 'spin 1.2s linear infinite',
+              pointerEvents: 'none',
+            }} />
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p className="font-brand" style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.04em', margin: 0 }}>
+              NIGHTFLOW VIP
+            </p>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
+              Verificando credenciales corporativas en el servidor...
+            </span>
+          </div>
         </div>
       </div>
     );

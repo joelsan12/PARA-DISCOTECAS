@@ -10,7 +10,8 @@ const { initializeApp, applicationDefault, getApps } = functionsRequire('firebas
 const { getFirestore } = functionsRequire('firebase-admin/firestore');
 
 const projectId = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'nightflow-vip';
-const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST || '';
+const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
+process.env.FIRESTORE_EMULATOR_HOST = emulatorHost;
 const useEmulator = Boolean(emulatorHost) || process.env.USE_FIREBASE_EMULATOR === '1';
 
 const PRICING_ROW = /\{\s*event_id:\s*'([^']+)',\s*table_id:\s*'([^']+)',\s*status:\s*'([^']+)',\s*min_spend:\s*(\d+),\s*deposit_required:\s*(\d+),\s*includes:\s*\[([^\]]*)\](?:,\s*active_reservation_id:\s*'([^']+)')?\s*\}/gu;
