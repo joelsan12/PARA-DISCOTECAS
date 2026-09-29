@@ -12,6 +12,7 @@ dist
 dist-admin
 dist-ssr
 *.local
+.firebase/
 
 # Entornos y secretos
 .env

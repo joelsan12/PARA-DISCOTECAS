@@ -212,7 +212,7 @@ export async function loadBusinessDirectory(options: LoadDirectoryOptions = {}):
   if (!force && directoryLoad) return directoryLoad;
 
   if (!isFirebaseConfigured || !db) {
-    return applyCache(MOCK_DIRECTORY);
+    return applyCache(import.meta.env.DEV ? MOCK_DIRECTORY : []);
   }
 
   const request = (async () => {
@@ -241,7 +241,7 @@ export function isBusinessDirectoryLoaded(): boolean {
 
 export function getBusinessById(businessId: string): BusinessDirectoryEntry | undefined {
   return directoryCache.find((business) => business.id === businessId)
-    ?? MOCK_DIRECTORY.find((business) => business.id === businessId);
+    ?? (import.meta.env.DEV ? MOCK_DIRECTORY.find((business) => business.id === businessId) : undefined);
 }
 
 export function findBusinessBySlug(entries: BusinessDirectoryEntry[], slug: string): BusinessDirectoryEntry | undefined {
@@ -255,7 +255,8 @@ export function findBusinessBySlug(entries: BusinessDirectoryEntry[], slug: stri
 }
 
 export function getBusinessBySlug(slug: string): BusinessDirectoryEntry | undefined {
-  return findBusinessBySlug(directoryCache, slug) ?? findBusinessBySlug(MOCK_DIRECTORY, slug);
+  return findBusinessBySlug(directoryCache, slug)
+    ?? (import.meta.env.DEV ? findBusinessBySlug(MOCK_DIRECTORY, slug) : undefined);
 }
 
 export function searchBusinesses(

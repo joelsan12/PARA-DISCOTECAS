@@ -21,7 +21,7 @@ export async function createBusinessTenant(input) {
     const businessId = `club_${sha256(`${input.name}:${input.city}`).slice(0, 20)}`;
     const directoryId = businessId;
     const now = Timestamp.now();
-    const authMethods = input.authMethods ?? ['password', 'email_otp', 'whatsapp_otp', 'sms_otp'];
+    const authMethods = input.authMethods ?? ['password'];
     const batch = db.batch();
     // 1. Create businessDirectory document (strictly 9 allowed keys from firestore.rules)
     const directoryRef = db.collection('businessDirectory').doc(directoryId);

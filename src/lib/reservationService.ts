@@ -206,7 +206,7 @@ export async function createReservationHold(
 export interface PaymentSessionOutcome {
   holdId: string;
   paymentSessionId: string;
-  state: 'PAYMENT_PENDING';
+  state: 'PAYMENT_PENDING' | 'CONFIRMED';
   amount: number;
   currency: string;
   expiresAt: string;
@@ -247,7 +247,7 @@ export async function startPaymentSession(
     const record = result && typeof result === 'object' && !Array.isArray(result)
       ? result as Record<string, unknown>
       : null;
-    if (!record || typeof record.paymentSessionId !== 'string' || record.state !== 'PAYMENT_PENDING') {
+    if (!record || typeof record.paymentSessionId !== 'string' || (record.state !== 'PAYMENT_PENDING' && record.state !== 'CONFIRMED')) {
       throw new ReservationServiceError(
         'El servidor de pagos no devolvió una sesión válida.',
         'reservation/invalid-payment-session'
@@ -256,7 +256,7 @@ export async function startPaymentSession(
     return {
       holdId: typeof record.holdId === 'string' ? record.holdId : holdId,
       paymentSessionId: record.paymentSessionId,
-      state: 'PAYMENT_PENDING',
+      state: record.state === 'CONFIRMED' ? 'CONFIRMED' : 'PAYMENT_PENDING',
       amount: typeof record.amount === 'number' ? record.amount : 0,
       currency: typeof record.currency === 'string' ? record.currency : RESERVATION_CURRENCY,
       expiresAt: typeof record.expiresAt === 'string' ? record.expiresAt : new Date(Date.now() + HOLD_DURATION_MS).toISOString(),

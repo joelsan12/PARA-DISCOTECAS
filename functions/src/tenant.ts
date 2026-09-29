@@ -53,7 +53,7 @@ export async function createBusinessTenant(input: CreateBusinessTenantInput & { 
   const directoryId = businessId;
   const now = Timestamp.now();
 
-  const authMethods = input.authMethods ?? ['password', 'email_otp', 'whatsapp_otp', 'sms_otp'];
+  const authMethods = input.authMethods ?? ['password'];
 
   const batch = db.batch();
 

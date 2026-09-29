@@ -226,6 +226,33 @@ export const CheckoutModal = ({
           activeHold.holdToken,
           window.location.pathname
         );
+        if (paymentSession.provider === 'pay_at_door' || paymentSession.state === 'CONFIRMED') {
+          clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
+          const confirmed: Reservation = {
+            id: activeHold.holdId,
+            code: `VIP-${activeHold.holdId.slice(-4).toUpperCase()}`,
+            club_id: store.activeClubId,
+            event_id: store.activeEventId,
+            table_id: table.id,
+            table_code: table.table_code,
+            zone: table.zone,
+            customer_name: name || 'Invitado',
+            customer_phone: normalizedPhone,
+            customer_email: email,
+            guest_count: guests,
+            deposit_amount: activeHold.amount,
+            min_spend: pricing.min_spend,
+            status: 'CONFIRMED',
+            payment_method: paymentMethod,
+            payment_status: 'paid',
+            qr_token: activeHold.holdId,
+            hold_expires_at: 0,
+            created_at: new Date().toISOString()
+          };
+          setIsProcessing(false);
+          onSuccess(confirmed);
+          return;
+        }
         watchHoldConfirmation(activeHold);
         setPaymentPhase('pending');
         setIsProcessing(false);

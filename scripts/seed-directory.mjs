@@ -46,7 +46,7 @@ function loadMockClubs() {
       tagline: pick(text, 'tagline'),
       primaryColor: pick(text, 'primary_color'),
       accentColor: pick(text, 'accent_color'),
-      authMethods: ['password', 'email_otp', 'whatsapp_otp', 'sms_otp'],
+      authMethods: ['password'],
       reentryMode: businessType === 'ROOFTOP' || businessType === 'EVENT_VENUE'
         ? 'physical_band'
         : 'digital_passkey',

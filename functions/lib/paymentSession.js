@@ -85,15 +85,40 @@ export async function createPaymentSessionFor(request) {
                 }
             }
         }
-        transaction.update(holdReference, {
-            state: "PAYMENT_PENDING",
-            paymentState: "PENDING",
-            paymentSessionId,
-            paymentSessionHash: requestHash,
-            paymentProvider: provider,
-            paymentStartedAt: FieldValue.serverTimestamp(),
-            updatedAt: FieldValue.serverTimestamp()
-        });
+        const isPayAtDoor = provider === "none" || provider === "pay_at_door";
+        if (isPayAtDoor) {
+            const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
+            const resourceId = typeof hold.resourceId === "string" ? hold.resourceId : "";
+            if (businessId && resourceId) {
+                const resourceReference = db.collection("businesses").doc(businessId).collection("resources").doc(resourceId);
+                transaction.update(resourceReference, {
+                    status: "CONFIRMED",
+                    activeReservationId: input.holdId,
+                    updatedAt: FieldValue.serverTimestamp()
+                });
+            }
+            transaction.update(holdReference, {
+                state: "CONFIRMED",
+                paymentState: "UNPAID",
+                paymentSessionId,
+                paymentSessionHash: requestHash,
+                paymentProvider: "pay_at_door",
+                confirmedAt: FieldValue.serverTimestamp(),
+                paymentStartedAt: FieldValue.serverTimestamp(),
+                updatedAt: FieldValue.serverTimestamp()
+            });
+        }
+        else {
+            transaction.update(holdReference, {
+                state: "PAYMENT_PENDING",
+                paymentState: "PENDING",
+                paymentSessionId,
+                paymentSessionHash: requestHash,
+                paymentProvider: provider,
+                paymentStartedAt: FieldValue.serverTimestamp(),
+                updatedAt: FieldValue.serverTimestamp()
+            });
+        }
         return {
             idempotentReplay: false,
             paymentSessionId,
@@ -102,6 +127,7 @@ export async function createPaymentSessionFor(request) {
             expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000
         };
     });
+    const isPayAtDoor = provider === "none" || provider === "pay_at_door";
     const holdSnapshotForAudit = await holdReference.get();
     const auditBusinessId = holdSnapshotForAudit.exists
         ? String(dataRecord(holdSnapshotForAudit.data()).businessId ?? "unknown")
@@ -112,16 +138,16 @@ export async function createPaymentSessionFor(request) {
         actorRole: "customer",
         requestId: getRequestId(request.rawRequest),
         ip: getClientIp(request.rawRequest)
-    }, { paymentSessionId: result.paymentSessionId, provider });
+    }, { paymentSessionId: result.paymentSessionId, provider: isPayAtDoor ? "pay_at_door" : provider });
     return {
         holdId: input.holdId,
         paymentSessionId: result.paymentSessionId,
-        state: "PAYMENT_PENDING",
+        state: isPayAtDoor ? "CONFIRMED" : "PAYMENT_PENDING",
         amount: result.amount,
         currency: result.currency,
         expiresAt: new Date(result.expiresAt).toISOString(),
-        checkoutUrl: buildCheckoutUrl(provider, result.paymentSessionId, input.holdId, input.returnUrl),
-        provider,
+        checkoutUrl: isPayAtDoor ? null : buildCheckoutUrl(provider, result.paymentSessionId, input.holdId, input.returnUrl),
+        provider: isPayAtDoor ? "pay_at_door" : provider,
         idempotentReplay: result.idempotentReplay
     };
 }

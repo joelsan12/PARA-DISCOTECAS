@@ -287,7 +287,7 @@ class ClubStore {
     };
 
     const newTables: ClubTable[] = result.resourceIds.map((resId, idx) => ({
-      id: `${result.businessId}_${resId}`,
+      id: resId,
       club_id: result.businessId,
       table_code: resId.toUpperCase().replace('TBL_', ''),
       zone: resId.includes('vip') ? 'Zona VIP' : 'General',
