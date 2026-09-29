@@ -55,8 +55,8 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: var(--border-focus) !important;
-  box-shadow: 0 0 12px rgba(229, 181, 79, 0.35) !important;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 12px rgba(229, 181, 79, 0.35);
 }
 
 /* Custom VIP Scrollbars */

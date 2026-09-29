@@ -65,8 +65,8 @@
 
 .saas-app a:focus-visible,
 .saas-app button:focus-visible,
-.saas-app input:focus-visible,
-.saas-app select:focus-visible {
+.saas-app input:not(.saas-field__control input):not(.saas-search-field input):focus-visible,
+.saas-app select:not(.saas-search-field select):focus-visible {
   outline: 2px solid var(--saas-gold);
   outline-offset: 3px;
 }
@@ -508,11 +508,23 @@
   width: 100%;
   min-width: 0;
   padding: 13px 0 0;
-  border: 0;
-  outline: 0;
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   color: var(--saas-ink);
-  background: transparent;
+  background: transparent !important;
   font-size: 12px;
+}
+
+.saas-search-field input:focus,
+.saas-search-field input:focus-visible,
+.saas-search-field select:focus,
+.saas-search-field select:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }
 
 .saas-search-field input::placeholder {
@@ -1645,11 +1657,21 @@
 .saas-field__control input {
   width: 100%;
   min-width: 0;
-  border: 0;
-  outline: 0;
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
   color: var(--saas-ink);
-  background: transparent;
+  background: transparent !important;
   font-size: 12px;
+}
+
+.saas-field__control input:focus,
+.saas-field__control input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }
 
 .saas-field__control input::placeholder {
