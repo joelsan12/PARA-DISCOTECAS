@@ -52,7 +52,7 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
     }
 
     // 2. Check if user is staff in targetClubId (users/{uid}.businessId -> staff/{uid}.ACTIVE)
-    const targetClubId = (userData?.businessId as string | undefined) || currentClubId || 'club-sensorial';
+    const targetClubId = (userData?.businessId as string | undefined) || currentClubId;
     if (targetClubId) {
       const staffDocRef = doc(db, 'businesses', targetClubId, 'staff', user.uid);
       const staffSnapshot = await getDoc(staffDocRef);

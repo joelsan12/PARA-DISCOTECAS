@@ -31,7 +31,7 @@ const toClientUser = (authUser: BusinessAuthUser, profile: BusinessCustomerProfi
     name,
     phone: profile?.phone || authUser.phone || '',
     ...(email ? { email } : {}),
-    auth_provider: 'phone_otp',
+    auth_provider: authUser.email ? 'password' : 'phone_otp',
     tier,
     created_at: profile?.createdAt || authUser.createdAt
   };

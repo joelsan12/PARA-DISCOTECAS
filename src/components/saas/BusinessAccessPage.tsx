@@ -161,7 +161,15 @@ export function BusinessAccessPage() {
         name: result.user.displayName || result.user.email?.split('@')[0] || 'Invitado Nightflow',
         phone: result.user.phone || '',
         ...(result.user.email ? { email: result.user.email } : {}),
-        auth_provider: 'phone_otp',
+        auth_provider: result.method === 'whatsapp_otp'
+          ? 'whatsapp'
+          : result.method === 'password'
+            ? 'password'
+            : result.method === 'email_otp'
+              ? 'email_otp'
+              : result.method === 'sms_otp'
+                ? 'sms_otp'
+                : 'phone_otp',
         tier: 'SILVER',
         created_at: result.user.createdAt
       });
@@ -337,7 +345,7 @@ export function BusinessAccessPage() {
                     name: user.displayName || user.email?.split('@')[0] || 'Invitado Nightflow',
                     phone: user.phone || '',
                     ...(user.email ? { email: user.email } : {}),
-                    auth_provider: 'phone_otp',
+                    auth_provider: user.email ? 'password' : 'phone_otp',
                     tier: 'SILVER',
                     created_at: user.createdAt
                   });

@@ -140,7 +140,7 @@ export interface AuditLog {
 
 export type ViewRole = 'CLIENT' | 'CLUB_ADMIN' | 'DOOR_CHECKIN' | 'SUPER_ADMIN';
 
-export type ClientAuthProvider = 'phone_otp' | 'whatsapp' | 'apple' | 'google';
+export type ClientAuthProvider = 'phone_otp' | 'whatsapp' | 'apple' | 'google' | 'password' | 'email_otp' | 'sms_otp';
 
 export type VIPTier = 'SILVER' | 'GOLD_VIP' | 'BLACK_DIAMOND';
 
