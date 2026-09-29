@@ -1,0 +1,11 @@
+import type { Request as FirebaseRequest } from "firebase-functions/v2/https";
+import type { Response } from "express";
+export declare function getHeader(request: FirebaseRequest, name: string): string | undefined;
+export declare function getClientIp(request: FirebaseRequest): string;
+export declare function getRequestId(request: FirebaseRequest): string;
+export declare function rawBody(request: FirebaseRequest): Buffer;
+export declare function parseJsonBody(request: FirebaseRequest): Record<string, unknown>;
+export declare function requirePost(request: FirebaseRequest): void;
+export declare function setCommonHeaders(response: Response): void;
+export declare function sendJson(response: Response, status: number, body: unknown): void;
+export declare function sendHttpError(response: Response, error: unknown): void;

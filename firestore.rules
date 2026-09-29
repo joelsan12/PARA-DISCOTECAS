@@ -1,0 +1,302 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.superAdmin == true;
+    }
+
+    function staffExists(businessId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/businesses/$(businessId)/staff/$(request.auth.uid))
+        && get(/databases/$(database)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.businessId == businessId;
+    }
+
+    function staffRole(businessId) {
+      return get(/databases/$(database)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.role;
+    }
+
+    function isActiveStaff(businessId) {
+      return staffExists(businessId)
+        && get(/databases/$(database)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.status == 'ACTIVE';
+    }
+
+    function isOwner(businessId) {
+      return isActiveStaff(businessId) && staffRole(businessId) == 'owner';
+    }
+
+    function isManager(businessId) {
+      return isActiveStaff(businessId) && (staffRole(businessId) == 'owner' || staffRole(businessId) == 'manager');
+    }
+
+    function isFinance(businessId) {
+      return isActiveStaff(businessId)
+        && (staffRole(businessId) == 'owner' || staffRole(businessId) == 'manager' || staffRole(businessId) == 'finance');
+    }
+
+    function isCustomerInBusiness(businessId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/businesses/$(businessId)/customers/$(request.auth.uid))
+        && get(/databases/$(database)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.businessId == businessId
+        && get(/databases/$(database)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.status == 'ACTIVE';
+    }
+
+    function isActiveBusiness(businessId) {
+      return exists(/databases/$(database)/documents/businesses/$(businessId))
+        && get(/databases/$(database)/documents/businesses/$(businessId)).data.status in ['active', 'trial'];
+    }
+
+    function validNewCustomer(businessId, uid) {
+      let data = request.resource.data;
+      return data.businessId == businessId
+        && data.uid == uid
+        && data.status == 'ACTIVE'
+        && data.tier == 'STANDARD'
+        && data.loyaltyPoints == 0
+        && data.marketingConsent is bool
+        && data.displayName is string
+        && data.displayName.size() >= 2
+        && data.displayName.size() <= 80
+        && (!('email' in data) || data.email is string || data.email == null)
+        && (!('phone' in data) || data.phone is string || data.phone == null)
+        && data.keys().hasOnly([
+          'businessId',
+          'uid',
+          'displayName',
+          'email',
+          'phone',
+          'status',
+          'tier',
+          'loyaltyPoints',
+          'marketingConsent',
+          'createdAt',
+          'updatedAt'
+        ]);
+    }
+
+    function validCustomerUpdate(businessId, uid) {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return data.businessId == businessId
+        && data.businessId == resource.data.businessId
+        && data.uid == uid
+        && data.uid == resource.data.uid
+        && data.displayName is string
+        && data.displayName.size() >= 2
+        && data.displayName.size() <= 80
+        && data.marketingConsent is bool
+        && (!('email' in data) || data.email is string || data.email == null)
+        && (!('phone' in data) || data.phone is string || data.phone == null)
+        && changed.hasOnly(['displayName', 'email', 'phone', 'marketingConsent', 'updatedAt']);
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && request.auth.uid == userId;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /businessDirectory/{businessId} {
+      allow get: if resource.data.status in ['active', 'trial']
+        && resource.data.keys().hasOnly([
+          'name',
+          'slug',
+          'city',
+          'businessType',
+          'logoUrl',
+          'coverUrl',
+          'status',
+          'verified',
+          'authMethods'
+        ]);
+      allow list: if resource.data.status in ['active', 'trial']
+        && resource.data.keys().hasOnly([
+          'name',
+          'slug',
+          'city',
+          'businessType',
+          'logoUrl',
+          'coverUrl',
+          'status',
+          'verified',
+          'authMethods'
+        ]);
+      allow create, update, delete: if false;
+    }
+
+    match /businesses/{businessId} {
+      allow get: if isActiveStaff(businessId) || isSuperAdmin();
+      allow list: if false;
+      allow create, update, delete: if false;
+
+      match /layout/{documentId} {
+        allow get, list: if signedIn()
+          && (isActiveStaff(businessId) || isCustomerInBusiness(businessId) || isSuperAdmin());
+        allow create, update: if isManager(businessId) || isSuperAdmin();
+        allow delete: if false;
+      }
+
+      match /resources/{resourceId} {
+        allow get, list: if signedIn()
+          && (isActiveStaff(businessId) || isCustomerInBusiness(businessId) || isSuperAdmin());
+        allow create, update, delete: if false;
+      }
+
+      match /events/{eventId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /devices/{deviceId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /customers/{uid} {
+        allow get: if (signedIn() && request.auth.uid == uid && (resource == null || resource.data.businessId == businessId))
+          || isActiveStaff(businessId)
+          || isSuperAdmin();
+        allow list: if isManager(businessId) || isSuperAdmin();
+        allow create: if signedIn()
+          && request.auth.uid == uid
+          && isActiveBusiness(businessId)
+          && validNewCustomer(businessId, uid);
+        allow update: if signedIn()
+          && request.auth.uid == uid
+          && resource.data.businessId == businessId
+          && validCustomerUpdate(businessId, uid);
+        allow delete: if false;
+      }
+
+      match /staff/{uid} {
+        allow get: if (signedIn() && request.auth.uid == uid && (resource == null || (resource.data.uid == uid && resource.data.businessId == businessId)))
+          || isManager(businessId)
+          || isSuperAdmin();
+        allow list: if isManager(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /reservations/{reservationId} {
+        allow get: if isActiveStaff(businessId)
+          || isSuperAdmin()
+          || (signedIn()
+            && resource.data.businessId == businessId
+            && resource.data.customerUid == request.auth.uid
+            && isCustomerInBusiness(businessId));
+        allow list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /loyalty/{uid} {
+        allow get: if (signedIn() && request.auth.uid == uid && isCustomerInBusiness(businessId))
+          || isActiveStaff(businessId)
+          || isSuperAdmin();
+        allow list: if isManager(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /attendance/{attendanceId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /attendanceEvents/{eventId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /attendanceSessions/{sessionId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /securityIncidents/{incidentId} {
+        allow get, list: if isFinance(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /customers/{customerId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    match /staff/{staffId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    match /reservations/{reservationId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    match /holds/{holdId} {
+      allow get: if isFinance(resource.data.businessId)
+        || (signedIn()
+          && resource.data.customerUid == request.auth.uid
+          && isCustomerInBusiness(resource.data.businessId));
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /attendance/{attendanceId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    match /financialRecords/{recordId} {
+      allow get: if resource.data.businessId is string && isFinance(resource.data.businessId);
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /privacyRequests/{requestId} {
+      allow get: if (signedIn() && resource.data.subjectUid == request.auth.uid)
+        || (resource.data.businessId is string && isManager(resource.data.businessId));
+      allow list: if false;
+      allow create, update, delete: if false;
+
+      match /ledger/{entryId} {
+        allow get: if (signedIn() && get(/databases/$(database)/documents/privacyRequests/$(requestId)).data.subjectUid == request.auth.uid)
+          || (get(/databases/$(database)/documents/privacyRequests/$(requestId)).data.businessId is string
+            && isManager(get(/databases/$(database)/documents/privacyRequests/$(requestId)).data.businessId));
+        allow list: if false;
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /auditLogs/{logId} {
+      allow get: if resource.data.businessId is string && isFinance(resource.data.businessId);
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /paymentEvents/{eventId} {
+      allow get, list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /otpChallenges/{challengeId} {
+      allow get, list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /businessSessions/{sessionId} {
+      allow get, list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /rateLimits/{key} {
+      allow get, list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

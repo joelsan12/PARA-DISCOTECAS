@@ -1,0 +1,35 @@
+{
+  "name": "NIGHTFLOW VIP",
+  "short_name": "NIGHTFLOW",
+  "description": "Pase digital VIP, reservas y acceso seguro a discotecas y lounges.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070c",
+  "theme_color": "#05070c",
+  "lang": "es-EC",
+  "categories": ["entertainment", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mis reservas",
+      "short_name": "Reservas",
+      "url": "/?vista=reservas"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+export declare function asRecord(value: unknown, name?: string): Record<string, unknown>;
+export declare function assertAllowedKeys(record: Record<string, unknown>, allowed: readonly string[]): void;
+export declare function requiredString(record: Record<string, unknown>, key: string, minimum?: number, maximum?: number): string;
+export declare function optionalString(record: Record<string, unknown>, key: string, minimum?: number, maximum?: number): string | undefined;
+export declare function requiredId(record: Record<string, unknown>, key: string): string;
+export declare function optionalId(record: Record<string, unknown>, key: string): string | undefined;
+export declare function requiredEmail(record: Record<string, unknown>, key: string): string;
+export declare function optionalEmail(record: Record<string, unknown>, key: string): string | undefined;
+export declare function requiredPhone(record: Record<string, unknown>, key: string): string;
+export declare function optionalPhone(record: Record<string, unknown>, key: string): string | undefined;
+export declare function normalizePhone(value: string): string | undefined;
+export declare function requiredNumber(record: Record<string, unknown>, key: string, minimum: number, maximum: number): number;
+export declare function optionalNumber(record: Record<string, unknown>, key: string, minimum: number, maximum: number): number | undefined;
+export declare function requiredBoolean(record: Record<string, unknown>, key: string, fallback?: boolean): boolean;
+export declare function requiredEnum<T extends string>(record: Record<string, unknown>, key: string, values: readonly T[]): T;
+export declare function safeReturnPath(record: Record<string, unknown>, key: string): string | undefined;
+export declare function stringValue(value: unknown, fallback?: string): string;
+export declare function numberValue(value: unknown): number | undefined;

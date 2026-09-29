@@ -1,0 +1,11 @@
+export declare function sha256(value: string | Buffer): string;
+export declare function hmacSha256(secret: string, value: string | Buffer, encoding?: "hex" | "base64url"): string;
+export declare function safeEqual(left: string, right: string): boolean;
+export declare function randomId(prefix: string): string;
+export declare function randomOtpCode(): string;
+export declare function hashIdentifier(secret: string, channel: string, identifier: string): string;
+export declare function hashOtpCode(secret: string, challengeId: string, code: string): string;
+export declare function hashToken(token: string): string;
+export declare function encryptIdentifier(secret: string, value: string): string;
+export declare function decryptIdentifier(secret: string, value: string): string;
+export declare function stableStringify(value: unknown): string;

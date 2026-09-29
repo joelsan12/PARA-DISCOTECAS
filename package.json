@@ -1,0 +1,49 @@
+{
+  "name": "para-discotecas",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"CLIENT,ADMIN\" -c \"cyan,magenta\" \"npm run dev:client\" \"npm run dev:admin\"",
+    "dev:client": "vite --mode client --port 5173",
+    "dev:admin": "vite --mode admin --port 5174",
+    "dev:single": "vite --port 5173",
+    "dev:door": "npm --prefix services/door-service run build && npm --prefix services/door-service run start",
+    "dev:edge": "npm --prefix services/edge-gateway run dev",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint && node scripts/check-frontend-boundaries.mjs && node scripts/check-security-invariants.mjs",
+    "check:boundaries": "node scripts/check-frontend-boundaries.mjs",
+    "check:invariants": "node scripts/check-security-invariants.mjs",
+    "seed:directory": "node scripts/seed-directory.mjs",
+    "seed:resources": "node scripts/seed-resources.mjs",
+    "seed:all": "npm run seed:directory && npm run seed:resources",
+    "test:frontend": "node --test tests/ticketPass.test.mjs tests/reentryPasskey.test.mjs",
+    "test:holds": "npm --prefix functions run test:emulators",
+    "test:door": "npm --prefix services/door-service run test",
+    "test:edge": "npm --prefix services/edge-gateway run test",
+    "test:scenario02": "npm run test:frontend && npm run test:door && npm run test:edge && npm run test:holds",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "firebase": "^12.19.0",
+    "jose": "^6.2.12",
+    "lucide-react": "^1.40.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^24.13.3",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "concurrently": "^10.0.5",
+    "oxlint": "^1.79.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}

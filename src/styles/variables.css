@@ -1,0 +1,73 @@
+:root {
+  /* Ultra-Deep Obsidian & Luxury Palette (Aligned with VIP Auth) */
+  --bg-void: #08080c;
+  --bg-base: #0a0a0f;
+  --bg-surface: #0e0e15;
+  --bg-elevated: #14141e;
+  --bg-input: #12121b;
+  --bg-hover: #191924;
+  
+  /* Glassmorphism Tokens */
+  --bg-glass: rgba(14, 14, 21, 0.82);
+  --bg-glass-strong: rgba(14, 14, 21, 0.92);
+  --bg-glass-card: rgba(18, 18, 27, 0.75);
+  
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.14);
+  --border-focus: rgba(229, 181, 79, 0.6);
+
+  /* Typography */
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+  --text-high: #ffffff;
+
+  /* Champagne Gold & Luxury Accents */
+  --accent: #e5b54f;
+  --accent-hover: #f5d38a;
+  --accent-subtle: rgba(229, 181, 79, 0.12);
+  --glow-cyan: 0 0 20px rgba(229, 181, 79, 0.35);
+
+  --gold: #e5b54f;
+  --gold-hover: #f5d38a;
+  --gold-subtle: rgba(229, 181, 79, 0.12);
+  --glow-gold: 0 0 22px rgba(229, 181, 79, 0.38);
+
+  --emerald: #34d399;
+  --emerald-subtle: rgba(52, 211, 153, 0.12);
+  --glow-emerald: 0 0 20px rgba(52, 211, 153, 0.35);
+
+  --violet: #a855f7;
+  --violet-subtle: rgba(168, 85, 247, 0.12);
+  --glow-violet: 0 0 20px rgba(168, 85, 247, 0.35);
+
+  --rose: #f43f5e;
+  --rose-subtle: rgba(244, 63, 94, 0.12);
+  --glow-rose: 0 0 20px rgba(244, 63, 94, 0.35);
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Fonts */
+  --font-serif: 'Cinzel', 'Playfair Display', serif;
+  --font-brand: 'Outfit', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Brand Gold (Luxury VIP Theme) */
+  --brand-gold: #e5b54f;
+  --brand-gold-light: #f5d38a;
+  --brand-gold-dark: #cfa038;
+  --brand-surface: #0e0e15;
+  --brand-card: #12121b;
+  --brand-border: rgba(255, 255, 255, 0.08);
+  --brand-muted: #a1a1aa;
+  --glow-brand-gold: 0 0 20px rgba(229, 181, 79, 0.4);
+}

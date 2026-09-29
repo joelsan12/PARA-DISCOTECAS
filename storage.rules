@@ -1,0 +1,89 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function staffExists(businessId) {
+      return signedIn()
+        && firestore.exists(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.uid == request.auth.uid
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.businessId == businessId;
+    }
+
+    function isManager(businessId) {
+      return staffExists(businessId)
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.status == 'ACTIVE'
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.role in ['owner', 'manager'];
+    }
+
+    function isStaff(businessId) {
+      return staffExists(businessId)
+        && firestore.get(/databases/(default)/documents/businesses/$(businessId)/staff/$(request.auth.uid)).data.status == 'ACTIVE';
+    }
+
+    function isImage() {
+      return request.resource != null
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024;
+    }
+
+    match /businessDirectory/{businessId}/{fileName} {
+      allow read: if firestore.get(/databases/(default)/documents/businessDirectory/$(businessId)).data.status in ['active', 'trial'];
+      allow write: if isManager(businessId) && isImage();
+    }
+
+    match /businesses/{businessId}/branding/{fileName} {
+      allow read: if isStaff(businessId);
+      allow write: if isManager(businessId) && isImage();
+    }
+
+    match /businesses/{businessId}/resources/{resourceId}/{fileName} {
+      allow read: if isStaff(businessId);
+      allow write: if isManager(businessId) && isImage();
+    }
+
+    match /businesses/{businessId}/events/{eventId}/{fileName} {
+      allow read: if isStaff(businessId);
+      allow write: if isManager(businessId) && isImage();
+    }
+
+    match /businesses/{businessId}/customers/{uid}/{fileName} {
+      allow read: if isStaff(businessId)
+        || (signedIn()
+          && request.auth.uid == uid
+          && firestore.exists(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid))
+          && firestore.get(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.uid == request.auth.uid
+          && firestore.get(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.businessId == businessId);
+      allow write: if isImage() && (
+        isManager(businessId)
+        || (signedIn()
+          && request.auth.uid == uid
+          && firestore.exists(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid))
+          && firestore.get(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.uid == request.auth.uid
+          && firestore.get(/databases/(default)/documents/businesses/$(businessId)/customers/$(request.auth.uid)).data.businessId == businessId)
+      );
+    }
+
+    match /businesses/{businessId}/reservations/{reservationId}/{fileName} {
+      allow read: if isStaff(businessId)
+        || (signedIn()
+          && firestore.get(/databases/(default)/documents/businesses/$(businessId)/reservations/$(reservationId)).data.customerUid == request.auth.uid);
+      allow write: if false;
+    }
+
+    match /users/{uid}/profile/{fileName} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if signedIn() && request.auth.uid == uid && isImage();
+    }
+
+    match /private/{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
