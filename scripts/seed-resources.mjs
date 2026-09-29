@@ -10,7 +10,7 @@ const { initializeApp, applicationDefault, cert, getApps } = functionsRequire('f
 const { getFirestore } = functionsRequire('firebase-admin/firestore');
 
 const projectId = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'nightflow-vip';
-const isProdTarget = process.env.USE_FIREBASE_EMULATOR === '0' || process.env.NODE_ENV === 'production';
+const isProdTarget = process.env.USE_FIREBASE_EMULATOR?.trim() === '0' || process.env.NODE_ENV === 'production';
 const emulatorHost = isProdTarget ? undefined : (process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080');
 if (emulatorHost) {
   process.env.FIRESTORE_EMULATOR_HOST = emulatorHost;

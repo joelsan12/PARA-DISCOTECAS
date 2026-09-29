@@ -50,13 +50,6 @@
       ]
     },
     {
-      "collectionGroup": "holds",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "reservationId", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "financialRecords",
       "queryScope": "COLLECTION",
       "fields": [
@@ -260,18 +253,5 @@
       ]
     }
   ],
-  "fieldOverrides": [
-    {
-      "collectionGroup": "holds",
-      "fieldPath": "expiresAt",
-      "ttl": true,
-      "indexes": []
-    },
-    {
-      "collectionGroup": "otpChallenges",
-      "fieldPath": "expiresAt",
-      "ttl": true,
-      "indexes": []
-    }
-  ]
+  "fieldOverrides": []
 }
