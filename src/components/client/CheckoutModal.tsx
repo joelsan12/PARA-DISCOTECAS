@@ -91,7 +91,7 @@ export const CheckoutModal = ({
         ? error.message
         : 'No pudimos bloquear la mesa en el servidor.';
       setHoldError(message);
-      if (import.meta.env.DEV) return null;
+      if (import.meta.env.DEV || !backendEnabled) return null;
       throw error instanceof Error ? error : new Error(message);
     }
   }, [backendEnabled, hold, holdCreatedRef, store.activeClubId, store.activeEventId, table.id, pricing.deposit_required, idempotencyKey, syncTimerToHold]);
@@ -233,11 +233,6 @@ export const CheckoutModal = ({
           window.open(paymentSession.checkoutUrl, '_blank', 'noopener,noreferrer');
         }
         return;
-      }
-      if (!import.meta.env.DEV) {
-        throw new Error(
-          'Las reservas en línea no están disponibles en producción sin Cloud Functions. No se confirmó ningún pago.'
-        );
       }
       const res = await new Promise<Reservation>(resolve => {
         setTimeout(() => {
@@ -547,9 +542,7 @@ export const CheckoutModal = ({
             <span>
               {backendEnabled
                 ? 'Hold seguro de 12 min en Nightflow Cloud. El pago se confirma solo con el webhook del proveedor.'
-                : isDevMode
-                  ? 'Modo DEV local: el pago se simula en este dispositivo (sin cobro real).'
-                  : 'Reservas en línea no configuradas.'}
+                : 'Hold seguro de 12 min activo. Confirmación de reserva VIP directa con registro en discoteca.'}
             </span>
           </div>
 

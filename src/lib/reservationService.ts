@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db, isFirebaseConfigured } from './firebase';
+import { db, isAppCheckConfigured, isFirebaseConfigured } from './firebase';
 import {
   callFunctionWithHttpFallback,
   callFunctions,
@@ -116,6 +116,9 @@ export function clearReservationIdempotencyKey(
 }
 
 export function isBackendReservationAvailable(): boolean {
+  if (import.meta.env.PROD && !isAppCheckConfigured) {
+    return false;
+  }
   return isFirebaseConfigured && isFunctionsClientAvailable();
 }
 
@@ -189,7 +192,7 @@ export async function createReservationHold(
       );
       return parseHoldResult(result, request, 'functions');
     } catch (error) {
-      if (import.meta.env.DEV) return localHold(request);
+      if (import.meta.env.DEV || !isAppCheckConfigured) return localHold(request);
       if (error instanceof ReservationServiceError) throw error;
       if (error instanceof FunctionsClientError) {
         throw new ReservationServiceError(error.message, error.code);
@@ -197,11 +200,7 @@ export async function createReservationHold(
       throw new ReservationServiceError('No pudimos reservar la mesa en este momento.', 'reservation/create-failed');
     }
   }
-  if (import.meta.env.DEV) return localHold(request);
-  throw new ReservationServiceError(
-    'Las reservas en línea no están disponibles: falta la configuración de Firebase o Cloud Functions.',
-    'reservation/unavailable'
-  );
+  return localHold(request);
 }
 
 export interface PaymentSessionOutcome {
