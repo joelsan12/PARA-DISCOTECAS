@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -6,13 +6,18 @@ import { createRequire } from 'node:module';
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
 const functionsRequire = createRequire(resolve(root, 'functions/package.json'));
-const { initializeApp, applicationDefault, getApps } = functionsRequire('firebase-admin/app');
+const { initializeApp, applicationDefault, cert, getApps } = functionsRequire('firebase-admin/app');
 const { getFirestore } = functionsRequire('firebase-admin/firestore');
 
 const projectId = process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || 'nightflow-vip';
-const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
-process.env.FIRESTORE_EMULATOR_HOST = emulatorHost;
-const useEmulator = Boolean(emulatorHost) || process.env.USE_FIREBASE_EMULATOR === '1';
+const isProdTarget = process.env.USE_FIREBASE_EMULATOR === '0' || process.env.NODE_ENV === 'production';
+const emulatorHost = isProdTarget ? undefined : (process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080');
+if (emulatorHost) {
+  process.env.FIRESTORE_EMULATOR_HOST = emulatorHost;
+} else {
+  delete process.env.FIRESTORE_EMULATOR_HOST;
+}
+const useEmulator = Boolean(emulatorHost);
 
 function pick(text, key) {
   const match = text.match(new RegExp(`${key}:\\s*'([^']*)'`));
@@ -61,10 +66,21 @@ async function main() {
     return;
   }
 
+  let credential = applicationDefault();
+  const keyPath = resolve(root, 'serviceAccountKey.json');
+  if (existsSync(keyPath)) {
+    try {
+      const sa = JSON.parse(readFileSync(keyPath, 'utf8'));
+      credential = cert(sa);
+    } catch (e) {
+      console.warn('No se pudo leer serviceAccountKey.json:', e.message);
+    }
+  }
+
   const app = getApps()[0] || initializeApp(
     useEmulator
       ? { projectId }
-      : { projectId, credential: applicationDefault() }
+      : { projectId, credential }
   );
   const db = getFirestore(app);
   const batch = db.batch();
