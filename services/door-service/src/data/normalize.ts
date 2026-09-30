@@ -1,6 +1,7 @@
 import { booleanValue, dateMillis, integerValue, isRecord, numberValue, optionalString } from '../utils/values.js'
 import type {
   AttendanceSessionSnapshot,
+  CustomerRecord,
   EventRecord,
   PresenceState,
   RevocationRecord,
@@ -46,6 +47,21 @@ export const normalizeStaff = (businessId: string, uid: string, value: unknown):
     businessId,
     uid,
     role: stringValue(raw, 'role', 'staffRole'),
+    status,
+    active: active && !disabled,
+    raw
+  }
+}
+
+export const normalizeCustomer = (businessId: string, uid: string, value: unknown): CustomerRecord => {
+  const raw = record(value)
+  const status = stringValue(raw, 'status', 'state')
+  const activeFlag = booleanValue(firstDefined(raw.active, raw.enabled, raw.isActive))
+  const disabled = booleanValue(firstDefined(raw.disabled, raw.isDisabled)) ?? false
+  const active = activeFlag ?? (status ? status.toUpperCase() === 'ACTIVE' : true)
+  return {
+    businessId,
+    uid,
     status,
     active: active && !disabled,
     raw

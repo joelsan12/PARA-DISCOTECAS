@@ -18,6 +18,14 @@ export interface StaffRecord {
   raw: Record<string, unknown>
 }
 
+export interface CustomerRecord {
+  businessId: string
+  uid: string
+  status?: string
+  active: boolean
+  raw: Record<string, unknown>
+}
+
 export interface TicketRecord {
   businessId: string
   ticketId: string
@@ -151,6 +159,7 @@ export interface DeviceKeyRecord {
 
 export interface DoorRepository {
   getStaff(businessId: string, uid: string): Promise<StaffRecord | null>
+  getCustomer(businessId: string, uid: string): Promise<CustomerRecord | null>
   getTicket(businessId: string, ticketId: string): Promise<TicketRecord | null>
   getEvent(businessId: string, eventId: string): Promise<EventRecord | null>
   getRevocations(businessId: string, eventId?: string, deviceId?: string): Promise<RevocationRecord[]>

@@ -2,15 +2,17 @@ import assert from 'node:assert/strict'
 import { createHmac } from 'node:crypto'
 import test from 'node:test'
 import { loadConfig } from './config.js'
-import { normalizeSession, normalizeStoredEvent, normalizeStoredSequence } from './data/normalize.js'
+import { normalizeSession, normalizeStoredEvent, normalizeStoredSequence, normalizeTicket } from './data/normalize.js'
 import { AttendanceSignatureService } from './services/attendance-signature-service.js'
 import { AttendanceService } from './services/attendance-service.js'
 import { EmergencyService } from './services/emergency-service.js'
 import { KeyService } from './services/key-service.js'
+import { TicketService } from './services/ticket-service.js'
 import type {
   AttendanceCommitInput,
   AttendanceCommitResult,
   AttendanceSessionSnapshot,
+  CustomerRecord,
   DeviceKeyRecord,
   DoorRepository,
   EventRecord,
@@ -89,6 +91,8 @@ class MemoryDoorRepository implements DoorRepository {
   readonly revocationRecords: RevocationRecord[] = []
   readonly deviceKeyRecords = new Map<string, DeviceKeyRecord>()
   readonly staffRecords = new Map<string, StaffRecord>()
+  readonly customerRecords = new Map<string, CustomerRecord>()
+  readonly holdRecords = new Map<string, { businessId: string; state: string; data: Record<string, unknown> }>()
   readonly sessions = new Map<string, AttendanceSessionSnapshot>()
   readonly attendanceEvents = new Map<string, StoredAttendanceEvent>()
   readonly sequences = new Map<string, StoredAttendanceSequence>()
@@ -98,8 +102,18 @@ class MemoryDoorRepository implements DoorRepository {
     return this.staffRecords.get(`${businessId}:${uid}`) ?? null
   }
 
+  async getCustomer(businessId: string, uid: string): Promise<CustomerRecord | null> {
+    return this.customerRecords.get(`${businessId}:${uid}`) ?? null
+  }
+
   async getTicket(businessId: string, ticketId: string): Promise<TicketRecord | null> {
-    return this.tickets.get(`${businessId}:${ticketId}`) ?? null
+    const direct = this.tickets.get(`${businessId}:${ticketId}`)
+    if (direct) return direct
+    const hold = this.holdRecords.get(ticketId)
+    if (hold && hold.businessId === businessId && hold.state === 'CONFIRMED') {
+      return normalizeTicket(businessId, ticketId, { ...hold.data, status: 'CONFIRMED' })
+    }
+    return null
   }
 
   async getEvent(businessId: string, eventId: string): Promise<EventRecord | null> {
@@ -581,4 +595,130 @@ test('escenario base: check-in normal acepta y registra presencia', async () => 
   assert.equal(repo.sessions.get(TICKET_ID)?.state, 'INSIDE')
   assert.equal(normalizeStoredEvent(repo.attendanceEvents.get('jti_baseline')).status, 'ACCEPTED')
   assert.equal(normalizeStoredSequence(repo.sequences.get('door-1:100') ?? undefined).jti, 'jti_baseline')
+})
+
+test('getTicket resuelve holds CONFIRMED y rechaza HELD o negocios ajenos (hueco B)', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+
+  repo.holdRecords.set('hold_confirmed_vip', {
+    businessId: BUSINESS_ID,
+    state: 'CONFIRMED',
+    data: {
+      eventId: EVENT_ID,
+      venueId: VENUE_ID,
+      customerUid: 'cust_vip',
+      resourceId: 'tbl_01',
+      amount: 150
+    }
+  })
+  repo.holdRecords.set('hold_pending_held', {
+    businessId: BUSINESS_ID,
+    state: 'HELD',
+    data: { eventId: EVENT_ID, customerUid: 'cust_held' }
+  })
+  repo.holdRecords.set('hold_other_club', {
+    businessId: 'other_club',
+    state: 'CONFIRMED',
+    data: { eventId: EVENT_ID, customerUid: 'cust_other' }
+  })
+
+  const confirmedTicket = await repo.getTicket(BUSINESS_ID, 'hold_confirmed_vip')
+  assert.ok(confirmedTicket)
+  assert.equal(confirmedTicket.ticketId, 'hold_confirmed_vip')
+  assert.equal(confirmedTicket.customerUid, 'cust_vip')
+  assert.equal(confirmedTicket.status, 'CONFIRMED')
+  assert.equal(confirmedTicket.revoked, false)
+
+  const heldTicket = await repo.getTicket(BUSINESS_ID, 'hold_pending_held')
+  assert.equal(heldTicket, null, 'Un hold HELD nunca debe dar entrada')
+
+  const otherTicket = await repo.getTicket(BUSINESS_ID, 'hold_other_club')
+  assert.equal(otherTicket, null, 'Un hold de otro club debe ser rechazado')
+})
+
+test('check-in exitoso con ticketId correspondiente a un hold CONFIRMED (hueco B)', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+  const service = createService(repo)
+
+  repo.holdRecords.set('hold_checkin_01', {
+    businessId: BUSINESS_ID,
+    state: 'CONFIRMED',
+    data: {
+      eventId: EVENT_ID,
+      venueId: VENUE_ID,
+      customerUid: 'cust_checkin_01',
+      resourceId: 'tbl_02'
+    }
+  })
+
+  const event = signEvent(baseFields({
+    ticketId: 'hold_checkin_01',
+    jti: 'jti_hold_checkin_01',
+    deviceId: 'door-1',
+    deviceSequence: 101,
+    action: 'CHECK_IN'
+  }))
+
+  const response = await service.sync(BUSINESS_ID, [event])
+  assert.equal(response.accepted, 1)
+  assert.equal(response.results[0]?.status, 'ACCEPTED')
+  assert.equal(repo.sessions.get('hold_checkin_01')?.state, 'INSIDE')
+})
+
+test('TicketService.rotate autoriza al titular cliente y rechaza a cliente ajeno (hueco A)', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+  repo.tickets.set(`${BUSINESS_ID}:tkt_cust_vip`, {
+    businessId: BUSINESS_ID,
+    ticketId: 'tkt_cust_vip',
+    eventId: EVENT_ID,
+    venueId: VENUE_ID,
+    customerUid: 'cust_legit_01',
+    revoked: false,
+    eventCanceled: false,
+    revocationVersion: 0,
+    raw: {}
+  })
+
+  const testConfig = loadConfig({
+    DOOR_KEY_ID: 'door-test-key',
+    DOOR_PRIVATE_KEY_BASE64: 'MC4CAQAwBQYDK2VwBCIEIHrcrp269fz13XwffpVNDYEhOYXAE09RBPZsgLwS03wd',
+    DOOR_PUBLIC_KEY: 'MCowBQYDK2VwAyEAI99TCPATDIAvjx/x6fAz+i6ZCIZytEPJQOFkrEfMcJg='
+  })
+  const keys = new KeyService({
+    DOOR_KEY_ID: 'door-test-key',
+    DOOR_PRIVATE_KEY_BASE64: 'MC4CAQAwBQYDK2VwBCIEIHrcrp269fz13XwffpVNDYEhOYXAE09RBPZsgLwS03wd',
+    DOOR_PUBLIC_KEY: 'MCowBQYDK2VwAyEAI99TCPATDIAvjx/x6fAz+i6ZCIZytEPJQOFkrEfMcJg='
+  }, testConfig)
+  const emergency = new EmergencyService(repo)
+  const ticketService = new TicketService(repo, keys, emergency, testConfig)
+
+  // 1. Cliente legítimo titular rota pase -> OK
+  const result = await ticketService.rotate(BUSINESS_ID, {
+    ticketId: 'tkt_cust_vip',
+    deviceId: 'dev_cust_phone_1'
+  }, { uid: 'cust_legit_01', role: 'customer' })
+  assert.ok(result.token)
+  assert.equal(result.claims.ticketId, 'tkt_cust_vip')
+
+  // 2. Cliente distinto intenta rotar pase ajeno -> 403 CUSTOMER_MISMATCH
+  await assert.rejects(async () => {
+    await ticketService.rotate(BUSINESS_ID, {
+      ticketId: 'tkt_cust_vip',
+      deviceId: 'dev_cust_phone_2'
+    }, { uid: 'cust_impostor_02', role: 'customer' })
+  }, (err: any) => {
+    assert.equal(err.statusCode, 403)
+    assert.equal(err.code, 'CUSTOMER_MISMATCH')
+    return true
+  })
+
+  // 3. Staff rota pase del cliente -> OK
+  const staffResult = await ticketService.rotate(BUSINESS_ID, {
+    ticketId: 'tkt_cust_vip',
+    deviceId: 'dev_cust_phone_1'
+  }, { uid: 'staff_door_01', role: 'staff' })
+  assert.ok(staffResult.token)
 })

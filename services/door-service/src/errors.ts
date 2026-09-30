@@ -25,8 +25,8 @@ export class UnauthorizedError extends HttpError {
 }
 
 export class ForbiddenError extends HttpError {
-  constructor(message = 'El usuario no está autorizado para este business') {
-    super(403, 'FORBIDDEN', message)
+  constructor(message = 'El usuario no está autorizado para este business', code = 'FORBIDDEN', details?: Record<string, unknown>) {
+    super(403, code, message, details)
   }
 }
 

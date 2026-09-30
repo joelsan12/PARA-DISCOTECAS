@@ -1,6 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import { BadRequestError, ForbiddenError } from '../errors.js'
-import type { AuthenticatedUser, DoorRepository } from '../types.js'
+import type { AuthenticatedUser, CustomerRecord, DoorRepository } from '../types.js'
 import { assertSafeId, getHeaderValue, optionalString } from '../utils/values.js'
 import { StaffAuthorizer } from '../services/staff-authorizer.js'
 import type { IdTokenVerifier } from '../services/auth-service.js'
@@ -9,6 +9,8 @@ export interface AuthenticatedLocals {
   authUser?: AuthenticatedUser
   businessId?: string
   staff?: Awaited<ReturnType<StaffAuthorizer['authorize']>>
+  customer?: CustomerRecord
+  callerRole?: 'staff' | 'customer'
 }
 
 export const getAuthenticatedUser = (response: Response): AuthenticatedUser => {
@@ -60,7 +62,56 @@ export const createBusinessAuthorizationMiddleware = (authorizer: StaffAuthorize
       const staff = await authorizer.authorize(businessId, user)
       response.locals.businessId = businessId
       response.locals.staff = staff
+      response.locals.callerRole = 'staff'
       next()
+    } catch (error) {
+      next(error)
+    }
+  }
+}
+
+export interface CallerContext {
+  uid: string
+  role: 'staff' | 'customer'
+}
+
+export const getCallerContext = (response: Response): CallerContext => {
+  const user = getAuthenticatedUser(response)
+  const role = (response.locals.callerRole as 'staff' | 'customer' | undefined) ?? 'staff'
+  return { uid: user.uid, role }
+}
+
+export const createTicketAuthorizationMiddleware = (
+  authorizer: StaffAuthorizer,
+  repository: DoorRepository
+): RequestHandler => {
+  return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = getAuthenticatedUser(response)
+      const businessId = getRequestBusinessId(request, user)
+      response.locals.businessId = businessId
+
+      // 1. Intentar autorización como staff
+      try {
+        const staff = await authorizer.authorize(businessId, user)
+        response.locals.staff = staff
+        response.locals.callerRole = 'staff'
+        next()
+        return
+      } catch {
+        // No es staff activo, intentar como cliente activo
+      }
+
+      // 2. Intentar autorización como cliente activo
+      const customer = await repository.getCustomer(businessId, user.uid)
+      if (customer && customer.active) {
+        response.locals.customer = customer
+        response.locals.callerRole = 'customer'
+        next()
+        return
+      }
+
+      throw new ForbiddenError('El usuario no tiene acceso de staff ni de cliente activo en este business')
     } catch (error) {
       next(error)
     }

@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError } from '../errors.js'
+import { BadRequestError, ConflictError, ForbiddenError } from '../errors.js'
 import { assertSafeId, integerValue, optionalString } from '../utils/values.js'
 import type { ServiceConfig } from '../config.js'
 import type { DoorRepository, RotateTicketRequest, TokenClaims } from '../types.js'
@@ -18,10 +18,18 @@ export class TicketService {
     this.config = config
   }
 
-  async rotate(businessId: string, input: RotateTicketRequest): Promise<{ token: string; kid: string; claims: TokenClaims; expiresIn: number }> {
+  async rotate(
+    businessId: string,
+    input: RotateTicketRequest,
+    caller?: { uid: string; role: 'staff' | 'customer' }
+  ): Promise<{ token: string; kid: string; claims: TokenClaims; expiresIn: number }> {
     const ticketId = assertSafeId(optionalString(input.ticketId) ?? optionalString(input.ticket_id), 'ticketId')
     const deviceId = assertSafeId(optionalString(input.deviceId) ?? optionalString(input.device_id), 'deviceId')
     const ticket = await this.repository.getTicket(businessId, ticketId)
+
+    if (ticket?.customerUid && caller && caller.role !== 'staff' && ticket.customerUid !== caller.uid) {
+      throw new ForbiddenError('El ticket no pertenece al usuario autenticado', 'CUSTOMER_MISMATCH')
+    }
     const eventId = assertSafeId(optionalString(input.eventId) ?? optionalString(input.event_id) ?? ticket?.eventId, 'eventId')
     const event = await this.repository.getEvent(businessId, eventId)
     const venueId = assertSafeId(optionalString(input.venueId) ?? optionalString(input.venue_id) ?? event?.venueId ?? ticket?.venueId, 'venueId')

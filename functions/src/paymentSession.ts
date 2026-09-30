@@ -108,6 +108,11 @@ export async function createPaymentSessionFor(request: CallableRequest<unknown>)
     if (isPayAtDoor) {
       const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
       const resourceId = typeof hold.resourceId === "string" ? hold.resourceId : "";
+      const customerUid = typeof hold.customerUid === "string" ? hold.customerUid : "";
+      const eventId = typeof hold.eventId === "string" ? hold.eventId : "";
+      const amount = typeof hold.amount === "number" ? hold.amount : 0;
+      const currency = typeof hold.currency === "string" ? hold.currency : "USD";
+
       if (businessId && resourceId) {
         const resourceReference = db.collection("businesses").doc(businessId).collection("resources").doc(resourceId);
         transaction.update(resourceReference, {
@@ -116,6 +121,27 @@ export async function createPaymentSessionFor(request: CallableRequest<unknown>)
           updatedAt: FieldValue.serverTimestamp()
         });
       }
+
+      if (businessId) {
+        const reservationReference = db.collection("businesses").doc(businessId).collection("reservations").doc(input.holdId);
+        transaction.set(reservationReference, {
+          id: input.holdId,
+          holdId: input.holdId,
+          businessId,
+          eventId,
+          resourceId,
+          customerUid,
+          status: "CONFIRMED",
+          paymentProvider: "pay_at_door",
+          paymentState: "UNPAID",
+          amount,
+          currency,
+          source: "functions",
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+
       transaction.update(holdReference, {
         state: "CONFIRMED",
         paymentState: "UNPAID",

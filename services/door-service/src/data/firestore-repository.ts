@@ -1,11 +1,12 @@
 import { FieldValue, type Firestore } from 'firebase-admin/firestore'
-import { normalizeEvent, normalizeRevocation, normalizeSession, normalizeStaff, normalizeStoredEvent, normalizeStoredSequence, normalizeTicket } from './normalize.js'
+import { normalizeCustomer, normalizeEvent, normalizeRevocation, normalizeSession, normalizeStaff, normalizeStoredEvent, normalizeStoredSequence, normalizeTicket } from './normalize.js'
 import { isRecord, safeDocumentId } from '../utils/values.js'
 import type {
   AttendanceCommitInput,
   AttendanceCommitResult,
   AttendanceDecision,
   AttendanceSessionSnapshot,
+  CustomerRecord,
   DeviceKeyRecord,
   DoorRepository,
   EventRecord,
@@ -34,11 +35,26 @@ export class FirestoreDoorRepository implements DoorRepository {
     return snapshot.exists ? normalizeStaff(businessId, uid, snapshot.data()) : null
   }
 
+  async getCustomer(businessId: string, uid: string): Promise<CustomerRecord | null> {
+    const snapshot = await this.businessCollection(businessId, 'customers').doc(safeDocumentId(uid)).get()
+    return snapshot.exists ? normalizeCustomer(businessId, uid, snapshot.data()) : null
+  }
+
   async getTicket(businessId: string, ticketId: string): Promise<TicketRecord | null> {
     const ticketSnapshot = await this.businessCollection(businessId, 'tickets').doc(safeDocumentId(ticketId)).get()
     if (ticketSnapshot.exists) return normalizeTicket(businessId, ticketId, ticketSnapshot.data())
     const reservationSnapshot = await this.businessCollection(businessId, 'reservations').doc(safeDocumentId(ticketId)).get()
-    return reservationSnapshot.exists ? normalizeTicket(businessId, ticketId, reservationSnapshot.data()) : null
+    if (reservationSnapshot.exists) return normalizeTicket(businessId, ticketId, reservationSnapshot.data())
+    const holdSnapshot = await this.db.collection('holds').doc(safeDocumentId(ticketId)).get()
+    if (holdSnapshot.exists) {
+      const holdData = asData(holdSnapshot.data())
+      const holdBusinessId = typeof holdData.businessId === 'string' ? holdData.businessId : undefined
+      const state = typeof holdData.state === 'string' ? holdData.state.toUpperCase() : ''
+      if (holdBusinessId === businessId && state === 'CONFIRMED') {
+        return normalizeTicket(businessId, ticketId, { ...holdData, status: 'CONFIRMED' })
+      }
+    }
+    return null
   }
 
   async getEvent(businessId: string, eventId: string): Promise<EventRecord | null> {

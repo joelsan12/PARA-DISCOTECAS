@@ -3,7 +3,7 @@ import type { ServiceConfig } from './config.js'
 import { loadConfig } from './config.js'
 import { FirebaseRuntime } from './firebase.js'
 import { createCorsMiddleware, requireAllowedOrigin } from './middleware/cors.js'
-import { createAuthenticationMiddleware, createBusinessAuthorizationMiddleware } from './middleware/auth.js'
+import { createAuthenticationMiddleware, createBusinessAuthorizationMiddleware, createTicketAuthorizationMiddleware } from './middleware/auth.js'
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js'
 import { createHealthRouter } from './routes/health.js'
 import { createKeysRouter } from './routes/keys.js'
@@ -59,8 +59,15 @@ export const createApp = (dependencies: AppDependencies = {}): Express => {
   app.use(createKeysRouter(keys))
 
   const authenticate = createAuthenticationMiddleware(authService)
-  const authorizeBusiness = createBusinessAuthorizationMiddleware(authorizer)
-  app.use('/v1', authenticate, authorizeBusiness)
+  const authorizeStaff = createBusinessAuthorizationMiddleware(authorizer)
+  const authorizeTicketCaller = createTicketAuthorizationMiddleware(authorizer, repository)
+
+  app.use('/v1', authenticate)
+  app.use('/v1/devices', authorizeStaff)
+  app.use('/v1/attendance', authorizeStaff)
+  app.use('/v1/emergency', authorizeStaff)
+  app.use('/v1/tickets', authorizeTicketCaller)
+
   app.use(createDevicesRouter(repository))
   app.use(createTicketsRouter(tickets))
   app.use(createAttendanceRouter(attendance))

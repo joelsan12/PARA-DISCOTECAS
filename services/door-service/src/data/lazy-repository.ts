@@ -2,7 +2,7 @@ import type { Firestore } from 'firebase-admin/firestore'
 import { ServiceUnavailableError } from '../errors.js'
 import { FirebaseRuntime } from '../firebase.js'
 import { FirestoreDoorRepository } from './firestore-repository.js'
-import type { AttendanceCommitInput, AttendanceCommitResult, DeviceKeyRecord, DoorRepository, EventRecord, RevocationRecord, StaffRecord, TicketRecord } from '../types.js'
+import type { AttendanceCommitInput, AttendanceCommitResult, CustomerRecord, DeviceKeyRecord, DoorRepository, EventRecord, RevocationRecord, StaffRecord, TicketRecord } from '../types.js'
 
 export class LazyFirestoreDoorRepository implements DoorRepository {
   private readonly runtime: FirebaseRuntime
@@ -14,6 +14,10 @@ export class LazyFirestoreDoorRepository implements DoorRepository {
 
   async getStaff(businessId: string, uid: string): Promise<StaffRecord | null> {
     return this.getDelegate().getStaff(businessId, uid)
+  }
+
+  async getCustomer(businessId: string, uid: string): Promise<CustomerRecord | null> {
+    return this.getDelegate().getCustomer(businessId, uid)
   }
 
   async getTicket(businessId: string, ticketId: string): Promise<TicketRecord | null> {
