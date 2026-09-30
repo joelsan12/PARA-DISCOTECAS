@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
-import { createHmac, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 
 const functionsRequire = createRequire(resolve('functions/package.json'));
 const { initializeApp, cert } = functionsRequire('firebase-admin/app');
@@ -37,13 +37,6 @@ async function getIdToken(uid) {
   return data.idToken;
 }
 
-const canonical = (value) => {
-  if (value === undefined) return 'null';
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((item) => canonical(item)).join(',')}]`;
-  const record = value;
-  return `{${Object.keys(record).filter((key) => record[key] !== undefined).sort().map((key) => `${JSON.stringify(key)}:${canonical(record[key])}`).join(',')}}`;
-};
 
 async function runSmokeTest() {
   console.log('========================================================');
