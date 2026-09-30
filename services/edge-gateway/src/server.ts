@@ -6,6 +6,7 @@ import { isRecord } from "./crypto.js";
 import { loadConfig } from "./config.js";
 import { GatewayHub } from "./hub.js";
 import { JsonlStore } from "./persistence.js";
+import { QueueCrypto } from "./queue-crypto.js";
 import { ReplayGuard } from "./replay-guard.js";
 import { StaffAuthority } from "./staff-authority.js";
 import { normalizeRevocation, ProtocolError, type NormalizedRevocation } from "./protocol.js";
@@ -30,7 +31,7 @@ export class EdgeGateway {
 
   public constructor(config: GatewayConfig = loadConfig()) {
     this.config = config;
-    this.store = new JsonlStore(config.dataFile);
+    this.store = new JsonlStore(config.dataFile, new QueueCrypto(config.queueKey));
     this.authContext = {
       config,
       replay: new ReplayGuard(config),
@@ -102,20 +103,25 @@ export class EdgeGateway {
       persistence: {
         format: "jsonl",
         fileName: basename(this.config.dataFile),
+        encryption: "aes-256-gcm",
         events: this.store.eventCount,
         revocations: this.store.revocationCount,
-        records: this.store.recordCount
+        records: this.store.recordCount,
+        unreadable: this.store.unreadableCount,
+        migratedFromPlaintext: this.store.migratedPlaintextCount
       },
       capabilities: [
         "http-health",
         "gateway-discovery",
         "door-link-websocket",
+        "subprotocol-auth",
         "hmac-events",
         "event-id-deduplication",
         "device-sequence-deduplication",
         "revocations",
         "presence",
-        "jsonl-append-only"
+        "jsonl-append-only",
+        "jsonl-encrypted-at-rest"
       ]
     };
   }

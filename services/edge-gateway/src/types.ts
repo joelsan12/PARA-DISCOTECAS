@@ -8,6 +8,8 @@ export interface GatewayConfig {
   eventId: string;
   hmacSecret: string;
   secretConfigured: boolean;
+  queueKey: Buffer;
+  allowQueryAuth: boolean;
   firebaseProjectId: string;
   idTokenConfigured: boolean;
   allowedOrigins: string[];
@@ -118,9 +120,12 @@ export interface ServiceStatus {
   persistence: {
     format: "jsonl";
     fileName: string;
+    encryption: string;
     events: number;
     revocations: number;
     records: number;
+    unreadable: number;
+    migratedFromPlaintext: number;
   };
   capabilities: string[];
 }

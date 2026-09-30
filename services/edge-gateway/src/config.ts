@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { deriveQueueKey } from "./queue-crypto.js";
 import type { GatewayConfig } from "./types.js";
 
 const DEFAULT_PORT = 8787;
@@ -40,6 +41,21 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
   const businessId = value(env.BUSINESS_ID) || "local-business";
   const eventId = value(env.EVENT_ID) || "local-event";
   const gatewayId = value(env.GATEWAY_ID) || deriveGatewayId(businessId, eventId);
+
+  // Clave de la cola offline (AGENTS §6.3): derivada del secreto HMAC con
+  // HKDF salvo que el operador defina EDGE_QUEUE_KEY explícita. Un valor
+  // malformado debe frenar el arranque, no degradar a texto plano.
+  let queueKey: Buffer;
+  try {
+    queueKey = deriveQueueKey({ queueKeyBase64: value(env.EDGE_QUEUE_KEY), hmacSecret, gatewayId });
+  } catch (error) {
+    throw new ConfigurationError(error instanceof Error ? error.message : "EDGE_QUEUE_KEY is invalid");
+  }
+
+  // Compatibilidad de despliegue: la PWA publicada en Hosting y el gateway
+  // instalado en el club se actualizan en momentos distintos, así que el token
+  // en la query string sigue admitido hasta que esta bandera se apague.
+  const allowQueryAuth = parseBoolean(env.EDGE_ALLOW_QUERY_AUTH, true);
   const dataFileValue = value(env.EDGE_DATA_FILE) || value(env.DATA_FILE);
   const serviceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
   const dataFile = dataFileValue ? resolve(dataFileValue) : resolve(serviceRoot, "data/events.jsonl");
@@ -50,6 +66,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
     eventId,
     hmacSecret,
     secretConfigured,
+    queueKey,
+    allowQueryAuth,
     firebaseProjectId,
     idTokenConfigured,
     allowedOrigins: parseOrigins(env.ALLOWED_ORIGINS),
@@ -89,6 +107,20 @@ function parseInteger(input: string | undefined, fallback: number, minimum: numb
     throw new ConfigurationError(`${name} must be an integer between ${minimum} and ${maximum}`);
   }
   return parsed;
+}
+
+function parseBoolean(input: string | undefined, fallback: boolean): boolean {
+  const normalized = value(input).toLowerCase();
+  if (normalized.length === 0) {
+    return fallback;
+  }
+  if (normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on") {
+    return true;
+  }
+  if (normalized === "0" || normalized === "false" || normalized === "no" || normalized === "off") {
+    return false;
+  }
+  throw new ConfigurationError("EDGE_ALLOW_QUERY_AUTH must be a boolean (true/false)");
 }
 
 function deriveGatewayId(businessId: string, eventId: string): string {

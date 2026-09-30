@@ -33,40 +33,35 @@ export interface EdgeGatewayClientOptions {
 
 export const isEdgeGatewayConfigured = (): boolean => EDGE_URL_RAW.trim().length > 0;
 
-const buildIdentity = async (
+const toBase64Url = (value: string): string => {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += 1) binary += String.fromCharCode(bytes[index]!);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/u, '');
+};
+
+/**
+ * La identidad y el token viajan en el subprotocolo `nfa.<base64url(JSON)>`,
+ * nunca en la query string: los access logs de proxies y balanceadores solo
+ * deben ver la ruta del upgrade (AGENTS §6.3 / §13). Si el gateway no entiende
+ * el subprotocolo responde `auth_required` y el handshake se completa con el
+ * primer frame, que además lleva el token en el cuerpo del mensaje.
+ */
+const buildIdentity = (
   deviceId: string,
   businessId: string,
   eventId: string,
   token: string | undefined
-): Promise<{ params: URLSearchParams; headers: Record<string, string> }> => {
-  const timestamp = String(Date.now());
-  const nonce = crypto.randomUUID();
-  const role = 'terminal';
-  const clientId = deviceId;
-  const params = new URLSearchParams({
-    businessId,
-    eventId,
-    deviceId,
-    clientId,
-    role,
-    timestamp,
-    nonce
-  });
-  if (token) params.set('token', token);
-  return {
-    params,
-    headers: {
-      'X-Edge-Business-Id': businessId,
-      'X-Edge-Event-Id': eventId,
-      'X-Edge-Device-Id': deviceId,
-      'X-Edge-Client-Id': clientId,
-      'X-Edge-Role': role,
-      'X-Edge-Timestamp': timestamp,
-      'X-Edge-Nonce': nonce,
-      ...(token ? { Authorization: `Bearer ${token}`, 'X-ID-Token': token } : {})
-    }
-  };
-};
+): Record<string, unknown> => ({
+  businessId,
+  eventId,
+  deviceId,
+  clientId: deviceId,
+  role: 'terminal',
+  timestamp: String(Date.now()),
+  nonce: crypto.randomUUID(),
+  ...(token ? { token } : {})
+});
 
 export class EdgeGatewayClient {
   private socket: WebSocket | null = null;
@@ -99,12 +94,11 @@ export class EdgeGatewayClient {
         this.scheduleReconnect();
         return;
       }
-      const identity = await buildIdentity(this.options.deviceId, this.businessId, this.eventId, this.cachedToken);
+      const identity = buildIdentity(this.options.deviceId, this.businessId, this.eventId, this.cachedToken);
       const base = EDGE_URL_RAW.trim().replace(/\/+$/u, '');
       const wsBase = base.replace(/^http/u, 'ws');
       const url = new URL(`${wsBase}/v1/door-link`);
-      url.search = identity.params.toString();
-      const socket = new WebSocket(url.toString());
+      const socket = new WebSocket(url.toString(), [`nfa.${toBase64Url(JSON.stringify(identity))}`]);
       this.socket = socket;
       socket.addEventListener('open', () => {
         this.attempts = 0;
@@ -117,7 +111,7 @@ export class EdgeGatewayClient {
             ack?: { eventId?: string; accepted?: boolean; duplicate?: boolean };
           };
           if (parsed.type === 'auth_required') {
-            void this.sendAuthMessage(socket, identity.headers);
+            void this.sendAuthMessage(socket, identity);
             return;
           }
           if (parsed.type === 'event_ack' && parsed.ack) {
@@ -151,22 +145,13 @@ export class EdgeGatewayClient {
     }
   }
 
-  private async sendAuthMessage(socket: WebSocket, headers: Record<string, string>): Promise<void> {
+  private async sendAuthMessage(socket: WebSocket, identity: Record<string, unknown>): Promise<void> {
     const token = this.options.getSessionToken ? await this.options.getSessionToken() : this.cachedToken;
     if (!token) return;
     this.cachedToken = token;
     socket.send(JSON.stringify({
       type: 'auth',
-      auth: {
-        businessId: this.businessId,
-        eventId: this.eventId,
-        deviceId: this.options.deviceId,
-        clientId: this.options.deviceId,
-        role: 'terminal',
-        timestamp: headers['X-Edge-Timestamp'],
-        nonce: headers['X-Edge-Nonce'],
-        token
-      }
+      auth: { ...identity, timestamp: String(Date.now()), nonce: crypto.randomUUID(), token }
     }));
   }
 

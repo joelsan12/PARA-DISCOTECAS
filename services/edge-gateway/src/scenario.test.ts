@@ -5,7 +5,9 @@ import test from "node:test";
 import WebSocket from "ws";
 import { EdgeGateway } from "./server.js";
 import { loadConfig } from "./config.js";
-import { hmacHex, identityParams, signEventBody, testSecret } from "./test-support.js";
+import { canonicalAuthString } from "./auth.js";
+import { canonicalJson, sha256Hex, stripSignatureFields } from "./crypto.js";
+import { buildIdentity, hmacHex, identityParams, identityProtocol, signAuth, signEventBody, testSecret } from "./test-support.js";
 import type { GatewayConfig } from "./types.js";
 
 const BUSINESS = "local-business";
@@ -44,10 +46,18 @@ interface DoorClient {
   close: () => Promise<void>;
 }
 
-const connectDoor = async (baseUrl: string, config: GatewayConfig, deviceId: string): Promise<DoorClient> => {
-  const params = identityParams(config, deviceId, { path: "/v1/door-link" });
-  const wsUrl = baseUrl.replace("http://", "ws://") + `/v1/door-link?${params.toString()}`;
-  const socket = new WebSocket(wsUrl);
+const connectDoor = async (
+  baseUrl: string,
+  config: GatewayConfig,
+  deviceId: string,
+  mode: "protocol" | "query" = "protocol"
+): Promise<DoorClient> => {
+  const path = "/v1/door-link";
+  const baseWs = baseUrl.replace("http://", "ws://") + path;
+  const socket =
+    mode === "query"
+      ? new WebSocket(`${baseWs}?${identityParams(config, deviceId, { path }).toString()}`)
+      : new WebSocket(baseWs, [identityProtocol(config, deviceId, { path })]);
   const messages: Array<Record<string, unknown>> = [];
   const waiters: Array<{ predicate: (message: Record<string, unknown>) => boolean; resolve: (message: Record<string, unknown>) => void }> = [];
 
@@ -186,6 +196,82 @@ test("B4: una firma sobre el eventId aislado NO autentica el evento (regresión)
     assert.ok(error);
     await door.close();
   });
+});
+
+test("compatibilidad legacy: el upgrade con identidad en query string sigue admitido (bandera ON)", async () => {
+  await withGateway(async (baseUrl, config) => {
+    assert.equal(config.allowQueryAuth, true);
+    const door = await connectDoor(baseUrl, config, "door-legacy", "query");
+    const body = {
+      type: "event",
+      eventId: "legacy-query-event-001",
+      jti: "legacy-query-event-001",
+      deviceId: "door-legacy",
+      deviceSequence: 1,
+      eventType: "CHECK_IN",
+      occurredAt: new Date().toISOString(),
+      payload: { ticketId: "tkt_legacy", action: "CHECK_IN" }
+    };
+    door.send({ ...body, signature: signEventBody(config, body) });
+    const ack = await door.waitFor((message) => message.type === "event_ack");
+    assert.equal(ack.status, "accepted");
+    await door.close();
+  });
+});
+
+test("EDGE_ALLOW_QUERY_AUTH=false: query no autentica el upgrade, pero el frame AUTH sigue funcionando", async () => {
+  const config = testConfig({ EDGE_ALLOW_QUERY_AUTH: "false" });
+  const gateway = new EdgeGateway(config);
+  const address = await gateway.start();
+  try {
+    const identity = buildIdentity(config, { deviceId: "door-no-query", clientId: "door-no-query" });
+    const params = new URLSearchParams({
+      businessId: identity.businessId,
+      eventId: identity.eventId,
+      deviceId: identity.deviceId,
+      clientId: identity.clientId,
+      role: identity.role,
+      timestamp: identity.timestamp,
+      nonce: identity.nonce,
+      signature: signAuth(config, identity, "/v1/door-link")
+    });
+    const socket = new WebSocket(`ws://127.0.0.1:${address.port}/v1/door-link?${params.toString()}`);
+
+    const first = await new Promise<Record<string, unknown>>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("timeout waiting for auth_required")), 3000);
+      socket.once("error", (error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+      socket.once("message", (data) => {
+        clearTimeout(timer);
+        resolve(JSON.parse(data.toString()) as Record<string, unknown>);
+      });
+    });
+    // La identidad firmada en la query string quedó fuera: debe pedir frame AUTH.
+    assert.equal(first.type, "auth_required");
+
+    // El fallback de primer frame (cuerpo JSON) sí autentica con la bandera OFF.
+    const auth: Record<string, unknown> = { ...identity };
+    const message: Record<string, unknown> = { type: "auth", auth };
+    const bodyDigest = sha256Hex(canonicalJson(stripSignatureFields(message)));
+    auth.signature = hmacHex(config.hmacSecret, canonicalAuthString(identity, "", bodyDigest));
+    socket.send(JSON.stringify(message));
+    const ready = await new Promise<Record<string, unknown>>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("timeout waiting for ready")), 3000);
+      socket.on("message", (data) => {
+        const parsed = JSON.parse(data.toString()) as Record<string, unknown>;
+        if (parsed.type === "ready") {
+          clearTimeout(timer);
+          resolve(parsed);
+        }
+      });
+    });
+    assert.equal(ready.type, "ready");
+    socket.close();
+  } finally {
+    await gateway.stop();
+  }
 });
 
 test("presencia reporta las tres terminales autenticadas", async () => {

@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { canonicalJson, sha256Hex, stripSignatureFields } from "./crypto.js";
-import { canonicalAuthString } from "./auth.js";
+import { canonicalAuthString, encodeProtocolPayload } from "./auth.js";
 import type { AuthIdentity, GatewayConfig } from "./types.js";
 
 /**
@@ -49,6 +49,22 @@ export function identityParams(
     nonce: identity.nonce,
     signature: signAuth(config, identity, path)
   });
+}
+
+/**
+ * Misma identidad que `identityParams`, pero empaquetada para el subprotocolo
+ * `nfa.<base64url(JSON)>` que usa el handshake nuevo (sin credential en la
+ * query string).
+ */
+export function identityProtocol(
+  config: GatewayConfig,
+  deviceId: string,
+  options: { path?: string; overrides?: Partial<AuthIdentity> } = {}
+): string {
+  const params = identityParams(config, deviceId, options);
+  const payload: Record<string, unknown> = {};
+  for (const [key, value] of params) payload[key] = value;
+  return encodeProtocolPayload(payload);
 }
 
 export function signEventBody(config: GatewayConfig, body: Record<string, unknown>): string {

@@ -71,9 +71,58 @@ export interface AuthContext {
   staff: StaffAuthority;
 }
 
+/**
+ * Handshake WebSocket sin credential en la query string (AGENTS §6.3 / §13).
+ *
+ * El navegador no permite fijar headers arbitrarios en `new WebSocket()`, así
+ * que la identidad y el token viajan en el subprotocolo
+ * `nfa.<base64url(JSON)>`: los access logs de proxies y balanceadores solo
+ * registran la ruta, nunca la credencial. La versión legacy de la PWA sigue
+ * funcionando mientras `EDGE_ALLOW_QUERY_AUTH` esté activa.
+ */
+const PROTOCOL_PAYLOAD_PREFIX = "nfa.";
+const MAX_PROTOCOL_PAYLOAD_CHARS = 32 * 1024;
+
+export function encodeProtocolPayload(payload: Record<string, unknown>): string {
+  return `${PROTOCOL_PAYLOAD_PREFIX}${Buffer.from(JSON.stringify(payload), "utf8").toString("base64url")}`;
+}
+
+export function readProtocolPayload(headers: IncomingHttpHeaders): Record<string, unknown> | null {
+  const raw = headerValue(headers, "sec-websocket-protocol");
+  if (!raw || raw.length > MAX_PROTOCOL_PAYLOAD_CHARS) {
+    return null;
+  }
+  for (const entry of raw.split(",")) {
+    const value = entry.trim();
+    if (!value.startsWith(PROTOCOL_PAYLOAD_PREFIX)) {
+      continue;
+    }
+    const encoded = value.slice(PROTOCOL_PAYLOAD_PREFIX.length);
+    if (encoded.length === 0 || encoded.length > MAX_PROTOCOL_PAYLOAD_CHARS) {
+      continue;
+    }
+    try {
+      const decoded: unknown = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8"));
+      if (isRecord(decoded)) {
+        return decoded;
+      }
+    } catch {
+      // Un candidato corrupto no debe ocultar el válido de detrás.
+      continue;
+    }
+  }
+  return null;
+}
+
 export async function authenticateUpgrade(context: AuthContext, headers: IncomingHttpHeaders, url: URL): Promise<AuthenticationResult> {
   const { config } = context;
-  const identity = readIdentity(config, url.searchParams, headers, undefined);
+  const payload = readProtocolPayload(headers);
+  // Con la bandera apagada, el upgrade solo se autentica por subprotocolo: la
+  // identidad firmada en la query string queda fuera de los access logs.
+  if (!config.allowQueryAuth && !payload) {
+    return failed("websocket identity must be provided via subprotocol");
+  }
+  const identity = readIdentity(config, url.searchParams, headers, payload ?? undefined);
   if (!identity) {
     return failed("invalid gateway identity");
   }
@@ -84,8 +133,8 @@ export async function authenticateUpgrade(context: AuthContext, headers: Incomin
   return completeAuthentication(
     context,
     identity,
-    readSessionToken(url.searchParams, headers, undefined),
-    () => readSignature(headers, url.searchParams, undefined, url.pathname, "GET"),
+    readSessionToken(url.searchParams, headers, payload ?? undefined, config.allowQueryAuth),
+    () => readSignature(headers, url.searchParams, payload ?? undefined, url.pathname, "GET"),
     url.pathname,
     sha256Hex("")
   );
@@ -112,7 +161,7 @@ export async function authenticateHttp(
   return completeAuthentication(
     context,
     identity,
-    readSessionToken(url.searchParams, headers, bodyRecord),
+    readSessionToken(url.searchParams, headers, bodyRecord, config.allowQueryAuth),
     () => readSignature(headers, url.searchParams, bodyRecord, url.pathname, method.toUpperCase()),
     url.pathname,
     sha256Hex(body)
@@ -136,7 +185,7 @@ export async function authenticateMessage(context: AuthContext, message: unknown
   return completeAuthentication(
     context,
     identity,
-    readSessionToken(new URLSearchParams(), {}, authRecord),
+    readSessionToken(new URLSearchParams(), {}, authRecord, config.allowQueryAuth),
     () => extractSignature(message) ?? extractSignature(authRecord),
     "",
     sha256Hex(canonicalJson(stripSignatureFields(message)))
@@ -237,22 +286,36 @@ function validateFreshness(identity: AuthIdentity, config: GatewayConfig): strin
   return null;
 }
 
-function readSessionToken(
+/**
+ * Orden de resolución del token de sesión: primero el cuerpo del mensaje o el
+ * subprotocolo (canales nuevos), luego los headers, y solo al final la query
+ * string — y únicamente mientras `allowQueryAuth` siga activa para la
+ * compatibilidad con la PWA publicada antes de la migración.
+ */
+export function readSessionToken(
   searchParams: URLSearchParams,
   headers: IncomingHttpHeaders,
-  body: Record<string, unknown> | undefined
+  body: Record<string, unknown> | undefined,
+  allowQueryAuth = true
 ): string {
-  const queryToken = searchParams.get("token")?.trim();
-  if (queryToken) return queryToken;
   const bodyToken = body?.token;
-  if (typeof bodyToken === "string" && bodyToken.trim().length > 0) return bodyToken.trim();
+  if (typeof bodyToken === "string" && bodyToken.trim().length > 0) {
+    return bodyToken.trim();
+  }
   const authorization = headerValue(headers, "authorization");
   if (authorization) {
     const bearer = /^(?:Bearer)\s+(.+)$/iu.exec(authorization.trim());
     if (bearer?.[1]) return bearer[1].trim();
   }
   const idToken = headerValue(headers, "x-id-token") ?? headerValue(headers, "x-firebase-id-token");
-  return idToken?.trim() ?? "";
+  if (idToken?.trim()) {
+    return idToken.trim();
+  }
+  if (allowQueryAuth) {
+    const queryToken = searchParams.get("token")?.trim();
+    if (queryToken) return queryToken;
+  }
+  return "";
 }
 
 export function readIdentity(
