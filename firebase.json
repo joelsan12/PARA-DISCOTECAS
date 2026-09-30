@@ -39,9 +39,6 @@
       }
     ],
     "rewrites": [
-      { "source": "/otp/request", "function": "requestOtpHttp" },
-      { "source": "/otp/verify", "function": "verifyOtpHttp" },
-      { "source": "/payments/webhook", "function": "paymentWebhook" },
       { "source": "**", "destination": "/index.html" }
     ]
   },

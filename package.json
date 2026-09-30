@@ -25,6 +25,8 @@
     "test:door": "npm --prefix services/door-service run test",
     "test:edge": "npm --prefix services/edge-gateway run test",
     "test:scenario02": "npm run test:frontend && npm run test:door && npm run test:edge && npm run test:holds",
+    "build:backend": "npm --prefix services/door-service run build && npm --prefix functions run build",
+    "start:backend": "node functions/lib/server.js",
     "preview": "vite preview"
   },
   "dependencies": {

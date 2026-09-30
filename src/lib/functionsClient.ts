@@ -1,4 +1,4 @@
-import { connectFunctionsEmulator, getFunctions, httpsCallable, type Functions } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions, httpsCallable, httpsCallableFromURL, type Functions, type HttpsCallable } from 'firebase/functions';
 import {
   app,
   emulatorHost,
@@ -11,6 +11,22 @@ import {
   useEmulators,
   useFunctionsEmulator
 } from './firebase';
+
+const rawBackendUrl = (import.meta.env.VITE_BACKEND_URL ?? '').toString().trim().replace(/\/+$/u, '');
+
+const HTTP_FUNCTION_PATHS: Record<string, string> = {
+  requestOtpHttp: '/otp/request',
+  verifyOtpHttp: '/otp/verify',
+  paymentWebhook: '/payments/webhook'
+};
+
+export function backendServiceUrl(): string {
+  return rawBackendUrl;
+}
+
+function hasCustomBackend(): boolean {
+  return rawBackendUrl.length > 0;
+}
 
 export type FunctionsClientErrorCode = 'functions/not-deployed' | 'functions/unavailable' | 'functions/error';
 
@@ -71,16 +87,18 @@ function getFunctionsClient(): Functions {
   }
   if (!cachedFunctions) {
     cachedFunctions = getFunctions(app, functionsRegion);
-    if (useFunctionsEmulator) {
+    if (useFunctionsEmulator && !hasCustomBackend()) {
       connectFunctionsEmulator(cachedFunctions, emulatorHost, functionsEmulatorPort);
       console.info('🧪 [Functions] Conectado al emulador en', `${emulatorHost}:${functionsEmulatorPort}`);
+    } else if (hasCustomBackend()) {
+      console.info('☁️ [Functions] Usando backend híbrido en', rawBackendUrl);
     }
   }
   return cachedFunctions;
 }
 
 function assertAppCheckReady(functionName: string): void {
-  if (!import.meta.env.PROD || useEmulators || !isFirebaseConfigured || isAppCheckConfigured) return;
+  if (!import.meta.env.PROD || useEmulators || !isFirebaseConfigured || isAppCheckConfigured || hasCustomBackend()) return;
   throw new FunctionsClientError(
     `${functionName} requiere App Check: define VITE_APPCHECK_SITE_KEY en el build de producción.`,
     'functions/unavailable'
@@ -91,7 +109,10 @@ export async function callFunctions<T>(functionName: string, data: unknown): Pro
   assertAppCheckReady(functionName);
   const client = getFunctionsClient();
   try {
-    const result = await httpsCallable<unknown, T>(client, functionName)(data);
+    const callable: HttpsCallable<unknown, T> = hasCustomBackend()
+      ? httpsCallableFromURL<unknown, T>(client, `${rawBackendUrl}/v1/call/${functionName}`)
+      : httpsCallable<unknown, T>(client, functionName);
+    const result = await callable(data);
     return result.data;
   } catch (error) {
     const code = readErrorCode(error);
@@ -117,6 +138,10 @@ export async function callFunctions<T>(functionName: string, data: unknown): Pro
 }
 
 function cloudFunctionsUrl(functionName: string): string {
+  if (hasCustomBackend()) {
+    const mapped = HTTP_FUNCTION_PATHS[functionName];
+    return `${rawBackendUrl}${mapped ?? `/v1/http/${functionName}`}`;
+  }
   if (useFunctionsEmulator) {
     return `http://${emulatorHost}:${functionsEmulatorPort}/${firebaseConfig.projectId}/${functionsRegion}/${functionName}`;
   }
