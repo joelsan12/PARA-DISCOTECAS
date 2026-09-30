@@ -21,6 +21,7 @@
     "seed:resources": "node scripts/seed-resources.mjs",
     "seed:all": "npm run seed:directory && npm run seed:resources",
     "provision:production": "node scripts/provision-production.mjs",
+    "test:smoke:production": "node scripts/smoke-02am-production.mjs",
     "test:frontend": "node --test tests/ticketPass.test.mjs tests/reentryPasskey.test.mjs",
     "test:holds": "npm --prefix functions run test:emulators",
     "test:door": "npm --prefix services/door-service run test",

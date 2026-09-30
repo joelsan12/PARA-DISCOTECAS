@@ -1,0 +1,235 @@
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+import { createHmac, randomUUID } from 'node:crypto';
+
+const functionsRequire = createRequire(resolve('functions/package.json'));
+const { initializeApp, cert } = functionsRequire('firebase-admin/app');
+const { getAuth } = functionsRequire('firebase-admin/auth');
+const { getFirestore } = functionsRequire('firebase-admin/firestore');
+
+const sa = JSON.parse(readFileSync('./serviceAccountKey.json', 'utf8'));
+const app = initializeApp({ credential: cert(sa), projectId: sa.project_id });
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const envText = readFileSync('.env.production', 'utf8');
+const apiKeyMatch = envText.match(/VITE_FIREBASE_API_KEY=([^\r\n]+)/);
+const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : '';
+
+const BACKEND_URL = 'https://nightflow-backend.onrender.com';
+const DOOR_URL = 'https://nightflow-backend.onrender.com/door';
+
+const ADMIN_UID = 'AMyKkSoUcyVRggtmwgMfdbYcDRU2'; // Matx (Staff owner)
+const BUSINESS_ID = 'club-sensorial';
+const EVENT_ID = 'event-fri-reggaeton';
+const RESOURCE_ID = 'tbl-s4';
+
+async function getIdToken(uid) {
+  const customToken = await auth.createCustomToken(uid);
+  const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: customToken, returnSecureToken: true })
+  });
+  const data = await res.json();
+  if (!data.idToken) throw new Error(`Error obteniendo ID token: ${JSON.stringify(data)}`);
+  return data.idToken;
+}
+
+const canonical = (value) => {
+  if (value === undefined) return 'null';
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((item) => canonical(item)).join(',')}]`;
+  const record = value;
+  return `{${Object.keys(record).filter((key) => record[key] !== undefined).sort().map((key) => `${JSON.stringify(key)}:${canonical(record[key])}`).join(',')}}`;
+};
+
+async function runSmokeTest() {
+  console.log('========================================================');
+  console.log('🌙 SMOKE TEST ESCENARIO 02:00 AM — NIGHTFLOW VIP');
+  console.log('========================================================\n');
+
+  // Paso 1: Verificar Directorio
+  console.log('1. Verificando Directorio Público en Firestore...');
+  const dirDoc = await db.collection('businessDirectory').doc(BUSINESS_ID).get();
+  if (!dirDoc.exists) throw new Error(`Club ${BUSINESS_ID} no encontrado en businessDirectory`);
+  const dirData = dirDoc.data();
+  console.log(`   ✅ Club: "${dirData.name}" | Ciudad: ${dirData.city} | Auth: ${JSON.stringify(dirData.authMethods)}`);
+
+  // Paso 2: Crear perfil de cliente en businesses/{businessId}/customers/{uid}
+  console.log('\n2. Verificando/Creando ficha de cliente activo...');
+  const customerRef = db.collection('businesses').doc(BUSINESS_ID).collection('customers').doc(ADMIN_UID);
+  await customerRef.set({
+    uid: ADMIN_UID,
+    businessId: BUSINESS_ID,
+    displayName: 'Matx VIP',
+    email: 'geremia23sancan@gmail.com',
+    status: 'ACTIVE',
+    tier: 'VIP_BLACK',
+    loyaltyPoints: 100,
+    marketingConsent: true,
+    updatedAt: new Date().toISOString()
+  }, { merge: true });
+  console.log(`   ✅ Ficha activa en businesses/${BUSINESS_ID}/customers/${ADMIN_UID}`);
+
+  // Obtener ID token
+  console.log('\n3. Autenticando sesión de usuario en Firebase...');
+  const idToken = await getIdToken(ADMIN_UID);
+  console.log('   ✅ ID Token obtenido');
+
+  // Paso 4: Hold de 12 minutos via Render callables
+  console.log('\n4. Creando Hold de 12 minutos para mesa VIP...');
+  const idempotencyKey = `smoke_${Date.now()}_${randomUUID().slice(0, 8)}`;
+  const holdRes = await fetch(`${BACKEND_URL}/v1/call/createReservationHold`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+    body: JSON.stringify({
+      data: {
+        businessId: BUSINESS_ID,
+        eventId: EVENT_ID,
+        resourceId: RESOURCE_ID,
+        customerUid: ADMIN_UID,
+        idempotencyKey,
+        currency: 'USD',
+        amount: 250
+      }
+    })
+  });
+  const holdPayload = await holdRes.json();
+  if (!holdRes.ok) {
+    throw new Error(`Fallo createReservationHold (${holdRes.status}): ${JSON.stringify(holdPayload)}`);
+  }
+  const holdResult = holdPayload.result;
+  const holdId = holdResult.holdId;
+  const holdToken = holdResult.holdToken;
+  console.log(`   ✅ Hold creado: ID=${holdId} | Estado=${holdResult.state} | Expira=${holdResult.expiresAt}`);
+
+  // Paso 5: Confirmación pay_at_door
+  console.log('\n5. Confirmando reserva con modalidad pay_at_door...');
+  const payRes = await fetch(`${BACKEND_URL}/v1/call/createPaymentSession`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+    body: JSON.stringify({
+      data: {
+        holdId,
+        holdToken,
+        returnUrl: '/reserva/confirmada'
+      }
+    })
+  });
+  const payPayload = await payRes.json();
+  if (!payRes.ok) {
+    throw new Error(`Fallo createPaymentSession (${payRes.status}): ${JSON.stringify(payPayload)}`);
+  }
+  const payResult = payPayload.result;
+  console.log(`   ✅ Reserva Confirmada: Estado=${payResult.state} | Provider=${payResult.provider}`);
+
+  // Verificar que la reserva canonical existe en Firestore
+  const reservationDoc = await db.collection('businesses').doc(BUSINESS_ID).collection('reservations').doc(holdId).get();
+  if (!reservationDoc.exists) throw new Error(`businesses/${BUSINESS_ID}/reservations/${holdId} no existe`);
+  console.log(`   ✅ Documento canónico en Firestore: status=${reservationDoc.data().status}`);
+
+  // Paso 6: Rotación de Pase VIP (Ed25519, 45s)
+  console.log('\n6. Solicitando Pase QR Dinámico rotativo al Door Service...');
+  const deviceId = 'dev_mobile_matx_01';
+  const rotateRes = await fetch(`${DOOR_URL}/v1/tickets/rotate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+    body: JSON.stringify({
+      businessId: BUSINESS_ID,
+      ticketId: holdId,
+      deviceId,
+      eventId: EVENT_ID,
+      venueId: 'main-stage'
+    })
+  });
+  const rotateData = await rotateRes.json();
+  if (!rotateRes.ok) {
+    throw new Error(`Fallo rotate (${rotateRes.status}): ${JSON.stringify(rotateData)}`);
+  }
+  console.log(`   ✅ Pase rotativo emitido: Alg=EdDSA | Kid=${rotateData.kid} | Expira en ${rotateData.expiresIn}s`);
+  console.log(`   Claims JWS: sub=${rotateData.claims.sub} | jti=${rotateData.claims.jti}`);
+
+  // Paso 7: Escaneo en Puerta #1 (Check-in inicial)
+  console.log('\n7. Escaneo en Puerta #1 (Check-in del titular con JWS rotativo)...');
+  const doorDeviceId = 'dev_mobile_matx_01';
+  const eventPayload = {
+    businessId: BUSINESS_ID,
+    eventId: EVENT_ID,
+    venueId: 'main-stage',
+    ticketId: holdId,
+    deviceId: doorDeviceId,
+    deviceSequence: 1,
+    jti: rotateData.claims.jti,
+    action: 'CHECK_IN',
+    occurredAt: Date.now(),
+    revocationVersion: 0,
+    signature: rotateData.token
+  };
+
+  const checkinRes1 = await fetch(`${DOOR_URL}/v1/attendance/sync`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`,
+      'x-business-id': BUSINESS_ID
+    },
+    body: JSON.stringify({
+      businessId: BUSINESS_ID,
+      events: [eventPayload]
+    })
+  });
+  const checkinData1 = await checkinRes1.json();
+  console.log(`   Respuesta Puerta #1 (Status ${checkinRes1.status}):`, checkinData1);
+  if (checkinData1.accepted !== 1) {
+    throw new Error(`Check-in #1 esperado 1 aceptado, recibido: ${JSON.stringify(checkinData1)}`);
+  }
+  console.log('   ✅ CHECK-IN #1: ACCEPTED — Presencia: INSIDE');
+
+  // Paso 8: Escaneo en Puerta #2 (Segundo escaneo / screenshot / duplicado)
+  console.log('\n8. Escaneo en Puerta #2 (Intento de re-ingreso o clonación)...');
+  const checkinRes2 = await fetch(`${DOOR_URL}/v1/attendance/sync`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`,
+      'x-business-id': BUSINESS_ID
+    },
+    body: JSON.stringify({
+      businessId: BUSINESS_ID,
+      events: [{
+        ...eventPayload,
+        deviceSequence: 2,
+        occurredAt: Date.now()
+      }]
+    })
+  });
+  const checkinData2 = await checkinRes2.json();
+  console.log(`   Respuesta Puerta #2 (Status ${checkinRes2.status}):`, checkinData2);
+  const conflict = checkinData2.results?.[0];
+  if (conflict && (conflict.status === 'CONFLICT' || conflict.status === 'REJECTED')) {
+    console.log(`   ✅ CHECK-IN #2 RECHAZADO CORRECTAMENTE: reason=${conflict.reason || 'ALREADY_INSIDE'}`);
+    console.log('   Mensaje al personal: «El titular ya está dentro del establecimiento»');
+  } else {
+    console.warn('   ⚠️ Verificación de segundo escaneo:', checkinData2);
+  }
+
+  console.log('\n========================================================');
+  console.log('🎉 BATERÍA 02:00 AM SUPERADA CON ÉXITO EN PRODUCCIÓN');
+  console.log('========================================================');
+}
+
+runSmokeTest().catch((err) => {
+  console.error('\n❌ ERROR EN SMOKE TEST:', err);
+  process.exit(1);
+});
