@@ -11,17 +11,17 @@ const app = initializeApp({ credential: cert(sa), projectId: sa.project_id });
 const db = getFirestore(app);
 
 const BUSINESS_ID = 'club-sensorial';
-const SMOKE_UID = 'AMyKkSoUcyVRggtmwgMfdbYcDRU2';
 
 async function cleanup() {
   console.log('🧹 [Cleanup] Iniciando saneamiento de datos de prueba en Firestore...');
 
   // 1. Eliminar reservas del smoke en businesses/club-sensorial/reservations
-  const resSnapshot = await db.collection('businesses')
-    .doc(BUSINESS_ID)
-    .collection('reservations')
-    .where('customerUid', '==', SMOKE_UID)
-    .get();
+  const staffSnap = await db.collection('businesses').doc(BUSINESS_ID).collection('staff').where('role', '==', 'owner').limit(1).get();
+  const smokeUid = process.env.SMOKE_ADMIN_UID || staffSnap.docs[0]?.id;
+
+  const resSnapshot = smokeUid
+    ? await db.collection('businesses').doc(BUSINESS_ID).collection('reservations').where('customerUid', '==', smokeUid).get()
+    : await db.collection('businesses').doc(BUSINESS_ID).collection('reservations').get();
 
   let deletedReservations = 0;
   for (const doc of resSnapshot.docs) {
@@ -31,9 +31,9 @@ async function cleanup() {
   console.log(`   ✅ Reservas de smoke eliminadas: ${deletedReservations}`);
 
   // 2. Eliminar holds del smoke en holds/
-  const holdsSnapshot = await db.collection('holds')
-    .where('customerUid', '==', SMOKE_UID)
-    .get();
+  const holdsSnapshot = smokeUid
+    ? await db.collection('holds').where('customerUid', '==', smokeUid).get()
+    : await db.collection('holds').get();
 
   let deletedHolds = 0;
   for (const doc of holdsSnapshot.docs) {

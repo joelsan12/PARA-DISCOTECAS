@@ -21,10 +21,18 @@ const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : '';
 const BACKEND_URL = 'https://nightflow-backend.onrender.com';
 const DOOR_URL = 'https://nightflow-backend.onrender.com/door';
 
-const ADMIN_UID = process.env.SMOKE_ADMIN_UID || 'AMyKkSoUcyVRggtmwgMfdbYcDRU2';
 const BUSINESS_ID = 'club-sensorial';
 const EVENT_ID = 'event-fri-reggaeton';
 const RESOURCE_ID = 'tbl-s4';
+
+async function resolveSmokeAdminUid() {
+  if (process.env.SMOKE_ADMIN_UID) return process.env.SMOKE_ADMIN_UID;
+  const staffSnap = await db.collection('businesses').doc(BUSINESS_ID).collection('staff').where('role', '==', 'owner').limit(1).get();
+  if (!staffSnap.empty) return staffSnap.docs[0].id;
+  const users = await auth.listUsers(5);
+  if (users.users.length > 0) return users.users[0].uid;
+  throw new Error('No se pudo resolver UID para el smoke test. Define SMOKE_ADMIN_UID.');
+}
 
 async function getIdToken(uid) {
   const customToken = await auth.createCustomToken(uid);
@@ -40,6 +48,7 @@ async function getIdToken(uid) {
 
 
 async function runSmokeTest() {
+  const ADMIN_UID = await resolveSmokeAdminUid();
   console.log('========================================================');
   console.log('🌙 SMOKE TEST ESCENARIO 02:00 AM — NIGHTFLOW VIP');
   console.log('========================================================\n');
