@@ -12,13 +12,12 @@
     "test": "npm run build && node --test dist/app.test.js dist/scenario.test.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "firebase-admin": "^13.5.0",
-    "jose": "^6.2.12"
-  },
-  "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.5.0",
+    "jose": "^6.2.12",
     "typescript": "^5.8.3"
-  }
+  },
+  "devDependencies": {}
 }
