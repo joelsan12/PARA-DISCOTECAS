@@ -62,20 +62,23 @@ function verifySignature(raw, header, secret) {
     const signaturePart = parts.find((part) => part.startsWith("v1=")) ?? (parts.length === 1 ? parts[0] : undefined);
     if (!signaturePart)
         throw new AppError("permission-denied", "Payment signature is invalid", 401);
-    const timestamp = timestampPart?.slice(2);
-    if (timestamp !== undefined) {
-        const timestampNumber = Number(timestamp);
-        if (!Number.isInteger(timestampNumber))
-            throw new AppError("permission-denied", "Payment signature timestamp is invalid", 401);
-        const age = Math.abs(Math.floor(Date.now() / 1000) - timestampNumber);
-        if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
-            throw new AppError("permission-denied", "Payment signature timestamp is outside the allowed window", 401);
-        }
+    // El timestamp es obligatorio. Sin el, la firma cubria solo el cuerpo y
+    // quedaba como credencial permanente: el id de hold es determinista
+    // (hash de negocio + uid + idempotencyKey), de modo que una firma capturada
+    // podia confirmar meses despues un hold nuevo creado con la misma clave.
+    if (!timestampPart)
+        throw new AppError("permission-denied", "Payment signature timestamp is required", 401);
+    const timestamp = timestampPart.slice(2);
+    const timestampNumber = Number(timestamp);
+    if (!Number.isInteger(timestampNumber))
+        throw new AppError("permission-denied", "Payment signature timestamp is invalid", 401);
+    const age = Math.abs(Math.floor(Date.now() / 1000) - timestampNumber);
+    if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
+        throw new AppError("permission-denied", "Payment signature timestamp is outside the allowed window", 401);
     }
-    const signedPayload = timestamp === undefined ? raw : Buffer.from(`${timestamp}.`, "utf8");
-    const payload = timestamp === undefined ? signedPayload : Buffer.concat([signedPayload, raw]);
-    const expectedHex = hmacSha256(secret, payload, "hex");
-    const expectedBase64 = hmacSha256(secret, payload, "base64url");
+    const signedPayload = Buffer.concat([Buffer.from(`${timestamp}.`, "utf8"), raw]);
+    const expectedHex = hmacSha256(secret, signedPayload, "hex");
+    const expectedBase64 = hmacSha256(secret, signedPayload, "base64url");
     const supplied = signaturePart
         .replace(/^v1=/i, "")
         .replace(/^sha256=/i, "");
@@ -83,6 +86,57 @@ function verifySignature(raw, header, secret) {
     const matchesBase64 = safeEqual(expectedBase64, supplied);
     if (!matchesHex && !matchesBase64)
         throw new AppError("permission-denied", "Payment signature is invalid", 401);
+}
+/**
+ * Secreto de webhook por tenant (AGENTS 2 y 13). Un secreto global permitiria
+ * que el webhook de un club confirmara holds de otro: basta con conocer el id
+ * del hold. Se resuelve el negocio desde el hold ya existente y se usa su
+ * secreto; el secreto global queda solo para negocios que no configuren uno.
+ */
+async function resolveWebhookSecret(businessId) {
+    if (businessId && businessId !== "unknown") {
+        try {
+            const snapshot = await db.collection("businesses").doc(businessId).get();
+            const secret = snapshot.exists ? stringValue(dataRecord(snapshot.data()).paymentWebhookSecret, "") : "";
+            if (secret.length >= 32)
+                return secret;
+        }
+        catch {
+            // Sin lectura no hay override: se continua con el secreto global.
+        }
+    }
+    try {
+        return paymentWebhookSecret();
+    }
+    catch {
+        throw new AppError("failed-precondition", "Payment webhook is not configured", 503);
+    }
+}
+async function resolveBusinessId(input, holdId, parsed) {
+    if (holdId) {
+        const snapshot = await db.collection("holds").doc(holdId).get();
+        if (snapshot.exists) {
+            const businessId = stringValue(dataRecord(snapshot.data()).businessId, "");
+            if (businessId)
+                return businessId;
+        }
+    }
+    const fromBody = recordBusinessId(parsed);
+    return fromBody === "unknown" ? undefined : fromBody;
+}
+/**
+ * Valida la forma de la cabecera antes de resolver el tenant. Evita que una
+ * peticion sin firma provoke lecturas en Firestore.
+ */
+function requireSignatureShape(header) {
+    if (!header)
+        throw new AppError("permission-denied", "Payment signature is required", 401);
+    const parts = header.split(",").map((part) => part.trim()).filter(Boolean);
+    const hasTimestamp = parts.some((part) => part.startsWith("t="));
+    const hasSignature = parts.some((part) => part.startsWith("v1=")) || parts.length === 1;
+    if (!hasTimestamp || !hasSignature) {
+        throw new AppError("permission-denied", "Payment signature must carry t= and v1=", 401);
+    }
 }
 function statusKind(status) {
     const normalized = status.toLowerCase();
@@ -104,14 +158,9 @@ async function resolveHoldId(input) {
     return snapshot.empty ? undefined : snapshot.docs[0]?.id;
 }
 export async function processPaymentWebhook(raw, signatureHeader) {
-    let secret;
-    try {
-        secret = paymentWebhookSecret();
-    }
-    catch {
-        throw new AppError("failed-precondition", "Payment webhook is not configured", 503);
-    }
-    verifySignature(raw, signatureHeader, secret);
+    // Cabecera bien formada antes de tocar Firestore: la cabecera vale como
+    // prueba de intencion, la firma se verifica contra el secreto del tenant.
+    requireSignatureShape(signatureHeader);
     let parsed;
     try {
         parsed = JSON.parse(raw.toString("utf8"));
@@ -120,8 +169,10 @@ export async function processPaymentWebhook(raw, signatureHeader) {
         throw new AppError("invalid-argument", "Payment body must be valid JSON");
     }
     const input = parsePaymentInput(parsed);
-    const kind = statusKind(input.status);
     const holdId = await resolveHoldId(input);
+    const secret = await resolveWebhookSecret(await resolveBusinessId(input, holdId, parsed));
+    verifySignature(raw, signatureHeader, secret);
+    const kind = statusKind(input.status);
     const eventReference = db.collection("paymentEvents").doc(sha256(input.eventId).slice(0, 48));
     const financialReference = db.collection("financialRecords").doc(sha256(input.eventId).slice(0, 48));
     const bodyHash = sha256(raw);
