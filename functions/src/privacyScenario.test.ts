@@ -12,11 +12,15 @@ process.env.FIRESTORE_EMULATOR_HOST ||= "127.0.0.1:8080";
 
 const { privacyDeletionRequestFor } = await import("./privacy.js");
 const { db } = await import("./config.js");
+const { hashIdentifier } = await import("./crypto.js");
+const { identifierHashSecret } = await import("./config.js");
 
 const BUSINESS_ID = "club_lopdp_02am";
 const TARGET_UID = "uid_lopdp_subject";
 const RESERVATION_ID = "res_lopdp_001";
 const FINANCIAL_ID = "fin_lopdp_001";
+const HOLD_ID = "hold_lopdp_001";
+const CHALLENGE_ID = "otp_lopdp_001";
 
 function callableRequest(data: Record<string, unknown>, uid: string): Parameters<typeof privacyDeletionRequestFor>[0] {
   const headers: Record<string, string> = { "x-forwarded-for": "127.0.0.1", "x-request-id": "req_lopdp_test" };
@@ -97,6 +101,37 @@ async function seedFixture(): Promise<void> {
     status: "CONFIRMED",
     createdAt: new Date().toISOString()
   });
+  batch.set(db.collection("holds").doc(HOLD_ID), {
+    holdId: HOLD_ID,
+    businessId: BUSINESS_ID,
+    customerUid: TARGET_UID,
+    state: "HELD",
+    amount: 150,
+    currency: "USD",
+    holdTokenHash: "hash",
+    idempotencyKeyHash: "hash",
+    expiresAt: new Date(Date.now() + 600_000).toISOString()
+  });
+  batch.set(db.collection("otpChallenges").doc(CHALLENGE_ID), {
+    challengeId: CHALLENGE_ID,
+    businessId: BUSINESS_ID,
+    channel: "email",
+    identifierHash: hashIdentifier(identifierHashSecret(), "email", "cliente@fiscal.test"),
+    identifierCiphertext: "cifrado_reversible",
+    codeHash: "hash",
+    provider: "resend",
+    state: "PENDING",
+    attempts: 0,
+    maxAttempts: 3,
+    expiresAt: new Date(Date.now() + 300_000).toISOString()
+  });
+  batch.set(db.collection("businesses").doc(BUSINESS_ID).collection("loyalty").doc(TARGET_UID), {
+    businessId: BUSINESS_ID,
+    uid: TARGET_UID,
+    points: 480,
+    tier: "GOLD",
+    updatedAt: new Date().toISOString()
+  });
   await batch.commit();
 }
 
@@ -109,6 +144,9 @@ async function cleanupFixture(): Promise<void> {
     db.collection("businesses").doc(BUSINESS_ID).collection("reservations").doc(RESERVATION_ID),
     db.collection("businesses").doc(BUSINESS_ID).collection("securityIncidents").doc("cleanup"),
     db.collection("financialRecords").doc(FINANCIAL_ID),
+    db.collection("holds").doc(HOLD_ID),
+    db.collection("otpChallenges").doc(CHALLENGE_ID),
+    db.collection("businesses").doc(BUSINESS_ID).collection("loyalty").doc(TARGET_UID),
     db.collection("privacyRequests").doc(privacyRequestId),
     db.collection("users").doc(TARGET_UID)
   ];
@@ -197,6 +235,30 @@ describe("Escenario 02:00 AM — Fase 9 privacidad LOPDP (Test #11)", () => {
     assert.equal(customerData.displayName, "ANONYMIZED");
     assert.equal(customerData.email, undefined);
     assert.equal(customerData.phone, undefined);
+    assert.equal(customerData.loyaltyPoints, undefined, "las preferencias no sobreviven a la solicitud");
+    assert.equal(customerData.tier, undefined);
+
+    const loyalty = await db
+      .collection("businesses")
+      .doc(BUSINESS_ID)
+      .collection("loyalty")
+      .doc(TARGET_UID)
+      .get();
+    assert.equal(loyalty.exists, false, "la ficha de loyalty del club debe eliminarse");
+
+    const hold = await db.collection("holds").doc(HOLD_ID).get();
+    const holdData = hold.data() ?? {};
+    assert.equal(holdData.customerUid, undefined, "el hold no debe conservar el uid del titular");
+    assert.equal(holdData.subjectPseudonym, subjectPseudonym);
+    assert.equal(holdData.anonymized, true);
+    assert.equal(holdData.state, "HELD", "la transicion de estado del hold se conserva");
+
+    const challenge = await db.collection("otpChallenges").doc(CHALLENGE_ID).get();
+    const challengeData = challenge.data() ?? {};
+    assert.equal(challengeData.identifierCiphertext, undefined, "el identificador cifrado es PII reversible");
+    assert.equal(challengeData.identifierHash, undefined);
+    assert.equal(challengeData.codeHash, undefined);
+    assert.equal(challengeData.anonymized, true);
 
     const privacyRequest = await db
       .collection("privacyRequests")
@@ -206,5 +268,6 @@ describe("Escenario 02:00 AM — Fase 9 privacidad LOPDP (Test #11)", () => {
     assert.equal(privacyRequest.get("status"), "COMPLETED");
     assert.equal(privacyRequest.get("subjectPseudonym"), subjectPseudonym);
     assert.equal(privacyRequest.get("subjectUidHash").length, 64);
+    assert.equal(privacyRequest.get("subjectUid"), undefined, "el log de cumplimiento no guarda el uid en claro");
   });
 });

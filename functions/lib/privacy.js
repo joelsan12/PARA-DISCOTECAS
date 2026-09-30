@@ -1,11 +1,11 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { db, runtimeConfig } from "./config.js";
+import { auth, db, identifierHashSecret, runtimeConfig } from "./config.js";
 import { AppError } from "./errors.js";
 import { getClientIp, getRequestId } from "./http.js";
 import { callableUid, requireStaff } from "./auth.js";
 import { asRecord, assertAllowedKeys, optionalString, requiredId } from "./validation.js";
 import { dataRecord, timestampMillis } from "./firestore.js";
-import { randomId, sha256 } from "./crypto.js";
+import { hashIdentifier, randomId, sha256 } from "./crypto.js";
 import { writeAudit } from "./audit.js";
 function parseInput(value, callerUid) {
     const record = asRecord(value);
@@ -36,6 +36,22 @@ async function loadAll(query) {
         cursor = page.docs[page.docs.length - 1];
     }
 }
+/**
+ * AGENTS 9.4: revocar de inmediato tokens, sesiones activas, dispositivos y
+ * passkeys. `revokeRefreshTokens` invalida todos los refresh tokens del sujeto,
+ * de modo que ningun dispositivo pueda obtener un ID token nuevo; la cuenta no
+ * se deshabilita porque el mismo uid puede conservar identidad global valida
+ * mientras ningun negocio tenga retencion activa (AGENTS 9.7).
+ */
+async function revokeSubjectIdentity(uid) {
+    try {
+        await auth.revokeRefreshTokens(uid);
+    }
+    catch {
+        // El borrado de datos ya quedo aplicado; la revocacion de tokens no debe
+        // convertir una eliminacion completada en un 503 que invite a reintentar.
+    }
+}
 export async function privacyDeletionRequestFor(request) {
     const callerUid = callableUid(request);
     const input = parseInput(request.data, callerUid);
@@ -52,6 +68,8 @@ export async function privacyDeletionRequestFor(request) {
     }
     const customerReference = businessReference.collection("customers").doc(input.targetUid);
     const customerSnapshot = await customerReference.get();
+    const customerEmail = customerSnapshot.exists ? typeof customerSnapshot.get("email") === "string" ? String(customerSnapshot.get("email")) : undefined : undefined;
+    const customerPhone = customerSnapshot.exists ? typeof customerSnapshot.get("phone") === "string" ? String(customerSnapshot.get("phone")) : undefined : undefined;
     if (customerSnapshot.exists) {
         const customer = dataRecord(customerSnapshot.data());
         if (customer.businessId !== input.businessId)
@@ -87,7 +105,6 @@ export async function privacyDeletionRequestFor(request) {
         transaction.set(requestReference, {
             requestId,
             businessId: input.businessId,
-            subjectUid: input.targetUid,
             subjectUidHash: sha256(input.targetUid),
             requestedBy: callerUid,
             status: "PROCESSING",
@@ -209,6 +226,21 @@ export async function privacyDeletionRequestFor(request) {
                 updatedAt: FieldValue.serverTimestamp()
             });
         }
+        // AGENTS 9.3: la ficha local incluye historial de navegacion, tags y
+        // preferencias. Los puntos y el nivel se conservan como agregado comercial
+        // del club, pero las preferencias y el consentimiento de marketing no
+        // sobreviven a la solicitud.
+        profileBatch.set(customerReference, {
+            tier: FieldValue.delete(),
+            loyaltyPoints: FieldValue.delete(),
+            tags: FieldValue.delete(),
+            preferences: FieldValue.delete(),
+            marketingConsent: FieldValue.delete(),
+            updatedAt: FieldValue.serverTimestamp()
+        }, { merge: true });
+        // AGENTS 2.1: businesses/{businessId}/loyalty/{uid} es la ficha de puntos y
+        // nivel VIP en este club.
+        profileBatch.delete(businessReference.collection("loyalty").doc(input.targetUid));
         profileBatch.set(db.collection("users").doc(input.targetUid), {
             uid: input.targetUid,
             privacyStatus: "DELETION_REQUESTED",
@@ -216,6 +248,56 @@ export async function privacyDeletionRequestFor(request) {
             updatedAt: FieldValue.serverTimestamp()
         }, { merge: true });
         await profileBatch.commit();
+        // Holds activos: el uid del titular se sustituye por el seudonimo para que
+        // la transicion de estado siga siendo auditable sin conservar la identidad.
+        const holds = await loadAll(db.collection("holds")
+            .where("businessId", "==", input.businessId)
+            .where("customerUid", "==", input.targetUid));
+        for (let start = 0; start < holds.length; start += 400) {
+            const batch = db.batch();
+            for (const document of holds.slice(start, start + 400)) {
+                batch.update(document.ref, {
+                    customerUid: FieldValue.delete(),
+                    subjectPseudonym,
+                    anonymized: true,
+                    privacyRequestId: requestId,
+                    updatedAt: FieldValue.serverTimestamp()
+                });
+            }
+            await batch.commit();
+        }
+        // Los desafios OTP guardan el identificador cifrado y su hash, ambos
+        // reversibles con la clave del servidor: son PII y se destruyen. Los hashes
+        // se calculan antes de borrar los campos del titular.
+        const identifierHashes = [customerEmail, customerPhone]
+            .filter((value) => typeof value === "string" && value.length > 0)
+            .map((identifier) => [
+            hashIdentifier(identifierHashSecret(), "email", identifier),
+            hashIdentifier(identifierHashSecret(), "sms", identifier)
+        ])
+            .flat();
+        const challengeDocuments = [];
+        for (const identifierHash of identifierHashes) {
+            challengeDocuments.push(...await loadAll(db.collection("otpChallenges")
+                .where("businessId", "==", input.businessId)
+                .where("identifierHash", "==", identifierHash)));
+        }
+        for (let start = 0; start < challengeDocuments.length; start += 400) {
+            const batch = db.batch();
+            for (const document of challengeDocuments.slice(start, start + 400)) {
+                batch.update(document.ref, {
+                    identifierCiphertext: FieldValue.delete(),
+                    identifierHash: FieldValue.delete(),
+                    codeHash: FieldValue.delete(),
+                    providerVerificationSid: FieldValue.delete(),
+                    anonymized: true,
+                    privacyRequestId: requestId,
+                    updatedAt: FieldValue.serverTimestamp()
+                });
+            }
+            await batch.commit();
+        }
+        await revokeSubjectIdentity(input.targetUid);
         const ledgerHash = sha256(`${requestId}:${reservationIds.join(",")}:${reservations.length}`);
         const completionBatch = db.batch();
         completionBatch.update(requestReference, {
@@ -225,6 +307,8 @@ export async function privacyDeletionRequestFor(request) {
             anonymizedReservationCount: reservationIds.length,
             attendanceAnonymizedCount: attendanceDocs.length,
             financialRecordsAnonymizedCount: financialRecords.length,
+            holdsAnonymizedCount: holds.length,
+            otpChallengesAnonymizedCount: challengeDocuments.length,
             subjectPseudonym,
             ledgerHash,
             updatedAt: FieldValue.serverTimestamp()
@@ -238,6 +322,8 @@ export async function privacyDeletionRequestFor(request) {
             reservationCount: reservations.length,
             attendanceCount: attendanceDocs.length,
             financialRecordCount: financialRecords.length,
+            holdsAnonymizedCount: holds.length,
+            otpChallengesAnonymizedCount: challengeDocuments.length,
             ledgerHash,
             createdAt: FieldValue.serverTimestamp()
         });
