@@ -269,3 +269,43 @@ Ningún módulo pasa a producción sin superar con éxito las siguientes 12 prue
 * Todo QR alterado, vencido o duplicado debe ser rechazado.
 * Cola offline cifrada y sincronizada una sola vez de forma idempotente.
 * Cloud Run y Cloud Functions sin secretos ni claves privadas expuestas en los bundles públicos.
+
+---
+
+## 14. Apéndice: Modalidad Económica Spark (Arquitectura Híbrida)
+
+**Estado:** Activo desde la Fase H (híbrida). **Coste objetivo: $0/mes sin tarjeta de crédito.**
+
+El plan **Spark** de Firebase bloquea el despliegue de *Cloud Functions*, *Cloud Run*, *Pub/Sub*, *Cloud Tasks* y *Cloud Scheduler* («You cannot do new deploys of any new or any existing Cloud Functions»). Para operar en producción sin tarjeta, este apéndice documenta la **desviación temporal autorizada** respecto a las Secciones 1, 5 y 7, y el puente de retorno a Blaze.
+
+### 14.1 Componentes de la Modalidad Híbrida
+
+| Rol (Sección 1 original) | Implementación híbrida | Componente |
+|---|---|---|
+| Firebase Auth, Firestore, Storage, Hosting, App Check | **Sin cambios** — plan Spark gratis | Firebase |
+| Cloud Functions (10 `onCall` + 3 HTTP) | Servidor Express único [`functions/src/server.ts`](functions/src/server.ts) desplegado en **Render Free** (`node lib/server.js`). Los exports de [`functions/src/index.ts`](functions/src/index.ts) **no se modifican**: se montan como handlers Express en `POST /v1/call/:name`, `/otp/request`, `/otp/verify` y `/payments/webhook`. | Render |
+| Cloud Run (door-service, Sección 5.1) | La app Express `createApp()` se monta **en el mismo proceso** bajo `/door/*` (un solo servicio = 720 h/mes, dentro del límite gratuito de 750 h). | Render |
+| Cloud Tasks (liberación de holds, Sección 7) | **Ticker interno** `setInterval` (8 s por defecto, `HOLD_TICK_INTERVAL_MS`) que libera holds `HELD` con `expiresAt` vencido, **más** la defensa lazy transaccional ya existente en [`functions/src/reservations.ts`](functions/src/reservations.ts). | Render |
+| KMS / claves | Par Ed25519 del door-service gestionado por variables de entorno (ya soportado por `key-service.ts`). | Render |
+
+### 14.2 Variables de Entorno Obligatorias (Render)
+
+* `FIREBASE_SERVICE_ACCOUNT_JSON` — clave de cuenta de servicio (**jamás en git**; ya está en `.gitignore` como `serviceAccount*.json`).
+* `APP_CHECK_ENFORCED=false` y `APP_CHECK_REQUIRED=false` — App Check se reactiva en el regreso a Blaze.
+* `PAYMENT_PROVIDER=none`, `CAPTCHA_REQUIRED=false`, secretos OTP/hold (los ya generados).
+* `DOOR_ALLOWED_ORIGINS` — dominios de Hosting permitidos (`https://nightflow-vip.web.app`, `http://localhost:5173`).
+* Cliente (`.env.production`): `VITE_BACKEND_URL=https://<servicio>.onrender.com` y `VITE_DOOR_SERVICE_URL=https://<servicio>.onrender.com/door`.
+
+### 14.3 Reglas de la Modalidad Híbrida
+
+* **Keep-alive obligatorio:** un ping gratuito (UptimeRobot) a `GET /health` cada 5 minutos mantiene el servicio despierto (720/750 h, cero cold starts).
+* **Render Free es transitorio:** su documentación lo desaconseja para producción real. Al generar ingresos, migrar a **Render Starter ($7/mes)** o volver a Blaze.
+* Los límites de la Sección 13 (cero secretos en bundles, aislamiento multi-tenant, claims mínimos) siguen **íntegros**: el backend habla el protocolo callable original, verifica ID tokens con `firebase-admin` y ejecuta exactamente la misma lógica de negocio.
+
+### 14.4 Puente de Retorno a Blaze
+
+1. Activar plan Blaze en Firebase y desplegar `firebase deploy --only functions` (los exports originales siguen intactos).
+2. Restaurar en `firebase.json` los rewrites `/otp/*` y `/payments/webhook` hacia las Functions y/o apuntar `VITE_BACKEND_URL` a `cloudfunctions.net`.
+3. Establecer `APP_CHECK_ENFORCED=true` + `APP_CHECK_REQUIRED=true` y completar `VITE_APPCHECK_SITE_KEY` (Fase 3 original).
+4. Restaurar Cloud Tasks (`CLOUD_TASKS_QUEUE`, `CLOUD_TASKS_TARGET_URL`, `CLOUD_TASKS_SERVICE_ACCOUNT_EMAIL`) o conservar el ticker como mecanismo primario.
+5. Retirar el servicio de Render o reservarlo solo para el módulo de puerta.
