@@ -1,8 +1,10 @@
 import type { IncomingHttpHeaders } from "node:http";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { canonicalJson, extractSignature, isRecord, sha256Hex, signatureMatchesAny, stripSignatureFields } from "./crypto.js";
+import { canonicalJson, extractSignature, isRecord, sha256Hex, signatureMatches, stripSignatureFields } from "./crypto.js";
 import { normalizeRole } from "./protocol.js";
-import type { AuthIdentity, GatewayConfig } from "./types.js";
+import type { ReplayGuard } from "./replay-guard.js";
+import type { StaffAuthority, StaffRole } from "./staff-authority.js";
+import type { AuthIdentity, GatewayConfig, GatewayRole } from "./types.js";
 
 export interface AuthenticationResult {
   ok: boolean;
@@ -22,18 +24,21 @@ function getFirebaseJwks(): ReturnType<typeof createRemoteJWKSet> {
   return firebaseJwks;
 }
 
-export async function verifyFirebaseSessionToken(config: GatewayConfig, token: string): Promise<boolean> {
+export async function verifyFirebaseSessionToken(config: GatewayConfig, token: string): Promise<string | null> {
   if (!config.idTokenConfigured || token.length === 0 || token.length > 8192) {
-    return false;
+    return null;
   }
   try {
     const { payload } = await jwtVerify(token, getFirebaseJwks(), {
       issuer: `https://securetoken.google.com/${config.firebaseProjectId}`,
       audience: config.firebaseProjectId
     });
-    return typeof payload.sub === "string" && payload.sub.length > 0 && payload.sub.length <= 128;
+    if (typeof payload.sub !== "string" || payload.sub.length === 0 || payload.sub.length > 128) {
+      return null;
+    }
+    return payload.sub;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -60,88 +65,62 @@ export function isOriginAllowed(origin: string | null | undefined, allowedOrigin
   return allowedOrigins.some((allowed) => wildcardMatches(normalizeOrigin(allowed), normalizedOrigin));
 }
 
-export async function authenticateUpgrade(
-  config: GatewayConfig,
-  headers: IncomingHttpHeaders,
-  url: URL
-): Promise<AuthenticationResult> {
+export interface AuthContext {
+  config: GatewayConfig;
+  replay: ReplayGuard;
+  staff: StaffAuthority;
+}
+
+export async function authenticateUpgrade(context: AuthContext, headers: IncomingHttpHeaders, url: URL): Promise<AuthenticationResult> {
+  const { config } = context;
   const identity = readIdentity(config, url.searchParams, headers, undefined);
   if (!identity) {
     return failed("invalid gateway identity");
   }
-  if (!isTimestampValid(identity.timestamp, config.authWindowMs)) {
-    return failed("expired authentication timestamp");
+  const timestampError = validateFreshness(identity, config);
+  if (timestampError) {
+    return failed(timestampError);
   }
-  const token = readSessionToken(url.searchParams, headers, undefined);
-  if (token) {
-    if (!(await verifyFirebaseSessionToken(config, token))) {
-      return failed("invalid session token");
-    }
-    return { ok: true, identity, reason: "authenticated", method: "token" };
-  }
-  if (!config.secretConfigured) {
-    return failed("EDGE_HMAC_SECRET is not configured");
-  }
-  const signature = readSignature(headers, url.searchParams, undefined);
-  if (!signature) {
-    return failed("missing HMAC signature");
-  }
-  const candidates = [
-    ...identityCandidates(identity),
-    ...requestCandidates("GET", url, "", identity),
-    url.search,
-    url.pathname
-  ];
-  if (!signatureMatchesAny(config.hmacSecret, unique(candidates), signature)) {
-    return failed("invalid HMAC signature");
-  }
-  return { ok: true, identity, reason: "authenticated", method: "hmac" };
+  return completeAuthentication(
+    context,
+    identity,
+    readSessionToken(url.searchParams, headers, undefined),
+    () => readSignature(headers, url.searchParams, undefined, url.pathname, "GET"),
+    url.pathname,
+    sha256Hex("")
+  );
 }
 
 export async function authenticateHttp(
-  config: GatewayConfig,
+  context: AuthContext,
   method: string,
   url: URL,
   headers: IncomingHttpHeaders,
   body: string,
   parsedBody?: unknown
 ): Promise<AuthenticationResult> {
+  const { config } = context;
   const bodyRecord = isRecord(parsedBody) ? parsedBody : undefined;
   const identity = readIdentity(config, url.searchParams, headers, bodyRecord);
   if (!identity) {
     return failed("invalid gateway identity");
   }
-  if (!isTimestampValid(identity.timestamp, config.authWindowMs)) {
-    return failed("expired authentication timestamp");
+  const timestampError = validateFreshness(identity, config);
+  if (timestampError) {
+    return failed(timestampError);
   }
-  const token = readSessionToken(url.searchParams, headers, bodyRecord);
-  if (token) {
-    if (!(await verifyFirebaseSessionToken(config, token))) {
-      return failed("invalid session token");
-    }
-    return { ok: true, identity, reason: "authenticated", method: "token" };
-  }
-  if (!config.secretConfigured) {
-    return failed("EDGE_HMAC_SECRET is not configured");
-  }
-  const signature = readSignature(headers, url.searchParams, bodyRecord);
-  if (!signature) {
-    return failed("missing HMAC signature");
-  }
-  const bodyWithoutSignature = bodyRecord ? JSON.stringify(stripSignatureFields(bodyRecord)) : "";
-  const candidates = [
-    ...identityCandidates(identity),
-    ...requestCandidates(method.toUpperCase(), url, body, identity),
-    body,
-    bodyWithoutSignature
-  ];
-  if (!signatureMatchesAny(config.hmacSecret, unique(candidates), signature)) {
-    return failed("invalid HMAC signature");
-  }
-  return { ok: true, identity, reason: "authenticated", method: "hmac" };
+  return completeAuthentication(
+    context,
+    identity,
+    readSessionToken(url.searchParams, headers, bodyRecord),
+    () => readSignature(headers, url.searchParams, bodyRecord, url.pathname, method.toUpperCase()),
+    url.pathname,
+    sha256Hex(body)
+  );
 }
 
-export async function authenticateMessage(config: GatewayConfig, message: unknown): Promise<AuthenticationResult> {
+export async function authenticateMessage(context: AuthContext, message: unknown): Promise<AuthenticationResult> {
+  const { config } = context;
   if (!isRecord(message)) {
     return failed("authentication message must be an object");
   }
@@ -150,36 +129,112 @@ export async function authenticateMessage(config: GatewayConfig, message: unknow
   if (!identity) {
     return failed("invalid gateway identity");
   }
-  if (!isTimestampValid(identity.timestamp, config.authWindowMs)) {
-    return failed("expired authentication timestamp");
+  const timestampError = validateFreshness(identity, config);
+  if (timestampError) {
+    return failed(timestampError);
   }
-  const token = readSessionToken(new URLSearchParams(), {}, authRecord);
+  return completeAuthentication(
+    context,
+    identity,
+    readSessionToken(new URLSearchParams(), {}, authRecord),
+    () => extractSignature(message) ?? extractSignature(authRecord),
+    "",
+    sha256Hex(canonicalJson(stripSignatureFields(message)))
+  );
+}
+
+async function completeAuthentication(
+  context: AuthContext,
+  identity: AuthIdentity,
+  token: string,
+  readSignature: () => string | null,
+  path: string,
+  bodyDigest: string
+): Promise<AuthenticationResult> {
+  const { config, replay, staff } = context;
+
+  // Un nonce nunca se reutiliza, ni entre conexiones ni entre peticiones.
+  if (!replay.claim(identity.nonce, identityScope(identity))) {
+    return failed("nonce already used or missing");
+  }
+
   if (token) {
-    if (!(await verifyFirebaseSessionToken(config, token))) {
+    const uid = await verifyFirebaseSessionToken(config, token);
+    if (!uid) {
       return failed("invalid session token");
     }
-    return { ok: true, identity, reason: "authenticated", method: "token" };
+    const authorization = await staff.authorize(uid, identity.deviceId);
+    if (!authorization) {
+      return failed("caller is not active staff of this business");
+    }
+    return {
+      ok: true,
+      // Rol derivado del servidor, nunca del header del cliente.
+      identity: { ...identity, role: toGatewayRole(authorization.role) },
+      reason: "authenticated",
+      method: "token"
+    };
   }
+
   if (!config.secretConfigured) {
     return failed("EDGE_HMAC_SECRET is not configured");
   }
-  const signature = extractSignature(message) ?? extractSignature(authRecord);
+  const signature = readSignature();
   if (!signature) {
     return failed("missing HMAC signature");
   }
-  const withoutSignature = stripSignatureFields(message);
-  const authWithoutSignature = stripSignatureFields(authRecord);
-  const candidates = [
-    ...identityCandidates(identity),
-    canonicalJson(withoutSignature),
-    JSON.stringify(withoutSignature),
-    canonicalJson(authWithoutSignature),
-    JSON.stringify(authWithoutSignature)
-  ];
-  if (!signatureMatchesAny(config.hmacSecret, unique(candidates), signature)) {
+  // Única canonicalización posible: identidad + ruta + digest del cuerpo.
+  // Cualquier lista de candidatos convierte la firma en maleable, porque
+  // una firma sobre el subconjunto mínimo autentica todos los demás campos.
+  if (!signatureMatches(config.hmacSecret, canonicalAuthString(identity, path, bodyDigest), signature)) {
     return failed("invalid HMAC signature");
   }
-  return { ok: true, identity, reason: "authenticated", method: "hmac" };
+  // El secreto HMAC es del gateway local: quien lo posee es el propio local,
+  // nunca un cliente de la PWA. El rol se degrada para que un header no
+  // pueda escalar privilegios.
+  const role: GatewayRole = identity.deviceId.length > 0 ? "terminal" : "client";
+  return { ok: true, identity: { ...identity, role }, reason: "authenticated", method: "hmac" };
+}
+
+/**
+ * Serialización única y firmada del handshake (identity + path + body digest).
+ */
+export function canonicalAuthString(identity: AuthIdentity, path: string, bodyDigest: string): string {
+  return canonicalJson({
+    v: 1,
+    kind: "edge-auth",
+    businessId: identity.businessId,
+    eventId: identity.eventId,
+    deviceId: identity.deviceId,
+    clientId: identity.clientId,
+    role: identity.role,
+    timestamp: identity.timestamp,
+    nonce: identity.nonce,
+    path,
+    bodyDigest
+  });
+}
+
+function identityScope(identity: AuthIdentity): string {
+  return `${identity.businessId}:${identity.clientId}`;
+}
+
+function toGatewayRole(role: StaffRole): GatewayRole {
+  return role === "door" ? "terminal" : "admin";
+}
+
+function validateFreshness(identity: AuthIdentity, config: GatewayConfig): string | null {
+  if (identity.timestamp.length === 0) {
+    return "authentication timestamp is required";
+  }
+  if (identity.nonce.length === 0) {
+    return "authentication nonce is required";
+  }
+  const windowMs = config.authWindowMs;
+  if (!isTimestampValid(identity.timestamp, windowMs)) {
+    return "expired authentication timestamp";
+  }
+  return null;
 }
 
 function readSessionToken(
@@ -232,10 +287,16 @@ export function readIdentity(
 }
 
 export function extractRequestSignature(headers: IncomingHttpHeaders, url: URL, body?: Record<string, unknown>): string | null {
-  return readSignature(headers, url.searchParams, body);
+  return readSignature(headers, url.searchParams, body, url.pathname, "POST");
 }
 
-function readSignature(headers: IncomingHttpHeaders, searchParams: URLSearchParams, body?: Record<string, unknown>): string | null {
+function readSignature(
+  headers: IncomingHttpHeaders,
+  searchParams: URLSearchParams,
+  body?: Record<string, unknown>,
+  _path?: string,
+  _method?: string
+): string | null {
   const headerNames = ["x-edge-signature", "x-edge-hmac", "x-gateway-signature", "x-signature", "x-hmac", "x-hmac-signature", "x-edge-token"];
   for (const name of headerNames) {
     const value = headerValue(headers, name);
@@ -253,7 +314,7 @@ function readSignature(headers: IncomingHttpHeaders, searchParams: URLSearchPara
       return parsed;
     }
   }
-  for (const name of ["signature", "sig", "hmac", "mac", "token", "auth"]) {
+  for (const name of ["signature", "sig", "hmac", "mac", "auth"]) {
     const value = searchParams.get(name);
     if (value) {
       return extractSignature(value);
@@ -318,75 +379,9 @@ function headerValue(headers: IncomingHttpHeaders, name: string): string | undef
   return value;
 }
 
-function identityCandidates(identity: AuthIdentity): string[] {
-  const compact = [
-    identity.businessId,
-    identity.eventId,
-    identity.deviceId,
-    identity.clientId,
-    identity.role,
-    identity.timestamp,
-    identity.nonce
-  ];
-  const base = {
-    businessId: identity.businessId,
-    eventId: identity.eventId,
-    deviceId: identity.deviceId,
-    clientId: identity.clientId,
-    role: identity.role,
-    timestamp: identity.timestamp,
-    nonce: identity.nonce
-  };
-  return [
-    canonicalJson(base),
-    JSON.stringify(base),
-    canonicalJson({ businessId: identity.businessId, eventId: identity.eventId }),
-    JSON.stringify({ businessId: identity.businessId, eventId: identity.eventId }),
-    JSON.stringify({ businessId: identity.businessId, eventId: identity.eventId, deviceId: identity.deviceId, clientId: identity.clientId, role: identity.role }),
-    compact.join(":"),
-    compact.join("."),
-    `${identity.businessId}:${identity.eventId}`,
-    `${identity.businessId}.${identity.eventId}`,
-    identity.businessId,
-    identity.eventId,
-    identity.deviceId,
-    identity.clientId,
-    identity.deviceId + identity.timestamp,
-    identity.deviceId + ":" + identity.timestamp,
-    identity.deviceId + "." + identity.timestamp,
-    identity.deviceId + ":" + identity.clientId + ":" + identity.timestamp,
-    identity.clientId + ":" + identity.timestamp
-  ];
-}
-
-function requestCandidates(method: string, url: URL, body: string, identity: AuthIdentity): string[] {
-  const path = url.pathname + url.search;
-  const bodyDigest = sha256Hex(body);
-  const timestamp = identity.timestamp;
-  return [
-    `${timestamp}.${method}.${path}.${bodyDigest}`,
-    `${timestamp}\n${method}\n${path}\n${bodyDigest}`,
-    `${method}.${path}.${bodyDigest}`,
-    `${method}\n${path}\n${bodyDigest}`,
-    `${method}:${path}:${bodyDigest}`,
-    `${method}:${url.pathname}:${bodyDigest}`,
-    `${method}:${url.pathname}`,
-    `${method}${url.pathname}`,
-    `${timestamp}:${method}:${path}:${bodyDigest}`,
-    `${timestamp}.${method}.${path}`,
-    `${timestamp}.${path}`,
-    `${timestamp}:${path}`,
-    `${timestamp}.${body}`,
-    `${timestamp}:${body}`,
-    `${timestamp}.${bodyDigest}`,
-    `${method}${path}${body}`,
-    body
-  ];
-}
-
 function isTimestampValid(timestamp: string, windowMs: number): boolean {
   if (timestamp.length === 0) {
-    return true;
+    return false;
   }
   const numeric = Number(timestamp);
   const time = Number.isFinite(numeric) ? (numeric < 10_000_000_000 ? numeric * 1000 : numeric) : Date.parse(timestamp);
@@ -394,10 +389,6 @@ function isTimestampValid(timestamp: string, windowMs: number): boolean {
     return false;
   }
   return Math.abs(Date.now() - time) <= windowMs;
-}
-
-function unique(values: string[]): string[] {
-  return [...new Set(values.filter((value) => value.length > 0))];
 }
 
 function normalizeOrigin(value: string): string {

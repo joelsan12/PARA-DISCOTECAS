@@ -16,6 +16,7 @@
     "test": "npm run build && node --test dist/server.test.js dist/scenario.test.js"
   },
   "dependencies": {
+    "firebase-admin": "^13.10.0",
     "jose": "^6.2.12",
     "ws": "^8.18.3"
   },

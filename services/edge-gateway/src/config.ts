@@ -10,6 +10,8 @@ const DEFAULT_AUTH_WINDOW_MS = 300_000;
 const DEFAULT_AUTH_TIMEOUT_MS = 10_000;
 const DEFAULT_HEARTBEAT_MS = 30_000;
 const DEFAULT_MAX_CONNECTIONS = 500;
+const MIN_HMAC_SECRET_LENGTH = 32;
+const MAX_TRACKED_NONCES = 10_000;
 
 export class ConfigurationError extends Error {
   public constructor(message: string) {
@@ -24,8 +26,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
   const secretConfigured = hmacSecret.length > 0;
   const firebaseProjectId = value(env.EDGE_FIREBASE_PROJECT_ID) || value(env.FIREBASE_PROJECT_ID) || value(env.GCLOUD_PROJECT);
   const idTokenConfigured = firebaseProjectId.length > 0;
-  if (isProduction && !secretConfigured && !idTokenConfigured) {
-    throw new ConfigurationError("EDGE_HMAC_SECRET or EDGE_FIREBASE_PROJECT_ID is required in production");
+
+  // Fail-hard: el gateway firma los eventos que persiste y verifica los que
+  // recibe. Una clave vacía o débil convertiría `secretConfigured` en una
+  // promesa falsa y permitiría firmar con HMAC(""), que cualquiera puede calcular.
+  if (hmacSecret.length > 0 && hmacSecret.length < MIN_HMAC_SECRET_LENGTH) {
+    throw new ConfigurationError(`EDGE_HMAC_SECRET must be at least ${MIN_HMAC_SECRET_LENGTH} characters`);
+  }
+  if (isProduction && !secretConfigured) {
+    throw new ConfigurationError("EDGE_HMAC_SECRET is required in production (the gateway signs persisted events with it)");
   }
 
   const businessId = value(env.BUSINESS_ID) || "local-business";
@@ -53,6 +62,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
     maxBodyBytes: parseInteger(env.EDGE_MAX_BODY_BYTES, DEFAULT_BODY_BYTES, 1_024, 16_777_216, "EDGE_MAX_BODY_BYTES"),
     maxMessageBytes: parseInteger(env.EDGE_MAX_MESSAGE_BYTES, DEFAULT_MESSAGE_BYTES, 1_024, 16_777_216, "EDGE_MAX_MESSAGE_BYTES"),
     maxConnections: parseInteger(env.EDGE_MAX_CONNECTIONS, DEFAULT_MAX_CONNECTIONS, 1, 100_000, "EDGE_MAX_CONNECTIONS"),
+    maxTrackedNonces: MAX_TRACKED_NONCES,
     isProduction,
     startedAt: new Date().toISOString()
   };

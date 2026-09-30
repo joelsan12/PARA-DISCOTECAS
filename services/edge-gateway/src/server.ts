@@ -1,11 +1,13 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { basename } from "node:path";
 import { WebSocketServer } from "ws";
-import { authenticateHttp, isOriginAllowed } from "./auth.js";
+import { authenticateHttp, isOriginAllowed, type AuthContext } from "./auth.js";
 import { isRecord } from "./crypto.js";
 import { loadConfig } from "./config.js";
 import { GatewayHub } from "./hub.js";
 import { JsonlStore } from "./persistence.js";
+import { ReplayGuard } from "./replay-guard.js";
+import { StaffAuthority } from "./staff-authority.js";
 import { normalizeRevocation, ProtocolError, type NormalizedRevocation } from "./protocol.js";
 import type { GatewayConfig, ServiceStatus, StoredRevocation } from "./types.js";
 import type { Duplex } from "node:stream";
@@ -20,6 +22,7 @@ export class EdgeGateway {
   private readonly config: GatewayConfig;
   private readonly store: JsonlStore;
   private readonly hub: GatewayHub;
+  private readonly authContext: AuthContext;
   private server: Server | null = null;
   private webSocketServer: WebSocketServer | null = null;
   private startPromise: Promise<GatewayAddress> | null = null;
@@ -28,7 +31,12 @@ export class EdgeGateway {
   public constructor(config: GatewayConfig = loadConfig()) {
     this.config = config;
     this.store = new JsonlStore(config.dataFile);
-    this.hub = new GatewayHub(config, this.store);
+    this.authContext = {
+      config,
+      replay: new ReplayGuard(config),
+      staff: new StaffAuthority(config)
+    };
+    this.hub = new GatewayHub(config, this.store, this.authContext);
   }
 
   public async start(): Promise<GatewayAddress> {
@@ -293,7 +301,7 @@ export class EdgeGateway {
       this.sendJson(response, 405, { ok: false, error: { code: "METHOD_NOT_ALLOWED", message: "method not allowed" } });
       return;
     }
-    const authentication = await authenticateHttp(this.config, request.method, url, request.headers, "");
+    const authentication = await authenticateHttp(this.authContext, request.method, url, request.headers, "");
     if (!authentication.ok) {
       this.sendAuthenticationFailure(response, authentication.reason);
       return;
@@ -308,7 +316,7 @@ export class EdgeGateway {
     path: string
   ): Promise<void> {
     if (request.method === "GET") {
-      const authentication = await authenticateHttp(this.config, request.method, url, request.headers, "");
+      const authentication = await authenticateHttp(this.authContext, request.method, url, request.headers, "");
       if (!authentication.ok) {
         this.sendAuthenticationFailure(response, authentication.reason);
         return;
@@ -347,7 +355,7 @@ export class EdgeGateway {
         return;
       }
     }
-    const authentication = await authenticateHttp(this.config, request.method, url, request.headers, rawBody, parsedBody);
+    const authentication = await authenticateHttp(this.authContext, request.method, url, request.headers, rawBody, parsedBody);
     if (!authentication.ok || !authentication.identity) {
       this.sendAuthenticationFailure(response, authentication.reason);
       return;

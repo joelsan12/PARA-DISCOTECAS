@@ -20,6 +20,7 @@ export interface GatewayConfig {
   maxBodyBytes: number;
   maxMessageBytes: number;
   maxConnections: number;
+  maxTrackedNonces: number;
   isProduction: boolean;
   startedAt: string;
 }
@@ -37,6 +38,7 @@ export interface AuthIdentity {
 export interface StoredEvent {
   kind: "event";
   eventId: string;
+  jti: string;
   deviceId: string;
   deviceSequence: number;
   eventType: string;

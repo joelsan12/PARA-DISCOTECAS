@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import WebSocket, { type RawData } from "ws";
-import { authenticateMessage, authenticateUpgrade } from "./auth.js";
-import { canonicalJson, hmacHex, isRecord, signatureMatchesAny, stripSignatureFields } from "./crypto.js";
+import { authenticateMessage, authenticateUpgrade, type AuthContext } from "./auth.js";
+import { canonicalJson, hmacHex, isRecord, signatureMatches, stripSignatureFields } from "./crypto.js";
 import { JsonlStore } from "./persistence.js";
 import { normalizeEvent, normalizeRevocation, ProtocolError, type NormalizedEvent, type NormalizedRevocation } from "./protocol.js";
 import type { AuthIdentity, GatewayConfig, PresenceEntry, StoredEvent, StoredRevocation, SyncSnapshot } from "./types.js";
@@ -29,12 +29,16 @@ export interface HubCounts {
 export class GatewayHub {
   private readonly clients = new Map<string, ClientRecord>();
   private readonly pendingRevocations = new Map<string, StoredRevocation>();
+  private readonly authContext: AuthContext;
   private heartbeatTimer: NodeJS.Timeout | null = null;
 
   public constructor(
     private readonly config: GatewayConfig,
-    private readonly store: JsonlStore
-  ) {}
+    private readonly store: JsonlStore,
+    authContext: AuthContext
+  ) {
+    this.authContext = authContext;
+  }
 
   public handleConnection(socket: WebSocket, request: IncomingMessage, url: URL): void {
     if (this.clients.size >= this.config.maxConnections) {
@@ -70,7 +74,7 @@ export class GatewayHub {
     socket.on("close", () => this.handleClose(record));
 
     void (async () => {
-      const handshake = await authenticateUpgrade(this.config, request.headers, url);
+      const handshake = await authenticateUpgrade(this.authContext, request.headers, url);
       if (handshake.ok && handshake.identity) {
         this.activate(record, handshake.identity, handshake.method, url.searchParams.get("since") ?? url.searchParams.get("cursor") ?? undefined, queryLimit(url.searchParams.get("limit")));
         return;
@@ -223,7 +227,7 @@ export class GatewayHub {
     }
     const messageType = stringValue(message.type) ?? stringValue(message.action) ?? stringValue(message.kind) ?? "";
     if (!record.identity && (messageType === "auth" || messageType === "authenticate" || messageType === "hello" || messageType === "register" || messageType === "login")) {
-      const authentication = await authenticateMessage(this.config, message);
+      const authentication = await authenticateMessage(this.authContext, message);
       if (!authentication.ok || !authentication.identity) {
         this.sendError(record, "AUTH_INVALID", authentication.reason);
         return;
@@ -266,18 +270,23 @@ export class GatewayHub {
       this.sendProtocolError(record, error);
       return;
     }
-    const tokenAuthed = record.authMethod === "token";
-    if (!event.signature) {
-      if (!tokenAuthed) {
-        this.sendError(record, "EVENT_SIGNATURE_REQUIRED", "events must include an HMAC signature");
-        return;
-      }
-    } else if (!verifyEventSignature(this.config.hmacSecret, message, event, event.signature)) {
-      this.sendError(record, "EVENT_SIGNATURE_INVALID", "event HMAC signature is invalid");
-      return;
-    }
-    const identity = record.identity;
-    if (identity && identity.role === "terminal" && identity.deviceId.length > 0 && identity.deviceId !== event.deviceId) {
+    // La firma es obligatoria SIEMPRE, incluso para conexiones autenticadas por
+// ID token: el token prueba quién es el cliente, no que el evento sea suo.
+// Omitirla convertía el Edge en un punto de inyección libre.
+if (!this.config.secretConfigured) {
+  this.sendError(record, "EVENT_SIGNING_UNAVAILABLE", "gateway event signing is not configured");
+  return;
+}
+if (!event.signature) {
+  this.sendError(record, "EVENT_SIGNATURE_REQUIRED", "events must include a signature");
+  return;
+}
+if (!verifyEventSignature(this.config.hmacSecret, message, event, event.signature)) {
+  this.sendError(record, "EVENT_SIGNATURE_INVALID", "event signature is invalid");
+  return;
+}
+const identity = record.identity;
+if (identity && identity.role === "terminal" && identity.deviceId.length > 0 && identity.deviceId !== event.deviceId) {
       this.sendError(record, "DEVICE_MISMATCH", "event deviceId does not match the authenticated terminal");
       return;
     }
@@ -296,9 +305,14 @@ export class GatewayHub {
     }
     const receivedAt = new Date().toISOString();
     const persistedAt = receivedAt;
+    // `jti` debe viajar con el evento: door-service deduplica por `jti` y, si
+    // cayera en `gatewayEventId` (constante por gateway), descartaría todos
+    // los eventos posteriores al primero (AGENTS §6.3, test #4 y #6).
+    const jti = stringValue(message.jti) ?? event.eventId;
     const unsigned: Omit<StoredEvent, "signature" | "hmac"> = {
       kind: "event",
       eventId: event.eventId,
+      jti,
       deviceId: event.deviceId,
       deviceSequence: event.deviceSequence,
       eventType: event.eventType,
@@ -577,48 +591,17 @@ function identityKeyFromEntry(entry: PresenceEntry): string {
   return entry.deviceId || entry.clientId;
 }
 
-function verifyEventSignature(secret: string, message: Record<string, unknown>, event: NormalizedEvent, signature: string): boolean {
+function verifyEventSignature(secret: string, message: Record<string, unknown>, _event: NormalizedEvent, signature: string): boolean {
   const nested = isRecord(message.event) ? message.event : isRecord(message.data) && looksLikeEventRecord(message.data) ? message.data : message;
-  const withoutSignature = stripSignatureFields(nested);
-  const withoutControlFields = removeControlFields(withoutSignature);
-  const normalized = { ...event, signature: undefined, hmac: undefined };
-  return signatureMatchesAny(secret, unique([
-    canonicalJson(withoutSignature),
-    JSON.stringify(withoutSignature),
-    canonicalJson(withoutControlFields),
-    JSON.stringify(withoutControlFields),
-    canonicalJson(normalized),
-    JSON.stringify(normalized),
-    canonicalJson(event.payload),
-    JSON.stringify(event.payload),
-    event.eventId + ":" + event.deviceId + ":" + event.deviceSequence,
-    event.eventId + ":" + event.deviceSequence,
-    event.eventId + ":" + event.deviceId,
-    event.eventId,
-    JSON.stringify({ eventId: event.eventId, deviceId: event.deviceId, deviceSequence: event.deviceSequence }),
-    JSON.stringify({ eventId: event.eventId, deviceSequence: event.deviceSequence }),
-    event.deviceId + ":" + event.deviceSequence + ":" + event.occurredAt
-  ]), signature);
+  // Única canonicalización: el cuerpo completo sin los campos de firma.
+  // Coincide con door-service (AGENTS §6.3). Una lista de candidatos haría
+  // que una firma sobre el subconjunto mínimo autentique el resto.
+  return signatureMatches(secret, canonicalJson(stripSignatureFields(nested)), signature);
 }
 
-function verifyRevocationSignature(secret: string, message: Record<string, unknown>, revocation: NormalizedRevocation, signature: string): boolean {
+function verifyRevocationSignature(secret: string, message: Record<string, unknown>, _revocation: NormalizedRevocation, signature: string): boolean {
   const nested = isRecord(message.revocation) ? message.revocation : isRecord(message.data) && looksLikeRevocationRecord(message.data) ? message.data : message;
-  const withoutSignature = stripSignatureFields(nested);
-  const withoutControlFields = removeControlFields(withoutSignature);
-  const normalized = { ...revocation, signature: undefined, hmac: undefined };
-  return signatureMatchesAny(secret, unique([
-    canonicalJson(withoutSignature),
-    JSON.stringify(withoutSignature),
-    canonicalJson(withoutControlFields),
-    JSON.stringify(withoutControlFields),
-    canonicalJson(normalized),
-    JSON.stringify(normalized),
-    revocation.revocationId + ":" + revocation.subject,
-    revocation.revocationId + ":" + revocation.subjectType,
-    revocation.revocationId,
-    JSON.stringify({ revocationId: revocation.revocationId, subject: revocation.subject }),
-    JSON.stringify({ revocationId: revocation.revocationId })
-  ]), signature);
+  return signatureMatches(secret, canonicalJson(stripSignatureFields(nested)), signature);
 }
 
 function looksLikeEventRecord(value: Record<string, unknown>): boolean {
@@ -627,19 +610,6 @@ function looksLikeEventRecord(value: Record<string, unknown>): boolean {
 
 function looksLikeRevocationRecord(value: Record<string, unknown>): boolean {
   return value.revocationId !== undefined || value.revocation_id !== undefined || value.subject !== undefined || value.ticketId !== undefined || value.ticket_id !== undefined;
-}
-
-function removeControlFields(value: unknown): unknown {
-  if (!isRecord(value)) {
-    return value;
-  }
-  const result: Record<string, unknown> = {};
-  for (const key of Object.keys(value)) {
-    if (key !== "type" && key !== "action" && key !== "kind") {
-      result[key] = value[key];
-    }
-  }
-  return result;
 }
 
 function rawDataToString(data: RawData): string {
@@ -672,6 +642,3 @@ function optionalLimit(value: unknown): number | undefined {
   return Number.isFinite(number) ? number : undefined;
 }
 
-function unique(values: string[]): string[] {
-  return [...new Set(values.filter((value) => value.length > 0))];
-}

@@ -202,11 +202,16 @@ export class AttendanceService {
     const signedEvent = isRecord(signedPayload.event) ? signedPayload.event : signedPayload
     const payload = isRecord(signedPayload.payload) ? signedPayload.payload : {}
     const signedClaims = { ...payload, ...signedPayload, ...signedEvent }
-    const eventId = assertSafeId(this.firstString(signedClaims.eventId, signedClaims.event_id, signedClaims.eventContext, signedClaims.event_context), 'eventId')
-    const venueId = assertSafeId(this.firstString(signedClaims.venueId, signedClaims.venue_id), 'venueId')
-    const ticketId = assertSafeId(this.firstString(signedClaims.ticketId, signedClaims.ticket_id), 'ticketId')
-    const deviceId = assertSafeId(this.firstString(signedClaims.deviceId, signedClaims.device_id), 'deviceId')
-    const jti = assertSafeId(this.firstString(signedClaims.jti, signedClaims.id, signedClaims.gatewayEventId), 'jti')
+// `eventContext` es el evento del negocio; el Edge re-emite con `eventId` = id
+// local del gateway. Priorizar el contexto evita resolver el evento equivocado.
+const eventId = assertSafeId(this.firstString(signedClaims.eventContext, signedClaims.event_context, signedClaims.eventId, signedClaims.event_id), 'eventId')
+const venueId = assertSafeId(this.firstString(signedClaims.venueId, signedClaims.venue_id), 'venueId')
+const ticketId = assertSafeId(this.firstString(signedClaims.ticketId, signedClaims.ticket_id), 'ticketId')
+const deviceId = assertSafeId(this.firstString(signedClaims.deviceId, signedClaims.device_id), 'deviceId')
+// Sin fallback a `gatewayEventId`: es constante por gateway, y usarlo como jti
+// haría que la deduplicación transaccional descartara todos los eventos
+// posteriores al primero (AGENTS §6.3, tests #4 y #6).
+const jti = assertSafeId(this.firstString(signedClaims.jti, signedClaims.id), 'jti')
     const deviceSequence = integerValue(this.firstValue(signedClaims.deviceSequence, signedClaims.device_sequence, signedClaims.sequence))
     if (deviceSequence === undefined || deviceSequence < 0) throw new BadRequestError('deviceSequence debe ser un entero no negativo')
     const signedBusinessId = this.firstString(signedClaims.businessId, signedClaims.business_id)
