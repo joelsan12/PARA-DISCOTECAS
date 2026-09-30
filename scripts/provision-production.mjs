@@ -77,9 +77,12 @@ async function provision() {
       updatedAt: now
     }, { merge: true });
 
-    // 4. Asegurar authMethods en businessDirectory (AGENTS §2.2)
+    // 4. Asegurar authMethods en businessDirectory y businesses (AGENTS §2.2)
     batch.set(db.collection('businessDirectory').doc(clubId), {
-      authMethods: ['password', 'email_code']
+      authMethods: ['password', 'email_otp', 'email_code']
+    }, { merge: true });
+    batch.set(db.collection('businesses').doc(clubId), {
+      authMethods: ['password', 'email_otp', 'email_code']
     }, { merge: true });
   }
 
