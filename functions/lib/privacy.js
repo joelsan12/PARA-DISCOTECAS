@@ -5,7 +5,7 @@ import { getClientIp, getRequestId } from "./http.js";
 import { callableUid, requireStaff } from "./auth.js";
 import { asRecord, assertAllowedKeys, optionalString, requiredId } from "./validation.js";
 import { dataRecord, timestampMillis } from "./firestore.js";
-import { hashIdentifier, randomId, sha256 } from "./crypto.js";
+import { hashIdentifier, hmacSha256, randomId, sha256 } from "./crypto.js";
 import { writeAudit } from "./audit.js";
 function parseInput(value, callerUid) {
     const record = asRecord(value);
@@ -17,7 +17,7 @@ function parseInput(value, callerUid) {
     return { businessId, targetUid };
 }
 function requestIdFor(businessId, targetUid) {
-    return `privacy_${sha256(`${businessId}:${targetUid}`).slice(0, 40)}`;
+    return `privacy_${hmacSha256(identifierHashSecret(), `${businessId}:${targetUid}`).slice(0, 40)}`;
 }
 function addLedgerEntry(transaction, requestReference, entryId, entry) {
     transaction.set(requestReference.collection("ledger").doc(entryId), {
@@ -134,7 +134,7 @@ export async function privacyDeletionRequestFor(request) {
         };
     }
     try {
-        const subjectPseudonym = `sp_${sha256(`subject:${input.businessId}:${input.targetUid}`).slice(0, 24)}`;
+        const subjectPseudonym = `sp_${hmacSha256(identifierHashSecret(), `subject:${input.businessId}:${input.targetUid}`).slice(0, 24)}`;
         const reservations = await loadAll(businessReference.collection("reservations")
             .where("customerUid", "==", input.targetUid));
         const reservationIds = [];

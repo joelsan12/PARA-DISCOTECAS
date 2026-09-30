@@ -17,6 +17,8 @@ export const createAttendanceRouter = (attendance: AttendanceService): Router =>
             ? [body]
             : undefined
       if (!Array.isArray(events)) throw new BadRequestError('events debe ser un array')
+      if (events.length === 0) throw new BadRequestError('events no puede estar vacío')
+      if (events.length > 100) throw new BadRequestError('events excede el tamaño máximo')
       const result = await attendance.sync(getBusinessContext(response), events)
       const status = result.conflicts > 0 ? 409 : result.accepted === 0 && result.rejected > 0 ? 403 : 200
       response.status(status).json(result)

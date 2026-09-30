@@ -43,7 +43,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): ServiceConfig 
     firebaseEmulatorHost: env.FIRESTORE_EMULATOR_HOST,
     authEmulatorHost: env.FIREBASE_AUTH_EMULATOR_HOST,
     maxBatchSize: 100,
-    clockSkewSeconds: readPositiveInteger(env.DOOR_CLOCK_SKEW_SECONDS, 30),
+    clockSkewSeconds: readPositiveInteger(env.DOOR_CLOCK_SKEW_SECONDS, 5),
     rateLimitWindowSeconds: readPositiveInteger(env.DOOR_RATE_LIMIT_WINDOW_SECONDS, 60),
     rateLimitMaxRequests: readPositiveInteger(env.DOOR_RATE_LIMIT_MAX_REQUESTS, 120)
   }
