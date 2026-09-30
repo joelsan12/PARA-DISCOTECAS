@@ -38,13 +38,14 @@ export async function createPaymentSessionFor(request) {
     const holdReference = db.collection("holds").doc(input.holdId);
     const paymentSessionId = `ps_${randomId("sess").slice(3, 31)}`;
     const requestHash = sha256(stableStringify({ holdId: input.holdId, returnUrl: input.returnUrl ?? null }));
-    const provider = (optionalEnv("PAYMENT_PROVIDER") ?? "mock").toLowerCase();
+    const provider = (optionalEnv("PAYMENT_PROVIDER") ?? "none").toLowerCase();
     const result = await db.runTransaction(async (transaction) => {
         const holdSnapshot = await transaction.get(holdReference);
         if (!holdSnapshot.exists)
             throw new AppError("not-found", "Hold not found", 404);
         const hold = dataRecord(holdSnapshot.data());
-        if (hold.customerUid && hold.customerUid !== uid) {
+        const holdCustomerUid = typeof hold.customerUid === "string" ? hold.customerUid : undefined;
+        if (!holdCustomerUid || holdCustomerUid !== uid) {
             throw new AppError("permission-denied", "Only the hold owner can start payment", 403);
         }
         if (hold.state === "CONFIRMED") {

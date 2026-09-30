@@ -202,27 +202,42 @@ export class AttendanceService {
     const signedEvent = isRecord(signedPayload.event) ? signedPayload.event : signedPayload
     const payload = isRecord(signedPayload.payload) ? signedPayload.payload : {}
     const signedClaims = { ...payload, ...signedPayload, ...signedEvent }
-    const envelope = isRecord(rawEvent.event) ? rawEvent.event : {}
-    const claims = { ...(isRecord(rawEvent.claims) ? rawEvent.claims : {}), ...envelope, ...signedClaims }
-    const eventId = assertSafeId(this.firstString(claims.eventContext, claims.event_context, claims.eventId, claims.event_id, rawEvent.eventId, rawEvent.event_id), 'eventId')
-    const venueId = assertSafeId(this.firstString(claims.venueId, claims.venue_id, rawEvent.venueId, rawEvent.venue_id), 'venueId')
-    const ticketId = assertSafeId(this.firstString(claims.ticketId, claims.ticket_id, rawEvent.ticketId, rawEvent.ticket_id), 'ticketId')
-    const deviceId = assertSafeId(this.firstString(claims.deviceId, claims.device_id, rawEvent.deviceId, rawEvent.device_id), 'deviceId')
-    const jti = assertSafeId(this.firstString(claims.jti, claims.id, claims.gatewayEventId, claims.eventId, rawEvent.jti, rawEvent.id), 'jti')
-    const deviceSequence = integerValue(this.firstValue(claims.deviceSequence, claims.device_sequence, claims.sequence, rawEvent.deviceSequence, rawEvent.device_sequence))
+    const eventId = assertSafeId(this.firstString(signedClaims.eventId, signedClaims.event_id, signedClaims.eventContext, signedClaims.event_context), 'eventId')
+    const venueId = assertSafeId(this.firstString(signedClaims.venueId, signedClaims.venue_id), 'venueId')
+    const ticketId = assertSafeId(this.firstString(signedClaims.ticketId, signedClaims.ticket_id), 'ticketId')
+    const deviceId = assertSafeId(this.firstString(signedClaims.deviceId, signedClaims.device_id), 'deviceId')
+    const jti = assertSafeId(this.firstString(signedClaims.jti, signedClaims.id, signedClaims.gatewayEventId), 'jti')
+    const deviceSequence = integerValue(this.firstValue(signedClaims.deviceSequence, signedClaims.device_sequence, signedClaims.sequence))
     if (deviceSequence === undefined || deviceSequence < 0) throw new BadRequestError('deviceSequence debe ser un entero no negativo')
     const signedBusinessId = this.firstString(signedClaims.businessId, signedClaims.business_id)
     if (signedBusinessId !== businessId) throw new BadRequestError('El evento no pertenece al business autorizado')
     if (rawEvent.businessId !== undefined && rawEvent.businessId !== businessId) throw new BadRequestError('businessId no coincide')
     if (rawEvent.business_id !== undefined && rawEvent.business_id !== businessId) throw new BadRequestError('businessId no coincide')
+    if (rawEvent.ticketId !== undefined && rawEvent.ticketId !== ticketId) throw new BadRequestError('ticketId no coincide')
+    if (rawEvent.deviceId !== undefined && rawEvent.deviceId !== deviceId) throw new BadRequestError('deviceId no coincide')
+    if (rawEvent.eventId !== undefined && rawEvent.eventId !== eventId) throw new BadRequestError('eventId no coincide')
+    if (rawEvent.venueId !== undefined && rawEvent.venueId !== venueId) throw new BadRequestError('venueId no coincide')
+    if (rawEvent.jti !== undefined && rawEvent.jti !== jti) throw new BadRequestError('jti no coincide')
     if (verified.header?.kid !== undefined && rawEvent.kid !== undefined && verified.header.kid !== rawEvent.kid) throw new BadRequestError('kid no coincide')
-    const actionValue = this.firstString(rawEvent.action, rawEvent.eventType, claims.action, claims.type, claims.eventType, claims.event_type, claims.event_type_name)
-    const presenceValue = this.firstString(rawEvent.presence, rawEvent.state, rawEvent.presenceState, claims.presence, claims.state, claims.presenceState, claims.presence_state)
+    const actionValue = this.firstString(signedClaims.action, signedClaims.type, signedClaims.eventType, signedClaims.event_type)
+    const presenceValue = this.firstString(signedClaims.presence, signedClaims.state, signedClaims.presenceState, signedClaims.presence_state)
     const action = this.normalizeAction(actionValue, presenceValue)
     const requestedState = this.normalizeState(presenceValue)
-    const occurredAt = dateMillis(this.firstValue(rawEvent.occurredAt, rawEvent.occurred_at, claims.occurredAt, claims.occurred_at, signedPayload.iat)) ?? now
+    if (rawEvent.action !== undefined && typeof rawEvent.action === 'string') {
+      const rawNormalized = this.normalizeAction(rawEvent.action, rawEvent.presence)
+      if (rawNormalized !== action) {
+        throw new BadRequestError('action en rawEvent no coincide con el payload firmado')
+      }
+    }
+    if (rawEvent.presence !== undefined && typeof rawEvent.presence === 'string') {
+      const rawState = this.normalizeState(rawEvent.presence)
+      if (rawState !== requestedState) {
+        throw new BadRequestError('presence en rawEvent no coincide con el payload firmado')
+      }
+    }
+    const occurredAt = dateMillis(this.firstValue(signedClaims.occurredAt, signedClaims.occurred_at, signedPayload.iat ? Number(signedPayload.iat) * 1000 : undefined)) ?? now
     if (occurredAt > now + this.config.clockSkewSeconds * 1000) throw new BadRequestError('occurredAt está en el futuro')
-    const revocationVersion = integerValue(this.firstValue(rawEvent.revocationVersion, rawEvent.revocation_version, claims.revocationVersion, claims.revocation_version, signedPayload.revocationVersion)) ?? 0
+    const revocationVersion = integerValue(this.firstValue(signedClaims.revocationVersion, signedClaims.revocation_version, signedPayload.revocationVersion)) ?? 0
 
     return {
       businessId,

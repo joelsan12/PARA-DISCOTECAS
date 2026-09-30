@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError, ForbiddenError } from '../errors.js'
+import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '../errors.js'
 import { assertSafeId, integerValue, optionalString } from '../utils/values.js'
 import type { ServiceConfig } from '../config.js'
 import type { DoorRepository, RotateTicketRequest, TokenClaims } from '../types.js'
@@ -27,33 +27,44 @@ export class TicketService {
     const deviceId = assertSafeId(optionalString(input.deviceId) ?? optionalString(input.device_id), 'deviceId')
     const ticket = await this.repository.getTicket(businessId, ticketId)
 
-    if (ticket?.customerUid && caller && caller.role !== 'staff' && ticket.customerUid !== caller.uid) {
-      throw new ForbiddenError('El ticket no pertenece al usuario autenticado', 'CUSTOMER_MISMATCH')
+    if (!ticket) {
+      throw new NotFoundError('Ticket no encontrado')
     }
-    const eventId = assertSafeId(optionalString(input.eventId) ?? optionalString(input.event_id) ?? ticket?.eventId, 'eventId')
+
+    if (caller && caller.role !== 'staff') {
+      if (!ticket.customerUid || ticket.customerUid !== caller.uid) {
+        throw new ForbiddenError('El ticket no pertenece al usuario autenticado', 'CUSTOMER_MISMATCH')
+      }
+    }
+
+    const eventId = ticket.eventId || assertSafeId(optionalString(input.eventId) ?? optionalString(input.event_id), 'eventId')
     const event = await this.repository.getEvent(businessId, eventId)
-    const venueId = assertSafeId(optionalString(input.venueId) ?? optionalString(input.venue_id) ?? event?.venueId ?? ticket?.venueId, 'venueId')
+    if (!event) {
+      throw new NotFoundError('Evento no encontrado')
+    }
+
+    const venueId = ticket.venueId || event.venueId || assertSafeId(optionalString(input.venueId) ?? optionalString(input.venue_id), 'venueId')
     const requestedVersion = integerValue(input.revocationVersion ?? input.revocation_version)
     if ((input.revocationVersion !== undefined || input.revocation_version !== undefined) && requestedVersion === undefined) throw new BadRequestError('revocationVersion no es válido')
-    const revocationVersion = Math.max(requestedVersion ?? 0, ticket?.revocationVersion ?? 0, event?.revocationVersion ?? 0)
-    const subject = assertSafeId(optionalString(input.subject) ?? optionalString(input.customerUid) ?? optionalString(input.customer_uid) ?? optionalString(input.uid) ?? ticket?.customerUid ?? ticketId, 'sub')
+    const revocationVersion = Math.max(requestedVersion ?? 0, ticket.revocationVersion ?? 0, event.revocationVersion ?? 0)
+    const subject = assertSafeId(ticket.customerUid ?? ticket.ticketId, 'sub')
 
-    if (ticket?.revoked || ticket?.eventCanceled) {
-      throw new ConflictError('El ticket está revocado o cancelado', ticket?.eventCanceled ? 'EVENT_CANCELED' : 'TICKET_REVOKED')
+    if (ticket.revoked || ticket.eventCanceled) {
+      throw new ConflictError('El ticket está revocado o cancelado', ticket.eventCanceled ? 'EVENT_CANCELED' : 'TICKET_REVOKED')
     }
-    if (event?.canceled) {
+    if (event.canceled) {
       throw new ConflictError('El evento está cancelado', 'EVENT_CANCELED')
     }
-    if (ticket?.deviceId && ticket.deviceId !== deviceId) {
+    if (ticket.deviceId && ticket.deviceId !== deviceId) {
       throw new ConflictError('El dispositivo no coincide con el ticket', 'DEVICE_MISMATCH')
     }
-    if (ticket?.eventId && ticket.eventId !== eventId) {
+    if (ticket.eventId && ticket.eventId !== eventId) {
       throw new ConflictError('El evento no coincide con el ticket', 'EVENT_MISMATCH')
     }
-    if (event?.venueId && event.venueId !== venueId) {
+    if (event.venueId && event.venueId !== venueId) {
       throw new ConflictError('El venue no coincide con el evento', 'VENUE_MISMATCH')
     }
-    if (requestedVersion !== undefined && requestedVersion < (ticket?.revocationVersion ?? 0)) {
+    if (requestedVersion !== undefined && requestedVersion < (ticket.revocationVersion ?? 0)) {
       throw new ConflictError('La versión de revocación está obsoleta', 'TOKEN_REVOKED')
     }
 

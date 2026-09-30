@@ -9,6 +9,7 @@ process.env.GCLOUD_PROJECT ||= "demo-nightflow";
 process.env.FIRESTORE_EMULATOR_HOST ||= "127.0.0.1:8080";
 const { createReservationHoldFor, releaseHoldById } = await import("./reservations.js");
 const { processPaymentWebhook } = await import("./payments.js");
+const { createPaymentSessionFor } = await import("./paymentSession.js");
 const { db } = await import("./config.js");
 const BUSINESS_ID = "club_test_holds";
 const EVENT_ID = "evt_test_vip";
@@ -186,6 +187,66 @@ describe("Escenario 02:00 AM — Fase 7 holds y pagos", () => {
         const duplicate = await processPaymentWebhook(raw, signWebhook(body));
         assert.equal(duplicate.duplicate, true);
         assert.equal(duplicate.status, "REFUND_REQUIRED");
+    });
+    it("P0 Security #9: createReservationHoldFor rechaza llamadas sin autenticación", async () => {
+        await assert.rejects(async () => {
+            await createReservationHoldFor(callableRequest({
+                businessId: BUSINESS_ID,
+                eventId: EVENT_ID,
+                resourceId: RESOURCE_ID,
+                amount: 150,
+                currency: "USD",
+                idempotencyKey: `anon-key-${Date.now()}`
+            }, undefined)); // Sin UID
+        }, (error) => {
+            assert.ok(typeof error === "object" && error !== null);
+            assert.equal(error.code, "unauthenticated");
+            return true;
+        });
+    });
+    it("P0 Security H3: createReservationHoldFor rechaza montos discrepantes enviados por el cliente", async () => {
+        await assert.rejects(async () => {
+            await createReservationHoldFor(callableRequest({
+                businessId: BUSINESS_ID,
+                eventId: EVENT_ID,
+                resourceId: RESOURCE_ID,
+                amount: 0, // Intento de reservar a $0 cuando el recurso vale $150
+                currency: "USD",
+                idempotencyKey: `tamper-key-${Date.now()}`
+            }, CUSTOMER_UID));
+        }, (error) => {
+            assert.ok(typeof error === "object" && error !== null);
+            assert.equal(error.code, "invalid-argument");
+            return true;
+        });
+    });
+    it("P0 Security H1: createPaymentSessionFor rechaza a cualquier usuario que no sea el dueño del hold", async () => {
+        const testHoldId = `hold_sec_owner_${Date.now()}`;
+        const holdRef = db.collection("holds").doc(testHoldId);
+        await holdRef.set({
+            holdId: testHoldId,
+            businessId: BUSINESS_ID,
+            eventId: EVENT_ID,
+            resourceId: RESOURCE_ID,
+            customerUid: "legitimate_owner_uid",
+            state: "HELD",
+            paymentState: "PENDING",
+            amount: 150,
+            currency: "USD",
+            expiresAt: new Date(Date.now() + 600_000),
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+        await assert.rejects(async () => {
+            await createPaymentSessionFor(callableRequest({
+                holdId: testHoldId
+            }, "attacker_uid")); // Usuario diferente intentando confirmar o robar el hold
+        }, (error) => {
+            assert.ok(typeof error === "object" && error !== null);
+            assert.equal(error.code, "permission-denied");
+            return true;
+        });
+        await holdRef.delete();
     });
 });
 //# sourceMappingURL=holdScenario.test.js.map

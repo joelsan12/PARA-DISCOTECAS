@@ -167,9 +167,13 @@ async function main(): Promise<void> {
     ticking = true;
     try {
       const now = Date.now();
-      const snapshot = await db.collection("holds").where("state", "==", "HELD").limit(100).get();
+      const [heldSnapshot, pendingSnapshot] = await Promise.all([
+        db.collection("holds").where("state", "==", "HELD").orderBy("expiresAt", "asc").limit(50).get(),
+        db.collection("holds").where("state", "==", "PAYMENT_PENDING").orderBy("expiresAt", "asc").limit(50).get()
+      ]);
+      const docs = [...heldSnapshot.docs, ...pendingSnapshot.docs];
       let released = 0;
-      for (const document of snapshot.docs) {
+      for (const document of docs) {
         const raw = document.get("expiresAt") as { toMillis?: () => number } | string | undefined;
         const millis = typeof raw === "object" && raw !== null && typeof raw.toMillis === "function"
           ? raw.toMillis()

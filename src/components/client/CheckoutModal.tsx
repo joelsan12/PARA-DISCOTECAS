@@ -91,7 +91,6 @@ export const CheckoutModal = ({
         ? error.message
         : 'No pudimos bloquear la mesa en el servidor.';
       setHoldError(message);
-      if (import.meta.env.DEV || !backendEnabled) return null;
       throw error instanceof Error ? error : new Error(message);
     }
   }, [backendEnabled, hold, holdCreatedRef, store.activeClubId, store.activeEventId, table.id, pricing.deposit_required, idempotencyKey, syncTimerToHold]);
@@ -172,23 +171,23 @@ export const CheckoutModal = ({
     unsubscribeHoldRef.current = unsubscribe;
   }, [email, guests, name, onSuccess, paymentMethod, phone, pricing.min_spend, store.activeClubId, store.activeEventId, table.id, table.table_code, table.zone]);
 
+  const handleTimeout = useCallback(() => {
+    store.releaseHold(table.id, store.activeEventId);
+    clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
+    onClose();
+  }, [table.id, store, onClose]);
+
   useEffect(() => {
+    if (timeLeft <= 0) {
+      handleTimeout();
+      return;
+    }
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          store.releaseHold(table.id, store.activeEventId);
-          clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
-          onClose();
-          alert('El tiempo de espera de 12 minutos ha expirado y la mesa ha sido liberada.');
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [table.id, store.activeEventId, store.activeClubId, store, onClose]);
+  }, [timeLeft, handleTimeout]);
 
   const releaseLocalAndClose = () => {
     store.releaseHold(table.id, store.activeEventId);
@@ -219,64 +218,52 @@ export const CheckoutModal = ({
     setHoldError('');
 
     try {
+      if (!backendEnabled) {
+        throw new Error('El servicio de reservas requiere conexión activa con el servidor. Por favor, verifica tu conexión o intenta más tarde.');
+      }
       const activeHold = await ensureBackendHold();
-      if (activeHold && activeHold.source === 'functions') {
-        const paymentSession = await startPaymentSession(
-          activeHold.holdId,
-          activeHold.holdToken,
-          window.location.pathname
-        );
-        if (paymentSession.provider === 'pay_at_door' || paymentSession.state === 'CONFIRMED') {
-          clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
-          const confirmed: Reservation = {
-            id: activeHold.holdId,
-            code: `VIP-${activeHold.holdId.slice(-4).toUpperCase()}`,
-            club_id: store.activeClubId,
-            event_id: store.activeEventId,
-            table_id: table.id,
-            table_code: table.table_code,
-            zone: table.zone,
-            customer_name: name || 'Invitado',
-            customer_phone: normalizedPhone,
-            customer_email: email,
-            guest_count: guests,
-            deposit_amount: activeHold.amount,
-            min_spend: pricing.min_spend,
-            status: 'CONFIRMED',
-            payment_method: paymentMethod,
-            payment_status: 'paid',
-            qr_token: activeHold.holdId,
-            hold_expires_at: 0,
-            created_at: new Date().toISOString()
-          };
-          setIsProcessing(false);
-          onSuccess(confirmed);
-          return;
-        }
-        watchHoldConfirmation(activeHold);
-        setPaymentPhase('pending');
+      if (!activeHold || activeHold.source !== 'functions') {
+        throw new Error('No se pudo asegurar el bloqueo de la mesa en el servidor.');
+      }
+      const paymentSession = await startPaymentSession(
+        activeHold.holdId,
+        activeHold.holdToken,
+        window.location.pathname
+      );
+      if (paymentSession.provider === 'pay_at_door' || paymentSession.state === 'CONFIRMED') {
+        clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
+        const confirmed: Reservation = {
+          id: activeHold.holdId,
+          code: `VIP-${activeHold.holdId.slice(-4).toUpperCase()}`,
+          club_id: store.activeClubId,
+          event_id: store.activeEventId,
+          table_id: table.id,
+          table_code: table.table_code,
+          zone: table.zone,
+          customer_name: name || 'Invitado',
+          customer_phone: normalizedPhone,
+          customer_email: email,
+          guest_count: guests,
+          deposit_amount: activeHold.amount,
+          min_spend: pricing.min_spend,
+          status: 'CONFIRMED',
+          payment_method: paymentMethod,
+          payment_status: paymentSession.provider === 'pay_at_door' ? 'pending' : 'paid',
+          qr_token: activeHold.holdId,
+          hold_expires_at: 0,
+          created_at: new Date().toISOString()
+        };
         setIsProcessing(false);
-        if (paymentSession.checkoutUrl && typeof window !== 'undefined') {
-          window.open(paymentSession.checkoutUrl, '_blank', 'noopener,noreferrer');
-        }
+        onSuccess(confirmed);
         return;
       }
-      const res = await new Promise<Reservation>(resolve => {
-        setTimeout(() => {
-          resolve(store.confirmReservation({
-            club_id: store.activeClubId,
-            event_id: store.activeEventId,
-            table_id: table.id,
-            customer_name: name,
-            customer_phone: normalizedPhone,
-            customer_email: email || `${name.toLowerCase().replace(/\s+/g, '')}@correo.com`,
-            guest_count: guests,
-            payment_method: paymentMethod
-          }));
-        }, 850);
-      });
+      watchHoldConfirmation(activeHold);
+      setPaymentPhase('pending');
       setIsProcessing(false);
-      onSuccess(res);
+      if (paymentSession.checkoutUrl && typeof window !== 'undefined') {
+        window.open(paymentSession.checkoutUrl, '_blank', 'noopener,noreferrer');
+      }
+      return;
     } catch (error) {
       setIsProcessing(false);
       setHoldError(error instanceof Error ? error.message : 'No pudimos procesar la reserva.');

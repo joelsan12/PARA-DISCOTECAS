@@ -10,9 +10,13 @@ import {
   isFirebaseConfigured,
   useEmulators,
   useFunctionsEmulator
-} from './firebase';
+} from './firebase.ts';
 
-const rawBackendUrl = (import.meta.env.VITE_BACKEND_URL ?? '').toString().trim().replace(/\/+$/u, '');
+const globalEnv = (globalThis as unknown as { __NIGHTFLOW_ENV__?: Record<string, string | undefined> }).__NIGHTFLOW_ENV__;
+const clientEnv: Record<string, string | undefined> = (typeof import.meta !== 'undefined' && import.meta.env)
+  ? (import.meta.env as unknown as Record<string, string | undefined>)
+  : (globalEnv ?? {});
+const rawBackendUrl = (clientEnv.VITE_BACKEND_URL ?? '').toString().trim().replace(/\/+$/u, '');
 
 const HTTP_FUNCTION_PATHS: Record<string, string> = {
   requestOtpHttp: '/otp/request',

@@ -721,4 +721,80 @@ test('TicketService.rotate autoriza al titular cliente y rechaza a cliente ajeno
     deviceId: 'dev_cust_phone_1'
   }, { uid: 'staff_door_01', role: 'staff' })
   assert.ok(staffResult.token)
+
+  // 4. Ticket inexistente lanza NotFoundError 404 (Hallazgo #8: fail-closed)
+  await assert.rejects(async () => {
+    await ticketService.rotate(BUSINESS_ID, {
+      ticketId: 'tkt_completely_nonexistent',
+      deviceId: 'dev_cust_phone_1'
+    }, { uid: 'staff_door_01', role: 'staff' })
+  }, (err: any) => {
+    assert.equal(err.statusCode, 404)
+    return true
+  })
+})
+
+test('Hallazgo #7: pase de cliente (JWS sin kid dev-*) es rechazado como firma de evento de asistencia', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+  const testConfig = loadConfig({
+    PORT: '8081',
+    ATTENDANCE_HMAC_SECRET: HMAC_SECRET
+  })
+  const keys = new KeyService({
+    DOOR_KEY_ID: 'door-test-key',
+    DOOR_PRIVATE_KEY_BASE64: 'MC4CAQAwBQYDK2VwBCIEIHrcrp269fz13XwffpVNDYEhOYXAE09RBPZsgLwS03wd',
+    DOOR_PUBLIC_KEY: 'MCowBQYDK2VwAyEAI99TCPATDIAvjx/x6fAz+i6ZCIZytEPJQOFkrEfMcJg='
+  }, testConfig)
+  const emergency = new EmergencyService(repo)
+  const ticketService = new TicketService(repo, keys, emergency, testConfig)
+  const signatures = new AttendanceSignatureService(keys, testConfig, repo)
+
+  // Generar pase legítimo (firmado con clave de pases, kid = door-test-key)
+  const rotated = await ticketService.rotate(BUSINESS_ID, {
+    ticketId: TICKET_ID,
+    deviceId: 'door-1'
+  })
+
+  // Intentar usar el pase JWS como si fuese la firma de un evento de asistencia -> debe ser rechazado
+  await assert.rejects(async () => {
+    await signatures.verify({
+      signature: rotated.token,
+      businessId: BUSINESS_ID,
+      eventId: EVENT_ID,
+      venueId: VENUE_ID,
+      ticketId: TICKET_ID
+    }, BUSINESS_ID)
+  }, (err: any) => {
+    assert.equal(err.statusCode, 401)
+    return true
+  })
+})
+
+test('Hallazgo #6: rawEvent sin firmar no puede sobreescribir action ni presence firmados', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+  const service = createService(repo)
+
+  // Evento legítimamente firmado con action: 'EXIT'
+  const signed = signEvent(baseFields({
+    jti: 'jti_tamper_test',
+    deviceId: 'door-1',
+    deviceSequence: 1,
+    action: 'EXIT'
+  }))
+
+  // Atacante intenta inyectar action: 'MANUAL_OVERRIDE' y presence: 'INSIDE' en el cuerpo externo sin firmar
+  const tampered = {
+    ...signed,
+    action: 'MANUAL_OVERRIDE',
+    presence: 'INSIDE'
+  }
+
+  // La normalización rechaza el evento adulterado y no permite la sobreescritura de presencia
+  const result = await service.sync(BUSINESS_ID, [tampered])
+  assert.equal(result.accepted, 0)
+  assert.equal(result.rejected, 1)
+  assert.ok(result.results[0])
+  assert.equal(result.results[0].status, 'REJECTED')
 })

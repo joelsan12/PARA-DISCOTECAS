@@ -1,11 +1,11 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db, isAppCheckConfigured, isFirebaseConfigured } from './firebase';
+import { db, isAppCheckConfigured, isFirebaseConfigured } from './firebase.ts';
 import {
   callFunctionWithHttpFallback,
   callFunctions,
   FunctionsClientError,
   isFunctionsClientAvailable
-} from './functionsClient';
+} from './functionsClient.ts';
 
 export const HOLD_DURATION_SECONDS = 12 * 60;
 export const HOLD_DURATION_MS = HOLD_DURATION_SECONDS * 1000;
@@ -116,9 +116,6 @@ export function clearReservationIdempotencyKey(
 }
 
 export function isBackendReservationAvailable(): boolean {
-  if (import.meta.env.PROD && !isAppCheckConfigured) {
-    return false;
-  }
   return isFirebaseConfigured && isFunctionsClientAvailable();
 }
 

@@ -10,6 +10,7 @@ import { dataNumber, dataRecord, timestampMillis } from "./firestore.js";
 import { writeAudit } from "./audit.js";
 import { enqueueReleaseTask } from "./taskQueue.js";
 import { holdTokenSecret } from "./config.js";
+import { enforceRateLimit } from "./rateLimit.js";
 
 export interface ReservationHoldResult {
   holdId: string;
@@ -29,20 +30,20 @@ interface ReservationInput {
   businessId: string;
   eventId: string;
   resourceId: string;
-  customerUid: string | null;
+  customerUid: string;
   amount?: number;
   currency: string;
   idempotencyKey: string;
 }
 
-function parseInput(value: unknown, authenticatedUid: string | undefined): ReservationInput {
+function parseInput(value: unknown, authenticatedUid: string): ReservationInput {
   const record = asRecord(value);
   assertAllowedKeys(record, ["businessId", "eventId", "resourceId", "customerUid", "amount", "currency", "idempotencyKey"]);
   const businessId = requiredId(record, "businessId");
   const eventId = requiredId(record, "eventId");
   const resourceId = requiredId(record, "resourceId");
-  const customerUid = optionalId(record, "customerUid") ?? authenticatedUid ?? null;
-  if (record.customerUid !== undefined && (!authenticatedUid || record.customerUid !== authenticatedUid)) {
+  const customerUid = optionalId(record, "customerUid") ?? authenticatedUid;
+  if (record.customerUid !== undefined && record.customerUid !== authenticatedUid) {
     throw new AppError("permission-denied", "customerUid must match the authenticated user", 403);
   }
   const amount = optionalNumber(record, "amount", 0, 10_000_000);
@@ -77,11 +78,13 @@ function tokenForHold(holdId: string): string {
 
 function resourceAmount(data: Record<string, unknown>, requested: number | undefined): number {
   const configured = dataNumber(data, "holdAmount") ?? dataNumber(data, "depositRequired") ?? dataNumber(data, "price") ?? dataNumber(data, "amount");
-  const amount = configured ?? requested;
-  if (amount === undefined || !Number.isFinite(amount) || amount < 0 || amount > 10_000_000) {
+  if (configured === undefined || !Number.isFinite(configured) || configured < 0 || configured > 10_000_000) {
     throw new AppError("failed-precondition", "Resource pricing is not configured", 412);
   }
-  return amount;
+  if (requested !== undefined && Number.isFinite(requested) && Math.abs(requested - configured) > 0.01) {
+    throw new AppError("invalid-argument", `Requested amount (${requested}) does not match configured price (${configured})`, 400);
+  }
+  return configured;
 }
 
 function isHeldState(value: unknown): boolean {
@@ -89,11 +92,12 @@ function isHeldState(value: unknown): boolean {
 }
 
 export async function createReservationHoldFor(request: CallableRequest<unknown>): Promise<ReservationHoldResult> {
-  const authenticatedUid = request.auth?.uid;
+  const authenticatedUid = callableUid(request);
   const input = parseInput(request.data, authenticatedUid);
+  await enforceRateLimit("hold-create", [input.customerUid, input.businessId, input.resourceId], 10, 60);
   const businessReference = db.collection("businesses").doc(input.businessId);
   const resourceReference = businessReference.collection("resources").doc(input.resourceId);
-  const holdId = `hold_${sha256(`${input.businessId}:${input.idempotencyKey}`).slice(0, 40)}`;
+  const holdId = `hold_${sha256(`${input.businessId}:${input.customerUid}:${input.idempotencyKey}`).slice(0, 40)}`;
   const holdReference = db.collection("holds").doc(holdId);
   const holdToken = tokenForHold(holdId);
   const expiresAt = Timestamp.fromMillis(Date.now() + runtimeConfig.holdDurationSeconds * 1000);
@@ -191,8 +195,8 @@ export async function createReservationHoldFor(request: CallableRequest<unknown>
     holdId,
     {
       businessId: input.businessId,
-      ...(authenticatedUid ? { actorUid: authenticatedUid } : {}),
-      actorRole: authenticatedUid ? "customer" : "anonymous",
+      actorUid: authenticatedUid,
+      actorRole: "customer",
       requestId: getRequestId(request.rawRequest),
       ip: getClientIp(request.rawRequest)
     },

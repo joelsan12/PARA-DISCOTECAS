@@ -50,8 +50,8 @@ async function runSmokeTest() {
   const dirData = dirDoc.data();
   console.log(`   ✅ Club: "${dirData.name}" | Ciudad: ${dirData.city} | Auth: ${JSON.stringify(dirData.authMethods)}`);
 
-  // Paso 2: Crear perfil de cliente en businesses/{businessId}/customers/{uid}
-  console.log('\n2. Verificando/Creando ficha de cliente activo...');
+  // Paso 2: Crear perfil de cliente en businesses/{businessId}/customers/{uid} y resetear mesa de prueba
+  console.log('\n2. Verificando/Creando ficha de cliente activo y recurso...');
   const customerRef = db.collection('businesses').doc(BUSINESS_ID).collection('customers').doc(ADMIN_UID);
   await customerRef.set({
     uid: ADMIN_UID,
@@ -65,6 +65,20 @@ async function runSmokeTest() {
     updatedAt: new Date().toISOString()
   }, { merge: true });
   console.log(`   ✅ Ficha activa en businesses/${BUSINESS_ID}/customers/${ADMIN_UID}`);
+
+  const resourceRef = db.collection('businesses').doc(BUSINESS_ID).collection('resources').doc(RESOURCE_ID);
+  await resourceRef.set({
+    eventId: EVENT_ID,
+    status: 'AVAILABLE',
+    active: true,
+    holdAmount: 250,
+    activeHoldId: null,
+    activeReservationId: null,
+    holdTokenHash: null,
+    holdExpiresAt: null,
+    updatedAt: new Date().toISOString()
+  }, { merge: true });
+  console.log(`   ✅ Recurso ${RESOURCE_ID} listo en estado AVAILABLE ($250 USD)`);
 
   // Obtener ID token
   console.log('\n3. Autenticando sesión de usuario en Firebase...');
@@ -131,7 +145,7 @@ async function runSmokeTest() {
 
   // Paso 6: Rotación de Pase VIP (Ed25519, 45s)
   console.log('\n6. Solicitando Pase QR Dinámico rotativo al Door Service...');
-  const deviceId = 'dev_mobile_matx_01';
+  const deviceId = `dev_mobile_${Date.now()}`;
   const rotateRes = await fetch(`${DOOR_URL}/v1/tickets/rotate`, {
     method: 'POST',
     headers: {
@@ -155,7 +169,7 @@ async function runSmokeTest() {
 
   // Paso 7: Escaneo en Puerta #1 (Check-in inicial)
   console.log('\n7. Escaneo en Puerta #1 (Check-in del titular con JWS rotativo)...');
-  const doorDeviceId = 'dev_mobile_matx_01';
+  const doorDeviceId = deviceId;
   const eventPayload = {
     businessId: BUSINESS_ID,
     eventId: EVENT_ID,

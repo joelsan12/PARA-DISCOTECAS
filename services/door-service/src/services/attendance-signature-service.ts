@@ -32,8 +32,6 @@ const canonical = (value: unknown): string => {
   return `{${Object.keys(record).filter((key) => record[key] !== undefined).sort().map((key) => `${JSON.stringify(key)}:${canonical(record[key])}`).join(',')}}`
 }
 
-const stringify = (value: unknown): string => JSON.stringify(value) ?? ''
-
 const extractSignature = (value: unknown): string | undefined => {
   if (typeof value === 'string') {
     const normalized = value.trim().replace(/^(?:hmac(?:-sha256)?|sha256)\s*[:=]?\s*/iu, '')
@@ -63,34 +61,15 @@ const signatureMatches = (secret: string, value: string, signature: string): boo
   return provided.length === expected.length && timingSafeEqual(provided, expected)
 }
 
-const firstString = (record: Record<string, unknown>, ...keys: string[]): string | undefined => {
-  for (const key of keys) {
-    const value = record[key]
-    if (typeof value === 'string' && value.trim().length > 0) return value.trim()
-  }
-  return undefined
-}
-
-const firstInteger = (record: Record<string, unknown>, ...keys: string[]): number | undefined => {
-  for (const key of keys) {
-    const value = record[key]
-    if (typeof value === 'number' && Number.isSafeInteger(value)) return value
-    if (typeof value === 'string' && /^\d+$/u.test(value.trim())) return Number(value)
-  }
-  return undefined
-}
-
 const DEVICE_KID_PREFIX = 'dev-'
 const DEVICE_ALGORITHMS = new Set(['ES256', 'RS256', 'EdDSA'])
 
 export class AttendanceSignatureService {
-  private readonly keys: KeyService
   private readonly config: ServiceConfig
   private readonly repository: DoorRepository
   private readonly deviceKeyCache = new Map<string, Promise<JWK | null>>()
 
-  constructor(keys: KeyService, config: ServiceConfig, repository: DoorRepository) {
-    this.keys = keys
+  constructor(_keys: KeyService, config: ServiceConfig, repository: DoorRepository) {
     this.config = config
     this.repository = repository
   }
@@ -104,8 +83,7 @@ export class AttendanceSignatureService {
       if (kid?.startsWith(DEVICE_KID_PREFIX)) {
         return this.verifyDeviceSignature(signature, header, kid, businessId)
       }
-      const verified = await this.keys.verifyCompactJws(signature)
-      return { payload: verified.payload, header: verified.header, signature }
+      throw new UnauthorizedError('La firma del evento debe provenir de un dispositivo registrado (dev-*)')
     }
     const secret = this.config.attendanceHmacSecret
     if (!secret) throw new ServiceUnavailableError('La clave de firma de eventos no está configurada')
@@ -113,47 +91,12 @@ export class AttendanceSignatureService {
     const nested = isRecord(rawEvent.event) ? { ...rawEvent.event } : undefined
     const source = nested ? { ...outer, ...nested } : outer
     const stripped = stripSignatureFields(source)
-    const outerStripped = stripSignatureFields(outer)
-    const nestedStripped = nested ? stripSignatureFields(nested) : undefined
-    const normalizedEvent = {
-      ...source,
-      signature: undefined,
-      hmac: undefined
-    }
-    const eventId = firstString(source, 'eventId', 'event_id', 'id') ?? ''
-    const deviceId = firstString(source, 'deviceId', 'device_id', 'terminalId', 'terminal_id') ?? ''
-    const sequence = firstInteger(source, 'deviceSequence', 'device_sequence', 'sequence', 'seq') ?? 0
-    const binding = {
-      businessId: firstString(source, 'businessId', 'business_id'),
-      eventId,
-      venueId: firstString(source, 'venueId', 'venue_id'),
-      ticketId: firstString(source, 'ticketId', 'ticket_id'),
-      deviceId,
-      deviceSequence: sequence,
-      jti: firstString(source, 'jti', 'id', 'gatewayEventId'),
-      action: firstString(source, 'action', 'eventType', 'event_type'),
-      occurredAt: firstString(source, 'occurredAt', 'occurred_at'),
-      revocationVersion: source.revocationVersion ?? source.revocation_version
-    }
-    const candidates = [
-      canonical(stripped),
-      stringify(stripped),
-      canonical(outerStripped),
-      stringify(outerStripped),
-      ...(nestedStripped === undefined ? [] : [canonical(nestedStripped), stringify(nestedStripped)]),
-      canonical(normalizedEvent),
-      stringify(normalizedEvent),
-      canonical(binding),
-      stringify(binding),
-      canonical(source.payload),
-      stringify(source.payload),
-      canonical(source.signedPayload),
-      stringify(source.signedPayload)
-    ].filter((value) => value.length > 0)
-    if (!candidates.some((value) => signatureMatches(secret, value, signature))) {
+    if (!isRecord(stripped)) throw new BadRequestError('El cuerpo del evento no es válido')
+    const canonicalPayload = canonical(stripped)
+    if (!signatureMatches(secret, canonicalPayload, signature)) {
       throw new UnauthorizedError('La firma del evento no es válida')
     }
-    return { payload: isRecord(stripped) ? stripped : source, signature }
+    return { payload: stripped, signature }
   }
 
   private decodeHeader(token: string): Record<string, unknown> {

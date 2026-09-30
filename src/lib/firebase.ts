@@ -9,9 +9,10 @@ import {
   type AppCheck
 } from 'firebase/app-check';
 
+const globalEnv = (globalThis as unknown as { __NIGHTFLOW_ENV__?: Record<string, string | undefined> }).__NIGHTFLOW_ENV__;
 const env: Record<string, string | undefined> = (typeof import.meta !== 'undefined' && import.meta.env)
   ? (import.meta.env as unknown as Record<string, string | undefined>)
-  : {};
+  : (globalEnv ?? {});
 
 export const firebaseConfig = {
   apiKey: env.VITE_FIREBASE_API_KEY || '',
