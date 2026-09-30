@@ -269,7 +269,7 @@ export async function startPaymentSession(
       currency: typeof record.currency === 'string' ? record.currency : RESERVATION_CURRENCY,
       expiresAt: typeof record.expiresAt === 'string' ? record.expiresAt : new Date(Date.now() + HOLD_DURATION_MS).toISOString(),
       checkoutUrl: typeof record.checkoutUrl === 'string' && record.checkoutUrl ? record.checkoutUrl : null,
-      provider: typeof record.provider === 'string' ? record.provider : 'mock',
+      provider: typeof record.provider === 'string' ? record.provider : (import.meta.env.DEV ? 'mock' : 'unknown'),
       idempotentReplay: record.idempotentReplay === true
     };
   } catch (error) {

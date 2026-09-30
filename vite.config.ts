@@ -2,16 +2,17 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const isAdmin = mode === 'admin';
   const port = isAdmin ? 5174 : 5173;
 
   // Los builds con modo propio (client/admin) NO cargan .env.production
   // automáticamente (solo .env.[mode]). Para que build:client/build:admin
   // vean las mismas variables de despliegue que `vite build`, las fusionamos
-  // explícitamente aquí; así la lectura dinámica de import.meta.env en
-  // src/lib/firebase.ts y ticketPass.ts también las recibe.
-  const productionEnv = mode === 'production' ? {} : loadEnv('production', process.cwd(), 'VITE_');
+  // explícitamente aquí únicamente durante el build, sin contaminar el dev server.
+  const productionEnv = command === 'build' && mode !== 'production'
+    ? loadEnv('production', process.cwd(), 'VITE_')
+    : {};
   const productionDefine = Object.fromEntries(
     Object.entries(productionEnv).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)])
   );

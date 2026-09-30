@@ -92,7 +92,7 @@ const toBusinessEntry = (club: (typeof INITIAL_CLUBS)[number]): BusinessDirector
 
 const MOCK_DIRECTORY: BusinessDirectoryEntry[] = INITIAL_CLUBS.map(toBusinessEntry);
 
-export const BUSINESS_DIRECTORY = MOCK_DIRECTORY;
+export const BUSINESS_DIRECTORY = import.meta.env.DEV ? MOCK_DIRECTORY : [];
 export const INITIAL_BUSINESSES = BUSINESS_DIRECTORY;
 
 /**

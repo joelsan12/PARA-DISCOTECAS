@@ -8,6 +8,7 @@ const root = resolve(here, '..');
 const functionsRequire = createRequire(resolve(root, 'functions/package.json'));
 const { initializeApp, cert } = functionsRequire('firebase-admin/app');
 const { getFirestore } = functionsRequire('firebase-admin/firestore');
+const { getAuth } = functionsRequire('firebase-admin/auth');
 
 const keyPath = resolve(root, 'serviceAccountKey.json');
 if (!existsSync(keyPath)) {
@@ -18,10 +19,11 @@ if (!existsSync(keyPath)) {
 const sa = JSON.parse(readFileSync(keyPath, 'utf8'));
 const app = initializeApp({ credential: cert(sa), projectId: sa.project_id });
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Cuentas de Auth reales detectadas en Firebase Auth
-const ADMIN_UID = 'AMyKkSoUcyVRggtmwgMfdbYcDRU2'; // geremia23sancan@gmail.com (Matx)
-const DOOR_UID = 'v0roZJuo3xRFauLvva2Y5QcMfCJ2';  // geremia.sancan.2026@gmail.com (Geremia Sancan)
+// Cuentas de Auth configurables vía env o predeterminadas
+const ADMIN_UID = process.env.PROVISION_ADMIN_UID || 'AMyKkSoUcyVRggtmwgMfdbYcDRU2';
+const DOOR_UID = process.env.PROVISION_DOOR_UID || 'v0roZJuo3xRFauLvva2Y5QcMfCJ2';
 
 const CLUBS = ['club-sensorial', 'club-rumaj', 'club-velvet'];
 
@@ -30,11 +32,18 @@ async function provision() {
   const now = new Date().toISOString();
   const batch = db.batch();
 
+  const adminUser = await auth.getUser(ADMIN_UID).catch(() => null);
+  const doorUser = await auth.getUser(DOOR_UID).catch(() => null);
+  const adminEmail = adminUser?.email || process.env.ADMIN_EMAIL || 'admin@nightflow.vip';
+  const doorEmail = doorUser?.email || process.env.DOOR_EMAIL || 'door@nightflow.vip';
+  const adminName = adminUser?.displayName || process.env.ADMIN_NAME || 'Staff Owner';
+  const doorName = doorUser?.displayName || process.env.DOOR_NAME || 'Door Staff';
+
   // 1. SuperAdmin en users/{uid}
   console.log(`Configurando SuperAdmin en users/${ADMIN_UID}...`);
   batch.set(db.collection('users').doc(ADMIN_UID), {
     superAdmin: true,
-    email: 'geremia23sancan@gmail.com',
+    email: adminEmail,
     businessId: 'club-sensorial',
     updatedAt: now
   }, { merge: true });
@@ -42,7 +51,7 @@ async function provision() {
   // 2. Door user en users/{uid}
   console.log(`Configurando usuario puerta en users/${DOOR_UID}...`);
   batch.set(db.collection('users').doc(DOOR_UID), {
-    email: 'geremia.sancan.2026@gmail.com',
+    email: doorEmail,
     businessId: 'club-sensorial',
     updatedAt: now
   }, { merge: true });
@@ -55,8 +64,8 @@ async function provision() {
     batch.set(db.collection('businesses').doc(clubId).collection('staff').doc(ADMIN_UID), {
       uid: ADMIN_UID,
       businessId: clubId,
-      name: 'Matx',
-      email: 'geremia23sancan@gmail.com',
+      name: adminName,
+      email: adminEmail,
       role: 'owner',
       status: 'ACTIVE',
       deviceIds: [],
@@ -68,8 +77,8 @@ async function provision() {
     batch.set(db.collection('businesses').doc(clubId).collection('staff').doc(DOOR_UID), {
       uid: DOOR_UID,
       businessId: clubId,
-      name: 'Geremia Sancan',
-      email: 'geremia.sancan.2026@gmail.com',
+      name: doorName,
+      email: doorEmail,
       role: 'door',
       status: 'ACTIVE',
       deviceIds: [],
@@ -88,8 +97,8 @@ async function provision() {
 
   await batch.commit();
   console.log('✅ Provisionamiento completado con éxito:');
-  console.log(` - Superadmin & Owner: ${ADMIN_UID} (geremia23sancan@gmail.com) activo en ${CLUBS.join(', ')}`);
-  console.log(` - Door Staff: ${DOOR_UID} (geremia.sancan.2026@gmail.com) activo en ${CLUBS.join(', ')}`);
+  console.log(` - Superadmin & Owner: ${ADMIN_UID} (${adminEmail}) activo en ${CLUBS.join(', ')}`);
+  console.log(` - Door Staff: ${DOOR_UID} (${doorEmail}) activo en ${CLUBS.join(', ')}`);
   console.log(` - businessDirectory: authMethods configurado en todos los clubes`);
 }
 

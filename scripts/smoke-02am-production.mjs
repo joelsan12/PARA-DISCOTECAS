@@ -21,7 +21,7 @@ const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : '';
 const BACKEND_URL = 'https://nightflow-backend.onrender.com';
 const DOOR_URL = 'https://nightflow-backend.onrender.com/door';
 
-const ADMIN_UID = 'AMyKkSoUcyVRggtmwgMfdbYcDRU2'; // Matx (Staff owner)
+const ADMIN_UID = process.env.SMOKE_ADMIN_UID || 'AMyKkSoUcyVRggtmwgMfdbYcDRU2';
 const BUSINESS_ID = 'club-sensorial';
 const EVENT_ID = 'event-fri-reggaeton';
 const RESOURCE_ID = 'tbl-s4';
@@ -53,12 +53,16 @@ async function runSmokeTest() {
 
   // Paso 2: Crear perfil de cliente en businesses/{businessId}/customers/{uid} y resetear mesa de prueba
   console.log('\n2. Verificando/Creando ficha de cliente activo y recurso...');
+  const customerUser = await auth.getUser(ADMIN_UID).catch(() => null);
+  const customerEmail = customerUser?.email || 'smoke_customer@nightflow.vip';
+  const customerDisplayName = customerUser?.displayName || 'Smoke Test Customer';
+
   const customerRef = db.collection('businesses').doc(BUSINESS_ID).collection('customers').doc(ADMIN_UID);
   await customerRef.set({
     uid: ADMIN_UID,
     businessId: BUSINESS_ID,
-    displayName: 'Matx VIP',
-    email: 'geremia23sancan@gmail.com',
+    displayName: customerDisplayName,
+    email: customerEmail,
     status: 'ACTIVE',
     tier: 'VIP_BLACK',
     loyaltyPoints: 100,
