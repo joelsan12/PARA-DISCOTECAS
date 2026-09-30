@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { generateKeyPair, exportJWK, SignJWT } from 'jose';
 
 const functionsRequire = createRequire(resolve('functions/package.json'));
 const { initializeApp, cert } = functionsRequire('firebase-admin/app');
@@ -167,21 +168,52 @@ async function runSmokeTest() {
   console.log(`   ✅ Pase rotativo emitido: Alg=EdDSA | Kid=${rotateData.kid} | Expira en ${rotateData.expiresIn}s`);
   console.log(`   Claims JWS: sub=${rotateData.claims.sub} | jti=${rotateData.claims.jti}`);
 
-  // Paso 7: Escaneo en Puerta #1 (Check-in inicial)
-  console.log('\n7. Escaneo en Puerta #1 (Check-in del titular con JWS rotativo)...');
-  const doorDeviceId = deviceId;
-  const eventPayload = {
+  // Paso 7: Enrolamiento de Terminal y Escaneo en Puerta #1 (Check-in inicial)
+  console.log('\n7. Enrolando Terminal de Puerta y realizando Check-in #1...');
+  const { privateKey, publicKey } = await generateKeyPair('ES256');
+  const publicJwk = await exportJWK(publicKey);
+  const terminalKid = `dev-gate-${Date.now()}`;
+  publicJwk.kid = terminalKid;
+
+  const enrollRes = await fetch(`${DOOR_URL}/v1/devices/enroll`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`,
+      'x-business-id': BUSINESS_ID
+    },
+    body: JSON.stringify({
+      kid: terminalKid,
+      deviceId: terminalKid,
+      publicKey: publicJwk
+    })
+  });
+  if (!enrollRes.ok) {
+    const enrollErr = await enrollRes.text();
+    throw new Error(`Fallo enrolando terminal (${enrollRes.status}): ${enrollErr}`);
+  }
+  console.log(`   ✅ Terminal enrolada exitosamente: kid=${terminalKid}`);
+
+  const eventClaims1 = {
     businessId: BUSINESS_ID,
     eventId: EVENT_ID,
     venueId: 'main-stage',
     ticketId: holdId,
-    deviceId: doorDeviceId,
+    deviceId: terminalKid,
     deviceSequence: 1,
     jti: rotateData.claims.jti,
     action: 'CHECK_IN',
     occurredAt: Date.now(),
-    revocationVersion: 0,
-    signature: rotateData.token
+    revocationVersion: 0
+  };
+
+  const signature1 = await new SignJWT(eventClaims1)
+    .setProtectedHeader({ alg: 'ES256', kid: terminalKid })
+    .sign(privateKey);
+
+  const eventPayload1 = {
+    ...eventClaims1,
+    signature: signature1
   };
 
   const checkinRes1 = await fetch(`${DOOR_URL}/v1/attendance/sync`, {
@@ -193,7 +225,7 @@ async function runSmokeTest() {
     },
     body: JSON.stringify({
       businessId: BUSINESS_ID,
-      events: [eventPayload]
+      events: [eventPayload1]
     })
   });
   const checkinData1 = await checkinRes1.json();
@@ -205,6 +237,15 @@ async function runSmokeTest() {
 
   // Paso 8: Escaneo en Puerta #2 (Segundo escaneo / screenshot / duplicado)
   console.log('\n8. Escaneo en Puerta #2 (Intento de re-ingreso o clonación)...');
+  const eventClaims2 = {
+    ...eventClaims1,
+    deviceSequence: 2,
+    occurredAt: Date.now()
+  };
+  const signature2 = await new SignJWT(eventClaims2)
+    .setProtectedHeader({ alg: 'ES256', kid: terminalKid })
+    .sign(privateKey);
+
   const checkinRes2 = await fetch(`${DOOR_URL}/v1/attendance/sync`, {
     method: 'POST',
     headers: {
@@ -215,9 +256,8 @@ async function runSmokeTest() {
     body: JSON.stringify({
       businessId: BUSINESS_ID,
       events: [{
-        ...eventPayload,
-        deviceSequence: 2,
-        occurredAt: Date.now()
+        ...eventClaims2,
+        signature: signature2
       }]
     })
   });
