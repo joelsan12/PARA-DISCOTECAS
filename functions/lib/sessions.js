@@ -91,6 +91,7 @@ export async function createBusinessSessionFor(request) {
 export async function revokeBusinessSessionsForScope(businessId, scope, target, version) {
     const snapshot = await db.collection("businessSessions").where("businessId", "==", businessId).limit(500).get();
     const batch = db.batch();
+    const revokedUids = new Set();
     let count = 0;
     for (const document of snapshot.docs) {
         const data = dataRecord(document.data());
@@ -104,11 +105,26 @@ export async function revokeBusinessSessionsForScope(businessId, scope, target, 
                 revocationVersion: version,
                 updatedAt: FieldValue.serverTimestamp()
             });
+            if (typeof data.uid === "string" && data.uid.length > 0)
+                revokedUids.add(data.uid);
             count += 1;
         }
     }
     if (count > 0)
         await batch.commit();
+    await revokeStaffIdentity([...revokedUids]);
     return count;
+}
+async function revokeStaffIdentity(uids) {
+    await Promise.all(uids.map(async (uid) => {
+        try {
+            await auth.setCustomUserClaims(uid, { platformRole: "customer", claimsVersion: 2 });
+            await auth.revokeRefreshTokens(uid);
+        }
+        catch {
+            // Un fallo de Identity Platform no debe abortar la revocacion de las
+            // sesiones ya persistidas: la puerta sigue rechazando por revocacion.
+        }
+    }));
 }
 //# sourceMappingURL=sessions.js.map

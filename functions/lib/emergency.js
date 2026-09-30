@@ -43,6 +43,38 @@ function optionalStringDevice(record) {
     }
     return value;
 }
+function scopeMapOf(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+        return {};
+    const result = {};
+    for (const [key, entry] of Object.entries(value)) {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry))
+            continue;
+        result[key] = dataRecord(entry);
+    }
+    return result;
+}
+function cumulativeRevocation(previous, revocation, actorUid, actorRole) {
+    const events = scopeMapOf(previous.events);
+    const devices = scopeMapOf(previous.devices);
+    const scope = String(revocation.scope);
+    const revokedBefore = String(revocation.revokedBefore);
+    const reason = String(revocation.reason);
+    if (scope === "EVENT" && typeof revocation.eventId === "string") {
+        events[revocation.eventId] = { revokedBefore, reason, actorUid, actorRole };
+    }
+    if (scope === "DEVICE" && typeof revocation.deviceId === "string") {
+        devices[revocation.deviceId] = { revokedBefore, reason, actorUid, actorRole };
+    }
+    const previousBusinessRevokedAt = typeof previous.businessRevokedAt === "string" ? previous.businessRevokedAt : null;
+    return {
+        ...revocation,
+        createdAt: FieldValue.serverTimestamp(),
+        businessRevokedAt: scope === "BUSINESS" ? revokedBefore : previousBusinessRevokedAt,
+        events,
+        devices
+    };
+}
 export async function emergencyRevokeFor(request) {
     const uid = callableUid(request);
     const input = parseInput(request.data);
@@ -59,6 +91,7 @@ export async function emergencyRevokeFor(request) {
         const previous = business.emergencyRevocation;
         const previousRecord = previous && typeof previous === "object" && !Array.isArray(previous) ? dataRecord(previous) : {};
         const version = (typeof previousRecord.version === "number" ? previousRecord.version : 0) + 1;
+        const revokedBefore = new Date().toISOString();
         const eventReference = input.scope === "EVENT" && input.eventId
             ? businessReference.collection("events").doc(input.eventId)
             : undefined;
@@ -68,15 +101,25 @@ export async function emergencyRevokeFor(request) {
             scope: input.scope,
             eventId: input.eventId ?? null,
             deviceId: input.deviceId ?? null,
-            revokedBefore: new Date().toISOString(),
+            revokedBefore,
             reason: input.reason,
             actorUid: uid,
             actorRole: staff.role,
             eventCanceled: input.scope === "EVENT" || input.scope === "BUSINESS",
             createdAt: FieldValue.serverTimestamp()
         };
+        // Una revocacion por documento: la puerta lee esta subcoleccion y resume el
+        // alcance vigente. Escribir solo el resumen en el documento del negocio
+        // sobrescribia el anterior, de modo que una segunda revocacion reponia en
+        // vigor un terminal o evento ya revocado. El resumen se acumula y la
+        // revocacion escalonada (AGENTS 8) exige que todas sigan vigentes.
+        transaction.set(businessReference.collection("emergencyRevocations").doc(`v${version}`), {
+            ...revocation,
+            businessId: input.businessId,
+            updatedAt: FieldValue.serverTimestamp()
+        });
         transaction.update(businessReference, {
-            emergencyRevocation: revocation,
+            emergencyRevocation: cumulativeRevocation(previousRecord, revocation, uid, staff.role),
             emergencyRevocationVersion: version,
             updatedAt: FieldValue.serverTimestamp()
         });
