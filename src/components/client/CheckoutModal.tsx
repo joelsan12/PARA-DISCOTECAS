@@ -8,6 +8,7 @@ import {
   clearReservationIdempotencyKey,
   createReservationHold,
   getReservationIdempotencyKey,
+  HOLD_DURATION_MS,
   HOLD_DURATION_SECONDS,
   isBackendReservationAvailable,
   releaseReservationHold,
@@ -51,6 +52,10 @@ export const CheckoutModal = ({
   const [paymentPhase, setPaymentPhase] = useState<'form' | 'pending' | 'confirmed'>('form');
   const holdCreatedRef = useRef(false);
   const unsubscribeHoldRef = useRef<(() => void) | null>(null);
+  const deadlineRef = useRef<number | null>(null);
+  const hasTimedOutRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  const releaseTargetsRef = useRef({ tableId: table.id, eventId: store.activeEventId, clubId: store.activeClubId });
   const backendEnabled = isBackendReservationAvailable();
 
   const idempotencyKey = useMemo(
@@ -59,7 +64,10 @@ export const CheckoutModal = ({
   );
 
   const syncTimerToHold = useCallback((nextHold: ReservationHoldOutcome) => {
-    const remaining = Math.ceil((Date.parse(nextHold.expiresAt) - Date.now()) / 1000);
+    const expiresAtMs = Date.parse(nextHold.expiresAt);
+    deadlineRef.current = Number.isFinite(expiresAtMs) ? expiresAtMs : Date.now() + HOLD_DURATION_MS;
+    hasTimedOutRef.current = false;
+    const remaining = Math.ceil((deadlineRef.current - Date.now()) / 1000);
     if (Number.isFinite(remaining) && remaining > 0) {
       setTimeLeft(Math.min(remaining, HOLD_DURATION_SECONDS));
     } else {
@@ -172,22 +180,42 @@ export const CheckoutModal = ({
   }, [email, guests, name, onSuccess, paymentMethod, phone, pricing.min_spend, store.activeClubId, store.activeEventId, table.id, table.table_code, table.zone]);
 
   const handleTimeout = useCallback(() => {
-    store.releaseHold(table.id, store.activeEventId);
-    clearReservationIdempotencyKey(store.activeClubId, store.activeEventId, table.id);
-    onClose();
-  }, [table.id, store, onClose]);
+    if (hasTimedOutRef.current) return;
+    hasTimedOutRef.current = true;
+    const targets = releaseTargetsRef.current;
+    store.releaseHold(targets.tableId, targets.eventId);
+    clearReservationIdempotencyKey(targets.clubId, targets.eventId, targets.tableId);
+    onCloseRef.current();
+  }, [store]);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      handleTimeout();
-      return;
-    }
-    const timer = setInterval(() => {
-      setTimeLeft(prev => Math.max(0, prev - 1));
-    }, 1000);
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
+  useEffect(() => {
+    releaseTargetsRef.current = {
+      tableId: table.id,
+      eventId: store.activeEventId,
+      clubId: store.activeClubId
+    };
+  }, [store.activeClubId, store.activeEventId, table.id]);
+
+  useEffect(() => {
+    const tick = () => {
+      if (deadlineRef.current === null) {
+        deadlineRef.current = Date.now() + HOLD_DURATION_MS;
+      }
+      const remaining = Math.ceil((deadlineRef.current - Date.now()) / 1000);
+      if (Number.isFinite(remaining) && remaining > 0) {
+        setTimeLeft(remaining);
+        return;
+      }
+      setTimeLeft(0);
+      handleTimeout();
+    };
+    const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [timeLeft, handleTimeout]);
+  }, [handleTimeout]);
 
   const releaseLocalAndClose = () => {
     store.releaseHold(table.id, store.activeEventId);

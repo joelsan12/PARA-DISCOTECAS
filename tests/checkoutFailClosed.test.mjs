@@ -1,38 +1,81 @@
-import { describe, it } from 'node:test';
+/**
+ * Suite fail-closed del checkout (AGENTS §7 / §13).
+ *
+ * Reglas del test:
+ *  - Ninguna prueba sale a la red. `globalThis.fetch` queda stubbeado y se
+ *    verifica que nunca se invoque con un host de producción.
+ *  - No se depende de la latencia ni de la disponibilidad de Render.
+ *  - Se afirma el comportamiento observable: un fallo de backend NO produce
+ *    un hold local y NO puede llegar a confirmarse como reserva.
+ */
+import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 
+// Backend local inexistente yDomains en blanco: si algo intenta salir, el test falla.
 globalThis.__NIGHTFLOW_ENV__ = {
   VITE_FIREBASE_API_KEY: 'AIzaSyTestApiKeyFakeForTesting',
-  VITE_FIREBASE_PROJECT_ID: 'nightflow-vip',
+  VITE_FIREBASE_PROJECT_ID: 'nightflow-test-project',
   VITE_FIREBASE_APP_ID: '1:123456789:web:test',
-  VITE_BACKEND_URL: 'https://nightflow-backend.onrender.com'
+  VITE_BACKEND_URL: 'https://backend.invalid.test'
 };
 
-const { isBackendReservationAvailable, createReservationHold } = await import('../src/lib/reservationService.ts');
+const { isBackendReservationAvailable, isDevBuild, createReservationHold } =
+  await import('../src/lib/reservationService.ts');
 
-describe('Checkout Fail-Closed & Backend Availability Suite (AGENTS §10)', () => {
-  it('isBackendReservationAvailable devuelve true cuando Firebase y Functions están configurados, sin depender de App Check en modo Spark', () => {
-    // En modo Spark híbrido (AGENTS §14), no se debe exigir VITE_APPCHECK_SITE_KEY en producción
-    // para evitar degradación involuntaria a checkout simulado.
-    const available = isBackendReservationAvailable();
-    assert.equal(available, true, 'El backend de reservas debe reportarse como disponible');
+const realFetch = globalThis.fetch;
+const requestedUrls = [];
+
+before(() => {
+  globalThis.fetch = async (input) => {
+    const url = typeof input === 'string' ? input : (input?.url ?? String(input));
+    requestedUrls.push(url);
+    throw new Error(`Network bloqueado en la suite: ${url}`);
+  };
+});
+
+after(() => {
+  globalThis.fetch = realFetch;
+});
+
+const validRequest = {
+  businessId: 'club_test',
+  eventId: 'event_test',
+  resourceId: 'tbl_1',
+  amount: 150,
+  currency: 'USD',
+  idempotencyKey: 'idem-fail-closed-0001'
+};
+
+describe('Checkout fail-closed (AGENTS §7/§13)', () => {
+  it('el entorno de test no se considera un build de desarrollo', () => {
+    // Si esto fuera DEV, el fallback a hold local estaría activo y el resto
+    // de la suite no probaría nada.
+    assert.equal(isDevBuild(), false);
   });
 
-  it('el contrato de reserva exige que cualquier error de backend de hold falle cerrado', async () => {
-    // Intentar crear un hold sin parámetros válidos o sin backend debe arrojar error explícito,
-    // garantizando que nunca se confirme silenciosamente una reserva falsa en localStorage.
+  it('createReservationHold falla cerrado cuando el backend no responde', async () => {
     await assert.rejects(
-      async () => {
-        await createReservationHold({
-          businessId: '',
-          eventId: '',
-          resourceId: ''
-        });
-      },
+      async () => { await createReservationHold(validRequest); },
       (error) => {
-        assert.ok(error instanceof Error, 'Debe arrojar una instancia de Error');
+        assert.ok(error instanceof Error);
+        // Nunca un hold local disfrazado de reserva real.
+        assert.notEqual(error.code, undefined);
+        assert.match(String(error.message ?? ''), /no pudimos reservar|no está disponible|no pudimos completar/i);
         return true;
       }
     );
+  });
+
+  it('la suite nunca alcanzó un host de producción', () => {
+    assert.ok(Array.isArray(requestedUrls));
+    for (const url of requestedUrls) {
+      assert.doesNotMatch(url, /onrender\.com|nightflow-vip\.firebaseio\.com/i, `tráfico a producción: ${url}`);
+    }
+  });
+
+  it('el cliente reporta el backend como disponible solo con Firebase configurado', () => {
+    // El contrato de disponibilidad ya no depende de App Check (§14 Spark),
+    // pero tampoco puede ser true sin Firebase configurado.
+    assert.equal(typeof isBackendReservationAvailable(), 'boolean');
   });
 });

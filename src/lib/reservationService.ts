@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db, isAppCheckConfigured, isFirebaseConfigured } from './firebase.ts';
+import { db, isFirebaseConfigured } from './firebase.ts';
 import {
   callFunctionWithHttpFallback,
   callFunctions,
@@ -51,6 +51,14 @@ export class ReservationServiceError extends Error {
 
 function canUseDomStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+}
+
+export function isDevBuild(): boolean {
+  try {
+    return (import.meta as unknown as { env?: { DEV?: unknown } }).env?.DEV === true;
+  } catch {
+    return false;
+  }
 }
 
 function createIdempotencyKey(): string {
@@ -189,7 +197,10 @@ export async function createReservationHold(
       );
       return parseHoldResult(result, request, 'functions');
     } catch (error) {
-      if (import.meta.env.DEV || !isAppCheckConfigured) return localHold(request);
+      // Solo el build de desarrollo degrada a hold local. En cualquier otro
+      // entorno el fallo debe propagarse: un hold simulado que llega al
+      // checkout se confundiría con una reserva real (AGENTS §7 / §13).
+      if (isDevBuild()) return localHold(request);
       if (error instanceof ReservationServiceError) throw error;
       if (error instanceof FunctionsClientError) {
         throw new ReservationServiceError(error.message, error.code);

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useClubStore } from '../../store/clubStore';
 import { formatEcuadorPhone, isValidEcuadorMobile, normalizeEcuadorPhone } from '../../lib/formatEcuador';
 import { getClientDeviceId } from '../../lib/ticketPass';
@@ -17,6 +18,7 @@ interface ClubLandingProps {
 
 export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: ClubLandingProps) => {
   const store = useClubStore();
+  const navigate = useNavigate();
 
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
@@ -46,6 +48,14 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
     if (!selectedTable) return;
     if (!activeEvent) {
       alert('No hay eventos activos programados en este club.');
+      return;
+    }
+    // Defensa en profundidad: el hold en el servidor exige ID token (§7/§13).
+    // Los mounts ya exigen sesión, pero si ClubLanding se monta sin ella el
+    // flujo debe redirigir en vez de dejar que el backend rechace la llamada.
+    if (!store.clientUser) {
+      const slug = activeClub.slug;
+      navigate(slug ? `/negocio/${slug}/acceso` : '/', { replace: true });
       return;
     }
     const deviceId = getClientDeviceId();
