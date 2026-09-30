@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "test": "npm run build && node --test dist/app.test.js dist/scenario.test.js"
+    "test": "npm run build && node --test dist/app.test.js dist/roles.test.js dist/scenario.test.js"
   },
   "dependencies": {
     "@types/express": "^5.0.3",

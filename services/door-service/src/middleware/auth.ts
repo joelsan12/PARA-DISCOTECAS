@@ -81,6 +81,34 @@ export const getCallerContext = (response: Response): CallerContext => {
   return { uid: user.uid, role }
 }
 
+export type StaffRole = 'owner' | 'manager' | 'door' | 'finance'
+
+const roleRank: Record<StaffRole, number> = { owner: 4, manager: 3, door: 2, finance: 1 }
+
+export const isStaffRole = (value: string): value is StaffRole => value in roleRank
+
+/**
+ * El middleware de autorizacion solo exigia "cualquier staff activo", de modo
+ * que una cuenta de `finance` podia enrolar su propia llave de terminal
+ * (`/v1/devices/enroll`) y luego firmar eventos de puerta con ella: la
+ * escalacion de privilegios mas directa del servicio. Cada grupo de rutas
+ * declara el rol minimo que AGENTS 8 exige para esa operacion.
+ */
+export const requireStaffRole = (minimum: StaffRole): RequestHandler => {
+  return (_request: Request, response: Response, next: NextFunction): void => {
+    const staff = response.locals.staff as { role?: string } | undefined
+    if (!staff || !isStaffRole(staff.role ?? '')) {
+      next(new ForbiddenError('El rol del staff no es valido'))
+      return
+    }
+    if (roleRank[staff.role as StaffRole] < roleRank[minimum]) {
+      next(new ForbiddenError(`Se requiere rol ${minimum} para esta operacion`))
+      return
+    }
+    next()
+  }
+}
+
 export const createTicketAuthorizationMiddleware = (
   authorizer: StaffAuthorizer,
   repository: DoorRepository

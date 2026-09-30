@@ -3,7 +3,8 @@ import type { ServiceConfig } from './config.js'
 import { loadConfig } from './config.js'
 import { FirebaseRuntime } from './firebase.js'
 import { createCorsMiddleware, requireAllowedOrigin } from './middleware/cors.js'
-import { createAuthenticationMiddleware, createBusinessAuthorizationMiddleware, createTicketAuthorizationMiddleware } from './middleware/auth.js'
+import { createAuthenticationMiddleware, createBusinessAuthorizationMiddleware, createTicketAuthorizationMiddleware, requireStaffRole } from './middleware/auth.js'
+import { createRateLimitMiddleware } from './middleware/rate-limit.js'
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js'
 import { createHealthRouter } from './routes/health.js'
 import { createKeysRouter } from './routes/keys.js'
@@ -61,12 +62,24 @@ export const createApp = (dependencies: AppDependencies = {}): Express => {
   const authenticate = createAuthenticationMiddleware(authService)
   const authorizeStaff = createBusinessAuthorizationMiddleware(authorizer)
   const authorizeTicketCaller = createTicketAuthorizationMiddleware(authorizer, repository)
+  const limitStaffReads = createRateLimitMiddleware({ windowSeconds: config.rateLimitWindowSeconds, max: config.rateLimitMaxRequests, keyPrefix: 'reads' })
+  const limitStaffSyncs = createRateLimitMiddleware({ windowSeconds: config.rateLimitWindowSeconds, max: Math.ceil(config.rateLimitMaxRequests / 2), keyPrefix: 'sync' })
+  const limitTicketReads = createRateLimitMiddleware({ windowSeconds: config.rateLimitWindowSeconds, max: Math.ceil(config.rateLimitMaxRequests / 2), keyPrefix: 'tickets' })
 
   app.use('/v1', authenticate)
   app.use('/v1/devices', authorizeStaff)
   app.use('/v1/attendance', authorizeStaff)
   app.use('/v1/emergency', authorizeStaff)
   app.use('/v1/tickets', authorizeTicketCaller)
+
+  // Los guards se registran antes que los routers: un router que responde corta
+  // la cadena, con lo que un guard colocado despues nunca se ejecutaria.
+  // Enrolar una llave de terminal equivale a emitir capacidad de firmar eventos
+  // de puerta: lo restringe AGENTS 8 a gerencia, no a cualquier staff activo.
+  app.use('/v1/devices', requireStaffRole('manager'))
+  app.use('/v1/emergency', limitStaffReads, requireStaffRole('door'))
+  app.use('/v1/attendance', limitStaffSyncs)
+  app.use('/v1/tickets', limitTicketReads)
 
   app.use(createDevicesRouter(repository))
   app.use(createTicketsRouter(tickets))

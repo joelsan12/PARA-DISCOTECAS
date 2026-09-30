@@ -47,3 +47,9 @@ export class ServiceUnavailableError extends HttpError {
     super(503, code, message, details)
   }
 }
+
+export class TooManyRequestsError extends HttpError {
+  constructor(message = 'Demasiadas solicitudes', details?: Record<string, unknown>) {
+    super(429, 'RATE_LIMITED', message, details)
+  }
+}
