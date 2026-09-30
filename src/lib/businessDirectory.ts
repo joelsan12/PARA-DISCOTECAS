@@ -95,6 +95,22 @@ const MOCK_DIRECTORY: BusinessDirectoryEntry[] = INITIAL_CLUBS.map(toBusinessEnt
 export const BUSINESS_DIRECTORY = MOCK_DIRECTORY;
 export const INITIAL_BUSINESSES = BUSINESS_DIRECTORY;
 
+/**
+ * Metodos de acceso declarados por el negocio. Sin declaracion se asume solo el
+ * canal gratuito de correo (AGENTS §3 lo senala como canal principal): los
+ * canales de pago deben habilitarse de forma explicita para no exponer SMS
+ * pumping ni logins con contrasena en negocios que nunca los configuraron.
+ */
+const DEFAULT_AUTH_METHODS: CustomerAuthMethod[] = ['email_otp'];
+
+const toAuthMethods = (value: unknown): CustomerAuthMethod[] => {
+  if (!Array.isArray(value)) return [...DEFAULT_AUTH_METHODS];
+  const methods = [...new Set(value.filter(
+    (method): method is CustomerAuthMethod => BUSINESS_AUTH_METHODS.includes(method as CustomerAuthMethod)
+  ))];
+  return methods.length > 0 ? methods : [...DEFAULT_AUTH_METHODS];
+};
+
 function mapPublicDocument(id: string, data: DocumentData): BusinessDirectoryEntry {
   const venueType = toVenueType(data.businessType);
   const status = toDirectoryStatus(typeof data.status === 'string' ? data.status : 'hidden');
@@ -113,9 +129,7 @@ function mapPublicDocument(id: string, data: DocumentData): BusinessDirectoryEnt
     accentColor: typeof data.accentColor === 'string' && data.accentColor ? data.accentColor : '#f5d38a',
     verified: data.verified === true,
     status,
-    authMethods: Array.isArray(data.authMethods) && data.authMethods.length > 0
-      ? (data.authMethods as CustomerAuthMethod[])
-      : [...BUSINESS_AUTH_METHODS],
+    authMethods: toAuthMethods(data.authMethods),
     reentryMode: data.reentryMode === 'physical_band' ? 'physical_band' : toReentryMode(venueType),
     reentryMinutes: typeof data.reentryMinutes === 'number' && data.reentryMinutes > 0
       ? data.reentryMinutes

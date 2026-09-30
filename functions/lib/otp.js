@@ -4,6 +4,7 @@ import { encryptIdentifier, decryptIdentifier, hashIdentifier, hashOtpCode, rand
 import { AppError } from "./errors.js";
 import { verifyCaptchaToken } from "./providers.js";
 import { enforceRateLimit } from "./rateLimit.js";
+import { consumeMessagingBudget } from "./messagingQuota.js";
 import { asRecord, assertAllowedKeys, optionalString, requiredEmail, requiredId, requiredPhone, requiredString } from "./validation.js";
 import { dataRecord, timestampMillis } from "./firestore.js";
 function parseRequestData(value) {
@@ -66,11 +67,19 @@ async function assertBusinessSupportsOtp(businessId, channel) {
     const directorySnapshot = await db.collection("businessDirectory").doc(businessId).get();
     const directory = directorySnapshot.exists ? dataRecord(directorySnapshot.data()) : {};
     const rawMethods = directory.authMethods ?? business.authMethods;
-    if (Array.isArray(rawMethods) && rawMethods.length > 0) {
-        const expected = channel === "email" ? "email_otp" : `${channel}_otp`;
-        if (!rawMethods.includes(expected))
+    // Default-deny: sin authMethods solo se admite el canal gratuito de correo,
+    // que es el canal principal (AGENTS 3). SMS y WhatsApp deben estar
+    // habilitados de forma explicita por el negocio; de lo contrario un club que
+    // nunca los contrato queda expuesto a SMS pumping desde el primer request.
+    const methods = Array.isArray(rawMethods) ? rawMethods : [];
+    const expected = channel === "email" ? "email_otp" : `${channel}_otp`;
+    if (methods.length === 0) {
+        if (channel !== "email")
             throw new AppError("failed-precondition", "OTP channel is not enabled", 412);
+        return;
     }
+    if (!methods.includes(expected))
+        throw new AppError("failed-precondition", "OTP channel is not enabled", 412);
 }
 function challengeDocument(data, identifierHash, identifierCiphertext, challengeId, expiresAt, codeHash, provider) {
     return {
@@ -102,6 +111,7 @@ export async function requestOtpFor(value, ipAddress) {
     await enforceRateLimit("otp-request-ip", [ipHash], runtimeConfig.otpRequestLimit * 4, runtimeConfig.otpRequestWindowSeconds);
     await enforceRateLimit("otp-request-identifier", [data.businessId, data.channel, identifierHash], runtimeConfig.otpRequestLimit, runtimeConfig.otpRequestWindowSeconds);
     await enforceRateLimit("otp-request-business", [data.businessId, data.channel], runtimeConfig.otpRequestLimit * 10, runtimeConfig.otpRequestWindowSeconds);
+    await consumeMessagingBudget(data.businessId, data.channel);
     const provider = data.channel === "email" ? "resend" : "twilio_verify";
     if (provider === "resend" && !resendConfig()) {
         throw new AppError("failed-precondition", "Email OTP provider is not configured", 503);

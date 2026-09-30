@@ -16,6 +16,9 @@ export declare const runtimeConfig: Readonly<{
     otpRequestLimit: number;
     otpVerifyWindowSeconds: number;
     otpVerifyLimit: number;
+    otpEmailDailyLimit: number;
+    otpPaidChannelDailyLimit: number;
+    trustedProxyCidrs: string;
     holdDurationSeconds: number;
     sessionDurationSeconds: number;
     privacyProcessingLeaseSeconds: number;
