@@ -31,9 +31,9 @@ class ClubStore {
   events: ClubEvent[] = INITIAL_EVENTS;
   tables: ClubTable[] = INITIAL_TABLES;
   eventPricing: EventTablePricing[] = INITIAL_EVENT_PRICING;
-  reservations: Reservation[] = INITIAL_RESERVATIONS;
+  reservations: Reservation[] = import.meta.env.DEV ? INITIAL_RESERVATIONS : [];
   plans: Plan[] = INITIAL_PLANS;
-  private logger = createAuditLogger(INITIAL_AUDIT_LOGS);
+  private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
 
   activeClubId: string = 'club-sensorial';
   activeEventId: string = 'event-fri-reggaeton';
@@ -144,7 +144,7 @@ class ClubStore {
       this.eventPricing = [...this.eventPricing.filter(p => !ids.has(p.event_id)), ...INITIAL_EVENT_PRICING.filter(p => ids.has(p.event_id))];
     } else {
       this.tables = [...INITIAL_TABLES]; this.eventPricing = [...INITIAL_EVENT_PRICING];
-      this.clubs = [...INITIAL_CLUBS]; this.reservations = [...INITIAL_RESERVATIONS];
+      this.clubs = [...INITIAL_CLUBS]; this.reservations = import.meta.env.DEV ? [...INITIAL_RESERVATIONS] : [];
     }
     this.persistAndNotify();
   }

@@ -78,4 +78,10 @@ describe('Checkout fail-closed (AGENTS §7/§13)', () => {
     // pero tampoco puede ser true sin Firebase configurado.
     assert.equal(typeof isBackendReservationAvailable(), 'boolean');
   });
+
+  it('E5: las reservas simuladas no se cargan por defecto en entornos no-DEV', async () => {
+    const { loadStorageState } = await import('../src/store/storage.ts');
+    const state = loadStorageState();
+    assert.equal(state.reservations, undefined);
+  });
 });

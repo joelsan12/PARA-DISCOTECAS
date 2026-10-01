@@ -53,7 +53,7 @@ export function loadStorageState(): LoadedStorageData {
     if (rawClubs) result.clubs = JSON.parse(rawClubs);
 
     const rawRes = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
-    if (rawRes) result.reservations = JSON.parse(rawRes);
+    if (rawRes && import.meta.env.DEV) result.reservations = JSON.parse(rawRes);
 
     const storedClub = localStorage.getItem(STORAGE_KEYS.ACTIVE_CLUB);
     if (storedClub) result.activeClubId = storedClub;
@@ -130,7 +130,9 @@ export function saveStorageState(data: {
     localStorage.setItem(STORAGE_KEYS.TABLES, JSON.stringify(data.tables));
     localStorage.setItem(STORAGE_KEYS.PRICING, JSON.stringify(data.eventPricing));
     localStorage.setItem(STORAGE_KEYS.CLUBS, JSON.stringify(data.clubs));
-    localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(data.reservations));
+    if (import.meta.env.DEV) {
+      localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(data.reservations));
+    }
     localStorage.setItem(STORAGE_KEYS.ACTIVE_CLUB, data.activeClubId);
     localStorage.setItem(STORAGE_KEYS.ACTIVE_EVENT, data.activeEventId);
     localStorage.setItem(STORAGE_KEYS.CURRENT_ROLE, data.currentRole);
