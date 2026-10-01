@@ -38,6 +38,7 @@ export const CheckoutModal = ({
   onSuccess
 }: Props) => {
   const store = useClubStore();
+  const activeClub = store.clubs.find(c => c.id === store.activeClubId);
   const [timeLeft, setTimeLeft] = useState<number>(HOLD_DURATION_SECONDS);
   const [name, setName] = useState(store.clientUser?.name || '');
   const [phone, setPhone] = useState(
@@ -586,6 +587,51 @@ export const CheckoutModal = ({
                 ? 'Hold seguro de 12 min en Nightflow Cloud. El pago se confirma solo con el webhook del proveedor.'
                 : 'Hold seguro de 12 min activo. Confirmación de reserva VIP directa con registro en discoteca.'}
             </span>
+          </div>
+
+          {/* Transparencia Comercial e Identidad Legal del Organizador (Fase B / AGENTS.md) */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '10px 14px',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            fontSize: '0.72rem',
+            color: 'var(--text-dim)',
+            lineHeight: 1.5,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3px'
+          }}>
+            <div>
+              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Organizador y Vendedor:</span>{' '}
+              <span style={{ color: '#fff' }}>{activeClub?.legal_profile?.legalName || activeClub?.name || 'Club Establecimiento'}</span>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>RUC:</span>{' '}
+              <span style={{ color: 'var(--accent)' }}>{activeClub?.legal_profile?.ruc || 'RUC del Establecimiento'}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '2px' }}>
+              <a
+                href={activeClub?.legal_profile?.termsAndConditionsUrl || '#politicas'}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'var(--accent)', textDecoration: 'underline' }}
+              >
+                Términos del Club
+              </a>
+              <span>·</span>
+              <a
+                href={activeClub?.legal_profile?.refundPolicyUrl || '#reembolsos'}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'var(--accent)', textDecoration: 'underline' }}
+              >
+                Políticas de Devolución
+              </a>
+            </div>
+            <div style={{ marginTop: '4px', fontSize: '0.67rem', color: 'var(--text-dim)', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '4px' }}>
+              Infraestructura tecnológica: <strong>NIGHTFLOW VIP</strong> (Proveedor SaaS / Encargado de Tratamiento LOPDP). Los precios, cobros y políticas corresponden exclusivamente al establecimiento organizador.
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>

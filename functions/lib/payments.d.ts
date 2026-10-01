@@ -1,6 +1,8 @@
-interface PaymentResult {
+import type { PaymentTransaction, PaymentTransactionStatus } from "./types/payments.js";
+export type CanonicalFinancialStatus = PaymentTransactionStatus;
+export interface PaymentResult {
     duplicate: boolean;
-    status: "PAID" | "FAILED" | "REFUND_REQUIRED";
+    status: CanonicalFinancialStatus;
     reservationId?: string;
     refundRequired: boolean;
 }
@@ -10,4 +12,7 @@ export interface PaymentWebhookRouting {
     businessId?: string | undefined;
 }
 export declare function processPaymentWebhook(raw: Buffer, signatureHeader: string | undefined, routing?: PaymentWebhookRouting): Promise<PaymentResult>;
-export {};
+/**
+ * Función de conciliación de estado financiero (Fase A)
+ */
+export declare function verifyPayment(businessId: string, transactionId: string): Promise<PaymentTransaction | null>;

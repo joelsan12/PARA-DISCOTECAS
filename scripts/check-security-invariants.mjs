@@ -93,6 +93,27 @@ try {
   failures.push('public/manifest.webmanifest: no es un JSON válido');
 }
 
+// 7) Webhook de pagos: orden de autenticación y raw body byte-exacto
+const paymentsSrc = read('functions/src/payments.ts');
+const shapeIdx = paymentsSrc.indexOf('requireSignatureShape(signatureHeader)');
+const freshIdx = paymentsSrc.indexOf('requireFreshTimestamp(signatureHeader)');
+const routeIdx = paymentsSrc.indexOf('resolveCandidateAccount(routing)');
+const verifyIdx = paymentsSrc.indexOf('verifySignature(raw, signatureHeader, candidate.secret)');
+const parseIdx = paymentsSrc.indexOf('JSON.parse(raw.toString("utf8"))');
+if (!(shapeIdx >= 0 && freshIdx > shapeIdx && routeIdx > freshIdx && verifyIdx > routeIdx && parseIdx > verifyIdx)) {
+  failures.push('functions/src/payments.ts: el orden obligatorio es forma → timestamp fresco → routing/secreto → firma HMAC → parseo del payload');
+}
+if (/resolveWebhookSecret\([^)]*recordBusinessId|resolveCandidateAccount\([^)]*parsed/u.test(paymentsSrc)) {
+  failures.push('functions/src/payments.ts: el secreto del webhook nunca se selecciona con datos del body no autenticado');
+}
+if (/JSON\.stringify\(request\.body\)/u.test(read('functions/src/http.ts'))) {
+  failures.push('functions/src/http.ts: rawBody no debe re-serializar con JSON.stringify (los bytes no coincidirían con la firma)');
+}
+const serverSrc = read('functions/src/server.ts');
+if (!/express\.json\(\{[^}]*verify:/u.test(serverSrc)) {
+  failures.push('functions/src/server.ts: express.json debe capturar el raw body exacto mediante hook verify');
+}
+
 if (failures.length > 0) {
   console.error('check-security-invariants: FALLÓ');
   for (const f of failures) console.error(`  - ${f}`);

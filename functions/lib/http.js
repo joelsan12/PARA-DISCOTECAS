@@ -126,6 +126,8 @@ export function rawBody(request) {
     const expressReq = request;
     if (Buffer.isBuffer(expressReq.rawBody))
         return expressReq.rawBody;
+    if (Buffer.isBuffer(request.body))
+        return request.body;
     if (typeof request.body === "string")
         return Buffer.from(request.body, "utf8");
     return Buffer.alloc(0);

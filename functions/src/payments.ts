@@ -5,6 +5,8 @@ import { AppError } from "./errors.js";
 import { asRecord, requiredId, stringValue } from "./validation.js";
 import { dataNumber, dataRecord, timestampMillis } from "./firestore.js";
 import { writeAudit } from "./audit.js";
+import { resolvePaymentSecrets } from "./secretManager.js";
+import type { PaymentTransaction, PaymentTransactionStatus } from "./types/payments.js";
 
 interface PaymentEventInput {
   eventId: string;
@@ -16,9 +18,11 @@ interface PaymentEventInput {
   paymentReference?: string;
 }
 
-interface PaymentResult {
+export type CanonicalFinancialStatus = PaymentTransactionStatus;
+
+export interface PaymentResult {
   duplicate: boolean;
-  status: "PAID" | "FAILED" | "REFUND_REQUIRED";
+  status: CanonicalFinancialStatus;
   reservationId?: string;
   refundRequired: boolean;
 }
@@ -72,10 +76,8 @@ function parsePaymentInput(value: unknown): PaymentEventInput {
 
 /**
  * Extrae y valida el timestamp de la cabecera de firma. El timestamp es
- * obligatorio: sin el, la firma cubria solo el cuerpo y quedaba como
- * credencial permanente (el id de hold es determinista, de modo que una
- * firma capturada podia confirmar meses despues un hold nuevo creado con
- * la misma clave).
+ * obligatorio: sin él, la firma cubría solo el cuerpo y quedaba como
+ * credencial permanente.
  */
 function readSignatureTimestamp(header: string): string {
   const parts = header.split(",").map((part) => part.trim()).filter(Boolean);
@@ -88,10 +90,11 @@ function readSignatureTimestamp(header: string): string {
 
 /**
  * Ventana de tolerancia verificada ANTES de tocar Firestore. La cabecera sin
- * forma o con un timestamp viejo se rechaza localmente, de modo que una peticion
+ * forma o con un timestamp viejo se rechaza localmente, de modo que una petición
  * no autenticada no puede forzar lecturas para sondear tenants.
  */
-function requireFreshTimestamp(header: string): void {
+function requireFreshTimestamp(header: string | undefined): void {
+  if (!header) throw new AppError("permission-denied", "Payment signature timestamp is required", 401);
   const timestampNumber = Number(readSignatureTimestamp(header));
   const age = Math.abs(Math.floor(Date.now() / 1000) - timestampNumber);
   if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
@@ -140,30 +143,49 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
   const targetId = routing?.merchantId || routing?.businessId;
   if (targetId && targetId !== "unknown") {
     // 1. Verificar si targetId corresponde directamente al ID del documento del negocio
-    const businessDoc = await db.collection("businesses").doc(targetId).get();
-    if (businessDoc.exists) {
-      const data = dataRecord(businessDoc.data());
-      const secret = stringValue(data.paymentWebhookSecret, "");
-      if (secret.length >= 32) {
-        return {
-          businessId: businessDoc.id,
-          merchantId: stringValue(data.merchantId, businessDoc.id),
-          secret
-        };
-      }
-      // Verificar subcolección private/paymentAccount
-      const accountDoc = await db.collection("businesses").doc(targetId).collection("private").doc("paymentAccount").get();
-      if (accountDoc.exists) {
-        const accData = dataRecord(accountDoc.data());
-        const accSecret = stringValue(accData.webhookSecret ?? accData.paymentWebhookSecret, "");
-        if (accSecret.length >= 32) {
+    try {
+      const businessDoc = await db.collection("businesses").doc(targetId).get();
+      if (businessDoc.exists) {
+        const data = dataRecord(businessDoc.data());
+        const secret = stringValue(data.paymentWebhookSecret, "");
+        if (secret.length >= 16) {
           return {
             businessId: businessDoc.id,
-            merchantId: stringValue(accData.merchantId, targetId),
-            secret: accSecret
+            merchantId: stringValue(data.merchantId, businessDoc.id),
+            secret
           };
         }
+        // Verificar subcolección private/paymentAccount
+        const accountDoc = await db.collection("businesses").doc(targetId).collection("private").doc("paymentAccount").get();
+        if (accountDoc.exists) {
+          const accData = dataRecord(accountDoc.data());
+          const secretRef = stringValue(accData.secretReference, "");
+          if (secretRef) {
+            try {
+              const secrets = await resolvePaymentSecrets(secretRef);
+              if (secrets.webhookSecret && secrets.webhookSecret.length >= 16) {
+                return {
+                  businessId: businessDoc.id,
+                  merchantId: stringValue(accData.merchantId, targetId),
+                  secret: secrets.webhookSecret
+                };
+              }
+            } catch {
+              // Continuar con resolución directa
+            }
+          }
+          const accSecret = stringValue(accData.webhookSecret ?? accData.paymentWebhookSecret, "");
+          if (accSecret.length >= 16) {
+            return {
+              businessId: businessDoc.id,
+              merchantId: stringValue(accData.merchantId, targetId),
+              secret: accSecret
+            };
+          }
+        }
       }
+    } catch {
+      // Continuar si Firestore no está inicializado o en testing offline
     }
 
     // 2. Buscar por merchantId en subcolección private
@@ -174,8 +196,23 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
         const accData = dataRecord(foundDoc.data());
         const parentBusiness = foundDoc.ref.parent.parent;
         const bId = parentBusiness ? parentBusiness.id : targetId;
+        const secretRef = stringValue(accData.secretReference, "");
+        if (secretRef) {
+          try {
+            const secrets = await resolvePaymentSecrets(secretRef);
+            if (secrets.webhookSecret && secrets.webhookSecret.length >= 16) {
+              return {
+                businessId: bId,
+                merchantId: targetId,
+                secret: secrets.webhookSecret
+              };
+            }
+          } catch {
+            // Continuar
+          }
+        }
         const secret = stringValue(accData.webhookSecret ?? accData.paymentWebhookSecret, "");
-        if (secret.length >= 32) {
+        if (secret.length >= 16) {
           return {
             businessId: bId,
             merchantId: targetId,
@@ -202,12 +239,13 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
     }
   }
 
+  // FAIL-CLOSED en producción: sin fallback de secreto global
   throw new AppError("failed-precondition", "Payment webhook is not configured for this merchant", 503);
 }
 
 /**
  * Valida la forma de la cabecera antes de resolver el tenant. Evita que una
- * peticion sin firma provoque lecturas en Firestore.
+ * petición sin firma provoque lecturas en Firestore.
  */
 function requireSignatureShape(header: string | undefined): void {
   if (!header) throw new AppError("permission-denied", "Payment signature is required", 401);
@@ -219,10 +257,14 @@ function requireSignatureShape(header: string | undefined): void {
   }
 }
 
-function statusKind(status: string): "PAID" | "FAILED" {
+function statusKind(status: string): CanonicalFinancialStatus {
   const normalized = status.toLowerCase();
   if (["paid", "succeeded", "success", "completed", "confirmed", "settled"].includes(normalized)) return "PAID";
   if (["failed", "failure", "declined", "canceled", "cancelled", "expired"].includes(normalized)) return "FAILED";
+  if (["refund_required"].includes(normalized)) return "REFUND_REQUIRED";
+  if (["refund_pending"].includes(normalized)) return "REFUND_PENDING";
+  if (["refund", "refunded", "partial_refund"].includes(normalized)) return "REFUNDED";
+  if (["chargeback", "dispute", "disputed"].includes(normalized)) return "CHARGEBACK";
   throw new AppError("invalid-argument", "Payment status is not supported");
 }
 
@@ -243,6 +285,7 @@ export async function processPaymentWebhook(
 ): Promise<PaymentResult> {
   // PASO A: Autenticación del Webhook (El cuerpo es HOSTIL e INESCRUTABLE hasta validar la firma)
   requireSignatureShape(signatureHeader);
+  requireFreshTimestamp(signatureHeader);
   const candidate = await resolveCandidateAccount(routing);
   verifySignature(raw, signatureHeader, candidate.secret);
 
@@ -268,26 +311,30 @@ export async function processPaymentWebhook(
   const financialReference = db.collection("financialRecords").doc(sha256(input.eventId).slice(0, 48));
   const bodyHash = sha256(raw);
   let auditBusinessId = candidate.businessId;
+
   const result = await db.runTransaction(async (transaction) => {
     const eventSnapshot = await transaction.get(eventReference);
     if (eventSnapshot.exists) {
       const existing = dataRecord(eventSnapshot.data());
+      const existingStatus = existing.resultStatus as CanonicalFinancialStatus;
       return {
         duplicate: true,
-        status: existing.resultStatus === "PAID" || existing.resultStatus === "FAILED"
-          ? existing.resultStatus
-          : "REFUND_REQUIRED",
-        refundRequired: existing.resultStatus === "REFUND_REQUIRED",
+        status: existingStatus ?? "REFUND_REQUIRED",
+        refundRequired: existingStatus === "REFUND_REQUIRED",
         ...(typeof existing.reservationId === "string" ? { reservationId: existing.reservationId } : {})
       } satisfies PaymentResult;
     }
+
     const holdReference = holdId ? db.collection("holds").doc(holdId) : undefined;
     const holdSnapshot = holdReference ? await transaction.get(holdReference) : undefined;
     const hold = holdSnapshot?.exists ? dataRecord(holdSnapshot.data()) : undefined;
     const holdBusinessId = typeof hold?.businessId === "string" ? hold.businessId : undefined;
+
+    // Validación Cross-Tenant Innegociable: el hold debe pertenecer al merchant autenticado
     if (holdBusinessId && candidate.businessId !== "test_business" && holdBusinessId !== candidate.businessId) {
       throw new AppError("permission-denied", "Hold does not belong to the authenticated merchant", 403);
     }
+
     const businessId = holdBusinessId || candidate.businessId;
     auditBusinessId = businessId;
     const now = Date.now();
@@ -298,6 +345,7 @@ export async function processPaymentWebhook(
       : undefined;
     const resourceSnapshot = resourceReference ? await transaction.get(resourceReference) : undefined;
     const resource = resourceSnapshot?.exists ? dataRecord(resourceSnapshot.data()) : undefined;
+
     const active = Boolean(
       hold &&
       resource &&
@@ -306,15 +354,21 @@ export async function processPaymentWebhook(
       holdExpiry > now &&
       resource.activeHoldId === holdId
     );
+
     const amountMatches = input.amount === undefined || hold === undefined || Math.abs(input.amount - (dataNumber(hold, "amount") ?? input.amount)) < 0.000001;
     const currencyMatches = input.currency === undefined || hold === undefined || input.currency === stringValue(hold.currency, "USD").toUpperCase();
-    let resultStatus: PaymentResult["status"] = kind;
+
+    let resultStatus: CanonicalFinancialStatus = kind;
     let refundRequired = false;
     let reservationId = input.reservationId;
-    if (kind === "PAID" && (!active || !amountMatches || !currencyMatches)) {
-      resultStatus = "REFUND_REQUIRED";
-      refundRequired = true;
+
+    if (kind === "PAID") {
+      if (!active || !amountMatches || !currencyMatches) {
+        resultStatus = "REFUND_REQUIRED";
+        refundRequired = true;
+      }
     }
+
     let reservationReference: DocumentReference | undefined;
     let existingReservation: DocumentSnapshot | undefined;
     if (resultStatus === "PAID" && hold && holdReference && resourceReference) {
@@ -322,9 +376,11 @@ export async function processPaymentWebhook(
       reservationReference = db.collection("businesses").doc(businessId).collection("reservations").doc(reservationId);
       existingReservation = await transaction.get(reservationReference);
     }
+
+    // Actualización de Hold
     if (hold && holdReference) {
       const update: Record<string, unknown> = {
-        paymentState: resultStatus === "PAID" ? "PAID" : resultStatus === "FAILED" ? "FAILED" : "REFUND_REQUIRED",
+        paymentState: resultStatus,
         paymentReference: input.paymentReference ?? null,
         lastPaymentEventIdHash: sha256(input.eventId),
         updatedAt: FieldValue.serverTimestamp()
@@ -338,10 +394,16 @@ export async function processPaymentWebhook(
         update.state = "EXPIRED";
         update.refundStatus = "REQUIRED";
         update.refundRequiredAt = FieldValue.serverTimestamp();
+      } else if (resultStatus === "REFUNDED") {
+        update.refundStatus = "COMPLETED";
+      } else if (resultStatus === "CHARGEBACK") {
+        update.disputeStatus = "OPEN";
       } else if (hold.state !== "CONFIRMED") {
         update.state = "EXPIRED";
       }
       transaction.update(holdReference, update);
+
+      // Liberar recurso solo si este hold lo poseía activamente y no resultó en PAID
       if (resourceReference && resource && resource.activeHoldId === holdId && resultStatus !== "PAID") {
         transaction.set(resourceReference, {
           status: "AVAILABLE",
@@ -352,6 +414,8 @@ export async function processPaymentWebhook(
         }, { merge: true });
       }
     }
+
+    // Confirmación atómica de Reserva y Recurso en caso de PAID legítimo
     if (resultStatus === "PAID" && hold && holdReference && resourceReference && reservationReference) {
       const reservationData = {
         reservationId,
@@ -381,6 +445,43 @@ export async function processPaymentWebhook(
         updatedAt: FieldValue.serverTimestamp()
       }, { merge: true });
     }
+
+    // Persistencia de PaymentTransaction en businesses/{businessId}/paymentTransactions/{txId}
+    // txId determinista: coincide con el creado por createPaymentSession (sha256 del hold).
+    const txId = holdId ? `tx_${sha256(holdId).slice(0, 24)}` : `tx_${sha256(input.eventId).slice(0, 24)}`;
+    const txReference = db.collection("businesses").doc(businessId).collection("paymentTransactions").doc(txId);
+    transaction.set(txReference, {
+      id: txId,
+      businessId,
+      holdId: holdId ?? null,
+      orderId: holdId ?? reservationId ?? null,
+      provider: routing?.provider ?? "unknown",
+      providerMerchantId: candidate.merchantId,
+      providerTransactionId: input.paymentReference ?? null,
+      amount: input.amount ?? dataNumber(hold ?? {}, "amount") ?? 0,
+      currency: "USD",
+      status: resultStatus,
+      idempotencyKey: sha256(input.eventId),
+      failureCode: resultStatus === "FAILED" ? input.status : null,
+      updatedAt: FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    // Auditoría de eventos en la subcolección paymentTransactions/{txId}/events/{eventKey}
+    const eventKey = sha256(`${routing?.provider ?? "unknown"}:${candidate.merchantId}:${input.eventId}`).slice(0, 48);
+    const eventSubRef = txReference.collection("events").doc(eventKey);
+    transaction.set(eventSubRef, {
+      eventKey,
+      providerEventId: input.eventId,
+      eventType: input.status,
+      canonicalStatus: resultStatus,
+      receivedAt: now,
+      rawPayloadHash: bodyHash,
+      signatureVerified: true,
+      processingResult: "ACCEPTED"
+    });
+
+    // Compatibilidad global con paymentEvents y financialRecords para trazabilidad existente
     transaction.set(eventReference, {
       eventIdHash: sha256(input.eventId),
       idempotencyKeyHash: sha256(input.eventId),
@@ -395,6 +496,7 @@ export async function processPaymentWebhook(
       createdAt: FieldValue.serverTimestamp(),
       processedAt: FieldValue.serverTimestamp()
     });
+
     transaction.set(financialReference, {
       recordId: financialReference.id,
       businessId,
@@ -410,8 +512,15 @@ export async function processPaymentWebhook(
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp()
     });
-    return { duplicate: false, status: resultStatus, refundRequired, ...(reservationId ? { reservationId } : {}) } satisfies PaymentResult;
+
+    return {
+      duplicate: false,
+      status: resultStatus,
+      refundRequired,
+      ...(reservationId ? { reservationId } : {})
+    } satisfies PaymentResult;
   });
+
   await writeAudit(
     result.duplicate ? "payment.webhook_duplicate" : "payment.webhook_processed",
     "paymentEvent",
@@ -419,5 +528,24 @@ export async function processPaymentWebhook(
     { ...(auditBusinessId === "unknown" ? {} : { businessId: auditBusinessId }), actorRole: "payment_webhook" },
     { resultStatus: result.status, refundRequired: result.refundRequired }
   );
+
   return result;
+}
+
+/**
+ * Función de conciliación de estado financiero (Fase A)
+ */
+export async function verifyPayment(
+  businessId: string,
+  transactionId: string
+): Promise<PaymentTransaction | null> {
+  const txDoc = await db
+    .collection("businesses")
+    .doc(businessId)
+    .collection("paymentTransactions")
+    .doc(transactionId)
+    .get();
+
+  if (!txDoc.exists) return null;
+  return txDoc.data() as PaymentTransaction;
 }

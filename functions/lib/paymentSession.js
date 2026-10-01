@@ -1,10 +1,10 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { db, optionalEnv, runtimeConfig } from "./config.js";
+import { db, runtimeConfig } from "./config.js";
 import { randomId, sha256, stableStringify } from "./crypto.js";
 import { AppError } from "./errors.js";
 import { getClientIp, getRequestId } from "./http.js";
 import { callableUid } from "./auth.js";
-import { asRecord, assertAllowedKeys, optionalString, requiredId, safeReturnPath } from "./validation.js";
+import { asRecord, assertAllowedKeys, optionalString, requiredId, safeReturnPath, stringValue } from "./validation.js";
 import { dataRecord, timestampMillis } from "./firestore.js";
 import { writeAudit } from "./audit.js";
 function parseInput(value) {
@@ -19,26 +19,12 @@ function parseInput(value) {
         ...(returnUrl ? { returnUrl } : {})
     };
 }
-function buildCheckoutUrl(provider, sessionId, holdId, returnUrl) {
-    const base = optionalEnv("PAYMENT_CHECKOUT_BASE_URL");
-    if (provider === "mock")
-        return null;
-    if (!base)
-        return null;
-    const url = new URL(base);
-    url.searchParams.set("session_id", sessionId);
-    url.searchParams.set("hold_id", holdId);
-    if (returnUrl)
-        url.searchParams.set("return_url", returnUrl);
-    return url.toString();
-}
 export async function createPaymentSessionFor(request) {
     const uid = callableUid(request);
     const input = parseInput(request.data);
     const holdReference = db.collection("holds").doc(input.holdId);
     const paymentSessionId = `ps_${randomId("sess").slice(3, 31)}`;
     const requestHash = sha256(stableStringify({ holdId: input.holdId, returnUrl: input.returnUrl ?? null }));
-    const provider = (optionalEnv("PAYMENT_PROVIDER") ?? "none").toLowerCase();
     const result = await db.runTransaction(async (transaction) => {
         const holdSnapshot = await transaction.get(holdReference);
         if (!holdSnapshot.exists)
@@ -69,33 +55,102 @@ export async function createPaymentSessionFor(request) {
                 paymentSessionId: existingSessionId,
                 amount: typeof hold.amount === "number" ? hold.amount : 0,
                 currency: typeof hold.currency === "string" ? hold.currency : "USD",
-                expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000
+                expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000,
+                provider: typeof hold.paymentProvider === "string" ? hold.paymentProvider : "pay_at_door",
+                isPayAtDoor: hold.paymentProvider === "pay_at_door" || hold.paymentProvider === "none"
             };
         }
-        if (hold.state === "HELD") {
-            const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
-            const resourceId = typeof hold.resourceId === "string" ? hold.resourceId : "";
-            if (businessId && resourceId) {
-                const resourceReference = db.collection("businesses").doc(businessId).collection("resources").doc(resourceId);
-                const resourceSnapshot = await transaction.get(resourceReference);
-                if (resourceSnapshot.exists) {
-                    const resource = dataRecord(resourceSnapshot.data());
-                    if (resource.activeHoldId !== input.holdId) {
-                        throw new AppError("failed-precondition", "Hold no longer owns the resource", 412);
-                    }
+        const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
+        const resourceId = typeof hold.resourceId === "string" ? hold.resourceId : "";
+        if (hold.state === "HELD" && businessId && resourceId) {
+            const resourceReference = db.collection("businesses").doc(businessId).collection("resources").doc(resourceId);
+            const resourceSnapshot = await transaction.get(resourceReference);
+            if (resourceSnapshot.exists) {
+                const resource = dataRecord(resourceSnapshot.data());
+                if (resource.activeHoldId !== input.holdId) {
+                    throw new AppError("failed-precondition", "Hold no longer owns the resource", 412);
                 }
             }
         }
-        const isPayAtDoor = provider === "none" || provider === "pay_at_door";
+        // RESOLUCIÓN DE CUENTA DE PAGO DEL TENANT (Fail-Closed)
+        // El proveedor y la modalidad se resuelven exclusivamente por tenant, sin fallback global en producción.
+        const businessReference = db.collection("businesses").doc(businessId);
+        const paymentAccountReference = businessReference.collection("private").doc("paymentAccount");
+        const paymentAccountSnapshot = await transaction.get(paymentAccountReference);
+        let paymentMode = "PAY_AT_DOOR";
+        let resolvedProvider = "pay_at_door";
+        let merchantId = "";
+        if (paymentAccountSnapshot.exists) {
+            const accountData = dataRecord(paymentAccountSnapshot.data());
+            const rawMode = accountData.paymentMode;
+            if (rawMode === "CLIENT_GATEWAY" || rawMode === "ASSISTED_GATEWAY") {
+                if (accountData.status !== "ACTIVE") {
+                    throw new AppError("failed-precondition", "La cuenta de pagos del club no está activa (PAYMENT_ACCOUNT_DISABLED)", 412);
+                }
+                const accProvider = stringValue(accountData.provider, "").toLowerCase();
+                if (!accProvider || accProvider === "none") {
+                    throw new AppError("failed-precondition", "Proveedor de pago no configurado (PAYMENT_PROVIDER_UNSUPPORTED)", 412);
+                }
+                const accMerchantId = stringValue(accountData.merchantId, "");
+                if (!accMerchantId) {
+                    throw new AppError("failed-precondition", "Merchant ID no configurado (PAYMENT_ACCOUNT_NOT_CONFIGURED)", 412);
+                }
+                const secretRef = stringValue(accountData.secretReference, "");
+                if (!secretRef) {
+                    throw new AppError("failed-precondition", "Credenciales del PSP no configuradas (PAYMENT_SECRET_UNAVAILABLE)", 412);
+                }
+                paymentMode = rawMode;
+                resolvedProvider = accProvider;
+                merchantId = accMerchantId;
+            }
+            else if (rawMode === "PAY_AT_DOOR") {
+                paymentMode = "PAY_AT_DOOR";
+                resolvedProvider = "pay_at_door";
+            }
+        }
+        else {
+            // Si no existe subcolección private/paymentAccount:
+            const isTestEnv = Boolean(process.env.FIRESTORE_EMULATOR_HOST || process.env.NODE_ENV === "test");
+            const businessSnapshot = await transaction.get(businessReference);
+            const businessData = businessSnapshot.exists ? dataRecord(businessSnapshot.data()) : {};
+            const defaultMode = businessData.defaultPaymentMode;
+            if (defaultMode === "PAY_AT_DOOR" || isTestEnv) {
+                paymentMode = "PAY_AT_DOOR";
+                resolvedProvider = "pay_at_door";
+            }
+            else {
+                // Fail-Closed en producción si no está configurada la cuenta de pagos
+                throw new AppError("failed-precondition", "La cuenta de pagos del establecimiento no ha sido configurada (PAYMENT_ACCOUNT_NOT_CONFIGURED)", 412);
+            }
+        }
+        const isPayAtDoor = paymentMode === "PAY_AT_DOOR";
+        const customerUid = typeof hold.customerUid === "string" ? hold.customerUid : "";
+        const eventId = typeof hold.eventId === "string" ? hold.eventId : "";
+        const amount = typeof hold.amount === "number" ? hold.amount : 0;
+        const currency = typeof hold.currency === "string" ? hold.currency : "USD";
+        // Creación de PaymentTransaction desacoplada de la reserva.
+        // txId determinista (sha256 del hold) para que el webhook de pago reconcilie
+        // EXACTAMENTE este mismo documento: una sola transacción financiera por hold.
+        const txId = `tx_${sha256(input.holdId).slice(0, 24)}`;
+        const txReference = businessReference.collection("paymentTransactions").doc(txId);
+        const txStatus = isPayAtDoor ? "PENDING" : "CREATED";
+        transaction.set(txReference, {
+            id: txId,
+            businessId,
+            holdId: input.holdId,
+            orderId: input.holdId,
+            provider: resolvedProvider,
+            providerMerchantId: merchantId || businessId,
+            amount,
+            currency: "USD",
+            status: txStatus,
+            idempotencyKey: requestHash,
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp()
+        });
         if (isPayAtDoor) {
-            const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
-            const resourceId = typeof hold.resourceId === "string" ? hold.resourceId : "";
-            const customerUid = typeof hold.customerUid === "string" ? hold.customerUid : "";
-            const eventId = typeof hold.eventId === "string" ? hold.eventId : "";
-            const amount = typeof hold.amount === "number" ? hold.amount : 0;
-            const currency = typeof hold.currency === "string" ? hold.currency : "USD";
             if (businessId && resourceId) {
-                const resourceReference = db.collection("businesses").doc(businessId).collection("resources").doc(resourceId);
+                const resourceReference = businessReference.collection("resources").doc(resourceId);
                 transaction.update(resourceReference, {
                     status: "CONFIRMED",
                     activeReservationId: input.holdId,
@@ -103,7 +158,7 @@ export async function createPaymentSessionFor(request) {
                 });
             }
             if (businessId) {
-                const reservationReference = db.collection("businesses").doc(businessId).collection("reservations").doc(input.holdId);
+                const reservationReference = businessReference.collection("reservations").doc(input.holdId);
                 transaction.set(reservationReference, {
                     id: input.holdId,
                     holdId: input.holdId,
@@ -138,7 +193,7 @@ export async function createPaymentSessionFor(request) {
                 paymentState: "PENDING",
                 paymentSessionId,
                 paymentSessionHash: requestHash,
-                paymentProvider: provider,
+                paymentProvider: resolvedProvider,
                 paymentStartedAt: FieldValue.serverTimestamp(),
                 updatedAt: FieldValue.serverTimestamp()
             });
@@ -146,12 +201,13 @@ export async function createPaymentSessionFor(request) {
         return {
             idempotentReplay: false,
             paymentSessionId,
-            amount: typeof hold.amount === "number" ? hold.amount : 0,
-            currency: typeof hold.currency === "string" ? hold.currency : "USD",
-            expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000
+            amount,
+            currency,
+            expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000,
+            provider: resolvedProvider,
+            isPayAtDoor
         };
     });
-    const isPayAtDoor = provider === "none" || provider === "pay_at_door";
     const holdSnapshotForAudit = await holdReference.get();
     const auditBusinessId = holdSnapshotForAudit.exists
         ? String(dataRecord(holdSnapshotForAudit.data()).businessId ?? "unknown")
@@ -162,16 +218,18 @@ export async function createPaymentSessionFor(request) {
         actorRole: "customer",
         requestId: getRequestId(request.rawRequest),
         ip: getClientIp(request.rawRequest)
-    }, { paymentSessionId: result.paymentSessionId, provider: isPayAtDoor ? "pay_at_door" : provider });
+    }, { paymentSessionId: result.paymentSessionId, provider: result.provider });
     return {
         holdId: input.holdId,
         paymentSessionId: result.paymentSessionId,
-        state: isPayAtDoor ? "CONFIRMED" : "PAYMENT_PENDING",
+        state: result.isPayAtDoor ? "CONFIRMED" : "PAYMENT_PENDING",
         amount: result.amount,
         currency: result.currency,
         expiresAt: new Date(result.expiresAt).toISOString(),
-        checkoutUrl: isPayAtDoor ? null : buildCheckoutUrl(provider, result.paymentSessionId, input.holdId, input.returnUrl),
-        provider: isPayAtDoor ? "pay_at_door" : provider,
+        // Fase A+B: Hosted Checkout solo si hay un proveedor online activo en Fase C.
+        // Cero checkout ficticio en producción.
+        checkoutUrl: null,
+        provider: result.provider,
         idempotentReplay: result.idempotentReplay
     };
 }

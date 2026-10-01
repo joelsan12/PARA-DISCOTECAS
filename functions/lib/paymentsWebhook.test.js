@@ -77,6 +77,8 @@ async function cleanup() {
     for (const businessId of [BUSINESS_ID, OTHER_BUSINESS_ID]) {
         batch.delete(db.collection("businesses").doc(businessId));
         batch.delete(db.collection("businesses").doc(businessId).collection("resources").doc(RESOURCE_ID));
+        const transactions = await db.collection("businesses").doc(businessId).collection("paymentTransactions").get();
+        transactions.forEach((document) => batch.delete(document.ref));
     }
     await batch.commit();
     const cleanupBatch = db.batch();
@@ -138,6 +140,14 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
         const eventDoc = await db.collection("paymentEvents").doc(createHash("sha256").update(eventId).digest("hex").slice(0, 48)).get();
         assert.equal(eventDoc.get("resultStatus"), "PAID");
         assert.equal(eventDoc.get("businessId"), BUSINESS_ID);
+        // Reconciliación: el webhook persiste la PaymentTransaction con el MISMO
+        // txId determinista que crea createPaymentSession (sha256 del hold).
+        const txId = `tx_${createHash("sha256").update(holdId).digest("hex").slice(0, 24)}`;
+        const txDoc = await db.collection("businesses").doc(BUSINESS_ID)
+            .collection("paymentTransactions").doc(txId).get();
+        assert.equal(txDoc.exists, true, "el webhook debe escribir la PaymentTransaction del hold");
+        assert.equal(txDoc.get("status"), "PAID");
+        assert.equal(txDoc.get("businessId"), BUSINESS_ID);
     });
     it("el secreto de un negocio no confirma holds de otro (routing a victima con firma ajena)", async () => {
         const holdId = "hold_webhook_cruzado";
@@ -154,6 +164,25 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
         const error = await errorOf(processPaymentWebhook(Buffer.from(body, "utf8"), sign(body, TENANT_SECRET), { businessId: BUSINESS_ID }));
         assert.equal(error.code, "permission-denied");
         assert.match(error.message, /Hold does not belong to the authenticated merchant/i);
+    });
+    it("rechaza un evento cuyo merchantId del payload no coincide con el merchant autenticado", async () => {
+        const holdId = "hold_webhook_merchant_mismatch";
+        await seedHold(holdId, BUSINESS_ID, TENANT_SECRET);
+        const eventId = `evt_mismatch_${Date.now()}`;
+        const body = JSON.stringify({
+            id: eventId,
+            status: "succeeded",
+            holdId,
+            businessId: BUSINESS_ID,
+            merchantId: "merchant_de_otro_club",
+            amount: 150,
+            currency: "USD"
+        });
+        const error = await errorOf(processPaymentWebhook(Buffer.from(body, "utf8"), sign(body, TENANT_SECRET), { businessId: BUSINESS_ID }));
+        assert.equal(error.code, "invalid-argument");
+        assert.match(error.message, /merchant/i);
+        const eventDoc = await db.collection("paymentEvents").doc(createHash("sha256").update(eventId).digest("hex").slice(0, 48)).get();
+        assert.equal(eventDoc.exists, false, "un evento rechazado no debe escribirse en el libro mayor");
     });
 });
 //# sourceMappingURL=paymentsWebhook.test.js.map

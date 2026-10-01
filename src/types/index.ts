@@ -47,6 +47,15 @@ export interface Club {
   scheduling_mode?: SchedulingMode;
   enabled_features?: FeatureFlag[];
   active_floor_plan_version_id?: string;
+  legal_profile?: {
+    legalName: string;
+    ruc: string;
+    taxAddress: string;
+    supportEmail: string;
+    supportPhone?: string;
+    refundPolicyUrl?: string;
+    termsAndConditionsUrl?: string;
+  };
 }
 
 export type TableZone = string;

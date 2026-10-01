@@ -88,6 +88,12 @@ describe("Escenario 02:00 AM — Fase 7 holds y pagos", () => {
     after(async () => {
         await cleanupTestHolds().catch(() => undefined);
         await db.collection("businesses").doc(BUSINESS_ID).collection("resources").doc(RESOURCE_ID).delete().catch(() => undefined);
+        const transactions = await db.collection("businesses").doc(BUSINESS_ID).collection("paymentTransactions").get().catch(() => null);
+        if (transactions) {
+            const batch = db.batch();
+            transactions.forEach((document) => batch.delete(document.ref));
+            await batch.commit().catch(() => undefined);
+        }
     });
     it("Test #7: 20 holds concurrentes — solo 1 gana, 19 sin sobreventa", async () => {
         const attempts = Array.from({ length: 20 }, (_, index) => createReservationHoldFor(callableRequest({
