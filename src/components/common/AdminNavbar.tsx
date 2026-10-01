@@ -23,7 +23,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
     ? '#a855f7'
     : session.role === 'DOOR_CHECKIN'
       ? '#34d399'
-      : '#00f0ff';
+      : '#e5b54f';
 
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN';
@@ -31,9 +31,9 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
 
   return (
     <header style={{
-      background: 'rgba(10, 14, 22, 0.95)',
+      background: 'rgba(10, 10, 15, 0.95)',
       backdropFilter: 'blur(16px)',
-      borderBottom: '1px solid rgba(0, 240, 255, 0.15)',
+      borderBottom: '1px solid rgba(229, 181, 79, 0.2)',
       padding: '12px 24px',
       position: 'sticky',
       top: 0,
@@ -47,14 +47,14 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
       {/* Left: Brand + Active Club Dropdown */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <NightflowLogoMark size={32} theme="cyan" />
+          <NightflowLogoMark size={32} theme="gold" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span className="font-brand" style={{
                 fontWeight: 800,
                 fontSize: '1.02rem',
                 letterSpacing: '0.12em',
-                background: 'linear-gradient(135deg, #ffffff 40%, #00f0ff 100%)',
+                background: 'linear-gradient(135deg, #ffffff 40%, #e5b54f 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
@@ -65,9 +65,9 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
                 fontWeight: 800,
                 padding: '1px 5px',
                 borderRadius: '3px',
-                background: 'rgba(0, 240, 255, 0.12)',
-                color: '#00f0ff',
-                border: '1px solid rgba(0, 240, 255, 0.3)',
+                background: 'rgba(229, 181, 79, 0.12)',
+                color: '#e5b54f',
+                border: '1px solid rgba(229, 181, 79, 0.35)',
                 letterSpacing: '0.06em',
               }}>
                 VIP
@@ -77,7 +77,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               fontSize: '0.55rem',
               fontWeight: 700,
               letterSpacing: '0.12em',
-              color: 'rgba(0, 240, 255, 0.8)',
+              color: 'rgba(229, 181, 79, 0.85)',
               textTransform: 'uppercase',
             }}>
               Portal Corporativo
@@ -138,14 +138,14 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               fontSize: '0.82rem',
               fontWeight: currentView === 'DASHBOARD' ? 700 : 500,
               background: currentView === 'DASHBOARD'
-                ? 'linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(56, 189, 248, 0.15) 100%)'
+                ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.22) 0%, rgba(207, 160, 56, 0.15) 100%)'
                 : 'rgba(255, 255, 255, 0.03)',
-              color: currentView === 'DASHBOARD' ? '#00f0ff' : 'rgba(255, 255, 255, 0.7)',
+              color: currentView === 'DASHBOARD' ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.7)',
               border: currentView === 'DASHBOARD'
-                ? '1px solid rgba(0, 240, 255, 0.4)'
+                ? '1px solid rgba(229, 181, 79, 0.45)'
                 : '1px solid rgba(255, 255, 255, 0.08)',
               cursor: 'pointer',
-              boxShadow: currentView === 'DASHBOARD' ? '0 0 14px rgba(0, 240, 255, 0.2)' : 'none',
+              boxShadow: currentView === 'DASHBOARD' ? '0 0 16px rgba(229, 181, 79, 0.25)' : 'none',
               transition: 'all 0.15s ease',
             }}
           >

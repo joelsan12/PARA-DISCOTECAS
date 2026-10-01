@@ -6,7 +6,15 @@ import { asRecord, requiredId, stringValue } from "./validation.js";
 import { dataNumber, dataRecord, timestampMillis } from "./firestore.js";
 import { writeAudit } from "./audit.js";
 import { resolvePaymentSecrets } from "./secretManager.js";
-import type { PaymentTransaction, PaymentTransactionStatus } from "./types/payments.js";
+import { paymentRegistry } from "./providers/index.js";
+import type {
+  PaymentAccount,
+  PaymentProviderType,
+  PaymentSecrets,
+  PaymentTransaction,
+  PaymentTransactionStatus,
+  VerifiedPaymentEvent
+} from "./types/payments.js";
 
 interface PaymentEventInput {
   eventId: string;
@@ -133,6 +141,11 @@ interface CandidateAccount {
   businessId: string;
   merchantId: string;
   secret: string;
+  environment: "sandbox" | "production";
+}
+
+function readEnvironment(record: Record<string, unknown>): "sandbox" | "production" {
+  return record.environment === "production" ? "production" : "sandbox";
 }
 
 /**
@@ -152,7 +165,8 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
           return {
             businessId: businessDoc.id,
             merchantId: stringValue(data.merchantId, businessDoc.id),
-            secret
+            secret,
+            environment: readEnvironment(data)
           };
         }
         // Verificar subcolección private/paymentAccount
@@ -167,7 +181,8 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
                 return {
                   businessId: businessDoc.id,
                   merchantId: stringValue(accData.merchantId, targetId),
-                  secret: secrets.webhookSecret
+                  secret: secrets.webhookSecret,
+                  environment: readEnvironment(accData)
                 };
               }
             } catch {
@@ -179,7 +194,8 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
             return {
               businessId: businessDoc.id,
               merchantId: stringValue(accData.merchantId, targetId),
-              secret: accSecret
+              secret: accSecret,
+              environment: readEnvironment(accData)
             };
           }
         }
@@ -200,13 +216,14 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
         if (secretRef) {
           try {
             const secrets = await resolvePaymentSecrets(secretRef);
-            if (secrets.webhookSecret && secrets.webhookSecret.length >= 16) {
-              return {
-                businessId: bId,
-                merchantId: targetId,
-                secret: secrets.webhookSecret
-              };
-            }
+              if (secrets.webhookSecret && secrets.webhookSecret.length >= 16) {
+                return {
+                  businessId: bId,
+                  merchantId: targetId,
+                  secret: secrets.webhookSecret,
+                  environment: readEnvironment(accData)
+                };
+              }
           } catch {
             // Continuar
           }
@@ -216,7 +233,8 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
           return {
             businessId: bId,
             merchantId: targetId,
-            secret
+            secret,
+            environment: readEnvironment(accData)
           };
         }
       }
@@ -232,7 +250,8 @@ async function resolveCandidateAccount(routing?: PaymentWebhookRouting): Promise
       return {
         businessId: targetId || "test_business",
         merchantId: targetId || "test_merchant",
-        secret: testSecret
+        secret: testSecret,
+        environment: "sandbox"
       };
     } catch {
       // Sin secreto de test
@@ -278,11 +297,26 @@ async function resolveHoldId(input: PaymentEventInput): Promise<string | undefin
   return snapshot.empty ? undefined : snapshot.docs[0]?.id;
 }
 
+interface FinalizePaymentEventInput {
+  raw: Buffer;
+  parsed: unknown;
+  input: PaymentEventInput;
+  candidate: CandidateAccount;
+  routing: PaymentWebhookRouting | undefined;
+}
+
 export async function processPaymentWebhook(
   raw: Buffer,
   signatureHeader: string | undefined,
-  routing?: PaymentWebhookRouting
+  routing?: PaymentWebhookRouting,
+  headers?: Record<string, string | string[] | undefined>
 ): Promise<PaymentResult> {
+  // PSP con firma nativa propia (p. ej. Kushki X-Kushki-Signature en hex crudo).
+  // El formato interoperable t=...,v1=... conserva el camino genérico de abajo.
+  if (shouldVerifyWithProviderAdapter(signatureHeader, routing)) {
+    return verifyNativeProviderWebhook(raw, signatureHeader ?? "", routing as PaymentWebhookRouting, headers ?? {});
+  }
+
   // PASO A: Autenticación del Webhook (El cuerpo es HOSTIL e INESCRUTABLE hasta validar la firma)
   requireSignatureShape(signatureHeader);
   requireFreshTimestamp(signatureHeader);
@@ -297,6 +331,15 @@ export async function processPaymentWebhook(
     throw new AppError("invalid-argument", "Payment body must be valid JSON");
   }
   const input = parsePaymentInput(parsed);
+  return finalizePaymentEvent({ raw, parsed, input, candidate, routing });
+}
+
+/**
+ * PASO B compartido por el camino genérico y por la delegación nativa a
+ * adaptadores de PSP. Solo debe ejecutarse tras autenticar la firma.
+ */
+async function finalizePaymentEvent(args: FinalizePaymentEventInput): Promise<PaymentResult> {
+  const { raw, parsed, input, candidate, routing } = args;
   const holdId = await resolveHoldId(input);
   const kind = statusKind(input.status);
 
@@ -530,6 +573,119 @@ export async function processPaymentWebhook(
   );
 
   return result;
+}
+
+function shouldVerifyWithProviderAdapter(header: string | undefined, routing?: PaymentWebhookRouting): boolean {
+  if (!header || !routing?.provider) return false;
+  if (!paymentRegistry.has(routing.provider)) return false;
+  // Solo la firma nativa (hex crudo) se delega; t=...,v1=... sigue el genérico.
+  return !header.split(",").some((part) => part.trim().startsWith("t="));
+}
+
+function readHeaderValue(headers: Record<string, string | string[] | undefined>, name: string): string {
+  const target = name.toLowerCase();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === target) {
+      return Array.isArray(value) ? value[0] ?? "" : typeof value === "string" ? value : "";
+    }
+  }
+  return "";
+}
+
+function canonicalStatusForEventType(eventType: VerifiedPaymentEvent["eventType"]): string {
+  switch (eventType) {
+    case "PAYMENT_SUCCESS":
+      return "paid";
+    case "PAYMENT_FAILED":
+      return "failed";
+    case "REFUND":
+      return "refunded";
+    case "CHARGEBACK":
+      return "chargeback";
+    default:
+      throw new AppError("invalid-argument", "Payment status is not supported");
+  }
+}
+
+/**
+ * Webhooks con firma nativa del PSP (Kushki X-Kushki-Signature en hex).
+ * Orden: forma de la firma → timestamp fresco (si el PSP lo envía) → routing
+ * del tenant → HMAC verificado por el adaptador sobre los bytes crudos →
+ * parseo → mismo PASO B y transacción atómica que el camino genérico.
+ */
+async function verifyNativeProviderWebhook(
+  raw: Buffer,
+  signatureHeader: string,
+  routing: PaymentWebhookRouting,
+  headers: Record<string, string | string[] | undefined>
+): Promise<PaymentResult> {
+  const provider = (routing.provider ?? "").toLowerCase();
+
+  // 1) Forma: la firma nativa de Kushki es HMAC-SHA256 en hex (64 caracteres).
+  if (!/^[0-9a-f]{64}$/i.test(signatureHeader.trim())) {
+    throw new AppError("permission-denied", "Native payment signature is invalid", 401);
+  }
+
+  // 2) Frescura anti-replay: si el PSP envía un timestamp numérico, exigir la
+  // ventana de tolerancia ANTES de resolver tenant o secreto en Firestore.
+  const pspTimestampRaw = readHeaderValue(headers, "x-kushki-id");
+  if (pspTimestampRaw) {
+    const parsedTimestamp = Number(pspTimestampRaw);
+    if (Number.isInteger(parsedTimestamp)) {
+      const seconds = parsedTimestamp > 1e11 ? Math.floor(parsedTimestamp / 1000) : parsedTimestamp;
+      const age = Math.abs(Math.floor(Date.now() / 1000) - seconds);
+      if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
+        throw new AppError("permission-denied", "Payment signature timestamp is outside the allowed window", 401);
+      }
+    }
+  }
+
+  // 3) Routing → secreto del tenant (fail-closed 503 sin configuración).
+  const candidate = await resolveCandidateAccount(routing);
+
+  // 4) Delegación al adaptador del proveedor (HMAC timing-safe sobre los bytes crudos).
+  const adapter = paymentRegistry.get(provider);
+  const account: PaymentAccount = {
+    businessId: candidate.businessId,
+    provider: provider as PaymentProviderType,
+    environment: candidate.environment,
+    merchantId: candidate.merchantId,
+    paymentMode: "CLIENT_GATEWAY",
+    status: "ACTIVE",
+    updatedAt: Date.now()
+  };
+  const secrets: PaymentSecrets = { webhookSecret: candidate.secret };
+  const event = await adapter.verifyWebhook(account, secrets, {
+    rawBody: raw,
+    headers,
+    merchantId: candidate.merchantId
+  });
+
+  // 5) Estado canónico (rechaza eventos no soportados con fail-closed).
+  const status = canonicalStatusForEventType(event.eventType);
+
+  // 6) Cuerpo ya autenticado → mismas validaciones y transacción atómica.
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw.toString("utf8"));
+  } catch {
+    throw new AppError("invalid-argument", "Payment body must be valid JSON");
+  }
+
+  const providerEventId = event.providerEventId.slice(0, 200);
+  if (!providerEventId) {
+    throw new AppError("invalid-argument", "Payment event id is required");
+  }
+  const holdIdValue = event.holdId ? requiredId({ holdId: event.holdId }, "holdId") : undefined;
+  const input: PaymentEventInput = {
+    eventId: providerEventId,
+    ...(holdIdValue ? { holdId: holdIdValue } : {}),
+    status,
+    ...(event.amount > 0 ? { amount: event.amount } : {}),
+    ...(event.currency && /^[A-Z]{3}$/.test(event.currency) ? { currency: event.currency } : {}),
+    ...(event.providerTransactionId ? { paymentReference: event.providerTransactionId } : {})
+  };
+  return finalizePaymentEvent({ raw, parsed, input, candidate, routing });
 }
 
 /**

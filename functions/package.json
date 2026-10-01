@@ -11,7 +11,7 @@
     "build": "tsc",
     "clean": "rm -rf lib",
     "lint": "tsc --noEmit",
-    "test": "npm run build && node --test lib/holdScenario.test.js lib/privacyScenario.test.js lib/otpScenario.test.js lib/tenantScenario.test.js lib/emergencyScenario.test.js lib/httpClientIp.test.js lib/webhookRawBody.test.js lib/paymentTransactions.test.js lib/messagingQuota.test.js lib/paymentsWebhook.test.js lib/legalProfile.test.js",
+    "test": "npm run build && node --test lib/holdScenario.test.js lib/privacyScenario.test.js lib/otpScenario.test.js lib/tenantScenario.test.js lib/emergencyScenario.test.js lib/httpClientIp.test.js lib/webhookRawBody.test.js lib/paymentTransactions.test.js lib/messagingQuota.test.js lib/paymentsWebhook.test.js lib/legalProfile.test.js lib/kushki.test.js lib/webhookNative.test.js lib/paymentAccount.test.js",
     "test:emulators": "npm run test"
   },
   "dependencies": {

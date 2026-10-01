@@ -27,7 +27,7 @@ export const SuperAdminDashboard = () => {
   };
 
   return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px 80px' }}>
+    <div style={{ width: '100%' }}>
       <div className="glass-card" style={{
         padding: '22px 26px',
         marginBottom: '24px',

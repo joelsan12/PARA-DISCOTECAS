@@ -7,6 +7,8 @@ import { callableUid } from "./auth.js";
 import { asRecord, assertAllowedKeys, optionalString, requiredId, safeReturnPath, stringValue } from "./validation.js";
 import { dataRecord, timestampMillis } from "./firestore.js";
 import { writeAudit } from "./audit.js";
+import { resolvePaymentSecrets } from "./secretManager.js";
+import { paymentRegistry } from "./providers/index.js";
 function parseInput(value) {
     const record = asRecord(value);
     assertAllowedKeys(record, ["holdId", "holdToken", "returnUrl"]);
@@ -57,7 +59,13 @@ export async function createPaymentSessionFor(request) {
                 currency: typeof hold.currency === "string" ? hold.currency : "USD",
                 expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000,
                 provider: typeof hold.paymentProvider === "string" ? hold.paymentProvider : "pay_at_door",
-                isPayAtDoor: hold.paymentProvider === "pay_at_door" || hold.paymentProvider === "none"
+                isPayAtDoor: hold.paymentProvider === "pay_at_door" || hold.paymentProvider === "none",
+                existingCheckoutUrl: typeof hold.checkoutUrl === "string" ? hold.checkoutUrl : null,
+                businessId: typeof hold.businessId === "string" ? hold.businessId : "",
+                merchantId: "",
+                paymentMode: "CLIENT_GATEWAY",
+                secretRef: undefined,
+                environment: "sandbox"
             };
         }
         const businessId = typeof hold.businessId === "string" ? hold.businessId : "";
@@ -80,6 +88,8 @@ export async function createPaymentSessionFor(request) {
         let paymentMode = "PAY_AT_DOOR";
         let resolvedProvider = "pay_at_door";
         let merchantId = "";
+        let secretRef = undefined;
+        let environment = "sandbox";
         if (paymentAccountSnapshot.exists) {
             const accountData = dataRecord(paymentAccountSnapshot.data());
             const rawMode = accountData.paymentMode;
@@ -95,13 +105,15 @@ export async function createPaymentSessionFor(request) {
                 if (!accMerchantId) {
                     throw new AppError("failed-precondition", "Merchant ID no configurado (PAYMENT_ACCOUNT_NOT_CONFIGURED)", 412);
                 }
-                const secretRef = stringValue(accountData.secretReference, "");
-                if (!secretRef) {
+                const accSecretRef = stringValue(accountData.secretReference, "");
+                if (!accSecretRef) {
                     throw new AppError("failed-precondition", "Credenciales del PSP no configuradas (PAYMENT_SECRET_UNAVAILABLE)", 412);
                 }
                 paymentMode = rawMode;
                 resolvedProvider = accProvider;
                 merchantId = accMerchantId;
+                secretRef = accSecretRef;
+                environment = accountData.environment === "production" ? "production" : "sandbox";
             }
             else if (rawMode === "PAY_AT_DOOR") {
                 paymentMode = "PAY_AT_DOOR";
@@ -205,7 +217,13 @@ export async function createPaymentSessionFor(request) {
             currency,
             expiresAt: expiry ?? Date.now() + runtimeConfig.holdDurationSeconds * 1000,
             provider: resolvedProvider,
-            isPayAtDoor
+            isPayAtDoor,
+            businessId,
+            merchantId,
+            paymentMode,
+            secretRef,
+            environment,
+            existingCheckoutUrl: null
         };
     });
     const holdSnapshotForAudit = await holdReference.get();
@@ -219,6 +237,44 @@ export async function createPaymentSessionFor(request) {
         requestId: getRequestId(request.rawRequest),
         ip: getClientIp(request.rawRequest)
     }, { paymentSessionId: result.paymentSessionId, provider: result.provider });
+    let checkoutUrl = result.existingCheckoutUrl ?? null;
+    if (!result.isPayAtDoor && !checkoutUrl && result.secretRef) {
+        try {
+            const secrets = await resolvePaymentSecrets(result.secretRef);
+            const provider = paymentRegistry.get(result.provider);
+            const session = await provider.createSession({
+                businessId: result.businessId ?? auditBusinessId,
+                provider: (result.provider ?? "kushki"),
+                environment: result.environment ?? "sandbox",
+                merchantId: result.merchantId ?? "",
+                paymentMode: result.paymentMode ?? "CLIENT_GATEWAY",
+                status: "ACTIVE",
+                updatedAt: Date.now()
+            }, secrets, {
+                businessId: result.businessId ?? auditBusinessId,
+                holdId: input.holdId,
+                orderId: input.holdId,
+                amount: result.amount,
+                currency: "USD",
+                description: `Reserva ${input.holdId} en NIGHTFLOW VIP`,
+                customer: {
+                    uid,
+                    email: request.auth?.token?.email ?? "cliente@nightflow.vip"
+                },
+                returnUrl: input.returnUrl ?? "https://nightflow-vip.web.app/"
+            });
+            checkoutUrl = session.checkoutUrl;
+            await holdReference.update({
+                checkoutUrl,
+                updatedAt: FieldValue.serverTimestamp()
+            });
+        }
+        catch (err) {
+            if (!(process.env.FIRESTORE_EMULATOR_HOST && err?.status === 502)) {
+                throw err;
+            }
+        }
+    }
     return {
         holdId: input.holdId,
         paymentSessionId: result.paymentSessionId,
@@ -226,9 +282,7 @@ export async function createPaymentSessionFor(request) {
         amount: result.amount,
         currency: result.currency,
         expiresAt: new Date(result.expiresAt).toISOString(),
-        // Fase A+B: Hosted Checkout solo si hay un proveedor online activo en Fase C.
-        // Cero checkout ficticio en producción.
-        checkoutUrl: null,
+        checkoutUrl,
         provider: result.provider,
         idempotentReplay: result.idempotentReplay
     };

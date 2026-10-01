@@ -40,20 +40,20 @@ export const FloorPlanToolbar: React.FC<Props> = ({
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '16px',
-        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(9, 12, 20, 0.95) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.12)'
+        background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.94) 0%, rgba(8, 8, 12, 0.98) 100%)',
+        border: '1px solid rgba(229, 181, 79, 0.2)'
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{
-              background: 'linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
               padding: '6px',
               borderRadius: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Sliders size={18} color="#040d1a" />
+              <Sliders size={18} color="#08080c" />
             </span>
             <h2 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
               Diseñador de Plano &amp; Mesas
@@ -63,9 +63,9 @@ export const FloorPlanToolbar: React.FC<Props> = ({
               fontWeight: 700,
               padding: '2px 8px',
               borderRadius: '12px',
-              background: 'rgba(0, 240, 255, 0.15)',
-              color: '#00f0ff',
-              border: '1px solid rgba(0, 240, 255, 0.3)'
+              background: 'rgba(229, 181, 79, 0.15)',
+              color: 'var(--brand-gold)',
+              border: '1px solid rgba(229, 181, 79, 0.35)'
             }}>
               {tableCount} mesas activas
             </span>

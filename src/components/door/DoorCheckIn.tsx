@@ -37,9 +37,9 @@ export const DoorCheckIn = () => {
       <div className="glass-card" style={{
         padding: '20px',
         marginBottom: '20px',
-        background: 'linear-gradient(180deg, rgba(16, 22, 34, 0.9) 0%, rgba(8, 11, 18, 0.95) 100%)',
-        border: '1px solid rgba(0, 240, 255, 0.25)',
-        boxShadow: '0 0 30px rgba(0, 240, 255, 0.1)'
+        background: 'linear-gradient(180deg, rgba(16, 16, 24, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
+        border: '1px solid rgba(229, 181, 79, 0.25)',
+        boxShadow: '0 0 30px rgba(229, 181, 79, 0.12)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>

@@ -14,6 +14,7 @@ import { privacyDeletionRequestFor } from "./privacy.js";
 import { releaseHoldTask } from "./tasks.js";
 import { createBusinessTenant as createBusinessTenantLogic } from "./tenant.js";
 import { updateBusinessLegalProfileFor } from "./legalProfile.js";
+import { configurePaymentAccountFor, getPaymentAccountFor } from "./paymentAccount.js";
 
 export { releaseHoldTask };
 
@@ -48,6 +49,32 @@ export const updateBusinessLegalProfile = onCall({
   try {
     assertCallableAppCheck(request);
     return await updateBusinessLegalProfileFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const getPaymentAccount = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await getPaymentAccountFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const configurePaymentAccount = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await configurePaymentAccountFor(request);
   } catch (error) {
     return callableError(error);
   }
@@ -210,13 +237,17 @@ export const paymentWebhook = onRequest({
 }, async (request, response) => {
   try {
     requirePost(request);
-    const signature = getHeader(request, "x-payment-signature") ?? getHeader(request, "x-webhook-signature") ?? getHeader(request, "x-signature");
+    const signature = getHeader(request, "x-payment-signature")
+      ?? getHeader(request, "x-webhook-signature")
+      ?? getHeader(request, "x-signature")
+      ?? getHeader(request, "x-kushki-signature")
+      ?? getHeader(request, "signature");
     const rawParams = (request as unknown as { params?: Record<string, unknown> }).params ?? {};
     const rawQuery = (request.query ?? {}) as Record<string, unknown>;
     const provider = typeof rawParams.provider === "string" ? rawParams.provider : typeof rawQuery.provider === "string" ? rawQuery.provider : getHeader(request, "x-payment-provider");
     const merchantId = typeof rawParams.merchantId === "string" ? rawParams.merchantId : typeof rawQuery.merchantId === "string" ? rawQuery.merchantId : typeof rawQuery.businessId === "string" ? rawQuery.businessId : getHeader(request, "x-merchant-id") ?? getHeader(request, "x-business-id");
 
-    const result = await processPaymentWebhook(rawBody(request), signature, { provider, merchantId });
+    const result = await processPaymentWebhook(rawBody(request), signature, { provider, merchantId }, request.headers);
     setCommonHeaders(response);
     response.status(200).json(result);
   } catch (error) {

@@ -173,10 +173,10 @@ export const AddTableFields: React.FC<Props> = ({
               onClick={() => setNewTableShape(shape)}
               style={{
                 padding: '8px 6px',
-                background: newTableShape === shape ? 'rgba(0, 240, 255, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                border: newTableShape === shape ? '1px solid #00f0ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                background: newTableShape === shape ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                border: newTableShape === shape ? '1px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: 'var(--radius-xs)',
-                color: newTableShape === shape ? '#00f0ff' : '#94a3b8',
+                color: newTableShape === shape ? 'var(--accent)' : '#94a3b8',
                 fontSize: '0.74rem',
                 fontWeight: 700,
                 cursor: 'pointer',

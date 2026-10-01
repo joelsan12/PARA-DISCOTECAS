@@ -70,9 +70,9 @@ export const QrCameraScanner = ({ enabled, onDetect }: Props) => {
       <div style={{
         position: 'relative',
         height: '200px',
-        background: '#04060c',
+        background: '#08080c',
         borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(0, 240, 255, 0.25)',
+        border: '1px solid rgba(229, 181, 79, 0.25)',
         overflow: 'hidden'
       }}>
         <video
@@ -95,17 +95,17 @@ export const QrCameraScanner = ({ enabled, onDetect }: Props) => {
           justifyContent: 'center',
           gap: '6px',
           pointerEvents: 'none',
-          background: status === 'scanning' ? 'transparent' : 'radial-gradient(circle at 50% 50%, rgba(0,240,255,0.06), #04060c)'
+          background: status === 'scanning' ? 'transparent' : 'radial-gradient(circle at 50% 50%, rgba(229,181,79,0.08), #08080c)'
         }}>
-          {status !== 'scanning' && <Camera size={28} color="rgba(0,240,255,0.5)" />}
+          {status !== 'scanning' && <Camera size={28} color="rgba(229,181,79,0.6)" />}
           <div style={{ fontSize: '0.74rem', color: 'var(--accent)', fontWeight: 700, textAlign: 'center', padding: '0 12px' }}>
             {message || 'Iniciando cámara…'}
           </div>
         </div>
-        <div style={{ position: 'absolute', top: '50%', left: '12%', right: '12%', height: '2px', background: 'rgba(0,240,255,0.7)', boxShadow: '0 0 10px #00f0ff', opacity: status === 'scanning' ? 1 : 0.3 }} />
+        <div style={{ position: 'absolute', top: '50%', left: '12%', right: '12%', height: '2px', background: 'rgba(229,181,79,0.85)', boxShadow: '0 0 12px rgba(229, 181, 79, 0.8)', opacity: status === 'scanning' ? 1 : 0.3 }} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-        <span className="badge" style={{ background: 'rgba(0,240,255,0.08)', color: 'var(--accent)', fontSize: '0.68rem' }}>
+        <span className="badge" style={{ background: 'rgba(229,181,79,0.12)', color: 'var(--brand-gold)', border: '1px solid rgba(229,181,79,0.25)', fontSize: '0.68rem' }}>
           <ScanLine size={11} />
           {status === 'scanning' ? 'ESCÁNER ACTIVO' : status.toUpperCase()}
         </span>

@@ -26,9 +26,9 @@ export const AddTableLivePreview: React.FC<Props> = ({
 }) => {
   return (
     <div style={{
-      background: '#04070e',
+      background: '#08080c',
       borderRadius: 'var(--radius-sm)',
-      border: '1px solid rgba(0, 240, 255, 0.25)',
+      border: '1px solid rgba(229, 181, 79, 0.25)',
       padding: '18px',
       display: 'flex',
       flexDirection: 'column',
@@ -92,11 +92,11 @@ export const AddTableLivePreview: React.FC<Props> = ({
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
           <span style={{ color: 'var(--text-muted)' }}>Zona y capacidad:</span>
-          <span>{esTableZone(newTableZone)} · <strong style={{ color: '#00f0ff' }}>{newTableCapacity} personas</strong></span>
+          <span>{esTableZone(newTableZone)} · <strong style={{ color: 'var(--brand-gold)' }}>{newTableCapacity} personas</strong></span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
           <span style={{ color: 'var(--text-muted)' }}>Consumo Mínimo:</span>
-          <strong style={{ color: '#22d3ee' }}>{formatUsd(newTableMinSpend)}</strong>
+          <strong style={{ color: 'var(--brand-gold)' }}>{formatUsd(newTableMinSpend)}</strong>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1' }}>
           <span style={{ color: 'var(--text-muted)' }}>Anticipo Reserva:</span>

@@ -1,4 +1,5 @@
 import type { PaymentAccount, PaymentSecrets, PaymentProvider, CreatePaymentInput, PaymentSession, WebhookVerificationInput, VerifiedPaymentEvent } from "../types/payments.js";
+import { KushkiAdapter } from "./kushki.js";
 /**
  * Proveedor nulo / para pruebas locales herméticas o PAY_AT_DOOR.
  * No genera redirección externa ni Hosted Checkout.
@@ -18,6 +19,7 @@ declare class PaymentProviderRegistry {
     constructor();
     register(provider: PaymentProvider): void;
     get(providerName: string): PaymentProvider;
+    has(providerName: string): boolean;
 }
 export declare const paymentRegistry: PaymentProviderRegistry;
-export {};
+export { KushkiAdapter };

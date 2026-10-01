@@ -90,7 +90,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
           </p>
 
           <p style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginBottom: '24px' }}>
-            AGENTS §10: El rol del personal se valida exclusivamente en el servidor (<code style={{ color: '#00f0ff' }}>businesses/staff</code>).
+            AGENTS §10: El rol del personal se valida exclusivamente en el servidor (<code style={{ color: 'var(--brand-gold)' }}>businesses/staff</code>).
           </p>
 
           {onSignOut && (
@@ -122,7 +122,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#090A0F',
+      background: '#08080c',
       padding: '24px',
       position: 'relative',
       overflow: 'hidden'
@@ -135,7 +135,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
         transform: 'translateX(-50%)',
         width: '500px',
         height: '500px',
-        background: 'radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(229, 181, 79, 0.04) 50%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(229, 181, 79, 0.14) 0%, rgba(207, 160, 56, 0.05) 50%, transparent 70%)',
         pointerEvents: 'none',
         filter: 'blur(60px)'
       }} />
@@ -146,14 +146,14 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
         padding: '36px 32px',
         position: 'relative',
         zIndex: 1,
-        border: '1px solid rgba(0, 240, 255, 0.2)',
-        background: 'linear-gradient(180deg, rgba(16, 20, 30, 0.95) 0%, rgba(9, 11, 17, 0.98) 100%)',
-        boxShadow: '0 0 50px rgba(0, 240, 255, 0.1)'
+        border: '1px solid rgba(229, 181, 79, 0.25)',
+        background: 'linear-gradient(180deg, rgba(16, 16, 24, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
+        boxShadow: '0 0 50px rgba(229, 181, 79, 0.12)'
       }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ marginBottom: '14px' }}>
-            <NightflowLogoMark size={48} theme="cyan" style={{ margin: '0 auto' }} />
+            <NightflowLogoMark size={48} theme="gold" style={{ margin: '0 auto' }} />
           </div>
 
           <div style={{
@@ -162,12 +162,12 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
             gap: '8px',
             padding: '4px 12px',
             borderRadius: '9999px',
-            background: 'rgba(0, 240, 255, 0.1)',
-            border: '1px solid rgba(0, 240, 255, 0.3)',
+            background: 'rgba(229, 181, 79, 0.12)',
+            border: '1px solid rgba(229, 181, 79, 0.3)',
             marginBottom: '16px'
           }}>
-            <ShieldCheck size={14} color="#00f0ff" />
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#00f0ff', letterSpacing: '0.08em' }}>
+            <ShieldCheck size={14} color="var(--brand-gold)" />
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--brand-gold)', letterSpacing: '0.08em' }}>
               AUTENTICACIÓN REQUERIDA · AGENTS §10
             </span>
           </div>
@@ -221,10 +221,10 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                 required
                 style={{
                   width: '100%',
-                  padding: '11px 12px 11px 38px',
+                  padding: '12px 14px 12px 38px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(8, 8, 12, 0.85)',
+                  border: '1px solid rgba(229, 181, 79, 0.3)',
                   color: '#fff',
                   fontSize: '0.86rem',
                   outline: 'none',
@@ -248,10 +248,10 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                 required
                 style={{
                   width: '100%',
-                  padding: '11px 12px 11px 38px',
+                  padding: '12px 14px 12px 38px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(8, 8, 12, 0.85)',
+                  border: '1px solid rgba(229, 181, 79, 0.3)',
                   color: '#fff',
                   fontSize: '0.86rem',
                   outline: 'none',
@@ -268,9 +268,9 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
               marginTop: '6px',
               padding: '12px 18px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #00f0ff 0%, #0284c7 100%)',
+              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
               border: 'none',
-              color: '#090a0f',
+              color: '#08080c',
               fontSize: '0.88rem',
               fontWeight: 800,
               cursor: loading ? 'not-allowed' : 'pointer',
@@ -278,7 +278,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
+              boxShadow: '0 0 22px rgba(229, 181, 79, 0.35)',
               transition: 'all 0.2s ease',
               opacity: loading ? 0.7 : 1
             }}
@@ -308,36 +308,54 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
             <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Modo Desarrollo Local
             </span>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '8px' }}>
               <button
                 type="button"
-                onClick={() => handleDevQuickFill('admin@nightflow.vip')}
+                onClick={() => handleDevQuickFill('superadmin@nightflow.vip')}
                 style={{
                   fontSize: '0.72rem',
-                  padding: '4px 10px',
+                  padding: '5px 12px',
                   borderRadius: '6px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#cbd5e1',
+                  background: 'rgba(234, 179, 8, 0.15)',
+                  border: '1px solid rgba(234, 179, 8, 0.35)',
+                  color: '#facc15',
+                  fontWeight: 700,
                   cursor: 'pointer'
                 }}
               >
-                Auto-fill Admin
+                👑 Auto-fill SuperAdmin
               </button>
               <button
                 type="button"
-                onClick={() => handleDevQuickFill('puerta@barahunda.com')}
+                onClick={() => handleDevQuickFill('admin@sensorial.club')}
                 style={{
                   fontSize: '0.72rem',
-                  padding: '4px 10px',
+                  padding: '5px 12px',
                   borderRadius: '6px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#cbd5e1',
+                  background: 'rgba(229, 181, 79, 0.15)',
+                  border: '1px solid rgba(229, 181, 79, 0.35)',
+                  color: 'var(--brand-gold)',
+                  fontWeight: 600,
                   cursor: 'pointer'
                 }}
               >
-                Auto-fill Puerta
+                🏢 Auto-fill Admin Club
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDevQuickFill('puerta@sensorial.club')}
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#cbd5e1',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                🚪 Auto-fill Puerta
               </button>
             </div>
           </div>

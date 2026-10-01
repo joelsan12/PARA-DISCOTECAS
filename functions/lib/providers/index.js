@@ -1,4 +1,5 @@
 import { AppError } from "../errors.js";
+import { KushkiAdapter } from "./kushki.js";
 /**
  * Proveedor nulo / para pruebas locales herméticas o PAY_AT_DOOR.
  * No genera redirección externa ni Hosted Checkout.
@@ -23,6 +24,7 @@ class PaymentProviderRegistry {
     providers = new Map();
     constructor() {
         this.register(new NonePaymentProvider());
+        this.register(new KushkiAdapter());
     }
     register(provider) {
         this.providers.set(provider.name.toLowerCase(), provider);
@@ -35,6 +37,10 @@ class PaymentProviderRegistry {
         }
         return provider;
     }
+    has(providerName) {
+        return this.providers.has((providerName || "").toLowerCase());
+    }
 }
 export const paymentRegistry = new PaymentProviderRegistry();
+export { KushkiAdapter };
 //# sourceMappingURL=index.js.map

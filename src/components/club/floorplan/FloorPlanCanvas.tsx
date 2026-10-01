@@ -43,14 +43,14 @@ export const FloorPlanCanvas: React.FC<Props> = ({
   return (
     <div className="glass-card" style={{
       padding: '20px',
-      background: '#070a0f',
-      border: '1px solid rgba(255, 255, 255, 0.12)',
+      background: '#08080c',
+      border: '1px solid rgba(229, 181, 79, 0.2)',
       borderRadius: 'var(--radius-md)',
       position: 'relative'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
         <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Move size={14} color="#00f0ff" />
+          <Move size={14} color="var(--brand-gold)" />
           Haz clic y <strong>arrastra cualquier mesa</strong> para reposicionarla con guías láser
         </span>
 
@@ -67,9 +67,9 @@ export const FloorPlanCanvas: React.FC<Props> = ({
               fontSize: '0.73rem',
               borderRadius: '12px',
               cursor: 'pointer',
-              background: snapToGrid ? 'rgba(0, 240, 255, 0.15)' : 'rgba(255,255,255,0.05)',
-              border: snapToGrid ? '1px solid #00f0ff' : '1px solid rgba(255,255,255,0.1)',
-              color: snapToGrid ? '#00f0ff' : 'var(--text-muted)',
+              background: snapToGrid ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255,255,255,0.05)',
+              border: snapToGrid ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+              color: snapToGrid ? 'var(--brand-gold)' : 'var(--text-muted)',
               fontWeight: 600,
               transition: 'all 0.15s ease'
             }}
@@ -83,9 +83,9 @@ export const FloorPlanCanvas: React.FC<Props> = ({
           {isDragging && draggedTable && (
             <span style={{
               fontSize: '0.73rem',
-              color: '#00f0ff',
-              background: 'rgba(0, 240, 255, 0.18)',
-              border: '1px solid #00f0ff',
+              color: 'var(--brand-gold)',
+              background: 'rgba(229, 181, 79, 0.18)',
+              border: '1px solid var(--accent)',
               padding: '3px 10px',
               borderRadius: '12px',
               fontWeight: 800,
@@ -93,7 +93,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
               alignItems: 'center',
               gap: '6px',
               fontFamily: 'monospace',
-              boxShadow: '0 0 12px rgba(0, 240, 255, 0.4)'
+              boxShadow: '0 0 14px rgba(229, 181, 79, 0.4)'
             }}>
               <Crosshair size={12} className="animate-spin" />
               {draggedTable.table_code} · X:{draggedTable.x}% Y:{draggedTable.y}%
@@ -137,10 +137,10 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             const cy = (draggedTable.y / 100) * viewBoxHeight;
             return (
               <g pointerEvents="none" opacity="0.9">
-                <line x1="0" y1={cy} x2={viewBoxWidth} y2={cy} stroke="#00f0ff" strokeWidth="1.2" strokeDasharray="4 4" />
-                <line x1={cx} y1="0" x2={cx} y2={viewBoxHeight} stroke="#00f0ff" strokeWidth="1.2" strokeDasharray="4 4" />
-                <circle cx={cx} cy={cy} r="28" fill="none" stroke="#00f0ff" strokeWidth="1" strokeDasharray="2 3" opacity="0.7" />
-                <circle cx={cx} cy={cy} r="46" fill="none" stroke="#00f0ff" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+                <line x1="0" y1={cy} x2={viewBoxWidth} y2={cy} stroke="var(--brand-gold)" strokeWidth="1.2" strokeDasharray="4 4" />
+                <line x1={cx} y1="0" x2={cx} y2={viewBoxHeight} stroke="var(--brand-gold)" strokeWidth="1.2" strokeDasharray="4 4" />
+                <circle cx={cx} cy={cy} r="28" fill="none" stroke="var(--brand-gold)" strokeWidth="1" strokeDasharray="2 3" opacity="0.7" />
+                <circle cx={cx} cy={cy} r="46" fill="none" stroke="var(--brand-gold)" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
               </g>
             );
           })()}
@@ -175,9 +175,9 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   transform={`rotate(${rot}, ${cx}, ${cy})`}
                   style={{
                     filter: isBeingDragged
-                      ? 'drop-shadow(0 0 14px rgba(0, 240, 255, 0.9))'
+                      ? 'drop-shadow(0 0 14px rgba(229, 181, 79, 0.9))'
                       : isSelected
-                      ? 'drop-shadow(0 0 8px rgba(0, 240, 255, 0.4))'
+                      ? 'drop-shadow(0 0 8px rgba(229, 181, 79, 0.5))'
                       : isHovered
                       ? 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.35))'
                       : 'none',
@@ -194,7 +194,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                         height={isAmphi ? 50 : 52}
                         rx={isAmphi ? 16 : 20}
                         fill="none"
-                        stroke="#00f0ff"
+                        stroke="var(--brand-gold)"
                         strokeWidth="3"
                         strokeDasharray={isBeingDragged ? '4 4' : 'none'}
                         opacity={1}
@@ -205,7 +205,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                         cy={cy}
                         r={radius + (isAmphi ? 5 : 8)}
                         fill="none"
-                        stroke="#00f0ff"
+                        stroke="var(--brand-gold)"
                         strokeWidth="3"
                         strokeDasharray={isBeingDragged ? '4 4' : 'none'}
                         opacity={1}

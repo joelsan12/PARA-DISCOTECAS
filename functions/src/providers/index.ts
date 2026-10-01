@@ -8,6 +8,7 @@ import type {
   VerifiedPaymentEvent
 } from "../types/payments.js";
 import { AppError } from "../errors.js";
+import { KushkiAdapter } from "./kushki.js";
 
 /**
  * Proveedor nulo / para pruebas locales herméticas o PAY_AT_DOOR.
@@ -50,6 +51,7 @@ class PaymentProviderRegistry {
 
   constructor() {
     this.register(new NonePaymentProvider());
+    this.register(new KushkiAdapter());
   }
 
   register(provider: PaymentProvider): void {
@@ -64,6 +66,11 @@ class PaymentProviderRegistry {
     }
     return provider;
   }
+
+  has(providerName: string): boolean {
+    return this.providers.has((providerName || "").toLowerCase());
+  }
 }
 
 export const paymentRegistry = new PaymentProviderRegistry();
+export { KushkiAdapter };

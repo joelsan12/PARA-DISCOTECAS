@@ -28,12 +28,14 @@ const inputStyle = {
   width: '100%',
   padding: '10px 12px',
   borderRadius: 'var(--radius-sm)',
-  background: 'var(--bg-input)',
-  border: '1px solid var(--border)',
+  background: 'rgba(8, 8, 12, 0.85)',
+  border: '1px solid rgba(229, 181, 79, 0.2)',
   color: '#fff',
   fontSize: '0.88rem',
   fontWeight: 600,
-  fontFamily: 'inherit'
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+  outline: 'none',
 } as const;
 
 const errorStyle = {
@@ -91,10 +93,26 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
   };
 
   return (
-    <div className="glass-card" style={{ padding: '22px' }}>
-      <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
-        Identidad Legal & Fiscal del Club
-      </h3>
+    <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)', border: '1px solid rgba(229, 181, 79, 0.2)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+          Identidad Legal & Fiscal del Club
+        </h3>
+        <span
+          style={{
+            fontSize: '0.66rem',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            padding: '3px 8px',
+            borderRadius: '4px',
+            background: 'rgba(229, 181, 79, 0.12)',
+            color: 'var(--brand-gold)',
+            border: '1px solid rgba(229, 181, 79, 0.28)',
+          }}
+        >
+          CUMPLIMIENTO TRIBUTARIO SRI
+        </span>
+      </div>
       <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
         Estos datos identifican al <strong>organizador y vendedor real</strong> de las entradas y reservas.
         Se muestran en el checkout antes de cobrar: los precios, cobros y políticas de reembolso
@@ -253,8 +271,26 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
             <AlertCircle size={13} />
             Los campos con * son obligatorios. El RUC se valida con el dígito verificador oficial del SRI.
           </span>
-          <button type="submit" className="btn-primary" disabled={saving} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px' }}>
-            {saving ? <Loader2 size={15} /> : <Save size={15} />}
+          <button
+            type="submit"
+            disabled={saving}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 24px',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
+              color: '#08080c',
+              border: 'none',
+              fontWeight: 800,
+              fontSize: '0.84rem',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              boxShadow: '0 0 18px rgba(229, 181, 79, 0.3)',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {saving ? <Loader2 size={15} className="spin" /> : <Save size={15} />}
             {saving ? 'Guardando…' : 'Guardar identidad legal'}
           </button>
         </div>

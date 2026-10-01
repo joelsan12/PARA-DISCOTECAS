@@ -761,9 +761,9 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
       <div style={{
         position: 'relative',
         height: '170px',
-        background: 'radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.05) 0%, #060910 100%)',
+        background: 'radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.08) 0%, #08080c 100%)',
         borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(0, 240, 255, 0.2)',
+        border: '1px solid rgba(229, 181, 79, 0.25)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -772,11 +772,11 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         overflow: 'hidden'
       }}>
         <div className="laser-line" />
-        <div style={{ position: 'absolute', top: '10px', left: '10px', width: '16px', height: '16px', borderTop: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
-        <div style={{ position: 'absolute', top: '10px', right: '10px', width: '16px', height: '16px', borderTop: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
-        <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '16px', height: '16px', borderBottom: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
-        <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '16px', height: '16px', borderBottom: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
-        <ScanLine size={44} color="rgba(0, 240, 255, 0.45)" style={{ marginBottom: '8px' }} />
+        <div style={{ position: 'absolute', top: '10px', left: '10px', width: '16px', height: '16px', borderTop: '2px solid var(--accent)', borderLeft: '2px solid var(--accent)' }} />
+        <div style={{ position: 'absolute', top: '10px', right: '10px', width: '16px', height: '16px', borderTop: '2px solid var(--accent)', borderRight: '2px solid var(--accent)' }} />
+        <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '16px', height: '16px', borderBottom: '2px solid var(--accent)', borderLeft: '2px solid var(--accent)' }} />
+        <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '16px', height: '16px', borderBottom: '2px solid var(--accent)', borderRight: '2px solid var(--accent)' }} />
+        <ScanLine size={44} color="rgba(229, 181, 79, 0.5)" style={{ marginBottom: '8px' }} />
         <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.04em' }}>
           VERIFICACIÓN LOCAL DE FIRMA JWS
         </div>

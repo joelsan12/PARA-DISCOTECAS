@@ -28,7 +28,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
             Ajuste Fino de Posición
           </span>
-          <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: '#00f0ff' }}>
+          <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--brand-gold)' }}>
             X: {selectedTable.x}% · Y: {selectedTable.y}%
           </span>
         </div>

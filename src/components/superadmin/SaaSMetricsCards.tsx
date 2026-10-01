@@ -33,7 +33,7 @@ export const SaaSMetricsCards = ({
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid #00f0ff' }}>
+      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid var(--brand-gold)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
             Discotecas conectadas
@@ -43,7 +43,7 @@ export const SaaSMetricsCards = ({
         <div className="font-mono" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent)', marginTop: '6px' }}>
           {activeClubs} <span style={{ fontSize: '0.88rem', color: 'var(--text-dim)' }}>/ {totalClubs}</span>
         </div>
-        <div style={{ fontSize: '0.74rem', color: '#38bdf8', marginTop: '4px' }}>
+        <div style={{ fontSize: '0.74rem', color: '#f5d38a', marginTop: '4px' }}>
           Instancias multiempresa activas
         </div>
       </div>

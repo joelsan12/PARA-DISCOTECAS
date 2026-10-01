@@ -29,15 +29,16 @@ export const appCheckProviderName = (env.VITE_APPCHECK_PROVIDER || 'recaptcha_v3
 export const appCheckDebugToken = env.DEV ? (env.VITE_APPCHECK_DEBUG_TOKEN || '') : '';
 export const functionsRegion = (env.VITE_FUNCTIONS_REGION || 'us-central1').toLowerCase();
 
+const allowDevFallback = Boolean(env.DEV) && env.VITE_USE_EMULATORS !== 'false' && env.VITE_USE_EMULATORS !== '0';
 export const useEmulators = env.VITE_USE_EMULATORS === '1'
   || env.VITE_USE_EMULATORS === 'true'
-  || Boolean(env.DEV);
+  || allowDevFallback;
 export const useAuthEmulator = env.VITE_USE_AUTH_EMULATOR === '1'
   || env.VITE_USE_AUTH_EMULATOR === 'true'
-  || Boolean(env.DEV);
+  || allowDevFallback;
 export const useFunctionsEmulator = env.VITE_USE_FUNCTIONS_EMULATOR === '1'
   || env.VITE_USE_FUNCTIONS_EMULATOR === 'true'
-  || Boolean(env.DEV);
+  || allowDevFallback;
 export const emulatorHost = (env.VITE_EMULATOR_HOST || '127.0.0.1').split(':')[0] || '127.0.0.1';
 export const functionsEmulatorPort = Number(env.VITE_FUNCTIONS_EMULATOR_PORT || 5001);
 

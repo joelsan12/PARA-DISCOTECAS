@@ -12,10 +12,57 @@
 }
 
 .card-hover:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(22, 28, 42, 0.75);
+  border-color: rgba(229, 181, 79, 0.3);
+  background: rgba(18, 18, 27, 0.95);
   transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(229, 181, 79, 0.12);
+}
+
+/* Executive Obsidian & Champagne Gold Glass Card */
+.glass-card {
+  background: linear-gradient(180deg, rgba(14, 14, 21, 0.94) 0%, rgba(8, 8, 12, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 181, 79, 0.18);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 44px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(229, 181, 79, 0.38);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 24px rgba(229, 181, 79, 0.18);
+  transform: translateY(-2px);
+}
+
+/* Luxury Action Button */
+.btn-luxury-action {
+  background: linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%);
+  color: #08080c !important;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 18px rgba(229, 181, 79, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-luxury-action:hover {
+  background: linear-gradient(135deg, #fae0a2 0%, #f0c365 50%, #dbad45 100%);
+  box-shadow: 0 6px 24px rgba(229, 181, 79, 0.5);
+  transform: translateY(-1px);
+  color: #08080c !important;
+}
+
+.btn-luxury-action:active {
+  transform: translateY(0);
 }
 
 /* High-End Luxury Gold Buttons */

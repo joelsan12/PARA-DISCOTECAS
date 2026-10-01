@@ -153,8 +153,8 @@ export const FloorPlanBackdrops: React.FC<{ layoutType: ClubLayoutType }> = ({ l
       <text x="400" y="58" fill="#ffffff" fontSize="18" fontWeight="800" textAnchor="middle" letterSpacing="4" fontFamily="var(--font-brand)">
         ESCENARIO PRINCIPAL
       </text>
-      <rect x="330" y="270" width="140" height="50" rx="8" fill="#0f172a" stroke="#00f0ff" strokeWidth="2" />
-      <text x="400" y="301" fill="#00f0ff" fontSize="16" fontWeight="900" textAnchor="middle" letterSpacing="3" fontFamily="var(--font-brand)">
+      <rect x="330" y="270" width="140" height="50" rx="8" fill="#14141e" stroke="var(--brand-gold)" strokeWidth="2" />
+      <text x="400" y="301" fill="var(--brand-gold)" fontSize="16" fontWeight="900" textAnchor="middle" letterSpacing="3" fontFamily="var(--font-brand)">
         CABINA DEL DJ
       </text>
       <circle cx="400" cy="295" r="140" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="2" strokeDasharray="6 6" />

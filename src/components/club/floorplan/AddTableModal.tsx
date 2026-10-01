@@ -64,14 +64,14 @@ export const AddTableModal: React.FC<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
-              background: 'linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%)',
+              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
               padding: '6px',
               borderRadius: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <Plus size={16} color="#040d1a" />
+              <Plus size={16} color="#08080c" />
             </span>
             <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
               Nueva Mesa VIP

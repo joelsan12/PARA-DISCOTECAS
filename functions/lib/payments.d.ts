@@ -11,7 +11,7 @@ export interface PaymentWebhookRouting {
     merchantId?: string | undefined;
     businessId?: string | undefined;
 }
-export declare function processPaymentWebhook(raw: Buffer, signatureHeader: string | undefined, routing?: PaymentWebhookRouting): Promise<PaymentResult>;
+export declare function processPaymentWebhook(raw: Buffer, signatureHeader: string | undefined, routing?: PaymentWebhookRouting, headers?: Record<string, string | string[] | undefined>): Promise<PaymentResult>;
 /**
  * Función de conciliación de estado financiero (Fase A)
  */

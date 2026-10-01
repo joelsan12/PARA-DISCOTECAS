@@ -72,32 +72,49 @@ interface Props {
 
 export const AuditLogsView = ({ auditLogs }: Props) => {
   return (
-    <div className="glass-card" style={{ padding: '22px' }}>
-      <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', marginBottom: '14px' }}>
-        Registro Inmutable de Eventos del Sistema
-      </h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
+    <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)', border: '1px solid rgba(229, 181, 79, 0.2)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+          Registro Inmutable de Eventos del Sistema
+        </h3>
+        <span
+          style={{
+            fontSize: '0.66rem',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            padding: '3px 8px',
+            borderRadius: '4px',
+            background: 'rgba(229, 181, 79, 0.12)',
+            color: 'var(--brand-gold)',
+            border: '1px solid rgba(229, 181, 79, 0.28)',
+          }}
+        >
+          BITÁCORA SEGURA AGENTS §2.1
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '440px', overflowY: 'auto' }}>
         {auditLogs.map(log => (
           <div
             key={log.id}
             style={{
               background: 'rgba(255, 255, 255, 0.025)',
-              padding: '10px 14px',
+              padding: '12px 16px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid rgba(255, 255, 255, 0.05)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              fontSize: '0.82rem'
+              fontSize: '0.82rem',
+              transition: 'all 0.15s ease'
             }}
           >
             <div>
-              <span className="badge" style={{ background: 'rgba(0, 240, 255, 0.1)', color: 'var(--accent)' }}>
+              <span className="badge" style={{ background: 'rgba(229, 181, 79, 0.12)', color: 'var(--brand-gold)', border: '1px solid rgba(229, 181, 79, 0.25)', fontSize: '0.72rem' }}>
                 {formatAuditAction(log.action)}
               </span>
-              <span style={{ color: '#e2e8f0', marginLeft: '10px' }}>{formatAuditDetails(log.details)}</span>
+              <span style={{ color: '#e2e8f0', marginLeft: '12px' }}>{formatAuditDetails(log.details)}</span>
             </div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
               {new Date(log.timestamp).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'America/Guayaquil' })}
             </span>
           </div>

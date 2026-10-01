@@ -132,8 +132,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'rgba(8, 8, 12, 0.85)',
+                border: '1px solid rgba(229, 181, 79, 0.25)',
                 borderRadius: 'var(--radius-xs)',
                 color: '#fff',
                 fontSize: '0.85rem',
@@ -153,8 +153,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'rgba(8, 8, 12, 0.85)',
+                border: '1px solid rgba(229, 181, 79, 0.25)',
                 borderRadius: 'var(--radius-xs)',
                 color: '#fff',
                 fontSize: '0.85rem',
@@ -175,8 +175,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                background: '#0d131f',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'rgba(8, 8, 12, 0.85)',
+                border: '1px solid rgba(229, 181, 79, 0.25)',
                 borderRadius: 'var(--radius-xs)',
                 color: '#fff',
                 fontSize: '0.82rem',
@@ -184,7 +184,7 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               }}
             >
               {ZONE_OPTIONS.map(z => (
-                <option key={z} value={z}>{esTableZone(z)}</option>
+                <option key={z} value={z} style={{ background: '#0e121a' }}>{esTableZone(z)}</option>
               ))}
             </select>
           </div>
@@ -202,8 +202,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'rgba(8, 8, 12, 0.85)',
+                border: '1px solid rgba(229, 181, 79, 0.25)',
                 borderRadius: 'var(--radius-xs)',
                 color: '#fff',
                 fontSize: '0.85rem',
@@ -229,9 +229,9 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
                   borderRadius: 'var(--radius-xs)',
                   fontSize: '0.72rem',
                   fontWeight: 700,
-                  background: selectedTable.shape === shape ? 'rgba(0, 240, 255, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                  color: selectedTable.shape === shape ? '#00f0ff' : 'var(--text-muted)',
-                  border: selectedTable.shape === shape ? '1px solid #00f0ff' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: selectedTable.shape === shape ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                  color: selectedTable.shape === shape ? 'var(--brand-gold)' : 'var(--text-muted)',
+                  border: selectedTable.shape === shape ? '1px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
                   cursor: 'pointer'
                 }}
               >

@@ -20,10 +20,10 @@ export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetC
       <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 700 }}>Arquetipo:</span>
       <div style={{
         display: 'flex',
-        background: 'rgba(255, 255, 255, 0.05)',
+        background: 'rgba(8, 8, 12, 0.85)',
         padding: '3px',
         borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(229, 181, 79, 0.25)',
         gap: '4px',
         flexWrap: 'wrap'
       }}>
@@ -37,9 +37,9 @@ export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetC
               style={{
                 padding: '5px 11px',
                 borderRadius: 'var(--radius-xs)',
-                background: isActive ? 'linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%)' : 'transparent',
+                background: isActive ? 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)' : 'transparent',
                 border: 'none',
-                color: isActive ? '#040d1a' : '#cbd5e1',
+                color: isActive ? '#08080c' : '#cbd5e1',
                 fontSize: '0.78rem',
                 fontWeight: isActive ? 800 : 600,
                 cursor: 'pointer',
