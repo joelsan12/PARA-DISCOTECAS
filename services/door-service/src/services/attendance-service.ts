@@ -72,10 +72,198 @@ export class AttendanceService {
     if (rawEvents.length === 0) throw new BadRequestError('events no puede estar vacío')
     if (rawEvents.length > this.config.maxBatchSize) throw new BadRequestError('events excede el tamaño máximo')
 
-    const results: AttendanceResult[] = []
-    for (const rawEvent of rawEvents) {
-      results.push(await this.syncOne(businessId, rawEvent, now))
+    // Fast path para eventos unitarios
+    const firstRaw = rawEvents[0]
+    if (rawEvents.length === 1 && firstRaw) {
+      const result = await this.syncOne(businessId, firstRaw, now)
+      return {
+        results: [result],
+        accepted: result.status === 'ACCEPTED' ? 1 : 0,
+        conflicts: result.status === 'CONFLICT' ? 1 : 0,
+        rejected: result.status === 'REJECTED' ? 1 : 0
+      }
     }
+
+    // Ruta optimizada por lote con memoización dentro del request
+    const eventCache = new Map<string, Promise<EventRecord | null>>()
+    const ticketCache = new Map<string, Promise<TicketRecord | null>>()
+    const emergencyCache = new Map<string, Promise<{ allowed: boolean; reason?: string; status: EmergencyStatus }>>()
+
+    const getCachedEvent = (bId: string, evId: string) => {
+      const key = `${bId}:${evId}`
+      let cached = eventCache.get(key)
+      if (!cached) {
+        cached = this.readEvent(bId, evId)
+        eventCache.set(key, cached)
+      }
+      return cached
+    }
+
+    const getCachedTicket = (bId: string, tId: string) => {
+      const key = `${bId}:${tId}`
+      let cached = ticketCache.get(key)
+      if (!cached) {
+        cached = this.readTicket(bId, tId)
+        ticketCache.set(key, cached)
+      }
+      return cached
+    }
+
+    const getCachedEmergency = (bId: string, evId: string, devId: string, revVer: number, occAt: number) => {
+      const key = `${bId}:${evId}:${devId}:${revVer}`
+      let cached = emergencyCache.get(key)
+      if (!cached) {
+        cached = this.readEmergency(bId, evId, devId, revVer, occAt)
+        emergencyCache.set(key, cached)
+      }
+      return cached
+    }
+
+    const outcomes: (AttendanceResult | null)[] = new Array(rawEvents.length).fill(null)
+    const validInputs: Array<{
+      index: number
+      event: NormalizedAttendanceEvent
+      commitInput: AttendanceCommitInput
+    }> = []
+
+    for (let i = 0; i < rawEvents.length; i++) {
+      const rawEvent = rawEvents[i]
+      if (!rawEvent || !isRecord(rawEvent)) throw new BadRequestError('Cada evento debe ser un objeto')
+
+      let event: NormalizedAttendanceEvent
+      try {
+        event = await this.normalizeEvent(businessId, rawEvent, now)
+      } catch (error) {
+        if (error instanceof HttpError && error.statusCode === 401) {
+          const reason = error.message === 'DEVICE_NOT_ENROLLED' || error.message === 'DEVICE_SIGNATURE_INVALID'
+            ? error.message
+            : 'DEVICE_SIGNATURE_INVALID'
+          outcomes[i] = this.rejected(this.fallbackEvent(businessId, rawEvent, now), reason)
+          continue
+        }
+        throw error
+      }
+
+      if (this.trueClaim(event.signedPayload, 'eventCanceled', 'event_canceled', 'canceled', 'cancelled', 'revoked')) {
+        outcomes[i] = this.rejected(event, 'EVENT_CANCELED')
+        continue
+      }
+
+      const [eventRecord, ticketRecord] = await Promise.all([
+        getCachedEvent(event.businessId, event.eventId),
+        getCachedTicket(event.businessId, event.ticketId)
+      ])
+
+      if (!eventRecord) {
+        outcomes[i] = this.rejected(event, 'EVENT_NOT_FOUND')
+        continue
+      }
+      if (!ticketRecord) {
+        outcomes[i] = this.rejected(event, 'TICKET_NOT_FOUND')
+        continue
+      }
+      if (eventRecord.canceled || ticketRecord.eventCanceled) {
+        outcomes[i] = this.rejected(event, 'EVENT_CANCELED')
+        continue
+      }
+      if (ticketRecord.revoked) {
+        outcomes[i] = this.rejected(event, 'TICKET_REVOKED')
+        continue
+      }
+      if (eventRecord.venueId && eventRecord.venueId !== event.venueId) {
+        outcomes[i] = this.rejected(event, 'VENUE_MISMATCH')
+        continue
+      }
+      if (ticketRecord.eventId && ticketRecord.eventId !== event.eventId) {
+        outcomes[i] = this.rejected(event, 'EVENT_MISMATCH')
+        continue
+      }
+      if (ticketRecord.venueId && ticketRecord.venueId !== event.venueId) {
+        outcomes[i] = this.rejected(event, 'VENUE_MISMATCH')
+        continue
+      }
+      if (ticketRecord.deviceId && ticketRecord.deviceId !== event.deviceId) {
+        outcomes[i] = this.rejected(event, 'DEVICE_MISMATCH')
+        continue
+      }
+      if (ticketRecord.revocationVersion > event.revocationVersion || eventRecord.revocationVersion > event.revocationVersion) {
+        outcomes[i] = this.rejected(event, 'TOKEN_REVOKED')
+        continue
+      }
+
+      const emergency = await getCachedEmergency(event.businessId, event.eventId, event.deviceId, event.revocationVersion, event.occurredAt)
+      if (!emergency.allowed) {
+        outcomes[i] = this.rejected(event, emergency.reason ?? 'REVOKED')
+        continue
+      }
+
+      const commitInput: AttendanceCommitInput = {
+        businessId: event.businessId,
+        eventId: event.eventId,
+        venueId: event.venueId,
+        ticketId: event.ticketId,
+        deviceId: event.deviceId,
+        jti: event.jti,
+        deviceSequence: event.deviceSequence,
+        occurredAt: event.occurredAt,
+        action: event.action,
+        signature: event.signature,
+        payloadHash: hashValue({
+          jti: event.jti,
+          businessId: event.businessId,
+          eventId: event.eventId,
+          venueId: event.venueId,
+          ticketId: event.ticketId,
+          deviceId: event.deviceId,
+          deviceSequence: event.deviceSequence,
+          action: event.action,
+          requestedState: event.requestedState,
+          occurredAt: event.occurredAt,
+          claims: event.signedPayload
+        }),
+        decide: (session) => this.decide(session, event, eventRecord, ticketRecord, emergency.status, now)
+      }
+
+      validInputs.push({ index: i, event, commitInput })
+    }
+
+    if (validInputs.length > 0) {
+      try {
+        const commitInputs = validInputs.map((v) => v.commitInput)
+        const commitResults = typeof this.repository.commitAttendanceBatch === 'function'
+          ? await this.repository.commitAttendanceBatch(commitInputs)
+          : await Promise.all(commitInputs.map((ci) => this.repository.commitAttendance(ci)))
+
+        for (let k = 0; k < validInputs.length; k++) {
+          const item = validInputs[k]
+          const committed = commitResults[k]
+          if (!item || !committed) continue
+          const { index, event } = item
+          outcomes[index] = {
+            jti: event.jti,
+            deviceId: event.deviceId,
+            deviceSequence: event.deviceSequence,
+            status: committed.status,
+            previousPresence: committed.stateBefore,
+            previousState: committed.stateBefore,
+            presence: committed.stateAfter,
+            state: committed.stateAfter,
+            sanction: 'NONE',
+            idempotent: committed.duplicate,
+            reentryCount: committed.reentryCount,
+            reentryExpiresAt: committed.reentryExpiresAt === undefined ? undefined : new Date(committed.reentryExpiresAt).toISOString(),
+            reason: committed.reason
+          }
+        }
+      } catch (error) {
+        if (this.isDependencyFailure(error)) {
+          throw new ServiceUnavailableError('Firestore no está disponible')
+        }
+        throw error
+      }
+    }
+
+    const results = outcomes as AttendanceResult[]
     return {
       results,
       accepted: results.filter((result) => result.status === 'ACCEPTED').length,

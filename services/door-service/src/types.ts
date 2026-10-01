@@ -166,6 +166,7 @@ export interface DoorRepository {
   getDeviceKey(businessId: string, kid: string): Promise<DeviceKeyRecord | null>
   putDeviceKey(record: DeviceKeyRecord): Promise<void>
   commitAttendance(input: AttendanceCommitInput): Promise<AttendanceCommitResult>
+  commitAttendanceBatch?(inputs: AttendanceCommitInput[]): Promise<AttendanceCommitResult[]>
 }
 
 export interface AttendanceEventRequest {

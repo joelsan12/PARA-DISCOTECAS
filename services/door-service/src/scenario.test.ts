@@ -228,6 +228,17 @@ class MemoryDoorRepository implements DoorRepository {
     }
   }
 
+  commitBatchCalls = 0
+
+  async commitAttendanceBatch(inputs: AttendanceCommitInput[]): Promise<AttendanceCommitResult[]> {
+    this.commitBatchCalls++
+    const results: AttendanceCommitResult[] = []
+    for (const input of inputs) {
+      results.push(await this.commitAttendance(input))
+    }
+    return results
+  }
+
   private recordIncident(input: AttendanceCommitInput, conflictingJti: string, reason: string): void {
     this.incidents.push({
       businessId: input.businessId,
@@ -798,3 +809,61 @@ test('Hallazgo #6: rawEvent sin firmar no puede sobreescribir action ni presence
   assert.ok(result.results[0])
   assert.equal(result.results[0].status, 'REJECTED')
 })
+
+test('Optimización por lote: sincronización masiva con commitAttendanceBatch y transiciones en cadena', async () => {
+  const repo = new MemoryDoorRepository()
+  seedWorld(repo)
+  const service = createService(repo)
+
+  const now = Date.now()
+  // Evento 1: Check-in legítimo
+  const ev1 = signEvent(baseFields({
+    jti: 'jti_batch_1',
+    deviceId: 'door-1',
+    deviceSequence: 1,
+    action: 'CHECK_IN',
+    occurredAt: now
+  }))
+
+  // Evento 2: Salida temporal legítima
+  const ev2 = signEvent(baseFields({
+    jti: 'jti_batch_2',
+    deviceId: 'door-1',
+    deviceSequence: 2,
+    action: 'EXIT',
+    occurredAt: now + 1000
+  }))
+
+  // Evento 3: Mismo jti y payload que ev1 (duplicado idempotente en el lote)
+  const ev3 = { ...ev1 }
+
+  // Evento 4: Evento con firma corrupta (debe ser rechazado sin detener el lote)
+  const ev4 = {
+    ...baseFields({
+      jti: 'jti_batch_corrupt',
+      deviceId: 'door-1',
+      deviceSequence: 3,
+      action: 'CHECK_IN'
+    }),
+    signature: 'bad-signature'
+  }
+
+  const result = await service.sync(BUSINESS_ID, [ev1, ev2, ev3, ev4])
+
+  assert.equal(repo.commitBatchCalls, 1, 'Debe invocar commitAttendanceBatch exactamente una vez para el lote')
+  assert.equal(result.accepted, 3, 'Los eventos 1, 2 y el duplicado 3 se aceptan')
+  assert.equal(result.rejected, 1, 'El evento 4 corrupto debe ser rechazado')
+
+  assert.equal(result.results.length, 4)
+  assert.equal(result.results[0]?.status, 'ACCEPTED')
+  assert.equal(result.results[0]?.presence, 'INSIDE')
+
+  assert.equal(result.results[1]?.status, 'ACCEPTED')
+  assert.equal(result.results[1]?.presence, 'OUTSIDE_TEMPORARY')
+
+  assert.equal(result.results[2]?.status, 'ACCEPTED')
+  assert.equal(result.results[2]?.idempotent, true)
+
+  assert.equal(result.results[3]?.status, 'REJECTED')
+})
+

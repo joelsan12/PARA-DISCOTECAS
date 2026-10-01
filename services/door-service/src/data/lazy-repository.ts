@@ -44,6 +44,10 @@ export class LazyFirestoreDoorRepository implements DoorRepository {
     return this.getDelegate().commitAttendance(input)
   }
 
+  async commitAttendanceBatch(inputs: AttendanceCommitInput[]): Promise<AttendanceCommitResult[]> {
+    return this.getDelegate().commitAttendanceBatch(inputs)
+  }
+
   private getDelegate(): FirestoreDoorRepository {
     if (!this.delegate) {
       let db: Firestore

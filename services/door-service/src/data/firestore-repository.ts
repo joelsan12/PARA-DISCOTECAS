@@ -1,4 +1,4 @@
-import { FieldValue, type Firestore } from 'firebase-admin/firestore'
+import { FieldValue, type DocumentReference, type DocumentSnapshot, type Firestore } from 'firebase-admin/firestore'
 import { normalizeCustomer, normalizeEvent, normalizeRevocation, normalizeSession, normalizeStaff, normalizeStoredEvent, normalizeStoredSequence, normalizeTicket } from './normalize.js'
 import { isRecord, safeDocumentId } from '../utils/values.js'
 import type {
@@ -13,6 +13,7 @@ import type {
   RevocationRecord,
   StaffRecord,
   StoredAttendanceEvent,
+  StoredAttendanceSequence,
   TicketRecord
 } from '../types.js'
 
@@ -236,6 +237,177 @@ export class FirestoreDoorRepository implements DoorRepository {
         reentryExpiresAt: decision.reentryExpiresAt,
         event
       }
+    })
+  }
+
+  async commitAttendanceBatch(inputs: AttendanceCommitInput[]): Promise<AttendanceCommitResult[]> {
+    if (inputs.length === 0) return []
+    const firstInput = inputs[0]
+    if (inputs.length === 1 && firstInput) return [await this.commitAttendance(firstInput)]
+
+    const results: AttendanceCommitResult[] = []
+    const CHUNK_SIZE = 25
+    for (let i = 0; i < inputs.length; i += CHUNK_SIZE) {
+      const chunk = inputs.slice(i, i + CHUNK_SIZE)
+      const chunkResults = await this.commitAttendanceChunk(chunk)
+      results.push(...chunkResults)
+    }
+    return results
+  }
+
+  private async commitAttendanceChunk(chunk: AttendanceCommitInput[]): Promise<AttendanceCommitResult[]> {
+    return this.db.runTransaction(async (transaction) => {
+      const refMap = new Map<string, DocumentReference>()
+      for (const input of chunk) {
+        const evRef = this.businessCollection(input.businessId, 'attendanceEvents').doc(safeDocumentId(input.jti))
+        const seqRef = this.businessCollection(input.businessId, 'attendanceSequences').doc(sequenceDocumentId(input.deviceId, input.deviceSequence))
+        const sessRef = this.businessCollection(input.businessId, 'attendanceSessions').doc(safeDocumentId(input.ticketId))
+        refMap.set(evRef.path, evRef)
+        refMap.set(seqRef.path, seqRef)
+        refMap.set(sessRef.path, sessRef)
+      }
+
+      const refs = Array.from(refMap.values())
+      const snapshots = await transaction.getAll(...refs)
+      const snapshotMap = new Map<string, DocumentSnapshot>()
+      for (let i = 0; i < refs.length; i++) {
+        const ref = refs[i]
+        const snap = snapshots[i]
+        if (ref && snap) {
+          snapshotMap.set(ref.path, snap)
+        }
+      }
+
+      const eventState = new Map<string, StoredAttendanceEvent | null>()
+      const sequenceState = new Map<string, StoredAttendanceSequence | null>()
+      const sessionState = new Map<string, AttendanceSessionSnapshot>()
+
+      const chunkResults: AttendanceCommitResult[] = []
+
+      for (const input of chunk) {
+        const eventReference = this.businessCollection(input.businessId, 'attendanceEvents').doc(safeDocumentId(input.jti))
+        const sequenceReference = this.businessCollection(input.businessId, 'attendanceSequences').doc(sequenceDocumentId(input.deviceId, input.deviceSequence))
+        const sessionReference = this.businessCollection(input.businessId, 'attendanceSessions').doc(safeDocumentId(input.ticketId))
+
+        const existingEvent = eventState.has(eventReference.path)
+          ? eventState.get(eventReference.path)!
+          : (snapshotMap.get(eventReference.path)?.exists ? normalizeStoredEvent(snapshotMap.get(eventReference.path)!.data()) : null)
+
+        const existingSequence = sequenceState.has(sequenceReference.path)
+          ? sequenceState.get(sequenceReference.path)!
+          : (snapshotMap.get(sequenceReference.path)?.exists ? normalizeStoredSequence(snapshotMap.get(sequenceReference.path)!.data()) : null)
+
+        const session = sessionState.has(sessionReference.path)
+          ? sessionState.get(sessionReference.path)!
+          : normalizeSession(snapshotMap.get(sessionReference.path)?.exists ? snapshotMap.get(sessionReference.path)!.data() : undefined)
+
+        const decision = input.decide(session, existingEvent, existingSequence)
+
+        if (existingEvent && existingEvent.jti === input.jti && existingEvent.payloadHash === input.payloadHash) {
+          chunkResults.push(this.resultFromStored(existingEvent, true))
+          continue
+        }
+
+        if (existingEvent && existingEvent.jti === input.jti && existingEvent.payloadHash !== input.payloadHash) {
+          const conflict = this.conflictResult(input, session, 'JTI_PAYLOAD_MISMATCH')
+          transaction.set(this.collisionReference(input), this.collisionData(input, existingEvent.jti, conflict.reason ?? 'JTI_PAYLOAD_MISMATCH'), { merge: true })
+          chunkResults.push(conflict)
+          continue
+        }
+
+        if (existingSequence && (existingSequence.jti !== input.jti || existingSequence.payloadHash !== input.payloadHash)) {
+          const conflict = this.conflictResult(input, session, 'DEVICE_SEQUENCE_COLLISION')
+          transaction.set(this.collisionReference(input), this.collisionData(input, existingSequence.jti, conflict.reason ?? 'DEVICE_SEQUENCE_COLLISION'), { merge: true })
+          transaction.set(eventReference, this.eventData(input, conflict.event, decision), { merge: false })
+          eventState.set(eventReference.path, conflict.event)
+          chunkResults.push(conflict)
+          continue
+        }
+
+        const event = this.storedEvent(input, decision)
+        if (decision.status === 'CONFLICT') {
+          if (this.isCollisionReason(decision.reason)) {
+            transaction.set(this.collisionReference(input), this.collisionData(input, input.jti, decision.reason ?? 'ATTENDANCE_COLLISION'), { merge: true })
+          }
+          transaction.set(eventReference, this.eventData(input, event, decision), { merge: false })
+          eventState.set(eventReference.path, event)
+          if (!existingSequence) {
+            transaction.set(sequenceReference, {
+              deviceId: input.deviceId,
+              deviceSequence: input.deviceSequence,
+              jti: input.jti,
+              payloadHash: input.payloadHash,
+              createdAt: FieldValue.serverTimestamp()
+            })
+            sequenceState.set(sequenceReference.path, {
+              deviceId: input.deviceId,
+              deviceSequence: input.deviceSequence,
+              jti: input.jti,
+              payloadHash: input.payloadHash
+            })
+          }
+          chunkResults.push({
+            status: 'CONFLICT',
+            duplicate: false,
+            stateBefore: event.stateBefore,
+            stateAfter: event.stateAfter,
+            reentryCount: decision.reentryCount,
+            reentryExpiresAt: decision.reentryExpiresAt,
+            reason: decision.reason ?? 'CONFLICT',
+            event
+          })
+          continue
+        }
+
+        transaction.set(eventReference, this.eventData(input, event, decision), { merge: false })
+        transaction.set(sequenceReference, {
+          deviceId: input.deviceId,
+          deviceSequence: input.deviceSequence,
+          jti: input.jti,
+          payloadHash: input.payloadHash,
+          createdAt: FieldValue.serverTimestamp()
+        })
+        const sessionData: Record<string, unknown> = {
+          businessId: input.businessId,
+          eventId: input.eventId,
+          venueId: input.venueId,
+          ticketId: input.ticketId,
+          state: decision.stateAfter,
+          lastDeviceSequence: decision.lastDeviceSequence,
+          reentryCount: decision.reentryCount,
+          lastEventJti: input.jti,
+          lastOccurredAt: input.occurredAt,
+          updatedAt: FieldValue.serverTimestamp()
+        }
+        sessionData.reentryExpiresAt = decision.reentryExpiresAt === undefined ? FieldValue.delete() : decision.reentryExpiresAt
+        transaction.set(sessionReference, sessionData, { merge: true })
+
+        eventState.set(eventReference.path, event)
+        sequenceState.set(sequenceReference.path, {
+          deviceId: input.deviceId,
+          deviceSequence: input.deviceSequence,
+          jti: input.jti,
+          payloadHash: input.payloadHash
+        })
+        sessionState.set(sessionReference.path, {
+          state: decision.stateAfter,
+          lastDeviceSequence: decision.lastDeviceSequence,
+          reentryCount: decision.reentryCount,
+          reentryExpiresAt: decision.reentryExpiresAt
+        })
+
+        chunkResults.push({
+          status: 'ACCEPTED',
+          duplicate: false,
+          stateBefore: decision.stateBefore,
+          stateAfter: decision.stateAfter,
+          reentryCount: decision.reentryCount,
+          reentryExpiresAt: decision.reentryExpiresAt,
+          event
+        })
+      }
+
+      return chunkResults
     })
   }
 
