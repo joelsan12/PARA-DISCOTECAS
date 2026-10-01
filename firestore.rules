@@ -136,6 +136,16 @@ service cloud.firestore {
       allow list: if false;
       allow create, update, delete: if false;
 
+      // Identidad legal pública al consumidor (Fase B): razón social, RUC y
+      // políticas que el checkout muestra antes de cobrar. Solo lectura para
+      // usuarios autenticados; la escritura ocurre exclusivamente vía callable
+      // con Admin SDK (updateBusinessLegalProfile).
+      match /public/{documentId} {
+        allow get: if signedIn();
+        allow list: if false;
+        allow create, update, delete: if false;
+      }
+
       match /layout/{documentId} {
         allow get, list: if signedIn()
           && (isActiveStaff(businessId) || isCustomerInBusiness(businessId) || isSuperAdmin());

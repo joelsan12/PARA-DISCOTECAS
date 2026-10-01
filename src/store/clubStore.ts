@@ -17,9 +17,11 @@ import {
   updateTablePositionHelper, batchUpdateTablePositionsHelper,
   updateTablePropertiesHelper, updateTablePricingHelper, updateTableHelper
 } from './tableManager';
-import { toggleClubStatusOperation, updateClubPlanOperation } from './tenantManager';
+import { toggleClubStatusOperation, updateClubPlanOperation, updateClubLegalProfileOperation } from './tenantManager';
 import { createAuditLogger } from './auditManager';
 import { firebaseBridge } from './firebaseBridge';
+import { fetchBusinessLegalProfile } from '../services/firebaseService';
+import type { LegalProfile } from '../lib/legalProfile';
 import { callFunctions } from '../lib/functionsClient';
 import { formatUsd } from '../lib/formatUsd';
 import { esClubStatus, esLayout, esPlan } from '../lib/esLabels';
@@ -67,6 +69,23 @@ class ClubStore {
         this.notify();
       }
     );
+    void this.hydrateLegalProfile(this.activeClubId);
+  }
+
+  /**
+   * Hidrata la identidad legal del negocio desde el subdoc público de
+   * Firestore (Fase B) para que el checkout muestre al vendedor real.
+   * Silencioso: sin sesión, sin documento o con reglas que rechazan la lectura,
+   * el checkout conserva los respaldos visibles.
+   */
+  private async hydrateLegalProfile(clubId: string) {
+    const profile = await fetchBusinessLegalProfile(clubId);
+    if (!profile || this.activeClubId !== clubId) return;
+    const club = this.clubs.find(c => c.id === clubId);
+    if (!club) return;
+    club.legal_profile = profile;
+    this.saveToStorage();
+    this.notify();
   }
 
   get auditLogs(): AuditLog[] { return this.logger.logs; }
@@ -335,6 +354,41 @@ class ClubStore {
       });
       this.persistAndNotify();
     }
+  }
+
+  /**
+   * Actualiza la identidad legal del negocio (Fase B). La fuente de verdad es
+   * la callable updateBusinessLegalProfile (Admin SDK, rol manager+ o
+   * superadmin); si el negocio aún no está aprovisionado en la nube o el
+   * backend no responde, se persiste localmente y se devuelve 'local' para que
+   * la interfaz lo declare explícitamente.
+   */
+  async updateClubLegalProfile(clubId: string, profile: LegalProfile): Promise<'synced' | 'local'> {
+    let syncResult: 'synced' | 'local' = 'local';
+    try {
+      await callFunctions('updateBusinessLegalProfile', {
+        businessId: clubId,
+        legalName: profile.legalName,
+        ruc: profile.ruc,
+        taxAddress: profile.taxAddress,
+        supportEmail: profile.supportEmail,
+        ...(profile.supportPhone ? { supportPhone: profile.supportPhone } : {}),
+        ...(profile.refundPolicyUrl ? { refundPolicyUrl: profile.refundPolicyUrl } : {}),
+        ...(profile.termsAndConditionsUrl ? { termsAndConditionsUrl: profile.termsAndConditionsUrl } : {})
+      });
+      syncResult = 'synced';
+    } catch (error) {
+      console.warn('[LegalProfile] Sin sincronización con el servidor; guardando localmente:', error);
+    }
+    const club = updateClubLegalProfileOperation(this.clubs, clubId, profile);
+    if (club) {
+      this.addAuditLog({
+        club_id: clubId, actor: 'Administrador del Club', role: 'club_owner', action: 'LEGAL_PROFILE_UPDATED',
+        details: `Identidad legal de ${club.name} actualizada (${syncResult === 'synced' ? 'sincronizada con la nube' : 'solo en este dispositivo'})`
+      });
+      this.persistAndNotify();
+    }
+    return syncResult;
   }
 
   addAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>) { this.logger.add(log); }

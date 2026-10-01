@@ -1,4 +1,5 @@
 import type { Club, SubscriptionPlanId } from '../types';
+import type { LegalProfile } from '../lib/legalProfile';
 
 /**
  * @deprecated AGENTS §10 & §2.1: El aprovisionamiento de discotecas en el cliente está prohibido.
@@ -20,6 +21,18 @@ export function updateClubPlanOperation(clubs: Club[], clubId: string, newPlanId
   const club = clubs.find(c => c.id === clubId);
   if (club) {
     club.plan_id = newPlanId;
+  }
+  return club;
+}
+
+export function updateClubLegalProfileOperation(
+  clubs: Club[],
+  clubId: string,
+  profile: LegalProfile
+): Club | undefined {
+  const club = clubs.find(c => c.id === clubId);
+  if (club) {
+    club.legal_profile = { ...profile };
   }
   return club;
 }

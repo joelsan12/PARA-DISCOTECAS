@@ -1,8 +1,9 @@
 import {
-  doc, setDoc, onSnapshot,
+  doc, getDoc, setDoc, onSnapshot,
   type Unsubscribe
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../lib/firebase';
+import { parseLegalProfileDocument, type LegalProfile } from '../lib/legalProfile';
 import type { ClubTable, ClubLayoutType } from '../types';
 
 export function subscribeToClubLayout(
@@ -49,5 +50,22 @@ export async function saveClubLayoutToFirebase(
   } catch (err) {
     console.error('[Firebase] Error al guardar plano en Firestore:', err);
     return false;
+  }
+}
+
+/**
+ * Lee la identidad legal pública del negocio (Fase B) desde el subdocumento
+ * businesses/{id}/public/legalProfile, que las reglas solo permiten leer con
+ * sesión activa. Devuelve null si no existe, no hay sesión o el documento no
+ * supera la validación estructural.
+ */
+export async function fetchBusinessLegalProfile(clubId: string): Promise<LegalProfile | null> {
+  if (!isFirebaseConfigured || !db || !clubId) return null;
+  try {
+    const snapshot = await getDoc(doc(db, 'businesses', clubId, 'public', 'legalProfile'));
+    if (!snapshot.exists()) return null;
+    return parseLegalProfileDocument(snapshot.data());
+  } catch {
+    return null;
   }
 }

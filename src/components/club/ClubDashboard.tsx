@@ -6,6 +6,7 @@ import { OperatingTablesList } from './dashboard/OperatingTablesList';
 import { ReservationsTable } from './dashboard/ReservationsTable';
 import { PricingManager } from './dashboard/PricingManager';
 import { AuditLogsView } from './dashboard/AuditLogsView';
+import { LegalProfileForm } from './dashboard/LegalProfileForm';
 
 export const ClubDashboard = () => {
   const store = useClubStore();
@@ -13,8 +14,8 @@ export const ClubDashboard = () => {
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 
-  const activeTab = (store.dashboardTab as 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'AUDIT') || 'MONITOR';
-  const setActiveTab = (tab: 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'AUDIT') => {
+  const activeTab = (store.dashboardTab as 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'LEGAL' | 'AUDIT') || 'MONITOR';
+  const setActiveTab = (tab: 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'LEGAL' | 'AUDIT') => {
     store.setDashboardTab(tab);
   };
 
@@ -65,6 +66,7 @@ export const ClubDashboard = () => {
           { key: 'LAYOUT_BUILDER', label: 'Diseñador de Plano & Mesas 📐' },
           { key: 'RESERVATIONS', label: `Reservas Activas (${eventReservations.length})` },
           { key: 'PRICING', label: 'Tarifario & Anticipos' },
+          { key: 'LEGAL', label: 'Identidad Legal & Fiscal' },
           { key: 'AUDIT', label: 'Bitácora de Auditoría' }
         ] as const).map(tab => {
           const isActive = activeTab === tab.key;
@@ -125,6 +127,11 @@ export const ClubDashboard = () => {
           activeEvent={activeEvent}
           onUpdatePricing={handleUpdatePricing}
         />
+      )}
+
+      {/* Tab: LEGAL */}
+      {activeTab === 'LEGAL' && (
+        <LegalProfileForm key={activeClub.id} activeClub={activeClub} />
       )}
 
       {/* Tab: AUDIT */}

@@ -13,6 +13,7 @@ import { emergencyRevokeFor } from "./emergency.js";
 import { privacyDeletionRequestFor } from "./privacy.js";
 import { releaseHoldTask } from "./tasks.js";
 import { createBusinessTenant as createBusinessTenantLogic } from "./tenant.js";
+import { updateBusinessLegalProfileFor } from "./legalProfile.js";
 export { releaseHoldTask };
 function callableError(error) {
     throw toHttpsError(error);
@@ -31,6 +32,19 @@ export const createBusinessTenant = onCall({
             ...request.data,
             uid: request.auth.uid
         });
+    }
+    catch (error) {
+        return callableError(error);
+    }
+});
+export const updateBusinessLegalProfile = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await updateBusinessLegalProfileFor(request);
     }
     catch (error) {
         return callableError(error);

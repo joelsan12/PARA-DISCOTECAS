@@ -59,6 +59,7 @@ function initAdmin() {
 }
 const CALLABLE_NAMES = [
     "createBusinessTenant",
+    "updateBusinessLegalProfile",
     "requestOtp",
     "verifyOtp",
     "createBusinessCustomerProfile",
