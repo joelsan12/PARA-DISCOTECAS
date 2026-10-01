@@ -63,6 +63,36 @@ for (const rel of ['src/store/clubStore.ts', 'src/App.tsx']) {
   }
 }
 
+// 6) PWA: Service Worker fail-closed y manifest instalable (E3)
+const sw = read('public/sw.js');
+if (!sw.includes("pathname.startsWith('/v1/')")) {
+  failures.push('public/sw.js: debe ignorar las rutas de negocio /v1/');
+}
+if (!sw.includes("'Authorization'") || !sw.includes("'X-Business-Id'")) {
+  failures.push('public/sw.js: debe ignorar peticiones con Authorization/X-Business-Id');
+}
+const fontHosts = (sw.match(/const FONT_HOSTS = \[([^\]]*)\]/u)?.[1] ?? '')
+  .split(',')
+  .map((entry) => entry.trim().replace(/^'|'$/gu, ''))
+  .filter(Boolean)
+  .sort();
+const allowedFontHosts = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+if (JSON.stringify(fontHosts) !== JSON.stringify(allowedFontHosts)) {
+  failures.push(`public/sw.js: FONT_HOSTS restringido a ${allowedFontHosts.join(', ')} (fail-closed)`);
+}
+try {
+  const manifest = JSON.parse(read('public/manifest.webmanifest'));
+  if (manifest.display !== 'standalone' || manifest.theme_color !== '#05070c') {
+    failures.push('public/manifest.webmanifest: display=standalone y theme_color=#05070c obligatorios');
+  }
+  const maskable = (manifest.icons ?? []).find((icon) => icon.purpose === 'maskable');
+  if (!maskable || maskable.type !== 'image/png') {
+    failures.push('public/manifest.webmanifest: se exige al menos un icono maskable PNG');
+  }
+} catch {
+  failures.push('public/manifest.webmanifest: no es un JSON válido');
+}
+
 if (failures.length > 0) {
   console.error('check-security-invariants: FALLÓ');
   for (const f of failures) console.error(`  - ${f}`);

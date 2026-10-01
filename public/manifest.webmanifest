@@ -13,23 +13,42 @@
   "categories": ["entertainment", "lifestyle"],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
       "name": "Mis reservas",
       "short_name": "Reservas",
-      "url": "/?vista=reservas"
+      "url": "/app",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Panel y acceso de puerta",
+      "short_name": "Puerta",
+      "url": "/admin",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
