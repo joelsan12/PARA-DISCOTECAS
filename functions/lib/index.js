@@ -192,7 +192,11 @@ export const paymentWebhook = onRequest({
     try {
         requirePost(request);
         const signature = getHeader(request, "x-payment-signature") ?? getHeader(request, "x-webhook-signature") ?? getHeader(request, "x-signature");
-        const result = await processPaymentWebhook(rawBody(request), signature);
+        const rawParams = request.params ?? {};
+        const rawQuery = (request.query ?? {});
+        const provider = typeof rawParams.provider === "string" ? rawParams.provider : typeof rawQuery.provider === "string" ? rawQuery.provider : getHeader(request, "x-payment-provider");
+        const merchantId = typeof rawParams.merchantId === "string" ? rawParams.merchantId : typeof rawQuery.merchantId === "string" ? rawQuery.merchantId : typeof rawQuery.businessId === "string" ? rawQuery.businessId : getHeader(request, "x-merchant-id") ?? getHeader(request, "x-business-id");
+        const result = await processPaymentWebhook(rawBody(request), signature, { provider, merchantId });
         setCommonHeaders(response);
         response.status(200).json(result);
     }

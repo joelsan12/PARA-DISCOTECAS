@@ -4,5 +4,10 @@ interface PaymentResult {
     reservationId?: string;
     refundRequired: boolean;
 }
-export declare function processPaymentWebhook(raw: Buffer, signatureHeader: string | undefined): Promise<PaymentResult>;
+export interface PaymentWebhookRouting {
+    provider?: string | undefined;
+    merchantId?: string | undefined;
+    businessId?: string | undefined;
+}
+export declare function processPaymentWebhook(raw: Buffer, signatureHeader: string | undefined, routing?: PaymentWebhookRouting): Promise<PaymentResult>;
 export {};

@@ -120,7 +120,8 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
     const body = bodyFor(`evt_sin_ts_${Date.now()}`, holdId, BUSINESS_ID);
     const error = await errorOf(processPaymentWebhook(
       Buffer.from(body, "utf8"),
-      signWithoutTimestamp(body, TENANT_SECRET)
+      signWithoutTimestamp(body, TENANT_SECRET),
+      { businessId: BUSINESS_ID }
     ));
     assert.equal(error.code, "permission-denied");
     assert.match(error.message, /t= and v1=|timestamp/i);
@@ -133,7 +134,8 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
     const stale = Math.floor(Date.now() / 1000) - 7200;
     const error = await errorOf(processPaymentWebhook(
       Buffer.from(body, "utf8"),
-      sign(body, TENANT_SECRET, stale)
+      sign(body, TENANT_SECRET, stale),
+      { businessId: BUSINESS_ID }
     ));
     assert.equal(error.code, "permission-denied");
   });
@@ -144,7 +146,8 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
     const body = bodyFor(`evt_global_${Date.now()}`, holdId, BUSINESS_ID);
     const error = await errorOf(processPaymentWebhook(
       Buffer.from(body, "utf8"),
-      sign(body, GLOBAL_SECRET)
+      sign(body, GLOBAL_SECRET),
+      { businessId: BUSINESS_ID }
     ));
     assert.equal(error.code, "permission-denied");
   });
@@ -154,7 +157,11 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
     await seedHold(holdId, BUSINESS_ID, TENANT_SECRET);
     const eventId = `evt_ok_${Date.now()}`;
     const body = bodyFor(eventId, holdId, BUSINESS_ID);
-    const result = await processPaymentWebhook(Buffer.from(body, "utf8"), sign(body, TENANT_SECRET));
+    const result = await processPaymentWebhook(
+      Buffer.from(body, "utf8"),
+      sign(body, TENANT_SECRET),
+      { businessId: BUSINESS_ID }
+    );
     assert.equal(result.duplicate, false);
     assert.equal(result.status, "PAID");
 
@@ -165,14 +172,29 @@ describe("webhook de pago — firma temporal y secreto por tenant", () => {
     assert.equal(eventDoc.get("businessId"), BUSINESS_ID);
   });
 
-  it("el secreto de un negocio no confirma holds de otro", async () => {
+  it("el secreto de un negocio no confirma holds de otro (routing a victima con firma ajena)", async () => {
     const holdId = "hold_webhook_cruzado";
     await seedHold(holdId, OTHER_BUSINESS_ID, "tenant_secret_otro_negocio_000000000000000002");
     const body = bodyFor(`evt_cruzado_${Date.now()}`, holdId, OTHER_BUSINESS_ID);
     const error = await errorOf(processPaymentWebhook(
       Buffer.from(body, "utf8"),
-      sign(body, TENANT_SECRET)
+      sign(body, TENANT_SECRET),
+      { businessId: OTHER_BUSINESS_ID }
     ));
     assert.equal(error.code, "permission-denied");
+  });
+
+  it("un atacante con firma válida de su propio club no puede confirmar holds de otro club", async () => {
+    const holdId = "hold_webhook_cruzado_inyeccion";
+    await seedHold(holdId, OTHER_BUSINESS_ID, "tenant_secret_otro_negocio_000000000000000002");
+    // Atacante firma con TENANT_SECRET (su secreto en BUSINESS_ID) pero apunta al holdId de OTHER_BUSINESS_ID
+    const body = bodyFor(`evt_cruzado_iny_${Date.now()}`, holdId, BUSINESS_ID);
+    const error = await errorOf(processPaymentWebhook(
+      Buffer.from(body, "utf8"),
+      sign(body, TENANT_SECRET),
+      { businessId: BUSINESS_ID }
+    ));
+    assert.equal(error.code, "permission-denied");
+    assert.match(error.message, /Hold does not belong to the authenticated merchant/i);
   });
 });

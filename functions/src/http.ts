@@ -118,8 +118,9 @@ export function getRequestId(request: FirebaseRequest): string {
 
 export function rawBody(request: FirebaseRequest): Buffer {
   if (Buffer.isBuffer(request.rawBody)) return request.rawBody;
+  const expressReq = request as unknown as { rawBody?: Buffer };
+  if (Buffer.isBuffer(expressReq.rawBody)) return expressReq.rawBody;
   if (typeof request.body === "string") return Buffer.from(request.body, "utf8");
-  if (request.body && typeof request.body === "object") return Buffer.from(JSON.stringify(request.body), "utf8");
   return Buffer.alloc(0);
 }
 

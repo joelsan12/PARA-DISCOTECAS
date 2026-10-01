@@ -82,7 +82,12 @@ async function main() {
     const app = express();
     app.disable("x-powered-by");
     app.set("trust proxy", true);
-    app.use(express.json({ limit: "1mb" }));
+    app.use(express.json({
+        limit: "1mb",
+        verify: (request, _response, buffer) => {
+            request.rawBody = buffer;
+        }
+    }));
     const callableHandlers = new Map();
     for (const name of CALLABLE_NAMES) {
         const handler = fns[name];
@@ -103,6 +108,7 @@ async function main() {
     app.all("/otp/request", fns.requestOtpHttp);
     app.all("/otp/verify", fns.verifyOtpHttp);
     app.post("/payments/webhook", fns.paymentWebhook);
+    app.post("/v1/payments/webhooks/:provider/:merchantId", fns.paymentWebhook);
     const doorAppPath = process.env.DOOR_APP_PATH?.trim()
         || path.resolve(functionsRoot, "..", "services", "door-service", "dist", "app.js");
     let doorEnabled = false;

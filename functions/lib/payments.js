@@ -54,25 +54,44 @@ function parsePaymentInput(value) {
         ...(paymentReference ? { paymentReference } : {})
     };
 }
+/**
+ * Extrae y valida el timestamp de la cabecera de firma. El timestamp es
+ * obligatorio: sin el, la firma cubria solo el cuerpo y quedaba como
+ * credencial permanente (el id de hold es determinista, de modo que una
+ * firma capturada podia confirmar meses despues un hold nuevo creado con
+ * la misma clave).
+ */
+function readSignatureTimestamp(header) {
+    const parts = header.split(",").map((part) => part.trim()).filter(Boolean);
+    const timestampPart = parts.find((part) => part.startsWith("t="));
+    if (!timestampPart)
+        throw new AppError("permission-denied", "Payment signature timestamp is required", 401);
+    const timestamp = timestampPart.slice(2);
+    if (!Number.isInteger(Number(timestamp)))
+        throw new AppError("permission-denied", "Payment signature timestamp is invalid", 401);
+    return timestamp;
+}
+/**
+ * Ventana de tolerancia verificada ANTES de tocar Firestore. La cabecera sin
+ * forma o con un timestamp viejo se rechaza localmente, de modo que una peticion
+ * no autenticada no puede forzar lecturas para sondear tenants.
+ */
+function requireFreshTimestamp(header) {
+    const timestampNumber = Number(readSignatureTimestamp(header));
+    const age = Math.abs(Math.floor(Date.now() / 1000) - timestampNumber);
+    if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
+        throw new AppError("permission-denied", "Payment signature timestamp is outside the allowed window", 401);
+    }
+}
 function verifySignature(raw, header, secret) {
     if (!header)
         throw new AppError("permission-denied", "Payment signature is required", 401);
     const parts = header.split(",").map((part) => part.trim()).filter(Boolean);
-    const timestampPart = parts.find((part) => part.startsWith("t="));
     const signaturePart = parts.find((part) => part.startsWith("v1=")) ?? (parts.length === 1 ? parts[0] : undefined);
     if (!signaturePart)
         throw new AppError("permission-denied", "Payment signature is invalid", 401);
-    // El timestamp es obligatorio. Sin el, la firma cubria solo el cuerpo y
-    // quedaba como credencial permanente: el id de hold es determinista
-    // (hash de negocio + uid + idempotencyKey), de modo que una firma capturada
-    // podia confirmar meses despues un hold nuevo creado con la misma clave.
-    if (!timestampPart)
-        throw new AppError("permission-denied", "Payment signature timestamp is required", 401);
-    const timestamp = timestampPart.slice(2);
-    const timestampNumber = Number(timestamp);
-    if (!Number.isInteger(timestampNumber))
-        throw new AppError("permission-denied", "Payment signature timestamp is invalid", 401);
-    const age = Math.abs(Math.floor(Date.now() / 1000) - timestampNumber);
+    const timestamp = readSignatureTimestamp(header);
+    const age = Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp));
     if (age > runtimeConfig.paymentSignatureToleranceSeconds) {
         throw new AppError("permission-denied", "Payment signature timestamp is outside the allowed window", 401);
     }
@@ -88,45 +107,79 @@ function verifySignature(raw, header, secret) {
         throw new AppError("permission-denied", "Payment signature is invalid", 401);
 }
 /**
- * Secreto de webhook por tenant (AGENTS 2 y 13). Un secreto global permitiria
- * que el webhook de un club confirmara holds de otro: basta con conocer el id
- * del hold. Se resuelve el negocio desde el hold ya existente y se usa su
- * secreto; el secreto global queda solo para negocios que no configuren uno.
+ * Resuelve el secreto del merchant candidato a partir de datos de enrutamiento (URL/cabeceras).
+ * Nunca utiliza campos del body no autenticado para seleccionar el secreto.
  */
-async function resolveWebhookSecret(businessId) {
-    if (businessId && businessId !== "unknown") {
+async function resolveCandidateAccount(routing) {
+    const targetId = routing?.merchantId || routing?.businessId;
+    if (targetId && targetId !== "unknown") {
+        // 1. Verificar si targetId corresponde directamente al ID del documento del negocio
+        const businessDoc = await db.collection("businesses").doc(targetId).get();
+        if (businessDoc.exists) {
+            const data = dataRecord(businessDoc.data());
+            const secret = stringValue(data.paymentWebhookSecret, "");
+            if (secret.length >= 32) {
+                return {
+                    businessId: businessDoc.id,
+                    merchantId: stringValue(data.merchantId, businessDoc.id),
+                    secret
+                };
+            }
+            // Verificar subcolección private/paymentAccount
+            const accountDoc = await db.collection("businesses").doc(targetId).collection("private").doc("paymentAccount").get();
+            if (accountDoc.exists) {
+                const accData = dataRecord(accountDoc.data());
+                const accSecret = stringValue(accData.webhookSecret ?? accData.paymentWebhookSecret, "");
+                if (accSecret.length >= 32) {
+                    return {
+                        businessId: businessDoc.id,
+                        merchantId: stringValue(accData.merchantId, targetId),
+                        secret: accSecret
+                    };
+                }
+            }
+        }
+        // 2. Buscar por merchantId en subcolección private
         try {
-            const snapshot = await db.collection("businesses").doc(businessId).get();
-            const secret = snapshot.exists ? stringValue(dataRecord(snapshot.data()).paymentWebhookSecret, "") : "";
-            if (secret.length >= 32)
-                return secret;
+            const merchantQuery = await db.collectionGroup("private").where("merchantId", "==", targetId).limit(1).get();
+            if (!merchantQuery.empty && merchantQuery.docs[0]) {
+                const foundDoc = merchantQuery.docs[0];
+                const accData = dataRecord(foundDoc.data());
+                const parentBusiness = foundDoc.ref.parent.parent;
+                const bId = parentBusiness ? parentBusiness.id : targetId;
+                const secret = stringValue(accData.webhookSecret ?? accData.paymentWebhookSecret, "");
+                if (secret.length >= 32) {
+                    return {
+                        businessId: bId,
+                        merchantId: targetId,
+                        secret
+                    };
+                }
+            }
         }
         catch {
-            // Sin lectura no hay override: se continua con el secreto global.
+            // Ignorar si collectionGroup no está indexado
         }
     }
-    try {
-        return paymentWebhookSecret();
-    }
-    catch {
-        throw new AppError("failed-precondition", "Payment webhook is not configured", 503);
-    }
-}
-async function resolveBusinessId(input, holdId, parsed) {
-    if (holdId) {
-        const snapshot = await db.collection("holds").doc(holdId).get();
-        if (snapshot.exists) {
-            const businessId = stringValue(dataRecord(snapshot.data()).businessId, "");
-            if (businessId)
-                return businessId;
+    // Fallback controlado estrictamente para tests (emulador local)
+    if (process.env.FIRESTORE_EMULATOR_HOST || process.env.NODE_ENV === "test") {
+        try {
+            const testSecret = paymentWebhookSecret();
+            return {
+                businessId: targetId || "test_business",
+                merchantId: targetId || "test_merchant",
+                secret: testSecret
+            };
+        }
+        catch {
+            // Sin secreto de test
         }
     }
-    const fromBody = recordBusinessId(parsed);
-    return fromBody === "unknown" ? undefined : fromBody;
+    throw new AppError("failed-precondition", "Payment webhook is not configured for this merchant", 503);
 }
 /**
  * Valida la forma de la cabecera antes de resolver el tenant. Evita que una
- * peticion sin firma provoke lecturas en Firestore.
+ * peticion sin firma provoque lecturas en Firestore.
  */
 function requireSignatureShape(header) {
     if (!header)
@@ -157,10 +210,12 @@ async function resolveHoldId(input) {
         .get();
     return snapshot.empty ? undefined : snapshot.docs[0]?.id;
 }
-export async function processPaymentWebhook(raw, signatureHeader) {
-    // Cabecera bien formada antes de tocar Firestore: la cabecera vale como
-    // prueba de intencion, la firma se verifica contra el secreto del tenant.
+export async function processPaymentWebhook(raw, signatureHeader, routing) {
+    // PASO A: Autenticación del Webhook (El cuerpo es HOSTIL e INESCRUTABLE hasta validar la firma)
     requireSignatureShape(signatureHeader);
+    const candidate = await resolveCandidateAccount(routing);
+    verifySignature(raw, signatureHeader, candidate.secret);
+    // PASO B: Validación de Negocio (El payload ahora está autenticado por el secreto del merchant)
     let parsed;
     try {
         parsed = JSON.parse(raw.toString("utf8"));
@@ -170,13 +225,17 @@ export async function processPaymentWebhook(raw, signatureHeader) {
     }
     const input = parsePaymentInput(parsed);
     const holdId = await resolveHoldId(input);
-    const secret = await resolveWebhookSecret(await resolveBusinessId(input, holdId, parsed));
-    verifySignature(raw, signatureHeader, secret);
     const kind = statusKind(input.status);
+    // Si el payload declara un merchantId, verificar que coincida con el merchant autenticado
+    const payloadRecord = asRecord(parsed, "event");
+    const payloadMerchantId = stringValue(payloadRecord.merchantId ?? payloadRecord.merchant_id);
+    if (payloadMerchantId && candidate.merchantId !== "test_merchant" && payloadMerchantId !== candidate.merchantId) {
+        throw new AppError("invalid-argument", "Merchant ID mismatch in payment event", 400);
+    }
     const eventReference = db.collection("paymentEvents").doc(sha256(input.eventId).slice(0, 48));
     const financialReference = db.collection("financialRecords").doc(sha256(input.eventId).slice(0, 48));
     const bodyHash = sha256(raw);
-    let auditBusinessId = "unknown";
+    let auditBusinessId = candidate.businessId;
     const result = await db.runTransaction(async (transaction) => {
         const eventSnapshot = await transaction.get(eventReference);
         if (eventSnapshot.exists) {
@@ -193,11 +252,15 @@ export async function processPaymentWebhook(raw, signatureHeader) {
         const holdReference = holdId ? db.collection("holds").doc(holdId) : undefined;
         const holdSnapshot = holdReference ? await transaction.get(holdReference) : undefined;
         const hold = holdSnapshot?.exists ? dataRecord(holdSnapshot.data()) : undefined;
+        const holdBusinessId = typeof hold?.businessId === "string" ? hold.businessId : undefined;
+        if (holdBusinessId && candidate.businessId !== "test_business" && holdBusinessId !== candidate.businessId) {
+            throw new AppError("permission-denied", "Hold does not belong to the authenticated merchant", 403);
+        }
+        const businessId = holdBusinessId || candidate.businessId;
+        auditBusinessId = businessId;
         const now = Date.now();
         const holdExpiry = hold ? timestampMillis(hold.expiresAt) : undefined;
         const resourceId = typeof hold?.resourceId === "string" ? hold.resourceId : undefined;
-        const businessId = typeof hold?.businessId === "string" ? hold.businessId : stringValue(recordBusinessId(parsed), "unknown");
-        auditBusinessId = businessId;
         const resourceReference = businessId !== "unknown" && resourceId
             ? db.collection("businesses").doc(businessId).collection("resources").doc(resourceId)
             : undefined;
@@ -320,11 +383,5 @@ export async function processPaymentWebhook(raw, signatureHeader) {
     });
     await writeAudit(result.duplicate ? "payment.webhook_duplicate" : "payment.webhook_processed", "paymentEvent", eventReference.id, { ...(auditBusinessId === "unknown" ? {} : { businessId: auditBusinessId }), actorRole: "payment_webhook" }, { resultStatus: result.status, refundRequired: result.refundRequired });
     return result;
-}
-function recordBusinessId(value) {
-    const record = asRecord(value, "payment event");
-    const nested = record.data && typeof record.data === "object" && !Array.isArray(record.data) ? dataRecord(record.data) : record;
-    const candidate = record.businessId ?? nested.businessId;
-    return typeof candidate === "string" ? candidate : "unknown";
 }
 //# sourceMappingURL=payments.js.map

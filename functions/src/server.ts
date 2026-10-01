@@ -87,7 +87,12 @@ async function main(): Promise<void> {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", true);
-  app.use(express.json({ limit: "1mb" }));
+  app.use(express.json({
+    limit: "1mb",
+    verify: (request: Request, _response: Response, buffer: Buffer) => {
+      (request as unknown as { rawBody?: Buffer }).rawBody = buffer;
+    }
+  }));
 
   const callableHandlers = new Map<string, express.Handler>();
   for (const name of CALLABLE_NAMES) {
@@ -111,6 +116,7 @@ async function main(): Promise<void> {
   app.all("/otp/request", fns.requestOtpHttp as unknown as express.Handler);
   app.all("/otp/verify", fns.verifyOtpHttp as unknown as express.Handler);
   app.post("/payments/webhook", fns.paymentWebhook as unknown as express.Handler);
+  app.post("/v1/payments/webhooks/:provider/:merchantId", fns.paymentWebhook as unknown as express.Handler);
 
   const doorAppPath = process.env.DOOR_APP_PATH?.trim()
     || path.resolve(functionsRoot, "..", "services", "door-service", "dist", "app.js");
