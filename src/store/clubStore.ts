@@ -17,7 +17,7 @@ import {
   updateTablePositionHelper, batchUpdateTablePositionsHelper,
   updateTablePropertiesHelper, updateTablePricingHelper, updateTableHelper
 } from './tableManager';
-import { toggleClubStatusOperation, updateClubPlanOperation, updateClubLegalProfileOperation } from './tenantManager';
+import { toggleClubStatusOperation, updateClubPlanOperation, updateClubLegalProfileOperation, updateClubDetailsOperation } from './tenantManager';
 import { createAuditLogger } from './auditManager';
 import { firebaseBridge } from './firebaseBridge';
 import { fetchBusinessLegalProfile } from '../services/firebaseService';
@@ -107,6 +107,7 @@ class ClubStore {
   saveToStorage() {
     saveStorageState({
       tables: this.tables, eventPricing: this.eventPricing, clubs: this.clubs,
+      plans: this.plans,
       reservations: this.reservations, activeClubId: this.activeClubId, activeEventId: this.activeEventId,
       currentRole: this.currentRole, dashboardTab: this.dashboardTab,
       customArchetypeLayouts: this.customArchetypeLayouts,
@@ -389,6 +390,84 @@ class ClubStore {
       this.persistAndNotify();
     }
     return syncResult;
+  }
+
+  updateClubDetails(clubId: string, updates: Partial<Club>): Club | undefined {
+    const club = updateClubDetailsOperation(this.clubs, clubId, updates);
+    if (club) {
+      this.addAuditLog({
+        club_id: clubId,
+        actor: 'Superadministrador',
+        role: 'super_admin',
+        action: 'TENANT_UPDATED',
+        details: `Detalles de ${club.name} actualizados por SuperAdmin`
+      });
+      this.persistAndNotify();
+    }
+    return club;
+  }
+
+  updatePlan(planId: string, updates: Partial<Plan>): Plan | undefined {
+    const plan = this.plans.find(p => p.id === planId);
+    if (plan) {
+      Object.assign(plan, updates);
+      this.addAuditLog({
+        actor: 'Superadministrador',
+        role: 'super_admin',
+        action: 'PLAN_MODIFIED',
+        details: `Plan ${plan.name} (${planId}) actualizado: USD ${plan.monthly_price}/mes`
+      });
+      this.persistAndNotify();
+    }
+    return plan;
+  }
+
+  addPlan(newPlan: Plan): Plan {
+    if (this.plans.some(p => p.id === newPlan.id)) {
+      throw new Error(`Ya existe un plan con el identificador "${newPlan.id}".`);
+    }
+    this.plans = [...this.plans, newPlan];
+    this.addAuditLog({
+      actor: 'Superadministrador',
+      role: 'super_admin',
+      action: 'PLAN_CREATED',
+      details: `Nuevo plan creado: ${newPlan.name} (${formatUsd(newPlan.monthly_price)}/mes)`
+    });
+    this.persistAndNotify();
+    return newPlan;
+  }
+
+  deletePlan(planId: string): boolean {
+    const isUsed = this.clubs.some(c => c.plan_id === planId);
+    if (isUsed) {
+      throw new Error(`No se puede eliminar el plan "${planId}" porque tiene discotecas clientes asignadas.`);
+    }
+    this.plans = this.plans.filter(p => p.id !== planId);
+    this.addAuditLog({
+      actor: 'Superadministrador',
+      role: 'super_admin',
+      action: 'PLAN_DELETED',
+      details: `Plan "${planId}" retirado del catálogo global`
+    });
+    this.persistAndNotify();
+    return true;
+  }
+
+  platformRevocationVersion: number = 2;
+
+  incrementRevocationVersion(clubId?: string): number {
+    this.platformRevocationVersion += 1;
+    this.addAuditLog({
+      club_id: clubId,
+      actor: 'Superadministrador',
+      role: 'super_admin',
+      action: 'PLATFORM_PANIC_REVOCATION',
+      details: clubId
+        ? `Revocación de emergencia para club ${clubId}: versión incrementada a ${this.platformRevocationVersion} (AGENTS §8)`
+        : `Revocación global de sesiones y pases: versión incrementada a ${this.platformRevocationVersion} (AGENTS §8)`
+    });
+    this.persistAndNotify();
+    return this.platformRevocationVersion;
   }
 
   addAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>) { this.logger.add(log); }

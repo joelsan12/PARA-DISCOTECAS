@@ -5,7 +5,8 @@ import type {
   Reservation,
   ViewRole,
   ClientUser,
-  StaffUser
+  StaffUser,
+  Plan
 } from '../types';
 
 export const STORAGE_KEYS = {
@@ -20,13 +21,15 @@ export const STORAGE_KEYS = {
   ARCHETYPE_PRESETS: 'nightflow_archetype_presets_v6',
   CLIENT_USER: 'nightflow_client_user_v6',
   STAFF_USER: 'nightflow_staff_user_v6',
-  CLIENT_SUBTAB: 'nightflow_client_subtab_v6'
+  CLIENT_SUBTAB: 'nightflow_client_subtab_v6',
+  PLANS: 'nightflow_plans_v6'
 };
 
 export interface LoadedStorageData {
   tables?: ClubTable[];
   pricing?: EventTablePricing[];
   clubs?: Club[];
+  plans?: Plan[];
   reservations?: Reservation[];
   activeClubId?: string;
   activeEventId?: string;
@@ -51,6 +54,9 @@ export function loadStorageState(): LoadedStorageData {
 
     const rawClubs = localStorage.getItem(STORAGE_KEYS.CLUBS);
     if (rawClubs) result.clubs = JSON.parse(rawClubs);
+
+    const rawPlans = localStorage.getItem(STORAGE_KEYS.PLANS);
+    if (rawPlans) result.plans = JSON.parse(rawPlans);
 
     const rawRes = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
     if (rawRes && import.meta.env.DEV) result.reservations = JSON.parse(rawRes);
@@ -93,6 +99,7 @@ export function applyLoadedStorageData(target: any, d: LoadedStorageData) {
   if (d.tables) target.tables = d.tables;
   if (d.pricing) target.eventPricing = d.pricing;
   if (d.clubs) target.clubs = d.clubs;
+  if (d.plans && Array.isArray(d.plans) && d.plans.length > 0) target.plans = d.plans;
   if (d.reservations) target.reservations = d.reservations;
   if (d.activeClubId) target.activeClubId = d.activeClubId;
   if (d.currentRole) target.currentRole = d.currentRole;
@@ -111,10 +118,10 @@ export function applyLoadedStorageData(target: any, d: LoadedStorageData) {
 }
 
 export function saveStorageState(data: {
-
   tables: ClubTable[];
   eventPricing: EventTablePricing[];
   clubs: Club[];
+  plans?: Plan[];
   reservations: Reservation[];
   activeClubId: string;
   activeEventId: string;
@@ -130,6 +137,9 @@ export function saveStorageState(data: {
     localStorage.setItem(STORAGE_KEYS.TABLES, JSON.stringify(data.tables));
     localStorage.setItem(STORAGE_KEYS.PRICING, JSON.stringify(data.eventPricing));
     localStorage.setItem(STORAGE_KEYS.CLUBS, JSON.stringify(data.clubs));
+    if (data.plans) {
+      localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(data.plans));
+    }
     if (import.meta.env.DEV) {
       localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(data.reservations));
     }

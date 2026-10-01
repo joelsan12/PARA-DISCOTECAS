@@ -36,3 +36,16 @@ export function updateClubLegalProfileOperation(
   }
   return club;
 }
+
+export function updateClubDetailsOperation(
+  clubs: Club[],
+  clubId: string,
+  updates: Partial<Club>
+): Club | undefined {
+  const club = clubs.find(c => c.id === clubId);
+  if (club) {
+    Object.assign(club, updates);
+  }
+  return club;
+}
+

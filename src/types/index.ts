@@ -6,7 +6,7 @@ import type {
   ReservationItem
 } from './domain';
 
-export type SubscriptionPlanId = 'basic' | 'pro' | 'enterprise';
+export type SubscriptionPlanId = 'basic' | 'pro' | 'enterprise' | (string & {});
 
 export interface Plan {
   id: SubscriptionPlanId;
