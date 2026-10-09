@@ -5,7 +5,6 @@ import type { CustomerAuthMethod } from '../../types/saas';
 import { findBusinessBySlug } from '../../lib/businessDirectory';
 import { useBusinessDirectory } from '../../lib/useBusinessDirectory';
 import {
-  BUSINESS_DEMO_ENABLED,
   BusinessAuthError,
   completeBusinessOtp,
   getPendingBusinessOtp,
@@ -104,7 +103,8 @@ export function BusinessAccessPage() {
   const isFirebaseReady = isBusinessAuthConfigured();
   const isEmailLinkMethod = method === 'email_otp' && challenge?.transport === 'firebase';
   const isEmailCodeMethod = method === 'email_otp' && challenge?.transport !== 'firebase';
-  const authAvailable = isFirebaseReady || BUSINESS_DEMO_ENABLED;
+  // AGENTS §10: Sin fallback demo. Solo Firebase real.
+  const authAvailable = isFirebaseReady;
   const availableMethods = authMethods.filter((option) => business.authMethods.includes(option.value));
   const destination = isPhoneMethod ? phone : email;
   const selectedMethod = authMethods.find((option) => option.value === method) ?? authMethods[0];
@@ -144,7 +144,7 @@ export function BusinessAccessPage() {
       email: authUser.email,
       phone: authUser.phone
     });
-    if (!profile && !BUSINESS_DEMO_ENABLED) {
+    if (!profile) {
       throw new BusinessAuthError('No pudimos asegurar tu perfil de cliente.', 'business-auth/profile-unavailable');
     }
     ensuredUid.current = authUser.uid;
@@ -318,7 +318,7 @@ export function BusinessAccessPage() {
         <section className="saas-access-card">
           <div className="saas-access-card__topline">
             <span className="saas-kicker"><KeyRound size={12} /> Acceso de cliente</span>
-            <span className={`saas-connection-status${isFirebaseReady ? ' is-firebase' : ''}`}><Wifi size={12} /> {isFirebaseReady ? 'Firebase conectado' : BUSINESS_DEMO_ENABLED ? 'Demo local' : 'Sin conexión'}</span>
+            <span className={`saas-connection-status${isFirebaseReady ? ' is-firebase' : ''}`}><Wifi size={12} /> {isFirebaseReady ? 'Firebase conectado' : 'Sin conexión'}</span>
           </div>
           <div className="saas-access-card__heading">
             <div>
@@ -406,7 +406,7 @@ export function BusinessAccessPage() {
 
                 {step === 'code' && (
                   <>
-                    <div className="saas-code-notice"><div className="saas-code-notice__icon"><Send size={16} /></div><div><strong>Código en camino</strong><p>{methodDescription}</p>{challenge?.demoCode && BUSINESS_DEMO_ENABLED && <small>Demo DEV: usa {challenge.demoCode}</small>}</div></div>
+                    <div className="saas-code-notice"><div className="saas-code-notice__icon"><Send size={16} /></div><div><strong>Código en camino</strong><p>{methodDescription}</p></div></div>
                     {!isEmailLinkMethod && (
                       <label className="saas-field">
                         <span>Código de seguridad</span>
