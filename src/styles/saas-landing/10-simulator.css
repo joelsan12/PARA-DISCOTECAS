@@ -1,0 +1,426 @@
+/* ── 6. Componentes del Simulador en Vivo ─────────────────────────────────── */
+.saas-stage {
+  background: var(--saas-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  margin-bottom: 48px;
+}
+
+.saas-stage__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--saas-surface);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.saas-stage__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--saas-text-primary);
+  text-transform: uppercase;
+}
+
+.saas-stage__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+}
+
+.saas-stage__split {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 0;
+}
+
+@media (max-width: 900px) {
+  .saas-stage__split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stage-left-panel {
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--saas-surface);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Tarjeta Pase VIP Premium Black Card (Sin bordes toscos, acabados de lujo) */
+.stage-phone-mock {
+  width: 100%;
+  max-width: 320px;
+  background: linear-gradient(155deg, #131722 0%, #080a0f 100%);
+  border: 1px solid rgba(229, 181, 79, 0.28);
+  border-radius: 22px;
+  padding: 24px 22px;
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.75),
+    0 0 35px rgba(229, 181, 79, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+}
+
+[data-theme="light"] .stage-phone-mock {
+  background: linear-gradient(155deg, #ffffff 0%, #f7f4ed 100%);
+  border-color: rgba(184, 134, 11, 0.3);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 0 25px rgba(184, 134, 11, 0.12);
+}
+
+.stage-phone-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stage-phone-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stage-phone-chip {
+  width: 26px;
+  height: 18px;
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+  border-radius: 3px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.stage-phone-brand-title {
+  font-family: var(--font-serif, 'Cinzel', serif);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--saas-gold);
+}
+
+.stage-phone-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.08em;
+  background: rgba(52, 211, 153, 0.09);
+  padding: 3px 8px;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.15);
+}
+
+.stage-phone-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: saas-pulse-glow 1.8s infinite ease-in-out;
+}
+
+/* Área central QR integrada con marco y escáner láser */
+.stage-phone-qr-bay {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 14px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .stage-phone-qr-bay {
+  background: rgba(184, 134, 11, 0.05);
+}
+
+.stage-phone-qr-frame {
+  width: 130px;
+  height: 130px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  margin-bottom: 10px;
+}
+
+.stage-phone-qr-frame svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stage-laser-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--saas-gold), #ffffff, var(--saas-gold), transparent);
+  box-shadow: 0 0 12px 2px var(--saas-gold);
+  opacity: 0.7;
+  animation: stage-laser-scan 2.6s infinite ease-in-out;
+}
+
+.stage-laser-line.scanning {
+  background: linear-gradient(90deg, transparent, #34d399, #ffffff, #34d399, transparent);
+  box-shadow: 0 0 16px 3px #34d399;
+  animation: stage-laser-scan 0.4s infinite ease-in-out;
+  opacity: 1;
+}
+
+@keyframes stage-laser-scan {
+  0% { top: 0%; opacity: 0.2; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.2; }
+}
+
+.stage-phone-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: var(--saas-text-secondary);
+}
+
+.stage-phone-timer strong {
+  color: var(--saas-gold);
+}
+
+/* Tira de datos del titular */
+.stage-phone-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.74rem;
+  color: var(--saas-text-primary);
+  text-align: center;
+}
+
+.stage-phone-strip strong {
+  color: var(--saas-gold);
+}
+
+.stage-phone-sep {
+  color: var(--saas-text-muted);
+  opacity: 0.5;
+}
+
+.stage-phone-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.stage-btn-fraud {
+  background: rgba(251, 113, 133, 0.08) !important;
+  border: 1px solid rgba(251, 113, 133, 0.3) !important;
+  color: #fb7185 !important;
+  transition: all 0.2s ease !important;
+}
+
+.stage-btn-fraud:hover {
+  background: rgba(251, 113, 133, 0.16) !important;
+  border-color: rgba(251, 113, 133, 0.55) !important;
+  transform: translateY(-1px);
+}
+
+.stage-result-banner {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  text-align: left;
+  animation: saas-fade-in 0.2s ease;
+}
+
+.stage-result-banner.success {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #34d399;
+}
+
+.stage-result-banner.fraud {
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  color: #fb7185;
+}
+
+.stage-right-panel {
+  padding: 32px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--saas-card-bg);
+  text-align: left;
+}
+
+.stage-floor-header {
+  margin-bottom: 22px;
+  text-align: left;
+}
+
+.stage-floor-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin: 4px 0;
+}
+
+.stage-floor-header p {
+  font-size: 0.84rem;
+  color: var(--saas-text-secondary);
+  margin: 0;
+}
+
+.stage-floor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1100px) {
+  .stage-floor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stage-floor-item {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stage-floor-item:hover {
+  border-color: var(--saas-border-gold);
+}
+
+.stage-floor-item.selected {
+  background: var(--saas-gold-subtle);
+  border-color: var(--saas-gold);
+}
+
+.stage-floor-item-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin-bottom: 4px;
+}
+
+.stage-floor-item-meta {
+  font-size: 0.74rem;
+  color: var(--saas-text-secondary);
+  margin-bottom: 6px;
+}
+
+.stage-floor-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.74rem;
+}
+
+.stage-floor-item-deposit {
+  color: var(--saas-gold);
+  font-weight: 700;
+}
+
+.stage-floor-item-timer {
+  color: #fbbf24;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.stage-table-control {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── 7. Tarjetas Técnicas (Simulador) ─────────────────────────────────────── */
+.saas-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+  margin-bottom: 56px;
+}
+
+@media (max-width: 900px) {
+  .saas-tech-grid {
+    grid-template-columns: 1fr;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+}
+
+.saas-tech-card {
+  background: var(--saas-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.saas-tech-card:hover {
+  border-color: rgba(229, 181, 79, 0.35);
+  transform: translateY(-2px);
+}
+
+.saas-tech-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin: 12px 0 6px;
+}
+
+.saas-tech-card p {
+  font-size: 0.84rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}

@@ -1,0 +1,68 @@
+/* ── Estructura Base ─────────────────────────────────────────────────────── */
+.saas-page {
+  background-color: var(--saas-bg);
+  color: var(--saas-text-primary);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  font-family: var(--font-body, 'Plus Jakarta Sans', -apple-system, sans-serif);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.saas-main {
+  position: relative;
+  z-index: 1;
+}
+
+.saas-page h1,
+.saas-page h2,
+.saas-page h3,
+.saas-page h4,
+.saas-page h5,
+.saas-page h6 {
+  color: var(--saas-text-primary);
+}
+
+.saas-section-header-left {
+  text-align: left;
+  max-width: 860px;
+  margin-bottom: 36px;
+}
+
+.saas-section-title-left {
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  color: var(--saas-text-primary) !important;
+  line-height: 1.15;
+  margin: 12px 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.saas-section-desc-left {
+  font-size: 1.05rem;
+  color: var(--saas-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+
+[data-theme="light"] .saas-badge-gold {
+  background: transparent;
+  border: none;
+  color: #8c6504;
+}
+
+/* Contenedor amplio (no centrado en cajita estrecha) */
+.saas-wide-shell {
+  width: min(1560px, calc(100% - 64px));
+  margin: 0 auto;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .saas-wide-shell {
+    width: calc(100% - 32px);
+  }
+}

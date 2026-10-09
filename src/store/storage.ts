@@ -6,7 +6,8 @@ import type {
   ViewRole,
   ClientUser,
   StaffUser,
-  Plan
+  Plan,
+  ClubProposal
 } from '../types';
 
 export const STORAGE_KEYS = {
@@ -22,7 +23,8 @@ export const STORAGE_KEYS = {
   CLIENT_USER: 'nightflow_client_user_v6',
   STAFF_USER: 'nightflow_staff_user_v6',
   CLIENT_SUBTAB: 'nightflow_client_subtab_v6',
-  PLANS: 'nightflow_plans_v6'
+  PLANS: 'nightflow_plans_v6',
+  PROPOSALS: 'nightflow_proposals_v6'
 };
 
 export interface LoadedStorageData {
@@ -30,6 +32,7 @@ export interface LoadedStorageData {
   pricing?: EventTablePricing[];
   clubs?: Club[];
   plans?: Plan[];
+  proposals?: ClubProposal[];
   reservations?: Reservation[];
   activeClubId?: string;
   activeEventId?: string;
@@ -57,6 +60,9 @@ export function loadStorageState(): LoadedStorageData {
 
     const rawPlans = localStorage.getItem(STORAGE_KEYS.PLANS);
     if (rawPlans) result.plans = JSON.parse(rawPlans);
+
+    const rawProposals = localStorage.getItem(STORAGE_KEYS.PROPOSALS);
+    if (rawProposals) result.proposals = JSON.parse(rawProposals);
 
     const rawRes = localStorage.getItem(STORAGE_KEYS.RESERVATIONS);
     if (rawRes && import.meta.env.DEV) result.reservations = JSON.parse(rawRes);
@@ -100,6 +106,7 @@ export function applyLoadedStorageData(target: any, d: LoadedStorageData) {
   if (d.pricing) target.eventPricing = d.pricing;
   if (d.clubs) target.clubs = d.clubs;
   if (d.plans && Array.isArray(d.plans) && d.plans.length > 0) target.plans = d.plans;
+  if (d.proposals && Array.isArray(d.proposals)) target.proposals = d.proposals;
   if (d.reservations) target.reservations = d.reservations;
   if (d.activeClubId) target.activeClubId = d.activeClubId;
   if (d.currentRole) target.currentRole = d.currentRole;
@@ -122,6 +129,7 @@ export function saveStorageState(data: {
   eventPricing: EventTablePricing[];
   clubs: Club[];
   plans?: Plan[];
+  proposals?: ClubProposal[];
   reservations: Reservation[];
   activeClubId: string;
   activeEventId: string;
@@ -139,6 +147,9 @@ export function saveStorageState(data: {
     localStorage.setItem(STORAGE_KEYS.CLUBS, JSON.stringify(data.clubs));
     if (data.plans) {
       localStorage.setItem(STORAGE_KEYS.PLANS, JSON.stringify(data.plans));
+    }
+    if (data.proposals) {
+      localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(data.proposals));
     }
     if (import.meta.env.DEV) {
       localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(data.reservations));

@@ -1,0 +1,699 @@
+import React, { useState } from 'react';
+import {
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Zap,
+  Building,
+  Filter,
+  Check,
+  X,
+  MessageSquare
+} from 'lucide-react';
+import type { Club, ClubProposal, SubscriptionPlan, SubscriptionPlanId, ProposalStatus } from '../../types';
+import { esPlan } from '../../lib/esLabels';
+import { formatUsd } from '../../lib/formatUsd';
+
+interface DevProposalsManagerProps {
+  proposals: ClubProposal[];
+  clubs: Club[];
+  plans: SubscriptionPlan[];
+  onRequestPlanChange: (club: Club, newPlanId: SubscriptionPlanId) => void;
+  onOpenImplementModal: (club: Club, proposal: ClubProposal) => void;
+  onUpdateStatus: (proposalId: string, status: ProposalStatus, devResponse?: string) => void;
+}
+
+export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
+  proposals,
+  clubs,
+  plans,
+  onRequestPlanChange,
+  onOpenImplementModal,
+  onUpdateStatus,
+}) => {
+  const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'IN_REVIEW' | 'IMPLEMENTED' | 'REJECTED'>('ALL');
+  const [editingResponseId, setEditingResponseId] = useState<string | null>(null);
+  const [responseText, setResponseText] = useState('');
+  const [rejectingProposalId, setRejectingProposalId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+
+  const filteredProposals = proposals.filter(p => {
+    if (filter === 'ALL') return true;
+    return p.status === filter;
+  });
+
+  const pendingCount = proposals.filter(p => p.status === 'PENDING').length;
+  const inReviewCount = proposals.filter(p => p.status === 'IN_REVIEW').length;
+  const implementedCount = proposals.filter(p => p.status === 'IMPLEMENTED').length;
+  const rejectedCount = proposals.filter(p => p.status === 'REJECTED').length;
+
+  const handleSaveResponse = (proposalId: string, targetStatus: ProposalStatus) => {
+    onUpdateStatus(proposalId, targetStatus, responseText.trim());
+    setEditingResponseId(null);
+    setResponseText('');
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Header & Metric Chips */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: '1.25rem',
+              fontWeight: 800,
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <Sparkles size={22} color="#e5b54f" />
+            Propuestas &amp; Solicitudes de Planes de Clientes
+          </h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+            Revisa contrataciones de planes, evalúa propuestas de los clubes e implementa módulos exclusivos por cliente.
+          </p>
+        </div>
+
+        {/* Filter Bar */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(255, 255, 255, 0.04)',
+            padding: '4px',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
+        >
+          <Filter size={13} color="rgba(255, 255, 255, 0.4)" style={{ marginLeft: '6px' }} />
+          <button
+            type="button"
+            onClick={() => setFilter('ALL')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: filter === 'ALL' ? '#e5b54f' : 'transparent',
+              color: filter === 'ALL' ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.74rem',
+              fontWeight: filter === 'ALL' ? 700 : 500,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            Todas ({proposals.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter('PENDING')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: filter === 'PENDING' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
+              color: filter === 'PENDING' ? '#fbbf24' : 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.74rem',
+              fontWeight: filter === 'PENDING' ? 700 : 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            Pendientes {pendingCount > 0 && <span style={{ padding: '1px 5px', borderRadius: '4px', background: '#f59e0b', color: '#000', fontSize: '0.65rem', fontWeight: 800 }}>{pendingCount}</span>}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter('IN_REVIEW')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: filter === 'IN_REVIEW' ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+              color: filter === 'IN_REVIEW' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.74rem',
+              fontWeight: filter === 'IN_REVIEW' ? 700 : 500,
+              cursor: 'pointer',
+            }}
+          >
+            En Revisión ({inReviewCount})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter('IMPLEMENTED')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: filter === 'IMPLEMENTED' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+              color: filter === 'IMPLEMENTED' ? '#34d399' : 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.74rem',
+              fontWeight: filter === 'IMPLEMENTED' ? 700 : 500,
+              cursor: 'pointer',
+            }}
+          >
+            Implementadas ({implementedCount})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter('REJECTED')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: filter === 'REJECTED' ? 'rgba(244, 63, 94, 0.2)' : 'transparent',
+              color: filter === 'REJECTED' ? '#fda4af' : 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.74rem',
+              fontWeight: filter === 'REJECTED' ? 700 : 500,
+              cursor: 'pointer',
+            }}
+          >
+            Rechazadas ({rejectedCount})
+          </button>
+        </div>
+      </div>
+
+      {/* Proposals List */}
+      {filteredProposals.length === 0 ? (
+        <div
+          style={{
+            padding: '48px 24px',
+            textAlign: 'center',
+            background: 'rgba(255, 255, 255, 0.02)',
+            borderRadius: '14px',
+            border: '1px dashed rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <Sparkles size={32} color="rgba(255, 255, 255, 0.2)" style={{ margin: '0 auto 12px' }} />
+          <h4 style={{ margin: '0 0 6px', color: '#fff', fontSize: '0.95rem' }}>
+            No hay solicitudes en este filtro
+          </h4>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+            Cuando una discoteca solicite contratar un plan o envíe una propuesta, aparecerá aquí inmediatamente.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {filteredProposals.map(prop => {
+            const club = clubs.find(c => c.id === prop.club_id);
+            const currentPlan = plans.find(p => p.id === club?.plan_id);
+            const requestedPlan = plans.find(p => p.id === prop.requested_plan_id);
+            const isPlanDifferent = prop.requested_plan_id && club && prop.requested_plan_id !== club.plan_id;
+
+            return (
+              <div
+                key={prop.id}
+                style={{
+                  background: 'linear-gradient(180deg, #101118 0%, #0a0b10 100%)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '14px',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                }}
+              >
+                {/* Top Strip: Club info + Status Badge */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    paddingBottom: '14px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        background: 'rgba(229, 181, 79, 0.12)',
+                        border: '1px solid rgba(229, 181, 79, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#e5b54f',
+                      }}
+                    >
+                      <Building size={16} />
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#fff' }}>
+                          {prop.club_name}
+                        </span>
+                        {club && (
+                          <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.45)' }}>
+                            ({club.city})
+                          </span>
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                        Enviada el {new Date(prop.created_at).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div>
+                    {prop.status === 'PENDING' && (
+                      <span className="status-chip status-chip--pending">
+                        <Clock size={11} /> Pendiente de Evaluación
+                      </span>
+                    )}
+                    {prop.status === 'IN_REVIEW' && (
+                      <span className="status-chip status-chip--review">
+                        <AlertCircle size={11} /> En Revisión Técnica
+                      </span>
+                    )}
+                    {prop.status === 'IMPLEMENTED' && (
+                      <span className="status-chip status-chip--done">
+                        <CheckCircle2 size={11} /> Implementada &amp; Activa
+                      </span>
+                    )}
+                    {prop.status === 'REJECTED' && (
+                      <span className="status-chip status-chip--rejected">
+                        <X size={11} /> Rechazada
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Plan Request Comparison if applicable */}
+                {prop.requested_plan_id && club && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '12px',
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      background: 'rgba(229, 181, 79, 0.04)',
+                      border: '1px solid rgba(229, 181, 79, 0.2)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div>
+                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.45)', display: 'block' }}>
+                          Plan Actual del Club
+                        </span>
+                        <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#fff' }}>
+                          {esPlan(club.plan_id)} ({formatUsd(currentPlan?.monthly_price || 0)}/m)
+                        </span>
+                      </div>
+
+                      <ArrowRight size={16} color="#e5b54f" />
+
+                      <div>
+                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#e5b54f', fontWeight: 700, display: 'block' }}>
+                          Plan que Desea Contratar
+                        </span>
+                        <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#e5b54f' }}>
+                          {esPlan(prop.requested_plan_id)} ({formatUsd(requestedPlan?.monthly_price || 0)}/m)
+                        </span>
+                      </div>
+                    </div>
+
+                    {isPlanDifferent && (
+                      <button
+                        type="button"
+                        onClick={() => onRequestPlanChange(club, prop.requested_plan_id!)}
+                        style={{
+                          padding: '7px 14px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(229, 181, 79, 0.6)',
+                          background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                          color: '#08080c',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <Zap size={13} />
+                        Aprobar y Cambiar Plan...
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Proposal Title & Description */}
+                <div>
+                  <h3 style={{ margin: '0 0 6px', fontSize: '0.98rem', fontWeight: 700, color: '#fff' }}>
+                    {prop.title}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '0.82rem', lineHeight: 1.5, color: 'rgba(255, 255, 255, 0.75)' }}>
+                    {prop.description}
+                  </p>
+                </div>
+
+                {/* Proposed Benefit Callout */}
+                {prop.proposed_benefit && (
+                  <div
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      borderLeft: '3px solid #e5b54f',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        color: '#e5b54f',
+                        display: 'block',
+                        marginBottom: '3px',
+                      }}
+                    >
+                      Beneficio esperado para el club:
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.85)' }}>
+                      {prop.proposed_benefit}
+                    </span>
+                  </div>
+                )}
+
+                {/* If Implemented: Show Activated Feature */}
+                {prop.activated_feature && (
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      background: 'rgba(16, 185, 129, 0.08)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <CheckCircle2 size={18} color="#10b981" />
+                      <div>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff', display: 'block' }}>
+                          Módulo Activo Exclusivo: {prop.activated_feature.name}
+                        </span>
+                        <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                          Flag: <code style={{ color: '#34d399' }}>{prop.activated_feature.key}</code> · {prop.activated_feature.description}
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        background: 'rgba(16, 185, 129, 0.2)',
+                        color: '#34d399',
+                      }}
+                    >
+                      ACTIVADO SOLO PARA ESTE CLUB
+                    </span>
+                  </div>
+                )}
+
+                {/* Dev Response Notes */}
+                {prop.dev_response && (
+                  <div style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.6)', fontStyle: 'italic' }}>
+                    <strong>Nota del desarrollador:</strong> {prop.dev_response}
+                  </div>
+                )}
+
+                {/* Action Bar for Dev */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                    paddingTop: '8px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {prop.status !== 'IMPLEMENTED' && club && (
+                      <button
+                        type="button"
+                        onClick={() => onOpenImplementModal(club, prop)}
+                        style={{
+                          padding: '7px 14px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(229, 181, 79, 0.5)',
+                          background: 'rgba(229, 181, 79, 0.12)',
+                          color: '#e5b54f',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <Zap size={13} />
+                        Implementar y Activar solo para {club.name}
+                      </button>
+                    )}
+
+                    {prop.status === 'PENDING' && (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateStatus(prop.id, 'IN_REVIEW', 'Equipo de desarrollo evaluando factibilidad técnica')}
+                        style={{
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(59, 130, 246, 0.4)',
+                          background: 'rgba(59, 130, 246, 0.08)',
+                          color: '#60a5fa',
+                          fontSize: '0.76rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Marcar En Revisión
+                      </button>
+                    )}
+
+                    {prop.status !== 'REJECTED' && prop.status !== 'IMPLEMENTED' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRejectingProposalId(prop.id);
+                          setRejectReason('');
+                        }}
+                        style={{
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(244, 63, 94, 0.3)',
+                          background: 'rgba(244, 63, 94, 0.06)',
+                          color: '#fda4af',
+                          fontSize: '0.76rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                        }}
+                      >
+                        <X size={12} />
+                        Rechazar
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Feedback response editor */}
+                  {editingResponseId === prop.id ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, maxWidth: '400px' }}>
+                      <input
+                        type="text"
+                        value={responseText}
+                        onChange={e => setResponseText(e.target.value)}
+                        placeholder="Mensaje o feedback al cliente..."
+                        style={{
+                          flex: 1,
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          background: 'rgba(255, 255, 255, 0.06)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#fff',
+                          fontSize: '0.76rem',
+                          outline: 'none',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSaveResponse(prop.id, prop.status)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          background: '#e5b54f',
+                          color: '#08080c',
+                          border: 'none',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Check size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingResponseId(null)}
+                        style={{
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          background: 'transparent',
+                          color: 'rgba(255, 255, 255, 0.5)',
+                          border: 'none',
+                          fontSize: '0.74rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingResponseId(prop.id);
+                        setResponseText(prop.dev_response || '');
+                      }}
+                      style={{
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <MessageSquare size={12} />
+                      {prop.dev_response ? 'Editar Respuesta' : 'Responder al Cliente'}
+                    </button>
+                  )}
+                </div>
+
+                {/* Inline Rejection Box */}
+                {rejectingProposalId === prop.id && (
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      background: 'rgba(244, 63, 94, 0.06)',
+                      border: '1px solid rgba(244, 63, 94, 0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.76rem', color: '#fda4af', fontWeight: 600 }}>
+                      ¿Confirmar rechazo de la propuesta?
+                    </span>
+                    <input
+                      type="text"
+                      value={rejectReason}
+                      onChange={e => setRejectReason(e.target.value)}
+                      placeholder="Motivo del rechazo para el club (opcional)..."
+                      style={{
+                        flex: 1,
+                        minWidth: '220px',
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        background: 'rgba(10, 11, 16, 0.85)',
+                        border: '1px solid rgba(244, 63, 94, 0.3)',
+                        color: '#fff',
+                        fontSize: '0.76rem',
+                        outline: 'none',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onUpdateStatus(
+                          prop.id,
+                          'REJECTED',
+                          rejectReason.trim() || 'Propuesta no viable técnicamente o fuera de alcance actual.'
+                        );
+                        setRejectingProposalId(null);
+                        setRejectReason('');
+                      }}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        background: '#f43f5e',
+                        color: '#fff',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Confirmar Rechazo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRejectingProposalId(null);
+                        setRejectReason('');
+                      }}
+                      style={{
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};

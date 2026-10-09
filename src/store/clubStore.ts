@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import type {
   Club, ClubEvent, ClubTable, EventTablePricing, Reservation, AuditLog,
-  Plan, SubscriptionPlanId, ViewRole, ClubLayoutType, ClientUser, StaffUser
+  Plan, SubscriptionPlanId, ViewRole, ClubLayoutType, ClientUser, StaffUser,
+  ClubProposal, CustomClubFeature, ProposalStatus
 } from '../types';
 import {
   INITIAL_PLANS, INITIAL_CLUBS, INITIAL_EVENTS, INITIAL_TABLES,
-  INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS
+  INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS
 } from '../data';
 import { loadStorageState, saveStorageState, applyLoadedStorageData } from './storage';
 import {
@@ -26,7 +27,7 @@ import { callFunctions } from '../lib/functionsClient';
 import { formatUsd } from '../lib/formatUsd';
 import { esClubStatus, esLayout, esPlan } from '../lib/esLabels';
 
-export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_EVENTS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS };
+export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_EVENTS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS };
 
 class ClubStore {
   clubs: Club[] = INITIAL_CLUBS;
@@ -35,6 +36,7 @@ class ClubStore {
   eventPricing: EventTablePricing[] = INITIAL_EVENT_PRICING;
   reservations: Reservation[] = import.meta.env.DEV ? INITIAL_RESERVATIONS : [];
   plans: Plan[] = INITIAL_PLANS;
+  proposals: ClubProposal[] = INITIAL_PROPOSALS;
   private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
 
   activeClubId: string = 'club-sensorial';
@@ -107,7 +109,7 @@ class ClubStore {
   saveToStorage() {
     saveStorageState({
       tables: this.tables, eventPricing: this.eventPricing, clubs: this.clubs,
-      plans: this.plans,
+      plans: this.plans, proposals: this.proposals,
       reservations: this.reservations, activeClubId: this.activeClubId, activeEventId: this.activeEventId,
       currentRole: this.currentRole, dashboardTab: this.dashboardTab,
       customArchetypeLayouts: this.customArchetypeLayouts,
@@ -120,7 +122,7 @@ class ClubStore {
     this.persistAndNotify();
   }
 
-  logoutClient() { this.clientUser = null; this.persistAndNotify(); }
+  logoutClient() { this.clientUser = null; this.currentRole = 'CLIENT'; this.persistAndNotify(); }
 
   setBusinessPortalSession(businessId: string, user: ClientUser) {
     this.clientUser = user;
@@ -356,6 +358,118 @@ class ClubStore {
       this.persistAndNotify();
     }
   }
+
+  submitClubProposal(proposalData: {
+    club_id: string;
+    club_name: string;
+    requested_plan_id?: SubscriptionPlanId;
+    title: string;
+    description: string;
+    proposed_benefit: string;
+  }): ClubProposal {
+    const newProp: ClubProposal = {
+      id: `prop-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      club_id: proposalData.club_id,
+      club_name: proposalData.club_name,
+      requested_plan_id: proposalData.requested_plan_id,
+      title: proposalData.title.trim(),
+      description: proposalData.description.trim(),
+      proposed_benefit: proposalData.proposed_benefit.trim(),
+      status: 'PENDING',
+      created_at: new Date().toISOString()
+    };
+    this.proposals = [newProp, ...this.proposals];
+    this.addAuditLog({
+      club_id: proposalData.club_id,
+      actor: 'Administrador del Club',
+      role: 'club_owner',
+      action: 'PROPOSAL_SUBMITTED',
+      details: `Propuesta "${newProp.title}" enviada al equipo de desarrollo`
+    });
+    this.persistAndNotify();
+    return newProp;
+  }
+
+  updateProposalStatus(proposalId: string, status: ProposalStatus, devResponse?: string) {
+    const prop = this.proposals.find(p => p.id === proposalId);
+    if (!prop) return;
+    prop.status = status;
+    prop.updated_at = new Date().toISOString();
+    if (devResponse !== undefined) prop.dev_response = devResponse;
+    this.addAuditLog({
+      club_id: prop.club_id,
+      actor: 'Desarrollador (SuperAdmin)',
+      role: 'super_admin',
+      action: 'PROPOSAL_STATUS_CHANGED',
+      details: `Propuesta "${prop.title}" marcada como ${status}`
+    });
+    this.persistAndNotify();
+  }
+
+  activateCustomFeatureForClub(
+    clubId: string,
+    featureData: { name: string; key: string; description: string; notes?: string },
+    proposalId?: string
+  ) {
+    const club = this.clubs.find(c => c.id === clubId);
+    if (!club) return;
+    if (!club.custom_features) club.custom_features = [];
+
+    const existingIdx = club.custom_features.findIndex(f => f.key === featureData.key);
+    const feature: CustomClubFeature = {
+      id: existingIdx >= 0 ? club.custom_features[existingIdx].id : `feat-${Date.now()}`,
+      name: featureData.name.trim(),
+      key: featureData.key.trim().toUpperCase(),
+      description: featureData.description.trim(),
+      enabled: true,
+      activated_at: new Date().toISOString(),
+      activated_by: 'Desarrollador (SuperAdmin)',
+      notes: featureData.notes?.trim()
+    };
+
+    if (existingIdx >= 0) {
+      club.custom_features[existingIdx] = feature;
+    } else {
+      club.custom_features.push(feature);
+    }
+
+    if (proposalId) {
+      const prop = this.proposals.find(p => p.id === proposalId);
+      if (prop) {
+        prop.status = 'IMPLEMENTED';
+        prop.updated_at = new Date().toISOString();
+        prop.dev_response = `Módulo "${feature.name}" implementado y activado exclusivamente para ${club.name}.`;
+        prop.activated_feature = feature;
+      }
+    }
+
+    this.addAuditLog({
+      club_id: clubId,
+      actor: 'Desarrollador (SuperAdmin)',
+      role: 'super_admin',
+      action: 'CUSTOM_FEATURE_ACTIVATED',
+      details: `Beneficio exclusivo "${feature.name}" activado únicamente para ${club.name}`
+    });
+    this.persistAndNotify();
+  }
+
+  toggleCustomFeatureForClub(clubId: string, featureKey: string, enabled: boolean) {
+    const club = this.clubs.find(c => c.id === clubId);
+    if (!club || !club.custom_features) return;
+    const feat = club.custom_features.find(f => f.key === featureKey);
+    if (feat) {
+      feat.enabled = enabled;
+      this.addAuditLog({
+        club_id: clubId,
+        actor: 'Desarrollador (SuperAdmin)',
+        role: 'super_admin',
+        action: enabled ? 'CUSTOM_FEATURE_ENABLED' : 'CUSTOM_FEATURE_DISABLED',
+        details: `Beneficio exclusivo "${feat.name}" ${enabled ? 'reactivado' : 'pausado'} para ${club.name}`
+      });
+      this.persistAndNotify();
+    }
+  }
+
 
   /**
    * Actualiza la identidad legal del negocio (Fase B). La fuente de verdad es

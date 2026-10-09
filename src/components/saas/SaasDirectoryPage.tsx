@@ -66,6 +66,54 @@ export function SaasDirectoryPage() {
     <div className="saas-app saas-directory-app">
       <SaasAmbient />
       <SaasHeader />
+      {/* Banner de invitación para dueños de clubes y discotecas */}
+      <div
+        style={{
+          background: 'rgba(229, 181, 79, 0.08)',
+          borderBottom: '1px solid rgba(229, 181, 79, 0.25)',
+          padding: '10px 20px',
+          textAlign: 'center',
+          fontSize: '0.82rem',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          flexWrap: 'wrap',
+          position: 'relative',
+          zIndex: 10,
+        }}
+      >
+        <span
+          style={{
+            fontSize: '0.68rem',
+            fontWeight: 800,
+            background: 'rgba(229, 181, 79, 0.2)',
+            color: 'var(--saas-gold, #e5b54f)',
+            padding: '2px 8px',
+            borderRadius: '9999px',
+            border: '1px solid rgba(229, 181, 79, 0.35)',
+            letterSpacing: '0.04em',
+          }}
+        >
+          ¿ERES DUEÑO DE DISCOTECA O CLUB?
+        </span>
+        <span>Digitaliza reservas con plano cenital y elimina el fraude en puerta a las 02:00 AM.</span>
+        <Link
+          to="/software"
+          style={{
+            color: 'var(--saas-gold, #e5b54f)',
+            fontWeight: 800,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}
+        >
+          Conoce NIGHTFLOW VIP SaaS ➔
+        </Link>
+      </div>
+
       <main>
         <section className="saas-directory-hero">
           <div className="saas-container saas-directory-hero__grid">

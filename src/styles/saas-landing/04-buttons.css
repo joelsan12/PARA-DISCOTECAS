@@ -1,0 +1,118 @@
+/* ── Botones Principales ─────────────────────────────────────────────────── */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--saas-gold);
+  color: #07080c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: 1px solid var(--saas-gold);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-gold:hover {
+  background: var(--saas-gold-hover);
+  border-color: var(--saas-gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(229, 181, 79, 0.25);
+}
+
+.saas-page .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--saas-surface);
+  color: var(--saas-text-primary) !important;
+  border: 1px solid var(--saas-border);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.saas-page .btn-secondary:hover {
+  background: var(--saas-gold-subtle);
+  border-color: var(--saas-border-gold);
+  color: var(--saas-gold) !important;
+}
+
+[data-theme="light"] .saas-page .btn-secondary {
+  background: #ffffff;
+  color: #0e1118 !important;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .saas-page .btn-secondary:hover {
+  background: rgba(184, 134, 11, 0.08);
+  border-color: var(--saas-gold);
+  color: var(--saas-gold) !important;
+}
+
+.saas-page .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--saas-gold) !important;
+  border: 1px solid var(--saas-border-gold);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.saas-page .btn-ghost:hover {
+  background: var(--saas-gold-subtle);
+  color: var(--saas-text-primary) !important;
+}
+
+.btn-ghost:hover {
+  background: var(--saas-gold-subtle);
+  color: var(--saas-text-primary);
+}
+
+.saas-badge-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--saas-gold);
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.saas-badge-gold::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--saas-gold);
+  box-shadow: 0 0 10px rgba(229, 181, 79, 0.9);
+  display: inline-block;
+  flex-shrink: 0;
+}

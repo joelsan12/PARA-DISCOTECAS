@@ -1,5 +1,21 @@
 {
   "projects": {
     "default": "nightflow-vip"
-  }
+  },
+  "targets": {
+    "nightflow-vip": {
+      "hosting": {
+        "client": [
+          "nightflow-vip"
+        ],
+        "admin": [
+          "nightflow-admin"
+        ],
+        "dev": [
+          "nightflow-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

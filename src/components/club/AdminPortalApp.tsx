@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useClubStore } from '../../store/clubStore';
 import { ClubDashboard } from './ClubDashboard';
 import { DoorCheckIn } from '../door/DoorCheckIn';
-import { SuperAdminDashboard } from '../superadmin/SuperAdminDashboard';
 import { AdminSidebar, type DashboardTabKey } from './AdminSidebar';
 import { AdminCommandBar } from './AdminCommandBar';
 import { AdminLoginView } from './AdminLoginView';
@@ -10,10 +9,10 @@ import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState } from '../../l
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import '../../styles/adminLayout.css';
 
-type AdminView = 'DASHBOARD' | 'DOOR' | 'SUPER_ADMIN';
+type AdminView = 'DASHBOARD' | 'DOOR';
 
 /**
- * Portal Exclusivo para Administradores, Staff y Personal de Puerta.
+ * Portal Exclusivo para Administradores, Staff y Personal de Puerta de Sensorial Club VIP.
  * Arquitectura ejecutiva de consola de mando con barra lateral, command bar
  * y control criptográfico estricto conforme a AGENTS §10 y §13.
  */
@@ -23,16 +22,21 @@ export function AdminPortalApp() {
   const [currentView, setCurrentView] = useState<AdminView>('DASHBOARD');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
 
-  const activeClubId = store.activeClubId;
+  // Garantizar que la consola de club opere estrictamente sobre Sensorial Club VIP
+  useEffect(() => {
+    if (store.activeClubId !== 'club-sensorial') {
+      store.setActiveClub('club-sensorial');
+    }
+  }, [store]);
+
+  const activeClubId = store.activeClubId || 'club-sensorial';
 
   useEffect(() => {
     const unsubscribe = subscribeToAdminAuth(activeClubId, state => {
       setAuthState(state);
       if (state.status === 'authenticated') {
         const session = state.session;
-        if (session.isSuperAdmin) {
-          setCurrentView('SUPER_ADMIN');
-        } else if (session.role === 'DOOR_CHECKIN') {
+        if (session.role === 'DOOR_CHECKIN') {
           setCurrentView('DOOR');
         } else {
           setCurrentView('DASHBOARD');
@@ -97,7 +101,6 @@ export function AdminPortalApp() {
   const session = authState.session;
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN';
-  const canAccessSuperAdmin = session.isSuperAdmin;
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
 
@@ -128,7 +131,6 @@ export function AdminPortalApp() {
         <main className="admin-canvas">
           {currentView === 'DASHBOARD' && canAccessDashboard && <ClubDashboard />}
           {currentView === 'DOOR' && canAccessDoor && <DoorCheckIn />}
-          {currentView === 'SUPER_ADMIN' && canAccessSuperAdmin && <SuperAdminDashboard />}
         </main>
       </div>
     </div>

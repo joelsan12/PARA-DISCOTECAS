@@ -4,6 +4,7 @@ import { formatEcuadorPhone, normalizeEcuadorPhone } from '../../lib/formatEcuad
 import { formatUsd } from '../../lib/formatUsd';
 import { esPlan, esClubStatus } from '../../lib/esLabels';
 import type { Club, SubscriptionPlan, SubscriptionPlanId, ClubStatus, VenueType } from '../../types';
+import { ConfirmPlanChangeModal } from './ConfirmPlanChangeModal';
 
 interface Props {
   club: Club | null;
@@ -11,6 +12,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (clubId: string, updates: Partial<Club>) => void;
+  onUpdatePlan?: (clubId: string, newPlanId: SubscriptionPlanId) => void;
 }
 
 const BUSINESS_TYPE_OPTIONS = [
@@ -23,7 +25,7 @@ const BUSINESS_TYPE_OPTIONS = [
   { value: 'OTHER', label: 'Otro formato nocturno' }
 ];
 
-export const EditClubModal = ({ club, plans, isOpen, onClose, onSave }: Props) => {
+export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePlan }: Props) => {
   const [name, setName] = useState(() => club?.name || '');
   const [city, setCity] = useState(() => club?.city || '');
   const [address, setAddress] = useState(() => club?.address || '');
@@ -33,6 +35,8 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave }: Props) =
   const [planId, setPlanId] = useState<SubscriptionPlanId>(() => club?.plan_id || 'pro');
   const [status, setStatus] = useState<ClubStatus>(() => club?.status || 'active');
   const [error, setError] = useState<string | null>(null);
+  const [pendingPlanConfirm, setPendingPlanConfirm] = useState(false);
+  const [pendingUpdates, setPendingUpdates] = useState<Partial<Club> | null>(null);
 
   if (!isOpen || !club) return null;
 
@@ -44,17 +48,25 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave }: Props) =
       return;
     }
 
+    const updates: Partial<Club> = {
+      name: name.trim(),
+      city: city.trim(),
+      address: address.trim(),
+      whatsapp_number: normalizedPhone,
+      tagline: tagline.trim(),
+      venue_type: businessType as Club['venue_type'],
+      status: status
+    };
+
+    // Invariante de seguridad: Ningún cambio de plan se ejecuta sin confirmación
+    if (planId !== club.plan_id) {
+      setPendingUpdates(updates);
+      setPendingPlanConfirm(true);
+      return;
+    }
+
     try {
-      onSave(club.id, {
-        name: name.trim(),
-        city: city.trim(),
-        address: address.trim(),
-        whatsapp_number: normalizedPhone,
-        tagline: tagline.trim(),
-        venue_type: businessType as Club['venue_type'],
-        plan_id: planId,
-        status: status
-      });
+      onSave(club.id, updates);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar modificaciones.');
@@ -361,6 +373,31 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave }: Props) =
           </div>
         </form>
       </div>
+
+      {/* Modal de confirmación obligatoria si el plan cambió en este formulario */}
+      <ConfirmPlanChangeModal
+        isOpen={pendingPlanConfirm}
+        club={club}
+        newPlanId={planId}
+        plans={plans}
+        onConfirm={(clubId, newPlan) => {
+          if (onUpdatePlan) {
+            onUpdatePlan(clubId, newPlan);
+          } else {
+            onSave(clubId, { plan_id: newPlan });
+          }
+          if (pendingUpdates) {
+            onSave(clubId, pendingUpdates);
+          }
+          setPendingPlanConfirm(false);
+          setPendingUpdates(null);
+          onClose();
+        }}
+        onCancel={() => {
+          setPendingPlanConfirm(false);
+          setPendingUpdates(null);
+        }}
+      />
     </div>
   );
 };

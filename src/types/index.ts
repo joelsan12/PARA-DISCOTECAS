@@ -8,6 +8,34 @@ import type {
 
 export type SubscriptionPlanId = 'basic' | 'pro' | 'enterprise' | (string & {});
 
+export type ProposalStatus = 'PENDING' | 'IN_REVIEW' | 'IMPLEMENTED' | 'REJECTED';
+
+export interface CustomClubFeature {
+  id: string;
+  name: string;
+  key: string;
+  description: string;
+  enabled: boolean;
+  activated_at: string;
+  activated_by: string;
+  notes?: string;
+}
+
+export interface ClubProposal {
+  id: string;
+  club_id: string;
+  club_name: string;
+  requested_plan_id?: SubscriptionPlanId;
+  title: string;
+  description: string;
+  proposed_benefit: string;
+  status: ProposalStatus;
+  created_at: string;
+  updated_at?: string;
+  dev_response?: string;
+  activated_feature?: CustomClubFeature;
+}
+
 export interface Plan {
   id: SubscriptionPlanId;
   name: string;
@@ -46,6 +74,7 @@ export interface Club {
   venue_type?: VenueType;
   scheduling_mode?: SchedulingMode;
   enabled_features?: FeatureFlag[];
+  custom_features?: CustomClubFeature[];
   active_floor_plan_version_id?: string;
   legal_profile?: {
     legalName: string;

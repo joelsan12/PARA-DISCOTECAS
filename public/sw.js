@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'nightflow-shell-v2';
+const SHELL_CACHE = 'nightflow-shell-v8';
 const FONT_CACHE = 'nightflow-fonts-v1';
 const FONT_MAX_ENTRIES = 32;
 const SHELL_URLS = [

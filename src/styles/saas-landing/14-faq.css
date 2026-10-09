@@ -1,0 +1,74 @@
+/* ── 11. FAQ y Soporte ───────────────────────────────────────────────────── */
+.saas-faq-wide-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 36px;
+}
+
+@media (max-width: 960px) {
+  .saas-faq-wide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-faq-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.saas-faq-item {
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.saas-faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: transparent;
+  border: none;
+  color: var(--saas-text-primary);
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.saas-faq-answer {
+  padding: 0 22px 18px;
+  font-size: 0.86rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.saas-faq-support-card {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border-gold);
+  border-radius: 12px;
+  padding: 32px 26px;
+  text-align: left;
+  height: fit-content;
+}
+
+.saas-faq-support-icon {
+  margin-bottom: 16px;
+}
+
+.saas-faq-support-card h3 {
+  font-size: 1.15rem;
+  color: var(--saas-text-primary);
+  margin: 0 0 10px;
+}
+
+.saas-faq-support-card p {
+  font-size: 0.84rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}

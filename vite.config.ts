@@ -3,11 +3,12 @@ import { defineConfig, loadEnv } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const isDev = mode === 'dev';
   const isAdmin = mode === 'admin';
-  const port = isAdmin ? 5174 : 5173;
+  const port = isDev ? 5175 : (isAdmin ? 5174 : 5173);
 
-  // Los builds con modo propio (client/admin) NO cargan .env.production
-  // automáticamente (solo .env.[mode]). Para que build:client/build:admin
+  // Los builds con modo propio (client/admin/dev) NO cargan .env.production
+  // automáticamente (solo .env.[mode]). Para que build:client/build:admin/build:dev
   // vean las mismas variables de despliegue que `vite build`, las fusionamos
   // explícitamente aquí únicamente durante el build, sin contaminar el dev server.
   const productionEnv = command === 'build' && mode !== 'production'
@@ -25,7 +26,7 @@ export default defineConfig(({ command, mode }) => {
       strictPort: false
     },
     build: {
-      outDir: isAdmin ? 'dist-admin' : 'dist',
+      outDir: isDev ? 'dist-dev' : (isAdmin ? 'dist-admin' : 'dist'),
       rollupOptions: {
         output: {
           manualChunks(id) {

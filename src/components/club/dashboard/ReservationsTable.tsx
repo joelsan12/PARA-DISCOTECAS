@@ -204,9 +204,10 @@ export const ReservationsTable = ({ reservations }: Props) => {
             <tr style={{
               borderBottom: '1px solid rgba(229, 181, 79, 0.2)',
               textAlign: 'left',
-              color: 'var(--brand-gold)',
-              fontSize: '0.72rem',
-              letterSpacing: '0.08em',
+              color: 'var(--text-muted)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
               textTransform: 'uppercase'
             }}>
               <th style={{ padding: '12px 10px' }}>CÓDIGO</th>
@@ -331,14 +332,20 @@ export const ReservationsTable = ({ reservations }: Props) => {
                   fontFamily: 'var(--font-mono)',
                   fontWeight: 800,
                   fontSize: '0.92rem',
-                  color: '#34d399'
+                  color: res.deposit_amount > 0 ? '#34d399' : 'var(--text-dim)'
                 }}>
-                  {formatUsd(res.deposit_amount)}
+                  {res.deposit_amount > 0 ? formatUsd(res.deposit_amount) : '—'}
                 </td>
 
                 {/* Estado */}
                 <td style={{ padding: '14px 10px' }}>
-                  <span className={`badge ${res.status === 'CHECKED_IN' ? 'badge-checkedin' : 'badge-confirmed'}`}>
+                  <span className={`badge ${
+                    res.status === 'CHECKED_IN' ? 'badge-checkedin'
+                      : res.status === 'HELD' ? 'badge-held'
+                        : res.status === 'EXPIRED' ? 'badge-expired'
+                          : res.status === 'AVAILABLE' ? 'badge-available'
+                            : 'badge-confirmed'
+                  }`}>
                     {esTableStatus(res.status)}
                   </span>
                 </td>

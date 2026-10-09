@@ -1,0 +1,78 @@
+/* ── 9. Galería de Pantallas (Screens) ───────────────────────────────────── */
+.saas-screens-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.saas-screen-tab {
+  padding: 10px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--saas-text-secondary);
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.saas-screen-tab:hover {
+  color: var(--saas-text-primary);
+  border-color: var(--saas-border-gold);
+}
+
+.saas-screen-tab.active {
+  color: #07080c;
+  background: var(--saas-gold);
+  border-color: var(--saas-gold);
+  font-weight: 700;
+}
+
+.saas-screen-viewport {
+  width: 100%;
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--saas-shadow);
+}
+
+.saas-screen-viewport img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.saas-screen-caption {
+  padding: 18px 24px;
+  background: var(--saas-surface);
+  border-top: 1px solid var(--saas-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saas-points-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .saas-points-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-point-card {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.84rem;
+  color: var(--saas-text-primary);
+}

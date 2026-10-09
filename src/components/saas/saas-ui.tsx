@@ -38,6 +38,20 @@ export function SaasHeader({ business, backTo, minimal = false }: SaasHeaderProp
       <SaasLogo />
       <nav className="saas-header__nav" aria-label="Navegación principal">
         {!minimal && <Link to="/">Directorio</Link>}
+        {!minimal && (
+          <Link
+            to="/software"
+            style={{
+              color: 'var(--saas-gold, #e5b54f)',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            Para Clubes (SaaS)
+          </Link>
+        )}
         {business && <Link to={`/negocio/${business.slug}`}>El venue</Link>}
         {business && <Link className="saas-header__access" to={`/negocio/${business.slug}/acceso`}>Acceder <ArrowUpRight size={14} /></Link>}
         {!business && !minimal && backTo && <Link className="saas-header__access" to={backTo}>Mi acceso <ArrowUpRight size={14} /></Link>}

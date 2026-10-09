@@ -5,3 +5,4 @@ export * from './mockTables';
 export * from './mockPricing';
 export * from './mockReservations';
 export * from './mockAuditLogs';
+export * from './mockProposals';

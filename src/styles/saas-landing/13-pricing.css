@@ -1,0 +1,191 @@
+/* ── 10. Cuadrícula de Precios & Tabla Comparativa ───────────────────────── */
+.saas-pricing-switch {
+  display: flex;
+}
+
+.saas-switch-box {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  padding: 4px;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+.saas-switch-btn {
+  padding: 8px 18px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--saas-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.saas-switch-btn.active {
+  background: var(--saas-gold);
+  color: #07080c;
+}
+
+.saas-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1200px) {
+  .saas-pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .saas-pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-plan-card {
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.saas-plan-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--saas-border-gold);
+}
+
+.saas-plan-card.featured {
+  background: var(--saas-surface-elevated);
+  border-color: var(--saas-gold);
+  box-shadow: 0 12px 32px rgba(229, 181, 79, 0.12);
+}
+
+.saas-plan-badge {
+  position: absolute;
+  top: -10px;
+  right: 18px;
+  background: var(--saas-gold);
+  color: #07080c;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.saas-plan-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--saas-text-primary);
+  margin-bottom: 6px;
+}
+
+.saas-plan-desc {
+  font-size: 0.78rem;
+  color: var(--saas-text-secondary);
+  min-height: 40px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.saas-plan-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--saas-border);
+  padding-bottom: 18px;
+}
+
+.saas-plan-amount {
+  font-family: var(--font-serif, 'Cinzel', serif);
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: var(--saas-text-primary);
+  line-height: 1;
+}
+
+.saas-plan-amount.gold {
+  color: var(--saas-gold);
+}
+
+.saas-plan-cycle {
+  font-size: 0.76rem;
+  color: var(--saas-text-secondary);
+}
+
+.saas-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.saas-plan-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--saas-text-secondary);
+}
+
+.saas-plan-feature svg {
+  color: var(--saas-gold);
+  flex-shrink: 0;
+}
+
+.saas-legal-notice {
+  font-size: 0.76rem;
+  color: var(--saas-text-muted);
+  text-align: left;
+}
+
+/* Tabla Comparativa */
+.saas-comparison-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  background: var(--saas-card-bg);
+}
+
+.saas-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.84rem;
+}
+
+.saas-comparison-table th,
+.saas-comparison-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--saas-border);
+}
+
+.saas-comparison-table th {
+  background: var(--saas-surface);
+  color: var(--saas-text-primary);
+  font-weight: 700;
+}
+
+.saas-comparison-table td {
+  color: var(--saas-text-secondary);
+}
+
+.saas-comparison-table .highlight-col {
+  color: var(--saas-gold);
+  font-weight: 700;
+  background: var(--saas-gold-subtle);
+}

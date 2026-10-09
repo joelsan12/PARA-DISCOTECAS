@@ -7,9 +7,7 @@ import {
   ShieldAlert,
   Building,
   Layers,
-  History,
-  Activity,
-  Server
+  History
 } from 'lucide-react';
 import { SaaSMetricsCards } from './SaaSMetricsCards';
 import { TenantClubsTable } from './TenantClubsTable';
@@ -20,11 +18,38 @@ import { EditPlanModal } from './EditPlanModal';
 import { PlatformEmergencyModal } from './PlatformEmergencyModal';
 import type { Club, SubscriptionPlan, SubscriptionPlanId } from '../../types';
 
-type SuperAdminTab = 'CLUBS' | 'PLANS' | 'AUDIT';
+export type SuperAdminTab = 'CLUBS' | 'PLANS' | 'AUDIT';
 
-export const SuperAdminDashboard = () => {
+export interface SuperAdminDashboardProps {
+  hideHeader?: boolean;
+  hideSubtabs?: boolean;
+  controlledTab?: SuperAdminTab;
+  onTabChange?: (tab: SuperAdminTab) => void;
+  hideMetrics?: boolean;
+  openCreateModal?: boolean;
+  onCloseCreateModal?: () => void;
+  openEmergencyModal?: boolean;
+  onCloseEmergencyModal?: () => void;
+}
+
+export const SuperAdminDashboard = ({
+  hideHeader = false,
+  hideSubtabs = false,
+  controlledTab,
+  onTabChange,
+  hideMetrics = false,
+  openCreateModal,
+  onCloseCreateModal,
+  openEmergencyModal,
+  onCloseEmergencyModal,
+}: SuperAdminDashboardProps = {}) => {
   const store = useClubStore();
-  const [activeTab, setActiveTab] = useState<SuperAdminTab>('CLUBS');
+  const [internalTab, setInternalTab] = useState<SuperAdminTab>('CLUBS');
+  const activeTab = controlledTab ?? internalTab;
+  const setActiveTab = (tab: SuperAdminTab) => {
+    setInternalTab(tab);
+    onTabChange?.(tab);
+  };
 
   // Modals state
   const [isCreateClubOpen, setIsCreateClubOpen] = useState(false);
@@ -77,158 +102,144 @@ export const SuperAdminDashboard = () => {
   return (
     <div style={{ width: '100%' }}>
       {/* 1. Header Banner & Developer Console Bar */}
-      <div className="glass-card" style={{
-        padding: '24px 28px',
-        marginBottom: '24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '18px',
-        background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 17, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              background: 'rgba(192, 132, 252, 0.15)',
-              border: '1px solid rgba(192, 132, 252, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#c084fc'
-            }}>
-              <ShieldCheck size={18} />
+      {!hideHeader && (
+        <div className="glass-card" style={{
+          padding: '24px 28px',
+          marginBottom: '24px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '18px',
+          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 17, 0.98) 100%)',
+          border: '1px solid rgba(229, 181, 79, 0.25)',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'rgba(229, 181, 79, 0.08)',
+                border: '1px solid rgba(229, 181, 79, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--brand-gold)'
+              }}>
+                <ShieldCheck size={18} />
+              </div>
+              <h1 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+                Consola de Plataforma &amp; SuperAdministrador · {esRole('SUPER_ADMIN')}
+              </h1>
             </div>
-            <h1 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fff', margin: 0 }}>
-              Consola de Plataforma &amp; SuperAdministrador · {esRole('SUPER_ADMIN')}
-            </h1>
+            <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
+              Aprovisionamiento global de discotecas, planes de suscripción, mando de seguridad y volumen transaccional
+            </p>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 10px 0' }}>
-            Aprovisionamiento global de discotecas, planes de suscripción, mando de seguridad y volumen transaccional
-          </p>
 
-          {/* System status chips */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '3px 8px',
-              borderRadius: '4px',
-              background: 'rgba(148, 163, 184, 0.12)',
-              border: '1px solid rgba(148, 163, 184, 0.3)',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: '#94a3b8'
-            }}>
-              <Server size={11} />
-              <span>Cloud Run / Render Híbrido · estado no verificado</span>
-            </div>
+          {/* Global Action Buttons */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setIsEmergencyModalOpen(true)}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                background: 'rgba(244, 63, 94, 0.06)',
+                border: '1px solid rgba(244, 63, 94, 0.24)',
+                color: '#fda4af',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(244, 63, 94, 0.14)';
+                e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.45)';
+                e.currentTarget.style.color = '#fff';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(244, 63, 94, 0.06)';
+                e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.24)';
+                e.currentTarget.style.color = '#fda4af';
+              }}
+            >
+              <ShieldAlert size={14} />
+              <span>Mando de Seguridad (AGENTS §8)</span>
+            </button>
 
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '3px 8px',
-              borderRadius: '4px',
-              background: 'rgba(229, 181, 79, 0.12)',
-              border: '1px solid rgba(229, 181, 79, 0.3)',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: 'var(--brand-gold)'
-            }}>
-              <ShieldCheck size={11} />
-              <span>Firma Ed25519 (door-service)</span>
-            </div>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '3px 8px',
-              borderRadius: '4px',
-              background: 'rgba(244, 63, 94, 0.12)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: '#fda4af'
-            }}>
-              <Activity size={11} />
-              <span>Revocación v{store.platformRevocationVersion} · local (AGENTS §8)</span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setIsCreateClubOpen(true)}
+              style={{
+                padding: '8px 15px',
+                borderRadius: '6px',
+                background: 'rgba(229, 181, 79, 0.12)',
+                border: '1px solid rgba(229, 181, 79, 0.38)',
+                color: '#f5d38a',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(229, 181, 79, 0.22)';
+                e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.6)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(229, 181, 79, 0.12)';
+                e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.38)';
+                e.currentTarget.style.color = '#f5d38a';
+              }}
+            >
+              <Plus size={15} />
+              <span>Registrar nueva discoteca</span>
+            </button>
           </div>
         </div>
-
-        {/* Global Action Buttons */}
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <button
-            type="button"
-            onClick={() => setIsEmergencyModalOpen(true)}
-            style={{
-              padding: '9px 14px',
-              borderRadius: '6px',
-              background: 'rgba(244, 63, 94, 0.12)',
-              border: '1px solid rgba(244, 63, 94, 0.4)',
-              color: '#f43f5e',
-              fontSize: '0.78rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <ShieldAlert size={14} />
-            <span>Mando de Seguridad (AGENTS §8)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsCreateClubOpen(true)}
-            className="btn-primary"
-            style={{ padding: '9px 16px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Plus size={15} />
-            <span>Registrar nueva discoteca</span>
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* 2. SaaS Metrics Overview */}
-      <SaaSMetricsCards
-        mrr={mrr}
-        activeClubs={activeClubs}
-        totalClubs={totalClubs}
-        totalVolume={totalVolume}
-        reservationsCount={store.reservations.length}
-      />
+      {!hideMetrics && (
+        <SaaSMetricsCards
+          mrr={mrr}
+          activeClubs={activeClubs}
+          totalClubs={totalClubs}
+          totalVolume={totalVolume}
+          reservationsCount={store.reservations.length}
+        />
+      )}
 
       {/* 3. Sub-navigation Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        marginBottom: '20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        paddingBottom: '10px'
-      }}>
+      {!hideSubtabs && (
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '20px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          paddingBottom: '10px'
+        }}>
         <button
           type="button"
           onClick={() => setActiveTab('CLUBS')}
           style={{
-            padding: '8px 16px',
+            padding: '7px 15px',
             borderRadius: '6px',
-            background: activeTab === 'CLUBS' ? 'rgba(229, 181, 79, 0.18)' : 'transparent',
+            background: activeTab === 'CLUBS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
-            borderColor: activeTab === 'CLUBS' ? 'rgba(229, 181, 79, 0.45)' : 'transparent',
-            color: activeTab === 'CLUBS' ? 'var(--brand-gold)' : 'var(--text-muted)',
-            fontSize: '0.82rem',
-            fontWeight: 800,
+            borderColor: activeTab === 'CLUBS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
+            color: activeTab === 'CLUBS' ? '#f5d38a' : '#71717a',
+            fontSize: '0.8rem',
+            fontWeight: activeTab === 'CLUBS' ? 600 : 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -236,7 +247,7 @@ export const SuperAdminDashboard = () => {
             transition: 'all 0.15s ease'
           }}
         >
-          <Building size={14} />
+          <Building size={14} color={activeTab === 'CLUBS' ? '#e5b54f' : '#71717a'} />
           <span>Discotecas &amp; Clientes ({store.clubs.length})</span>
         </button>
 
@@ -244,14 +255,14 @@ export const SuperAdminDashboard = () => {
           type="button"
           onClick={() => setActiveTab('PLANS')}
           style={{
-            padding: '8px 16px',
+            padding: '7px 15px',
             borderRadius: '6px',
-            background: activeTab === 'PLANS' ? 'rgba(229, 181, 79, 0.18)' : 'transparent',
+            background: activeTab === 'PLANS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
-            borderColor: activeTab === 'PLANS' ? 'rgba(229, 181, 79, 0.45)' : 'transparent',
-            color: activeTab === 'PLANS' ? 'var(--brand-gold)' : 'var(--text-muted)',
-            fontSize: '0.82rem',
-            fontWeight: 800,
+            borderColor: activeTab === 'PLANS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
+            color: activeTab === 'PLANS' ? '#f5d38a' : '#71717a',
+            fontSize: '0.8rem',
+            fontWeight: activeTab === 'PLANS' ? 600 : 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -259,7 +270,7 @@ export const SuperAdminDashboard = () => {
             transition: 'all 0.15s ease'
           }}
         >
-          <Layers size={14} />
+          <Layers size={14} color={activeTab === 'PLANS' ? '#e5b54f' : '#71717a'} />
           <span>Modelos de Suscripción ({store.plans.length})</span>
         </button>
 
@@ -267,14 +278,14 @@ export const SuperAdminDashboard = () => {
           type="button"
           onClick={() => setActiveTab('AUDIT')}
           style={{
-            padding: '8px 16px',
+            padding: '7px 15px',
             borderRadius: '6px',
-            background: activeTab === 'AUDIT' ? 'rgba(229, 181, 79, 0.18)' : 'transparent',
+            background: activeTab === 'AUDIT' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
-            borderColor: activeTab === 'AUDIT' ? 'rgba(229, 181, 79, 0.45)' : 'transparent',
-            color: activeTab === 'AUDIT' ? 'var(--brand-gold)' : 'var(--text-muted)',
-            fontSize: '0.82rem',
-            fontWeight: 800,
+            borderColor: activeTab === 'AUDIT' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
+            color: activeTab === 'AUDIT' ? '#f5d38a' : '#71717a',
+            fontSize: '0.8rem',
+            fontWeight: activeTab === 'AUDIT' ? 600 : 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -282,10 +293,11 @@ export const SuperAdminDashboard = () => {
             transition: 'all 0.15s ease'
           }}
         >
-          <History size={14} />
+          <History size={14} color={activeTab === 'AUDIT' ? '#e5b54f' : '#71717a'} />
           <span>Bitácora de Auditoría Global ({store.auditLogs.length})</span>
         </button>
       </div>
+      )}
 
       {/* 4. Tab Content */}
       {activeTab === 'CLUBS' && (
@@ -376,8 +388,11 @@ export const SuperAdminDashboard = () => {
       {/* Create Club Modal */}
       <CreateClubModal
         plans={store.plans}
-        isOpen={isCreateClubOpen}
-        onClose={() => setIsCreateClubOpen(false)}
+        isOpen={openCreateModal !== undefined ? openCreateModal : isCreateClubOpen}
+        onClose={() => {
+          setIsCreateClubOpen(false);
+          onCloseCreateModal?.();
+        }}
         onCreate={async data => {
           await store.createClub(data);
         }}
@@ -392,6 +407,7 @@ export const SuperAdminDashboard = () => {
           isOpen={true}
           onClose={() => setEditingClub(null)}
           onSave={handleSaveClubDetails}
+          onUpdatePlan={handleUpdateClubPlan}
         />
       )}
 
@@ -411,8 +427,11 @@ export const SuperAdminDashboard = () => {
 
       {/* Platform Emergency / Revocation Modal */}
       <PlatformEmergencyModal
-        isOpen={isEmergencyModalOpen}
-        onClose={() => setIsEmergencyModalOpen(false)}
+        isOpen={openEmergencyModal !== undefined ? openEmergencyModal : isEmergencyModalOpen}
+        onClose={() => {
+          setIsEmergencyModalOpen(false);
+          onCloseEmergencyModal?.();
+        }}
         clubs={store.clubs}
         revocationVersion={store.platformRevocationVersion}
         onIncrementRevocation={(clubId?: string) => store.incrementRevocationVersion(clubId)}

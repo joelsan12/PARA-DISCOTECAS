@@ -1,0 +1,323 @@
+/* ── 3. Comparativa: Caos Tradicional vs NIGHTFLOW VIP ───────────────────── */
+.saas-vs-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--saas-border);
+  position: relative;
+}
+
+.saas-vs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--saas-gold);
+  margin-bottom: 14px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.saas-vs-eyebrow__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--saas-gold);
+  box-shadow: 0 0 10px rgba(229, 181, 79, 0.9);
+  display: inline-block;
+}
+
+.saas-vs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 900px) {
+  .saas-vs-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.saas-vs-card {
+  border-radius: 22px;
+  padding: 38px 34px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.saas-vs-card.bad {
+  background: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.07) 0%, rgba(13, 15, 22, 0.96) 75%);
+  border: none;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(244, 63, 94, 0.22);
+}
+
+.saas-vs-card.bad:hover {
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.65), 0 0 36px rgba(244, 63, 94, 0.08), inset 0 1px 0 rgba(244, 63, 94, 0.35);
+}
+
+.saas-vs-card.good {
+  background: radial-gradient(circle at 50% 0%, rgba(229, 181, 79, 0.12) 0%, rgba(14, 16, 24, 0.96) 75%);
+  border: none;
+  box-shadow: 0 20px 52px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(229, 181, 79, 0.38);
+}
+
+.saas-vs-card.good:hover {
+  box-shadow: 0 26px 58px rgba(0, 0, 0, 0.7), 0 0 46px rgba(229, 181, 79, 0.15), inset 0 1px 0 rgba(229, 181, 79, 0.55);
+}
+
+.saas-vs-card__header {
+  margin-bottom: 26px;
+}
+
+.saas-vs-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 0;
+  border: none;
+  background: transparent;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.saas-vs-card__tag.bad {
+  color: #fb7185;
+  background: transparent;
+  border: none;
+}
+
+.saas-vs-card__tag.good {
+  color: var(--saas-gold);
+  background: transparent;
+  border: none;
+}
+
+.saas-vs-card__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.saas-vs-card__sub {
+  font-size: 0.84rem;
+  color: var(--saas-text-secondary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.saas-vs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.saas-vs-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: none;
+  transition: all 0.22s ease;
+}
+
+.saas-vs-card.bad .saas-vs-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+}
+
+.saas-vs-card.bad .saas-vs-item:hover {
+  background: rgba(244, 63, 94, 0.06);
+  transform: translateX(4px);
+}
+
+.saas-vs-card.good .saas-vs-item {
+  background: rgba(229, 181, 79, 0.04);
+  border: none;
+}
+
+.saas-vs-card.good .saas-vs-item:hover {
+  background: rgba(229, 181, 79, 0.09);
+  transform: translateX(4px);
+}
+
+.saas-vs-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+}
+
+.saas-vs-card.bad .saas-vs-icon-box {
+  background: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+  border: none;
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.18);
+}
+
+.saas-vs-card.good .saas-vs-icon-box {
+  background: linear-gradient(135deg, rgba(229, 181, 79, 0.28) 0%, rgba(229, 181, 79, 0.08) 100%);
+  color: var(--saas-gold);
+  border: none;
+  box-shadow: 0 4px 20px rgba(229, 181, 79, 0.24);
+}
+
+.saas-vs-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.saas-vs-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.saas-vs-item-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.saas-vs-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: none;
+}
+
+.saas-vs-card.bad .saas-vs-pill {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.14);
+  border: none;
+}
+
+.saas-vs-card.good .saas-vs-pill {
+  color: var(--saas-gold);
+  background: rgba(229, 181, 79, 0.18);
+  border: none;
+}
+
+.saas-vs-item-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Fila de Métricas Comparativas al Pie ── */
+.saas-vs-metrics {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 820px) {
+  .saas-vs-metrics {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.saas-vs-metric-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--saas-border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.saas-vs-metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--saas-gold-subtle);
+  border: 1px solid var(--saas-border-gold);
+  color: var(--saas-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.saas-vs-metric-content {
+  flex: 1;
+}
+
+.saas-vs-metric-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--saas-text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.saas-vs-metric-comparison {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.saas-vs-metric-before {
+  color: #fb7185;
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.saas-vs-metric-arrow {
+  color: var(--saas-text-secondary);
+  font-size: 0.8rem;
+}
+
+.saas-vs-metric-after {
+  color: var(--saas-gold);
+  font-weight: 800;
+}
+
+.saas-card-link {
+  color: var(--saas-gold);
+  text-decoration: none;
+  transition: gap 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.saas-card-link:hover {
+  gap: 12px;
+}

@@ -1,0 +1,46 @@
+/* ── 4. Resumen de Precios ───────────────────────────────────────────────── */
+.saas-pricing-summary {
+  padding: 72px 0;
+  border-top: 1px solid var(--saas-border);
+}
+
+/* ── 5. Páginas Dedicadas (Encabezado & Layout) ───────────────────────────── */
+.saas-page-header {
+  padding: 48px 0 40px;
+  text-align: left;
+  max-width: 900px;
+}
+
+.saas-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--saas-text-secondary);
+  text-decoration: none;
+  margin-bottom: 18px;
+  transition: color 0.15s ease;
+}
+
+.saas-back-link:hover {
+  color: var(--saas-gold);
+}
+
+.saas-page-title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--saas-text-primary);
+  margin: 12px 0 14px;
+  text-align: left;
+}
+
+.saas-page-lead {
+  font-size: 1.05rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.65;
+  margin: 0;
+  text-align: left;
+}

@@ -1,3 +1,9 @@
+/* ═════════════════════════════════════════════════════════════════════════
+   NIGHTFLOW VIP — DESIGN TOKENS
+   Direction: "Consola Operativa Nocturna" (dark operativo / hardware studio)
+   Rules: obsidian base · champagne gold as the single accent · state colors
+   are semantic and functional · hairlines over glows · mono for telemetry
+   ═════════════════════════════════════════════════════════════════════════ */
 :root {
   /* Ultra-Deep Obsidian & Luxury Palette (Aligned with VIP Auth) */
   --bg-void: #08080c;
@@ -6,22 +12,58 @@
   --bg-elevated: #14141e;
   --bg-input: #12121b;
   --bg-hover: #191924;
-  
+
   /* Glassmorphism Tokens */
   --bg-glass: rgba(14, 14, 21, 0.82);
   --bg-glass-strong: rgba(14, 14, 21, 0.92);
   --bg-glass-card: rgba(18, 18, 27, 0.75);
-  
+
   /* Borders */
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.14);
   --border-focus: rgba(229, 181, 79, 0.6);
 
-  /* Typography */
+  /* Typography — --text-dim raised to AA (>= 4.5:1) on --bg-void and --bg-surface */
   --text-main: #f4f4f5;
   --text-muted: #a1a1aa;
-  --text-dim: #71717a;
+  --text-dim: #8f8f99;
   --text-high: #ffffff;
+
+  /* ── Semantic State Tokens (functional color, never decorative) ───────── */
+  --state-success: #34d399;
+  --state-success-subtle: rgba(16, 185, 129, 0.12);
+  --state-success-border: rgba(16, 185, 129, 0.3);
+  --state-hold: #fbbf24;
+  --state-hold-subtle: rgba(245, 158, 11, 0.1);
+  --state-hold-border: rgba(245, 158, 11, 0.3);
+  --state-danger: #f43f5e;
+  --state-danger-text: #fda4af;
+  --state-danger-subtle: rgba(244, 63, 94, 0.12);
+  --state-danger-border: rgba(244, 63, 94, 0.32);
+  --state-info: #60a5fa;
+  --state-info-subtle: rgba(59, 130, 246, 0.12);
+  --state-info-border: rgba(59, 130, 246, 0.35);
+  --state-neutral: #cbd5e1;
+  --state-neutral-subtle: rgba(255, 255, 255, 0.07);
+  --state-neutral-border: rgba(255, 255, 255, 0.14);
+
+  /* ── Spacing Scale (4px rhythm) ───────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ── Motion (short, purposeful; disabled by prefers-reduced-motion) ───── */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 280ms;
+  --ease-operational: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── Focus ring (visible keyboard focus, WCAG 2.2) ────────────────────── */
+  --focus-ring: 0 0 0 2px var(--bg-void), 0 0 0 4px rgba(229, 181, 79, 0.75);
 
   /* Champagne Gold & Luxury Accents */
   --accent: #e5b54f;
@@ -55,7 +97,7 @@
   --radius-full: 9999px;
 
   /* Fonts */
-  --font-serif: 'Cinzel', 'Playfair Display', serif;
+  --font-serif: 'Cinzel', Georgia, serif;
   --font-brand: 'Outfit', sans-serif;
   --font-display: 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;

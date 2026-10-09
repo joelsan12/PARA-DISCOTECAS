@@ -1,0 +1,200 @@
+/* ── 2. Las 3 Experiencias de Sala (Visuales) ────────────────────────────── */
+.saas-experiences-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--saas-border);
+}
+
+.saas-experience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 960px) {
+  .saas-experience-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-exp-card {
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 14px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.saas-exp-card:hover {
+  border-color: var(--saas-border-gold);
+  transform: translateY(-2px);
+  box-shadow: var(--saas-shadow);
+}
+
+.saas-exp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--saas-gold);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.saas-exp-card h3 {
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin: 0 0 10px;
+}
+
+.saas-exp-card p {
+  font-size: 0.88rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+/* Micro-plano interactivo dentro de la tarjeta */
+.saas-micro-floor {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.saas-micro-table-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.saas-micro-table {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.saas-micro-table:hover,
+.saas-micro-table.active {
+  border-color: var(--saas-gold);
+  background: var(--saas-gold-subtle);
+}
+
+.saas-micro-table__info strong {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--saas-text-primary);
+}
+
+.saas-micro-table__info span {
+  font-size: 0.72rem;
+  color: var(--saas-text-secondary);
+}
+
+.saas-table-pill {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.saas-table-pill.avail {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+
+.saas-table-pill.held {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  font-family: monospace;
+}
+
+.saas-table-pill.occ {
+  background: rgba(142, 146, 157, 0.12);
+  color: #8e929d;
+}
+
+.saas-micro-floor__action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Micro-HUD de puerta */
+.saas-micro-hud {
+  background: #050608;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  font-size: 0.74rem;
+}
+
+.saas-micro-hud__header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.saas-micro-hud__line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  color: #c4c7d0;
+}
+
+/* Micro-Dashboard de KPIs */
+.saas-micro-dashboard-preview {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.saas-micro-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.saas-micro-kpi {
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.saas-micro-kpi span {
+  font-size: 0.62rem;
+  color: var(--saas-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.saas-micro-kpi strong {
+  font-size: 0.95rem;
+  color: var(--saas-text-primary);
+}

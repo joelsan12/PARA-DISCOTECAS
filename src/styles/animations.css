@@ -3,6 +3,11 @@
   50% { opacity: 0.4; }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @keyframes slide-up-drawer {
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -48,4 +53,10 @@
   box-shadow: 0 0 12px #e5b54f, 0 0 24px rgba(229, 181, 79, 0.4);
   animation: laserSweep 2.2s infinite ease-in-out;
   pointer-events: none;
+}
+
+/* Loading indicators (Loader2 / RotateCw / Crosshair) */
+.spin,
+.animate-spin {
+  animation: spin 1s linear infinite;
 }

@@ -1,0 +1,64 @@
+/* ═════════════════════════════════════════════════════════════════════════
+   NIGHTFLOW VIP — LANDING PAGE & ARQUITECTURA MULTIPÁGINA
+   Estética: Haute Nocturne / Minimalismo de Lujo (Modo Oscuro & Modo Claro)
+   Características:
+   - Modo Oscuro: Obsidiana (#07080c), Oro Champán (#e5b54f), Marfil (#f4f4f5)
+   - Modo Claro: Mármol Crema (#f8f6f0), Oro Antiguo (#b8860b), Carbón (#0e1118)
+   - Layout amplio (no centrado), diseño asimétrico editorial de alta gama
+   ═════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --saas-bg: #07080c;
+  --saas-surface: #0a0c12;
+  --saas-surface-elevated: #10131c;
+  --saas-card-bg: #090b10;
+  --saas-border: rgba(255, 255, 255, 0.08);
+  --saas-border-gold: rgba(229, 181, 79, 0.28);
+  --saas-text-primary: #ffffff;
+  --saas-text-secondary: #9ba1b0;
+  --saas-text-muted: #6b7082;
+  --saas-gold: #e5b54f;
+  --saas-gold-hover: #f3c86c;
+  --saas-gold-subtle: rgba(229, 181, 79, 0.08);
+  --saas-nav-bg: rgba(7, 8, 12, 0.92);
+  --saas-nav-border: rgba(255, 255, 255, 0.08);
+  --saas-nav-height: 76px;
+  --saas-glow: radial-gradient(circle at 25% 0%, rgba(229, 181, 79, 0.07) 0%, transparent 65%);
+  --saas-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="light"] {
+  --text-high: #0e1118;
+  --text-mid: #4a4f5d;
+  --text-low: #7b8191;
+  --saas-bg: #f8f6f0;
+  --saas-surface: #ffffff;
+  --saas-surface-elevated: #f1ede4;
+  --saas-card-bg: #ffffff;
+  --saas-border: rgba(0, 0, 0, 0.08);
+  --saas-border-gold: rgba(184, 134, 11, 0.35);
+  --saas-text-primary: #0e1118;
+  --saas-text-secondary: #4a4f5d;
+  --saas-text-muted: #7b8191;
+  --saas-gold: #b8860b;
+  --saas-gold-hover: #9e7308;
+  --saas-gold-subtle: rgba(184, 134, 11, 0.09);
+  --saas-nav-bg: rgba(248, 246, 240, 0.94);
+  --saas-nav-border: rgba(0, 0, 0, 0.08);
+  --saas-glow: radial-gradient(circle at 25% 0%, rgba(184, 134, 11, 0.06) 0%, transparent 65%);
+  --saas-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6,
+[data-theme="light"] .saas-section-title-left {
+  color: #0e1118 !important;
+}
+
+[data-theme="light"] .saas-section-desc-left {
+  color: #4a4f5d !important;
+}

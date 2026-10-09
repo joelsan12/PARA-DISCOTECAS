@@ -11,9 +11,7 @@
 
 body {
   background-color: #08080c;
-  background-image: 
-    radial-gradient(circle at 50% 12%, rgba(229, 181, 79, 0.08) 0%, rgba(8, 8, 12, 0) 65%),
-    radial-gradient(circle at 50% 90%, rgba(18, 18, 28, 0.45) 0%, rgba(8, 8, 12, 1) 100%);
+  background-image: linear-gradient(180deg, rgba(229, 181, 79, 0.045) 0%, rgba(8, 8, 12, 0) 320px);
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-body);
@@ -59,6 +57,20 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 12px rgba(229, 181, 79, 0.35);
 }
 
+/* Keyboard focus — visible ring on every interactive element (WCAG 2.2 AA) */
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+[role='tab']:focus-visible,
+[role='switch']:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgba(229, 181, 79, 0.85);
+  outline-offset: 2px;
+}
+
 /* Custom VIP Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
@@ -76,4 +88,16 @@ input:focus, select:focus, textarea:focus {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(229, 181, 79, 0.45);
+}
+
+/* Motion is informational, never a requirement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

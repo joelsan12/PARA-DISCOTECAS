@@ -185,9 +185,19 @@ export const InteractiveFloorPlan = ({
 
         const buttonClass = isSelected
           ? 'table-node-btn selected'
-          : isOccupied || isHeld
+          : isOccupied
           ? 'table-node-btn occupied'
+          : isHeld
+          ? 'table-node-btn held'
           : 'table-node-btn available';
+
+        const statusLabel = isSelected
+          ? 'seleccionada'
+          : isOccupied
+          ? 'ocupada'
+          : isHeld
+          ? 'en proceso de reserva'
+          : 'disponible';
 
         return (
           <button
@@ -198,7 +208,7 @@ export const InteractiveFloorPlan = ({
               if (isAvailable) onSelectTable(table);
             }}
             disabled={!isAvailable}
-            aria-label={`Mesa ${table.table_code} (${displayText})`}
+            aria-label={`Mesa ${table.table_code} (${displayText}) — ${statusLabel}`}
             onMouseEnter={() => isAvailable && setHoveredTableId(table.id)}
             onMouseLeave={() => setHoveredTableId(null)}
             style={{

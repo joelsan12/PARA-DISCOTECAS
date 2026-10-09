@@ -1,0 +1,570 @@
+/* ── Consola Operativa VIP Interactiva (Pase 3D + Radar de Mesas) ────────── */
+.saas-interactive-console {
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Selector de pestañas interactivas estilo hardware studio */
+.saas-console-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  background: rgba(10, 12, 18, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--saas-border);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+[data-theme="light"] .saas-console-tabs {
+  background: rgba(240, 236, 226, 0.75);
+  border-color: rgba(184, 134, 11, 0.2);
+}
+
+.saas-console-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--saas-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saas-console-tab:hover {
+  color: var(--saas-text-primary);
+}
+
+.saas-console-tab.active {
+  color: var(--saas-gold);
+  background: var(--saas-gold-subtle);
+  border-color: var(--saas-border-gold);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .saas-console-tab.active {
+  background: rgba(184, 134, 11, 0.12);
+  border-color: rgba(184, 134, 11, 0.35);
+  color: #8c6504;
+}
+
+/* ── Tarjeta VIP Black Card con Relieve, Tilt 3D y Acabado Metálico ──────── */
+.saas-vip-pass-card {
+  width: 100%;
+  background: linear-gradient(145deg, #131722 0%, #080a0f 100%);
+  border: 1px solid rgba(229, 181, 79, 0.35);
+  border-radius: 18px;
+  padding: 22px 24px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.85),
+    0 0 36px rgba(229, 181, 79, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.saas-vip-card--3d {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+/* Reflejo especular que sigue al ratón */
+.saas-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 18px;
+  z-index: 2;
+  transition: background 0.1s ease-out;
+}
+
+[data-theme="light"] .saas-vip-pass-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f7f4ed 100%);
+  border-color: rgba(184, 134, 11, 0.35);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.08),
+    0 0 28px rgba(184, 134, 11, 0.12),
+    inset 0 1px 0 rgba(184, 134, 11, 0.2);
+}
+
+.saas-vip-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.saas-vip-card__emblem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.saas-vip-card__chip {
+  width: 28px;
+  height: 20px;
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+  border-radius: 4px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.saas-vip-card__brand {
+  display: block;
+  font-family: var(--font-serif, 'Cinzel', serif);
+  font-size: 0.96rem;
+  letter-spacing: 0.14em;
+  color: var(--saas-gold);
+}
+
+.saas-vip-card__sub {
+  font-size: 0.65rem;
+  color: var(--saas-text-muted);
+  letter-spacing: 0.08em;
+  font-family: monospace;
+}
+
+.saas-vip-card__status-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.08em;
+  background: rgba(52, 211, 153, 0.09);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.15);
+}
+
+.saas-pulse-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: saas-pulse-glow 1.8s infinite ease-in-out;
+}
+
+.saas-vip-qr-wrapper {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.saas-vip-qr-frame {
+  width: 126px;
+  height: 126px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(229, 181, 79, 0.15);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.saas-vip-qr-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Haz de luz láser animado sobre el QR */
+.saas-laser-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--saas-gold), #ffffff, var(--saas-gold), transparent);
+  box-shadow: 0 0 14px 2px var(--saas-gold);
+  opacity: 0.6;
+  animation: saas-laser-sweep 2.8s infinite ease-in-out;
+}
+
+.saas-laser-beam.active,
+.saas-vip-qr-frame.scanning-laser .saas-laser-beam {
+  opacity: 1;
+  background: linear-gradient(90deg, transparent, #34d399, #ffffff, #34d399, transparent);
+  box-shadow: 0 0 18px 4px #34d399;
+  animation: saas-laser-sweep 0.45s infinite ease-in-out;
+}
+
+@keyframes saas-laser-sweep {
+  0% { top: 0%; opacity: 0.2; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.2; }
+}
+
+.saas-vip-qr-timer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.74rem;
+  color: var(--saas-text-secondary);
+}
+
+.saas-spin-icon {
+  animation: saas-spin 4s linear infinite;
+}
+
+@keyframes saas-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.saas-refresh-btn {
+  background: transparent;
+  border: none;
+  color: var(--saas-gold);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.saas-refresh-btn:hover {
+  background: var(--saas-gold-subtle);
+  transform: scale(1.15);
+}
+
+.saas-vip-card__strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--saas-text-secondary);
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.saas-vip-holder {
+  font-weight: 700;
+  color: var(--saas-text-primary);
+}
+
+.saas-vip-sep {
+  color: var(--saas-border-gold);
+}
+
+.saas-vip-loc {
+  color: var(--saas-text-secondary);
+}
+
+.saas-vip-pax {
+  color: var(--saas-gold);
+  font-weight: 700;
+}
+
+.saas-vip-card__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.saas-btn-compact {
+  font-size: 0.78rem !important;
+  padding: 9px 12px !important;
+  flex: 1;
+}
+
+.saas-btn-fraud {
+  color: #fb7185 !important;
+  border-color: rgba(251, 113, 133, 0.35) !important;
+}
+
+.saas-btn-fraud:hover {
+  background: rgba(251, 113, 133, 0.12) !important;
+  color: #fb7185 !important;
+}
+
+.saas-scan-feedback {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  animation: saas-feedback-slide 0.25s ease-out;
+}
+
+@keyframes saas-feedback-slide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.saas-feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.saas-scan-feedback.success {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: #34d399;
+}
+
+.saas-scan-feedback.fraud {
+  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(251, 113, 133, 0.45);
+  color: #fb7185;
+}
+
+/* ── MODO 2: RADAR DE MESAS Y HOLDS INTERACTIVOS DE 12 MIN ────────────────── */
+.saas-tables-console-card {
+  width: 100%;
+  background: linear-gradient(145deg, #131722 0%, #080a0f 100%);
+  border: 1px solid rgba(229, 181, 79, 0.35);
+  border-radius: 18px;
+  padding: 22px 24px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.85),
+    0 0 36px rgba(229, 181, 79, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  text-align: left;
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .saas-tables-console-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f7f4ed 100%);
+  border-color: rgba(184, 134, 11, 0.35);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.08),
+    0 0 28px rgba(184, 134, 11, 0.12),
+    inset 0 1px 0 rgba(184, 134, 11, 0.2);
+}
+
+.saas-tables-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.saas-tables-title {
+  display: block;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--saas-text-primary);
+}
+
+.saas-tables-sub {
+  font-size: 0.72rem;
+  color: var(--saas-text-muted);
+}
+
+.saas-hold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--saas-gold);
+  background: transparent;
+  border: none;
+  padding: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Cuadrícula de 6 mesas interactivas */
+.saas-mini-floor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.saas-mini-table-btn {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.saas-mini-table-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--saas-border-gold);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.saas-mini-table-btn.selected {
+  outline: 2px solid var(--saas-gold);
+  outline-offset: 1px;
+}
+
+.saas-mini-table-btn.available {
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.saas-mini-table-btn.available:hover {
+  border-color: #34d399;
+}
+
+.saas-mini-table-btn.held {
+  border-color: rgba(229, 181, 79, 0.55);
+  background: rgba(229, 181, 79, 0.08);
+  box-shadow: 0 0 16px rgba(229, 181, 79, 0.15);
+}
+
+.saas-mini-table-btn.occupied {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.saas-mini-table-id {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--saas-text-muted);
+  letter-spacing: 0.08em;
+}
+
+.saas-mini-table-name {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin: 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.saas-mini-table-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.66rem;
+  color: var(--saas-text-secondary);
+  margin-top: 4px;
+}
+
+.saas-mini-table-meta strong {
+  color: var(--saas-gold);
+}
+
+.saas-table-hold-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--saas-gold);
+  margin-top: 4px;
+  background: rgba(229, 181, 79, 0.18);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.saas-table-avail-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #34d399;
+  margin-top: 4px;
+}
+
+.saas-table-occ-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--saas-text-muted);
+  margin-top: 4px;
+}
+
+/* Ficha interactiva de la mesa seleccionada */
+.saas-selected-table-strip {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.saas-strip-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.saas-strip-col.action {
+  flex-shrink: 0;
+}
+
+.saas-strip-label {
+  font-size: 0.65rem;
+  color: var(--saas-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.saas-strip-value {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+}
+
+.saas-strip-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  color: var(--saas-gold);
+  font-weight: 600;
+}
+
+.held-active {
+  background: rgba(229, 181, 79, 0.2) !important;
+  border-color: var(--saas-gold) !important;
+}
+
+.saas-tables-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.4;
+  padding-top: 8px;
+  border-top: 1px solid var(--saas-border);
+}

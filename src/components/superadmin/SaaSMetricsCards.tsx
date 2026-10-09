@@ -17,66 +17,89 @@ export const SaaSMetricsCards = ({
   reservationsCount,
 }: Props) => {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px' }}>
-      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid #10b981' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-            Ingresos recurrentes mensuales · Suscripciones de la plataforma
+    <div className="dev-hud-strip">
+      {/* 1. MRR */}
+      <div className="dev-hud-cell">
+        <div className="dev-hud-cell__header">
+          <span className="dev-hud-cell__label">Ingresos Recurrentes (MRR)</span>
+          <div className="dev-hud-cell__icon">
+            <TrendingUp size={13} />
+          </div>
+        </div>
+        <div className="dev-hud-cell__value-row">
+          <span className="font-mono dev-hud-cell__value">
+            {formatUsd(mrr)}
           </span>
-          <TrendingUp size={16} color="#10b981" />
+          <span className="dev-hud-cell__unit">/ mes</span>
         </div>
-        <div className="font-mono" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', marginTop: '6px' }}>
-          {formatUsd(mrr)} <span style={{ fontSize: '0.88rem', color: 'var(--text-dim)' }}>/ mes</span>
-        </div>
-        <div style={{ fontSize: '0.74rem', color: '#34d399', marginTop: '4px' }}>
-          Ingresos recurrentes garantizados
+        <div className="dev-hud-cell__sub">
+          Suscripciones SaaS activas
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid var(--brand-gold)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-            Discotecas conectadas
+      {/* 2. Discotecas */}
+      <div className="dev-hud-cell">
+        <div className="dev-hud-cell__header">
+          <span className="dev-hud-cell__label">Discotecas Afiliadas</span>
+          <div className="dev-hud-cell__icon">
+            <Building2 size={13} />
+          </div>
+        </div>
+        <div className="dev-hud-cell__value-row">
+          <span className="font-mono dev-hud-cell__value">
+            {activeClubs}
           </span>
-          <Building2 size={16} color="var(--accent)" />
+          <span className="dev-hud-cell__badge dev-hud-cell__badge--neutral">
+            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: '#10b981', marginRight: '4px' }} />
+            {activeClubs} de {totalClubs} activas
+          </span>
         </div>
-        <div className="font-mono" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent)', marginTop: '6px' }}>
-          {activeClubs} <span style={{ fontSize: '0.88rem', color: 'var(--text-dim)' }}>/ {totalClubs}</span>
-        </div>
-        <div style={{ fontSize: '0.74rem', color: '#f5d38a', marginTop: '4px' }}>
-          Instancias multiempresa activas
+        <div className="dev-hud-cell__sub">
+          Instancias multi-tenant
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid #f59e0b' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-            Volumen bruto de anticipos
+      {/* 3. Volumen */}
+      <div className="dev-hud-cell">
+        <div className="dev-hud-cell__header">
+          <span className="dev-hud-cell__label">Volumen Transaccionado</span>
+          <div className="dev-hud-cell__icon">
+            <Layers size={13} />
+          </div>
+        </div>
+        <div className="dev-hud-cell__value-row">
+          <span className="font-mono dev-hud-cell__value">
+            {formatUsd(totalVolume)}
           </span>
-          <Layers size={16} color="#f59e0b" />
+          <span className="dev-hud-cell__unit">total</span>
         </div>
-        <div className="font-mono" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fde68a', marginTop: '6px' }}>
-          {formatUsd(totalVolume)}
-        </div>
-        <div style={{ fontSize: '0.74rem', color: '#fbbf24', marginTop: '4px' }}>
-          Procesado a través de pasarelas
+        <div className="dev-hud-cell__sub">
+          Anticipos y reservas procesadas
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '20px', borderTop: '3px solid #8b5cf6' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
-            Total de pases VIP emitidos
+      {/* 4. Pases VIP */}
+      <div className="dev-hud-cell">
+        <div className="dev-hud-cell__header">
+          <span className="dev-hud-cell__label">Pases VIP Emitidos</span>
+          <div className="dev-hud-cell__icon">
+            <Sparkles size={13} />
+          </div>
+        </div>
+        <div className="dev-hud-cell__value-row">
+          <span className="font-mono dev-hud-cell__value">
+            {reservationsCount}
           </span>
-          <Sparkles size={16} color="#8b5cf6" />
+          <span className="dev-hud-cell__badge dev-hud-cell__badge--neutral">
+            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: '#e5b54f', marginRight: '4px' }} />
+            JWS Ed25519
+          </span>
         </div>
-        <div className="font-mono" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#e9d5ff', marginTop: '6px' }}>
-          {reservationsCount}
-        </div>
-        <div style={{ fontSize: '0.74rem', color: '#c084fc', marginTop: '4px' }}>
-          Transacciones completadas con QR
+        <div className="dev-hud-cell__sub">
+          Accesos verificados con JWS
         </div>
       </div>
     </div>
   );
 };
+

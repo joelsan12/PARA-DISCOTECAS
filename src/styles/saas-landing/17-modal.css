@@ -1,0 +1,68 @@
+/* ── 14. Modal de Contacto & Onboarding ──────────────────────────────────── */
+.saas-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.saas-modal-box {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border-gold);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 28px;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  text-align: left;
+}
+
+.saas-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: var(--saas-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.saas-modal-close:hover {
+  color: var(--saas-text-primary);
+}
+
+.saas-form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.saas-form-label {
+  font-size: 0.74rem;
+  color: var(--saas-text-secondary);
+  font-weight: 600;
+}
+
+.saas-form-input {
+  background: var(--saas-card-bg);
+  border: 1px solid var(--saas-border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: var(--saas-text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.saas-form-input:focus {
+  border-color: var(--saas-gold);
+}

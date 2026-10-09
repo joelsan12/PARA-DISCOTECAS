@@ -1,0 +1,124 @@
+/* ── 8. Arquitectura Blocks ──────────────────────────────────────────────── */
+.saas-arch-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 56px;
+}
+
+.saas-arch-block {
+  background: var(--saas-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 40px 36px;
+  text-align: left;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.saas-arch-block__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.saas-arch-block__icon {
+  background: rgba(229, 181, 79, 0.08);
+  border: 1px solid rgba(229, 181, 79, 0.28);
+  border-radius: 12px;
+  padding: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saas-arch-block__header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--saas-text-primary);
+  margin: 6px 0 0;
+  line-height: 1.3;
+}
+
+.saas-arch-block__text {
+  font-size: 0.94rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.65;
+  margin: 0 0 28px;
+  max-width: 860px;
+}
+
+.saas-arch-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .saas-arch-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-arch-step-item {
+  background: var(--saas-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saas-arch-step-item.highlight {
+  border-color: rgba(229, 181, 79, 0.4);
+  background: rgba(229, 181, 79, 0.08);
+}
+
+.saas-arch-step-item.success {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.saas-arch-step-item strong {
+  font-size: 0.84rem;
+  color: var(--saas-text-primary);
+}
+
+.saas-arch-step-item span {
+  font-size: 0.76rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.5;
+}
+
+.saas-feature-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 800px) {
+  .saas-feature-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.saas-feature-point {
+  display: flex;
+  gap: 14px;
+}
+
+.saas-feature-point h4 {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--saas-text-primary);
+  margin: 0 0 4px;
+}
+
+.saas-feature-point p {
+  font-size: 0.82rem;
+  color: var(--saas-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}

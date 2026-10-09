@@ -287,15 +287,17 @@ export const ClientHeader = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '20px',
+        flexWrap: 'wrap',
+        gap: '8px 20px',
         marginTop: '10px',
         paddingTop: '8px',
         paddingBottom: '10px',
         borderTop: '1px solid rgba(255, 255, 255, 0.04)',
       }}>
-        <LegendDot color="transparent" borderColor="rgba(255,255,255,0.4)" bgColor="rgba(255,255,255,0.1)" label="Disponible" textColor="rgba(255,255,255,0.6)" />
+        <LegendDot color="transparent" borderColor="rgba(229,181,79,0.55)" bgColor="rgba(229,181,79,0.08)" label="Disponible" textColor="rgba(255,255,255,0.6)" />
         <LegendDot color="var(--brand-gold)" borderColor="transparent" bgColor="var(--brand-gold)" label="Seleccionada" textColor="var(--brand-gold)" bold />
-        <LegendDot color="transparent" borderColor="rgba(255,255,255,0.05)" bgColor="rgba(255,255,255,0.04)" label="Ocupada" textColor="rgba(255,255,255,0.3)" dim />
+        <LegendDot color="transparent" borderColor="rgba(245,158,11,0.7)" bgColor="rgba(245,158,11,0.12)" label="Reservando (12 min)" textColor="#fbbf24" />
+        <LegendDot color="transparent" borderColor="rgba(255,255,255,0.05)" bgColor="rgba(255,255,255,0.04)" label="Ocupada" textColor="rgba(255,255,255,0.4)" dim />
       </div>
     </header>
   );

@@ -84,7 +84,8 @@ export const OperatingTablesList = ({ tables, eventPricings }: Props) => {
                     pricing.status === 'AVAILABLE' ? 'badge-available'
                       : pricing.status === 'HELD' ? 'badge-held'
                         : pricing.status === 'CONFIRMED' ? 'badge-confirmed'
-                          : 'badge-checkedin'
+                          : pricing.status === 'CHECKED_IN' ? 'badge-checkedin'
+                            : 'badge-expired'
                   }`}>
                     {esTableStatus(pricing.status)}
                   </span>

@@ -1,5 +1,5 @@
+import { useEffect } from 'react';
 import { useClubStore } from '../../store/clubStore';
-import { MonitorPlay, Sliders, Ticket, Coins, CreditCard, Building2, ShieldCheck } from 'lucide-react';
 import { InteractiveFloorPlan } from '../client/InteractiveFloorPlan';
 import { FloorPlanEditor } from './FloorPlanEditor';
 import { ClubMetricsHeader } from './dashboard/ClubMetricsHeader';
@@ -9,20 +9,31 @@ import { PricingManager } from './dashboard/PricingManager';
 import { AuditLogsView } from './dashboard/AuditLogsView';
 import { LegalProfileForm } from './dashboard/LegalProfileForm';
 import { PaymentGatewayManager } from './dashboard/PaymentGatewayManager';
+import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
+import { isDashboardTabAllowed } from '../../lib/clubPermissions';
+import type { DashboardTabKey } from './AdminSidebar';
 
 export const ClubDashboard = () => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
+  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 
-  const activeTab = (store.dashboardTab as 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'PAYMENTS' | 'LEGAL' | 'AUDIT') || 'MONITOR';
-  const setActiveTab = (tab: 'MONITOR' | 'LAYOUT_BUILDER' | 'RESERVATIONS' | 'PRICING' | 'PAYMENTS' | 'LEGAL' | 'AUDIT') => {
-    store.setDashboardTab(tab);
-  };
+  const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
+
+  // Si la pestaña actual no está permitida por el plan del club, regresar a MONITOR
+  useEffect(() => {
+    if (!isDashboardTabAllowed(activeTab, activeClub, activePlan)) {
+      store.setDashboardTab('MONITOR');
+    }
+  }, [activeTab, activeClub, activePlan, store]);
 
   const clubTables = store.tables.filter(t => t.club_id === activeClub.id);
-  const eventPricings = store.eventPricing.filter(p => p.event_id === activeEvent?.id);
+  const clubTableIds = new Set(clubTables.map(t => t.id));
+  const eventPricings = store.eventPricing.filter(
+    p => p.event_id === activeEvent?.id && clubTableIds.has(p.table_id)
+  );
   const eventReservations = store.reservations.filter(r => r.club_id === activeClub.id && r.event_id === activeEvent?.id);
 
   const totalTables = clubTables.length;
@@ -54,72 +65,7 @@ export const ClubDashboard = () => {
         totalDeposits={totalDeposits}
       />
 
-      {/* Luxury Tabs Bar */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        marginBottom: '24px',
-        borderBottom: '1px solid rgba(229, 181, 79, 0.18)',
-        paddingBottom: '14px',
-        overflowX: 'auto',
-        alignItems: 'center'
-      }}>
-        {([
-          { key: 'MONITOR', label: 'Sala en Vivo', icon: MonitorPlay },
-          { key: 'LAYOUT_BUILDER', label: 'Diseñador de Plano & Mesas', icon: Sliders },
-          { key: 'RESERVATIONS', label: `Reservas Activas (${eventReservations.length})`, icon: Ticket },
-          { key: 'PRICING', label: 'Tarifario & Anticipos', icon: Coins },
-          { key: 'PAYMENTS', label: 'Pasarela & Cobros (Kushki)', icon: CreditCard },
-          { key: 'LEGAL', label: 'Identidad Legal & SRI', icon: Building2 },
-          { key: 'AUDIT', label: 'Bitácora de Auditoría', icon: ShieldCheck }
-        ] as const).map(tab => {
-          const isActive = activeTab === tab.key;
-          const TabIcon = tab.icon;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 18px',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '0.82rem',
-                fontWeight: isActive ? 800 : 600,
-                background: isActive
-                  ? 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%)'
-                  : 'rgba(255, 255, 255, 0.03)',
-                color: isActive ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
-                border: '1px solid',
-                borderColor: isActive ? 'rgba(255, 255, 255, 0.35)' : 'rgba(229, 181, 79, 0.12)',
-                boxShadow: isActive ? '0 0 20px rgba(229, 181, 79, 0.4)' : 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              onMouseEnter={e => {
-                if (!isActive) {
-                  e.currentTarget.style.color = '#ffffff';
-                  e.currentTarget.style.background = 'rgba(229, 181, 79, 0.1)';
-                  e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.3)';
-                }
-              }}
-              onMouseLeave={e => {
-                if (!isActive) {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.12)';
-                }
-              }}
-            >
-              <TabIcon size={15} color={isActive ? '#08080c' : 'var(--brand-gold)'} />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* La navegación vive exclusivamente en el AdminSidebar (una sola fuente) */}
 
       {/* Tab: MONITOR */}
       {activeTab === 'MONITOR' && (
@@ -169,6 +115,11 @@ export const ClubDashboard = () => {
       {/* Tab: AUDIT */}
       {activeTab === 'AUDIT' && (
         <AuditLogsView auditLogs={store.auditLogs} />
+      )}
+
+      {/* Tab: SUBSCRIPTION */}
+      {activeTab === 'SUBSCRIPTION' && (
+        <ClubPlanAndProposalsView activeClub={activeClub} />
       )}
     </div>
   );

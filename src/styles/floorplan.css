@@ -152,3 +152,14 @@
   cursor: not-allowed;
   z-index: 5;
 }
+
+/* State 4: Held — checkout in progress (12 min), visible but not selectable */
+.table-node-btn.held {
+  pointer-events: none;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1.5px dashed rgba(245, 158, 11, 0.6);
+  color: var(--state-hold, #fbbf24);
+  cursor: not-allowed;
+  z-index: 8;
+  animation: pulse-gold 1.6s ease-in-out infinite;
+}
