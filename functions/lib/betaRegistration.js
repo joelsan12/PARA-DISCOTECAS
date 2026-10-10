@@ -131,6 +131,8 @@ export async function registerAndActivateBetaClub(input) {
     // 3.4 Ficha de Personal como OWNER (businesses/{businessId}/staff/{uid})
     const staffRef = businessRef.collection("staff").doc(userRecord.uid);
     batch.set(staffRef, {
+        uid: userRecord.uid,
+        businessId,
         role: "owner",
         status: "ACTIVE",
         name: ownerName,
@@ -143,6 +145,7 @@ export async function registerAndActivateBetaClub(input) {
     // 3.5 Identidad Global Vinculada (users/{uid})
     const userRef = db.collection("users").doc(userRecord.uid);
     batch.set(userRef, {
+        uid: userRecord.uid,
         email,
         displayName: ownerName,
         businessId,

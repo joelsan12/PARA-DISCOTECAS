@@ -47,30 +47,38 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
         displayName: user.displayName || user.email?.split('@')[0] || 'SuperAdmin',
         role: 'SUPER_ADMIN',
         isSuperAdmin: true,
-        clubId: currentClubId
+        clubId: (userData?.businessId as string | undefined) || currentClubId || 'club-sensorial'
       };
     }
 
     // 2. Check if user is staff in targetClubId (users/{uid}.businessId -> staff/{uid}.ACTIVE)
-    const targetClubId = (userData?.businessId as string | undefined) || currentClubId;
-    if (targetClubId) {
-      const staffDocRef = doc(db, 'businesses', targetClubId, 'staff', user.uid);
-      const staffSnapshot = await getDoc(staffDocRef);
-      if (staffSnapshot.exists()) {
-        const data = staffSnapshot.data();
-        if (data?.status === 'ACTIVE') {
-          const rawRole = (data.role || 'manager').toLowerCase();
-          const role: ViewRole = rawRole === 'door' ? 'DOOR_CHECKIN' : 'CLUB_ADMIN';
-          return {
-            uid: user.uid,
-            email: user.email || '',
-            displayName: data.name || user.displayName || user.email?.split('@')[0] || 'Staff',
-            role,
-            isSuperAdmin: false,
-            clubId: targetClubId,
-            staffRole: rawRole as AdminStaffSession['staffRole']
-          };
+    const candidates = Array.from(new Set([
+      userData?.businessId as string | undefined,
+      currentClubId
+    ].filter((id): id is string => Boolean(id && typeof id === 'string'))));
+
+    for (const targetClubId of candidates) {
+      try {
+        const staffDocRef = doc(db, 'businesses', targetClubId, 'staff', user.uid);
+        const staffSnapshot = await getDoc(staffDocRef);
+        if (staffSnapshot.exists()) {
+          const data = staffSnapshot.data();
+          if (data?.status === 'ACTIVE') {
+            const rawRole = (data.role || 'manager').toLowerCase();
+            const role: ViewRole = rawRole === 'door' ? 'DOOR_CHECKIN' : 'CLUB_ADMIN';
+            return {
+              uid: user.uid,
+              email: user.email || '',
+              displayName: data.name || user.displayName || user.email?.split('@')[0] || 'Staff',
+              role,
+              isSuperAdmin: false,
+              clubId: targetClubId,
+              staffRole: rawRole as AdminStaffSession['staffRole']
+            };
+          }
         }
+      } catch (staffErr) {
+        console.warn(`No se pudo verificar staff en ${targetClubId}:`, staffErr);
       }
     }
 
