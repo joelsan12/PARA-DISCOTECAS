@@ -8,11 +8,11 @@
 
 .saas-arch-block {
   background: var(--saas-card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--saas-border);
   border-radius: 18px;
   padding: 40px 36px;
   text-align: left;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--saas-shadow);
 }
 
 .saas-arch-block__header {
@@ -23,8 +23,8 @@
 }
 
 .saas-arch-block__icon {
-  background: rgba(229, 181, 79, 0.08);
-  border: 1px solid rgba(229, 181, 79, 0.28);
+  background: var(--saas-gold-subtle);
+  border: 1px solid var(--saas-border-gold);
   border-radius: 12px;
   padding: 12px;
   flex-shrink: 0;
@@ -63,7 +63,7 @@
 
 .saas-arch-step-item {
   background: var(--saas-surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--saas-border);
   border-radius: 12px;
   padding: 20px 18px;
   display: flex;
@@ -79,6 +79,25 @@
 .saas-arch-step-item.success {
   border-color: rgba(52, 211, 153, 0.4);
   background: rgba(52, 211, 153, 0.06);
+}
+
+[data-theme="light"] .saas-arch-block {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .saas-arch-step-item {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .saas-arch-step-item.highlight {
+  border-color: rgba(184, 134, 11, 0.35);
+  background: rgba(184, 134, 11, 0.08);
+}
+
+[data-theme="light"] .saas-arch-step-item.success {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.08);
 }
 
 .saas-arch-step-item strong {
