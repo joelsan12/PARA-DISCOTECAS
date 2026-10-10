@@ -1,0 +1,202 @@
+import { Timestamp } from "firebase-admin/firestore";
+import { auth, db } from "./config.js";
+import { sha256 } from "./crypto.js";
+import { AppError } from "./errors.js";
+import { asRecord, optionalString, requiredEmail, requiredString } from "./validation.js";
+import { sendWelcomeCredentialsEmail } from "./email.js";
+function generateSlug(name) {
+    return name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+function generateTemporaryPassword() {
+    const pin = Math.floor(1000 + Math.random() * 9000);
+    return `NF-${pin}!Vip`;
+}
+export function parseRegisterBetaInput(value) {
+    const record = asRecord(value, "registro beta");
+    const clubName = requiredString(record, "clubName", 2, 80);
+    const city = requiredString(record, "city", 2, 80);
+    const ownerName = requiredString(record, "ownerName", 2, 80);
+    const email = requiredEmail(record, "email").toLowerCase();
+    const whatsapp = requiredString(record, "whatsapp", 7, 30);
+    const plan = optionalString(record, "plan", 1, 50) || "Club Pro";
+    const source = optionalString(record, "source", 1, 120) || "/software";
+    return {
+        clubName,
+        city,
+        ownerName,
+        email,
+        whatsapp,
+        plan,
+        source
+    };
+}
+export async function registerAndActivateBetaClub(input) {
+    const { clubName, city, ownerName, email, whatsapp, plan, source } = input;
+    const temporaryPassword = generateTemporaryPassword();
+    const slug = generateSlug(clubName) || "club";
+    const businessId = `club_${sha256(`${clubName}:${city}`).slice(0, 16)}`;
+    const now = Timestamp.now();
+    // 1. Firebase Auth: Buscar usuario existente o crear nuevo
+    let userRecord;
+    let isExisting = false;
+    try {
+        userRecord = await auth.getUserByEmail(email);
+        isExisting = true;
+        await auth.updateUser(userRecord.uid, {
+            password: temporaryPassword,
+            displayName: ownerName
+        });
+    }
+    catch (error) {
+        const isNotFound = error && typeof error === "object" && "code" in error && error.code === "auth/user-not-found";
+        if (!isNotFound) {
+            console.error("❌ [Beta] Error al consultar usuario en Auth:", error);
+            throw new AppError("internal", "No se pudo verificar el usuario en el servicio de identidad", 500);
+        }
+        userRecord = await auth.createUser({
+            email,
+            password: temporaryPassword,
+            displayName: ownerName,
+            emailVerified: false
+        });
+    }
+    // 2. Custom Claims estrictamente < 300 bytes conforme a AGENTS §2.3
+    await auth.setCustomUserClaims(userRecord.uid, {
+        platformRole: "tenant_staff",
+        claimsVersion: 2
+    });
+    // 3. Provisionamiento Atómico en Cloud Firestore
+    const batch = db.batch();
+    // 3.1 Directorio Público (estrictamente 9 campos permitidos por firestore.rules)
+    const directoryRef = db.collection("businessDirectory").doc(businessId);
+    batch.set(directoryRef, {
+        name: clubName,
+        slug,
+        city,
+        businessType: "NIGHTCLUB",
+        logoUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=150&auto=format&fit=crop&q=80",
+        coverUrl: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1200&auto=format&fit=crop&q=80",
+        status: "active",
+        verified: true,
+        authMethods: ["password", "email_otp"]
+    });
+    // 3.2 Documento Principal del Negocio (businesses/{businessId})
+    const businessRef = db.collection("businesses").doc(businessId);
+    batch.set(businessRef, {
+        name: clubName,
+        slug,
+        city,
+        businessType: "NIGHTCLUB",
+        logoUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=150&auto=format&fit=crop&q=80",
+        coverUrl: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1200&auto=format&fit=crop&q=80",
+        status: "active",
+        verified: true,
+        tagline: "Experiencia nocturna de primer nivel",
+        primaryColor: "#a855f7",
+        accentColor: "#06b6d4",
+        authMethods: ["password", "email_otp"],
+        reentryMode: "digital_passkey",
+        reentryMinutes: 30,
+        customerCount: 0,
+        planId: plan,
+        contactEmail: email,
+        contactPhone: whatsapp,
+        createdAt: now,
+        updatedAt: now
+    });
+    // 3.3 Recursos Iniciales (Mesas VIP y Estándar)
+    const defaultResources = [
+        { resourceId: "tbl_vip_01", status: "AVAILABLE", active: true, holdAmount: 150 },
+        { resourceId: "tbl_vip_02", status: "AVAILABLE", active: true, holdAmount: 150 },
+        { resourceId: "tbl_vip_03", status: "AVAILABLE", active: true, holdAmount: 120 },
+        { resourceId: "tbl_std_01", status: "AVAILABLE", active: true, holdAmount: 80 },
+        { resourceId: "tbl_std_02", status: "AVAILABLE", active: true, holdAmount: 80 },
+        { resourceId: "tbl_std_03", status: "AVAILABLE", active: true, holdAmount: 80 }
+    ];
+    for (const resource of defaultResources) {
+        const resourceRef = businessRef.collection("resources").doc(resource.resourceId);
+        batch.set(resourceRef, {
+            ...resource,
+            eventId: null,
+            holdTokenHash: null,
+            holdExpiresAt: null,
+            updatedAt: now
+        });
+    }
+    // 3.4 Ficha de Personal como OWNER (businesses/{businessId}/staff/{uid})
+    const staffRef = businessRef.collection("staff").doc(userRecord.uid);
+    batch.set(staffRef, {
+        role: "owner",
+        status: "ACTIVE",
+        name: ownerName,
+        email,
+        whatsapp,
+        deviceIds: [],
+        createdAt: now,
+        updatedAt: now
+    });
+    // 3.5 Identidad Global Vinculada (users/{uid})
+    const userRef = db.collection("users").doc(userRecord.uid);
+    batch.set(userRef, {
+        email,
+        displayName: ownerName,
+        businessId,
+        platformRole: "tenant_staff",
+        superAdmin: false,
+        createdAt: now,
+        updatedAt: now
+    }, { merge: true });
+    // 3.6 Registro de Lead en betaLeads
+    const leadRef = db.collection("betaLeads").doc();
+    batch.set(leadRef, {
+        clubName,
+        city,
+        ownerName,
+        email,
+        whatsapp,
+        plan,
+        source,
+        status: "AUTO_ACTIVATED",
+        businessId,
+        uid: userRecord.uid,
+        clientVersion: "1.0.0-beta",
+        createdAt: now
+    });
+    await batch.commit();
+    console.info(`🎉 [Beta] Club activado exitosamente: ${clubName} (${businessId}) para ${email} (uid: ${userRecord.uid}, existente: ${isExisting})`);
+    // 4. Envío de Correo con Credenciales
+    const adminUrl = "https://nightflow-admin.web.app";
+    const brandUrl = `https://nightflow-vip.web.app/negocio/${slug}`;
+    const emailResult = await sendWelcomeCredentialsEmail({
+        to: email,
+        ownerName,
+        clubName,
+        city,
+        tempPassword: temporaryPassword,
+        adminUrl,
+        brandUrl
+    });
+    return {
+        success: true,
+        businessId,
+        clubName,
+        city,
+        slug,
+        credentials: {
+            email,
+            temporaryPassword,
+            adminUrl,
+            brandUrl
+        },
+        emailSent: emailResult.sent,
+        message: emailResult.sent
+            ? `Se ha enviado un correo con tus credenciales a ${email}.`
+            : "Tu club ha sido activado. Guarda tus credenciales para acceder."
+    };
+}
+//# sourceMappingURL=betaRegistration.js.map

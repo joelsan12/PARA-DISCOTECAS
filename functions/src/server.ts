@@ -71,7 +71,8 @@ const CALLABLE_NAMES = [
   "createPaymentSession",
   "createBusinessSession",
   "emergencyRevoke",
-  "privacyDeletionRequest"
+  "privacyDeletionRequest",
+  "registerBetaClub"
 ] as const;
 
 const TICK_INTERVAL_MS = Math.max(2_000, Number(process.env.HOLD_TICK_INTERVAL_MS ?? 8_000) || 8_000);
@@ -90,6 +91,18 @@ async function main(): Promise<void> {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", true);
+
+  app.use((request: Request, response: Response, next: NextFunction) => {
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    response.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-App-Check");
+    if (request.method === "OPTIONS") {
+      response.sendStatus(204);
+      return;
+    }
+    next();
+  });
+
   app.use(express.json({
     limit: "1mb",
     verify: (request: Request, _response: Response, buffer: Buffer) => {
@@ -116,6 +129,7 @@ async function main(): Promise<void> {
     handler(request, response, next);
   });
 
+  app.all("/v1/beta/register", fns.registerBetaClubHttp as unknown as express.Handler);
   app.all("/otp/request", fns.requestOtpHttp as unknown as express.Handler);
   app.all("/otp/verify", fns.verifyOtpHttp as unknown as express.Handler);
   app.post("/payments/webhook", fns.paymentWebhook as unknown as express.Handler);

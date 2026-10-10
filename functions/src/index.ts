@@ -15,6 +15,7 @@ import { releaseHoldTask } from "./tasks.js";
 import { createBusinessTenant as createBusinessTenantLogic } from "./tenant.js";
 import { updateBusinessLegalProfileFor } from "./legalProfile.js";
 import { configurePaymentAccountFor, getPaymentAccountFor } from "./paymentAccount.js";
+import { registerAndActivateBetaClub, parseRegisterBetaInput } from "./betaRegistration.js";
 
 export { releaseHoldTask };
 
@@ -254,3 +255,34 @@ export const paymentWebhook = onRequest({
     sendHttpError(response, error);
   }
 });
+
+export const registerBetaClub = onCall({
+  cors: true,
+  enforceAppCheck: false,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    const input = parseRegisterBetaInput(request.data);
+    return await registerAndActivateBetaClub(input);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+async function handleRegisterBetaClubHttp(request: FirebaseRequest, response: Response): Promise<void> {
+  try {
+    requirePost(request);
+    const body = parseJsonBody(request);
+    const input = parseRegisterBetaInput(body);
+    const result = await registerAndActivateBetaClub(input);
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendHttpError(response, error);
+  }
+}
+
+export const registerBetaClubHttp = onRequest({
+  cors: true,
+  invoker: "public",
+  region: runtimeConfig.region
+}, handleRegisterBetaClubHttp);

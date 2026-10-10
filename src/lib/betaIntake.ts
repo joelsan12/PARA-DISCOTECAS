@@ -1,5 +1,6 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from './firebase.ts';
+import { callFunctions } from './functionsClient.ts';
 
 export const CLIENT_VERSION = '1.0.0-beta';
 export const ALLOWED_FEEDBACK_CATEGORIES = ['suggestion', 'bug', 'reservation', 'design'] as const;
@@ -171,4 +172,109 @@ export async function submitBetaLead(input: BetaLeadInput): Promise<{ id: string
   });
 
   return { id: docRef.id };
+}
+
+export interface RegisterBetaClubOnlineInput {
+  clubName: string;
+  city: string;
+  ownerName: string;
+  email: string;
+  whatsapp: string;
+  plan?: string;
+  source?: string;
+}
+
+export interface RegisterBetaClubOnlineResponse {
+  success: boolean;
+  businessId: string;
+  clubName: string;
+  city: string;
+  slug: string;
+  credentials: {
+    email: string;
+    temporaryPassword: string;
+    adminUrl: string;
+    brandUrl: string;
+  };
+  emailSent: boolean;
+  message: string;
+}
+
+export async function registerBetaClubOnline(
+  input: RegisterBetaClubOnlineInput
+): Promise<RegisterBetaClubOnlineResponse> {
+  const clubName = input.clubName.trim();
+  const city = input.city.trim();
+  const ownerName = input.ownerName.trim();
+  const email = input.email.trim().toLowerCase();
+  const whatsapp = input.whatsapp.trim();
+  const plan = (input.plan || 'Club Pro').trim();
+  const source = input.source || (typeof window !== 'undefined' ? window.location.pathname : '/software');
+
+  if (!clubName || !city || !ownerName || !email || !whatsapp) {
+    throw new Error('Por favor completa todos los campos requeridos.');
+  }
+
+  const payload = {
+    clubName,
+    city,
+    ownerName,
+    email,
+    whatsapp,
+    plan,
+    source
+  };
+
+  // 1. Intentar vía endpoint HTTP en Backend Render
+  const backendUrl = typeof window !== 'undefined' && (import.meta.env.VITE_BACKEND_URL as string | undefined);
+  if (backendUrl) {
+    try {
+      const response = await fetch(`${backendUrl.replace(/\/+$/, '')}/v1/beta/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const data = await response.json() as RegisterBetaClubOnlineResponse;
+        return data;
+      }
+      const errorJson = await response.json().catch(() => null) as { error?: { message?: string } } | null;
+      if (errorJson?.error?.message) {
+        throw new Error(errorJson.error.message);
+      }
+    } catch (err) {
+      console.warn('⚠️ [BetaIntake] HTTP directo falló o tuvo error, intentando callable:', err);
+      if (err instanceof Error && err.message && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
+    }
+  }
+
+  // 2. Fallback vía callable de Firebase Functions
+  try {
+    const result = await callFunctions<RegisterBetaClubOnlineResponse>('registerBetaClub', payload);
+    return result;
+  } catch (callableError) {
+    console.error('❌ [BetaIntake] Callable falló:', callableError);
+    // Registrar el lead en betaLeads de Firestore para que no se pierda el prospecto
+    try {
+      await submitBetaLead({
+        clubName,
+        city,
+        whatsapp,
+        plan,
+        source
+      });
+    } catch {
+      // Ignorar error secundario de persistencia
+    }
+    throw new Error(
+      callableError instanceof Error
+        ? callableError.message
+        : 'No se pudo activar automáticamente el club en este momento. Puedes contactarnos directamente por WhatsApp.'
+    );
+  }
 }

@@ -22,20 +22,25 @@ export function AdminPortalApp() {
   const [currentView, setCurrentView] = useState<AdminView>('DASHBOARD');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
 
-  // Garantizar que la consola de club opere estrictamente sobre Sensorial Club VIP
+  // Garantizar que la consola de club tenga un club base seleccionado si aún no hay uno
   useEffect(() => {
-    if (store.activeClubId !== 'club-sensorial') {
+    if (!store.activeClubId) {
       store.setActiveClub('club-sensorial');
     }
   }, [store]);
 
-  const activeClubId = store.activeClubId || 'club-sensorial';
+  const activeClubId = store.activeClubId || undefined;
 
   useEffect(() => {
     const unsubscribe = subscribeToAdminAuth(activeClubId, state => {
       setAuthState(state);
       if (state.status === 'authenticated') {
         const session = state.session;
+        // Si el usuario autenticado pertenece a un club específico (ej. club activado en la beta),
+        // sincronizar la consola de mando automáticamente con su club:
+        if (session.clubId && session.clubId !== store.activeClubId) {
+          store.setActiveClub(session.clubId);
+        }
         if (session.role === 'DOOR_CHECKIN') {
           setCurrentView('DOOR');
         } else {
@@ -45,7 +50,7 @@ export function AdminPortalApp() {
     });
 
     return () => unsubscribe();
-  }, [activeClubId]);
+  }, [activeClubId, store]);
 
   if (authState.status === 'loading') {
     return (

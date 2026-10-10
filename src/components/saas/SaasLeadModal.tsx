@@ -1,7 +1,22 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { X, CheckCircle2, ArrowRight, MessageCircle, RotateCw, AlertCircle } from 'lucide-react';
-import { submitBetaLead } from '../../lib/betaIntake';
+import {
+  X,
+  CheckCircle2,
+  ArrowRight,
+  MessageCircle,
+  RotateCw,
+  AlertCircle,
+  Copy,
+  Check,
+  ExternalLink,
+  Sparkles,
+  Lock,
+  Mail,
+  Building,
+  UserCheck
+} from 'lucide-react';
+import { registerBetaClubOnline, type RegisterBetaClubOnlineResponse } from '../../lib/betaIntake';
 
 interface SaasLeadModalProps {
   isOpen: boolean;
@@ -13,49 +28,69 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
   const location = useLocation();
   const [clubName, setClubName] = useState<string>('');
   const [city, setCity] = useState<string>('Quito');
+  const [ownerName, setOwnerName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [whatsapp, setWhatsapp] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<boolean>(false);
+  const [result, setResult] = useState<RegisterBetaClubOnlineResponse | null>(null);
 
   if (!isOpen) return null;
 
   const whatsappMessage = encodeURIComponent(
-    `Hola Nightflow VIP, solicito acceso a la beta:\n• Discoteca / Club: ${clubName.trim() || 'Por definir'}\n• Ciudad: ${city.trim() || 'Ecuador'}\n• Plan Seleccionado: ${selectedPlan || 'Club Pro'}\n• WhatsApp de Contacto: ${whatsapp.trim() || 'Sin especificar'}`
+    `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${city.trim() || 'Ecuador'}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Plan: ${selectedPlan || 'Club Pro'}`
   );
   const whatsappUrl = `https://wa.me/593979116551?text=${whatsappMessage}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clubName.trim() || !city.trim() || !whatsapp.trim() || isSubmitting) return;
+    if (!clubName.trim() || !city.trim() || !ownerName.trim() || !email.trim() || !whatsapp.trim() || isSubmitting) {
+      return;
+    }
 
     setIsSubmitting(true);
     setErrorMessage(null);
 
     try {
-      await submitBetaLead({
+      const response = await registerBetaClubOnline({
         clubName: clubName.trim(),
         city: city.trim(),
+        ownerName: ownerName.trim(),
+        email: email.trim(),
         whatsapp: whatsapp.trim(),
         plan: selectedPlan || 'Club Pro',
         source: location.pathname || '/software'
       });
+      setResult(response);
       setIsSubmitted(true);
     } catch (err) {
-      console.error('Error al registrar lead beta:', err);
+      console.error('Error al activar club beta:', err);
       setErrorMessage(
         err instanceof Error
           ? err.message
-          : 'No se pudo guardar la solicitud en este momento. Puedes continuar directamente por WhatsApp.'
+          : 'No se pudo completar la activación en este momento. Puedes continuar directamente por WhatsApp.'
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleCopyPassword = () => {
+    if (!result?.credentials.temporaryPassword) return;
+    navigator.clipboard.writeText(result.credentials.temporaryPassword);
+    setCopiedKey(true);
+    setTimeout(() => setCopiedKey(false), 2500);
+  };
+
   return (
     <div className="saas-modal-backdrop" onClick={onClose}>
-      <div className="saas-modal-box" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="saas-modal-box"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: isSubmitted ? '520px' : '480px' }}
+      >
         <button
           type="button"
           className="saas-modal-close"
@@ -67,13 +102,16 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
 
         {!isSubmitted ? (
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '18px' }}>
-              <span className="saas-badge-gold">BETA PRIVADA VIP</span>
-              <h3 style={{ fontSize: '1.3rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginTop: '6px' }}>
-                {selectedPlan && selectedPlan !== 'Club Pro' ? `Activar ${selectedPlan}` : 'Solicitar Acceso a la Beta'}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }} className="saas-badge-gold">
+                <Sparkles size={12} />
+                <span>ACTIVACIÓN AUTOMÁTICA AL INSTANTE</span>
+              </div>
+              <h3 style={{ fontSize: '1.35rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginTop: '8px', marginBottom: '4px' }}>
+                {selectedPlan && selectedPlan !== 'Club Pro' ? `Activar ${selectedPlan}` : 'Acceso Instantáneo a la Beta'}
               </h3>
-              <p style={{ fontSize: '0.82rem', color: 'var(--saas-text-secondary)', margin: 0 }}>
-                Déjanos los datos de tu discoteca y te contactaremos para habilitar tu consola en menos de 24 horas.
+              <p style={{ fontSize: '0.82rem', color: 'var(--saas-text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                Completa los datos de tu discoteca. Se creará tu cuenta en el servidor de inmediato y recibirás tus credenciales en pantalla y por correo.
               </p>
             </div>
 
@@ -98,7 +136,7 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
               </div>
             )}
 
-            <div className="saas-form-group">
+            <div className="saas-form-group" style={{ marginBottom: '10px' }}>
               <label className="saas-form-label">Nombre del Club o Discoteca</label>
               <input
                 type="text"
@@ -112,22 +150,52 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
               />
             </div>
 
-            <div className="saas-form-group">
-              <label className="saas-form-label">Ciudad</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+              <div className="saas-form-group" style={{ marginBottom: 0 }}>
+                <label className="saas-form-label">Ciudad</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={80}
+                  placeholder="Quito, Guayaquil..."
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="saas-form-input"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="saas-form-group" style={{ marginBottom: 0 }}>
+                <label className="saas-form-label">Tu Nombre / Responsable</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={80}
+                  placeholder="Ej. Carlos Ramos"
+                  value={ownerName}
+                  onChange={(e) => setOwnerName(e.target.value)}
+                  className="saas-form-input"
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+
+            <div className="saas-form-group" style={{ marginBottom: '10px' }}>
+              <label className="saas-form-label">Correo Electrónico (Para recibir credenciales)</label>
               <input
-                type="text"
+                type="email"
                 required
-                maxLength={80}
-                placeholder="Quito, Guayaquil, Cuenca..."
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
+                maxLength={90}
+                placeholder="carlos@tudiscoteca.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="saas-form-input"
                 disabled={isSubmitting}
               />
             </div>
 
-            <div className="saas-form-group" style={{ marginBottom: '22px' }}>
-              <label className="saas-form-label">Número de WhatsApp</label>
+            <div className="saas-form-group" style={{ marginBottom: '18px' }}>
+              <label className="saas-form-label">Número de WhatsApp (Contacto Directo VIP)</label>
               <input
                 type="tel"
                 required
@@ -143,18 +211,19 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
             <button
               type="submit"
               className="btn-gold"
-              style={{ width: '100%', padding: '12px' }}
+              style={{ width: '100%', padding: '13px', fontSize: '0.92rem', fontWeight: 800 }}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <RotateCw size={14} className="spin" />
-                  <span>Enviando solicitud...</span>
+                  <RotateCw size={16} className="spin" />
+                  <span>Configurando sala y credenciales...</span>
                 </>
               ) : (
                 <>
-                  <span>Solicitar Activación en 24h</span>
-                  <ArrowRight size={14} />
+                  <Sparkles size={16} />
+                  <span>Activar mi Club y Acceder al Instante</span>
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
@@ -188,39 +257,186 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
             )}
           </form>
         ) : (
-          <div style={{ textAlign: 'center', padding: '16px 0' }}>
-            <CheckCircle2 size={42} color="#34d399" style={{ margin: '0 auto 12px' }} />
-            <h3 style={{ fontSize: '1.25rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginBottom: '6px' }}>
-              ¡Solicitud Enviada con Éxito!
-            </h3>
-            <p style={{ fontSize: '0.84rem', color: 'var(--saas-text-secondary)', marginBottom: '20px' }}>
-              Te contactaremos al WhatsApp ({whatsapp}) para habilitar tu consola y cargar tu plano de sala.
-            </p>
+          <div style={{ textAlign: 'left', padding: '6px 0' }}>
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <div
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '50%',
+                  background: 'rgba(52, 211, 153, 0.15)',
+                  border: '1px solid rgba(52, 211, 153, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 12px',
+                  color: '#34d399'
+                }}
+              >
+                <CheckCircle2 size={32} />
+              </div>
+              <span className="saas-badge-gold" style={{ background: 'rgba(52, 211, 153, 0.15)', borderColor: 'rgba(52, 211, 153, 0.35)', color: '#34d399' }}>
+                ¡CLUB ACTIVADO CON ÉXITO!
+              </span>
+              <h3 style={{ fontSize: '1.3rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginTop: '6px', marginBottom: '4px' }}>
+                Tu Consola de Mando está Lista
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--saas-text-secondary)', margin: 0 }}>
+                {result?.emailSent ? (
+                  <>✉️ Enviamos una copia de tus credenciales a <strong style={{ color: '#fff' }}>{result.credentials.email}</strong>.</>
+                ) : (
+                  <>Tus credenciales temporales han sido generadas. Guárdalas para iniciar sesión:</>
+                )}
+              </p>
+            </div>
+
+            {/* Tarjeta de Credenciales */}
+            <div
+              style={{
+                background: 'rgba(17, 18, 25, 0.95)',
+                border: '1px solid rgba(229, 181, 79, 0.35)',
+                borderRadius: '12px',
+                padding: '16px 18px',
+                marginBottom: '18px',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <Building size={16} color="#e5b54f" />
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#ffffff' }}>
+                  {result?.clubName} <span style={{ color: 'var(--saas-text-secondary)', fontWeight: 400 }}>({result?.city})</span>
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--saas-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Mail size={14} /> Correo / Usuario:
+                  </span>
+                  <span style={{ color: '#ffffff', fontWeight: 700, fontFamily: 'monospace' }}>
+                    {result?.credentials.email}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--saas-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Lock size={14} /> Contraseña:
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: '#e5b54f', fontWeight: 800, fontFamily: 'monospace', fontSize: '0.92rem', letterSpacing: '0.04em' }}>
+                      {result?.credentials.temporaryPassword}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyPassword}
+                      style={{
+                        background: copiedKey ? 'rgba(52, 211, 153, 0.2)' : 'rgba(229, 181, 79, 0.15)',
+                        border: '1px solid',
+                        borderColor: copiedKey ? 'rgba(52, 211, 153, 0.4)' : 'rgba(229, 181, 79, 0.3)',
+                        borderRadius: '6px',
+                        padding: '4px 8px',
+                        color: copiedKey ? '#34d399' : '#e5b54f',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontWeight: 700
+                      }}
+                      title="Copiar contraseña"
+                    >
+                      {copiedKey ? <Check size={12} /> : <Copy size={12} />}
+                      <span>{copiedKey ? 'Copiada' : 'Copiar'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '4px' }}>
+                  <span style={{ color: 'var(--saas-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <UserCheck size={14} /> Rol:
+                  </span>
+                  <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.78rem' }}>
+                    PROPIETARIO (Consola Completa)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botones de Acción */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <a
-                href={whatsappUrl}
+                href={result?.credentials.adminUrl || 'https://nightflow-admin.web.app'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold"
                 style={{
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
                   width: '100%',
-                  padding: '12px',
+                  padding: '13px',
+                  textDecoration: 'none',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <span>Ingresar a mi Consola de Club</span>
+                <ExternalLink size={15} />
+              </a>
+
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  width: '100%',
+                  padding: '11px',
+                  background: 'rgba(37, 211, 102, 0.12)',
+                  border: '1px solid rgba(37, 211, 102, 0.35)',
+                  color: '#25d366',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
                   textDecoration: 'none',
                   boxSizing: 'border-box'
                 }}
               >
                 <MessageCircle size={16} />
-                <span>Continuar en WhatsApp</span>
+                <span>Contactar a Soporte VIP en WhatsApp</span>
               </a>
+
+              {result?.credentials.brandUrl && (
+                <a
+                  href={result.credentials.brandUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.78rem',
+                    color: 'var(--saas-text-secondary)',
+                    textDecoration: 'underline',
+                    padding: '4px'
+                  }}
+                >
+                  <span>Ver página pública de mi club ({result.slug})</span>
+                  <ExternalLink size={12} />
+                </a>
+              )}
+
               <button
                 type="button"
                 className="btn-secondary"
                 onClick={onClose}
-                style={{ width: '100%', padding: '10px' }}
+                style={{ width: '100%', padding: '9px', marginTop: '4px', fontSize: '0.82rem' }}
               >
                 Cerrar
               </button>

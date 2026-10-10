@@ -25,3 +25,5 @@ export declare const privacyDeletionRequest: import("firebase-functions/v2/https
 export declare const requestOtpHttp: import("firebase-functions/v2/https").HttpsFunction;
 export declare const verifyOtpHttp: import("firebase-functions/v2/https").HttpsFunction;
 export declare const paymentWebhook: import("firebase-functions/v2/https").HttpsFunction;
+export declare const registerBetaClub: import("firebase-functions/v2/https").CallableFunction<any, Promise<import("./betaRegistration.js").RegisterBetaClubResult>, unknown>;
+export declare const registerBetaClubHttp: import("firebase-functions/v2/https").HttpsFunction;

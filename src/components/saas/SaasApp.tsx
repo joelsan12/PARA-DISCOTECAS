@@ -49,6 +49,8 @@ export function SaasRoutes() {
       <Route path="/saas" element={<SaasLandingPage />} />
       <Route path="/landing" element={<SaasLandingPage />} />
       <Route path="/para-clubes" element={<SaasLandingPage />} />
+      <Route path="/beta" element={<SaasLandingPage />} />
+      <Route path="/activar" element={<SaasLandingPage />} />
 
       <Route path="/negocio/:slug" element={<BusinessBrandPage />} />
       <Route path="/negocio/:slug/acceso" element={<BusinessAccessPage />} />
