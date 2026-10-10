@@ -146,7 +146,6 @@ export function SaasFaqPage() {
       <SaasLeadModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        selectedPlan="Club Pro"
       />
     </div>
   );

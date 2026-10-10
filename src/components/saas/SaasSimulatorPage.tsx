@@ -26,7 +26,6 @@ interface DemoTable {
 
 export function SaasSimulatorPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalPlan, setModalPlan] = useState('Club Pro');
 
   // QR dinámico
   const [qrCountdown, setQrCountdown] = useState<number>(28);
@@ -105,8 +104,7 @@ export function SaasSimulatorPage() {
 
   const activeTable = tables.find((t) => t.id === selectedTableId) || tables[0];
 
-  const openModal = (plan = 'Club Pro') => {
-    setModalPlan(plan);
+  const openModal = () => {
     setIsModalOpen(true);
   };
 
@@ -391,7 +389,7 @@ export function SaasSimulatorPage() {
             <button
               type="button"
               className="btn-gold"
-              onClick={() => openModal('Club Pro')}
+              onClick={() => openModal()}
               style={{ padding: '12px 28px', fontSize: '0.9rem' }}
             >
               <span>Activar Mi Club</span>
@@ -405,7 +403,6 @@ export function SaasSimulatorPage() {
       <SaasLeadModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        selectedPlan={modalPlan}
       />
     </div>
   );

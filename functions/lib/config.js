@@ -89,11 +89,9 @@ export function holdTokenSecret() {
 }
 export function resendConfig() {
     const apiKey = readEnv("RESEND_API_KEY");
-    const from = readEnv("RESEND_FROM_EMAIL") ?? readEnv("RESEND_FROM");
-    if (!apiKey && !from)
+    if (!apiKey)
         return null;
-    if (!apiKey || !from)
-        throw new ConfigurationError("Resend requires RESEND_API_KEY and RESEND_FROM_EMAIL");
+    const from = readEnv("RESEND_FROM_EMAIL") ?? readEnv("RESEND_FROM") ?? "NIGHTFLOW VIP <onboarding@resend.dev>";
     return { apiKey, from };
 }
 export function twilioConfig() {

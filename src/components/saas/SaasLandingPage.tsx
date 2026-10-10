@@ -12,10 +12,8 @@ import '../../styles/saas-landing/index.css';
 
 export function SaasLandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalPlan, setModalPlan] = useState('Club Pro');
 
-  const openModal = (plan = 'Club Pro') => {
-    setModalPlan(plan);
+  const openModal = () => {
     setIsModalOpen(true);
   };
 
@@ -43,7 +41,6 @@ export function SaasLandingPage() {
       <SaasLeadModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        selectedPlan={modalPlan}
       />
     </div>
   );

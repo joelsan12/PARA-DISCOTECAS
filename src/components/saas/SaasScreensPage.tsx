@@ -148,7 +148,6 @@ export function SaasScreensPage() {
       <SaasLeadModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        selectedPlan="Beta Privada"
       />
     </div>
   );

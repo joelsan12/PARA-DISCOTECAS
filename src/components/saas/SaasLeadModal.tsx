@@ -21,10 +21,10 @@ import { registerBetaClubOnline, type RegisterBetaClubOnlineResponse } from '../
 interface SaasLeadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedPlan: string;
+  selectedPlan?: string;
 }
 
-export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalProps) {
+export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
   const location = useLocation();
   const [clubName, setClubName] = useState<string>('');
   const [city, setCity] = useState<string>('Quito');
@@ -40,7 +40,7 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
   if (!isOpen) return null;
 
   const whatsappMessage = encodeURIComponent(
-    `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${city.trim() || 'Ecuador'}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Plan: ${selectedPlan || 'Club Pro'}`
+    `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${city.trim() || 'Ecuador'}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Acceso: Beta Privada VIP`
   );
   const whatsappUrl = `https://wa.me/593979116551?text=${whatsappMessage}`;
 
@@ -60,7 +60,7 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
         ownerName: ownerName.trim(),
         email: email.trim(),
         whatsapp: whatsapp.trim(),
-        plan: selectedPlan || 'Club Pro',
+        plan: 'Beta Privada VIP',
         source: location.pathname || '/software'
       });
       setResult(response);
@@ -105,13 +105,13 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
             <div style={{ marginBottom: '16px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }} className="saas-badge-gold">
                 <Sparkles size={12} />
-                <span>ACTIVACIÓN AUTOMÁTICA AL INSTANTE</span>
+                <span>BETA PRIVADA VIP • ACCESO TOTAL</span>
               </div>
               <h3 style={{ fontSize: '1.35rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginTop: '8px', marginBottom: '4px' }}>
-                {selectedPlan && selectedPlan !== 'Club Pro' ? `Activar ${selectedPlan}` : 'Acceso Instantáneo a la Beta'}
+                Acceso Instantáneo a la Beta
               </h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--saas-text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                Completa los datos de tu discoteca. Se creará tu cuenta en el servidor de inmediato y recibirás tus credenciales en pantalla y por correo.
+                Prueba la plataforma completa con tu discoteca sin costo durante la fase beta. Recibirás tus credenciales de consola al instante.
               </p>
             </div>
 
@@ -356,7 +356,7 @@ export function SaasLeadModal({ isOpen, onClose, selectedPlan }: SaasLeadModalPr
                     <UserCheck size={14} /> Rol:
                   </span>
                   <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.78rem' }}>
-                    PROPIETARIO (Consola Completa)
+                    PROPIETARIO (Beta Privada VIP • Acceso Total)
                   </span>
                 </div>
               </div>
