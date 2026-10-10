@@ -18,6 +18,31 @@ import {
 } from 'lucide-react';
 import { registerBetaClubOnline, type RegisterBetaClubOnlineResponse } from '../../lib/betaIntake';
 
+const ECUADOR_CITIES = [
+  'Quito',
+  'Guayaquil',
+  'Cuenca',
+  'Manta',
+  'Samborondón',
+  'Montañita',
+  'Salinas',
+  'Ambato',
+  'Loja',
+  'Machala',
+  'Santo Domingo',
+  'Ibarra',
+  'Riobamba',
+  'Portoviejo',
+  'Baños de Agua Santa',
+  'Cumbayá',
+  'Esmeraldas',
+  'Latacunga',
+  'Quevedo',
+  'Babahoyo',
+  'Tulcán',
+  'Otra ciudad...'
+] as const;
+
 interface SaasLeadModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +53,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
   const location = useLocation();
   const [clubName, setClubName] = useState<string>('');
   const [city, setCity] = useState<string>('Quito');
+  const [customCity, setCustomCity] = useState<string>('');
   const [ownerName, setOwnerName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [whatsapp, setWhatsapp] = useState<string>('');
@@ -39,14 +65,21 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
 
   if (!isOpen) return null;
 
+  const resolvedCity = city === 'Otra ciudad...' ? customCity.trim() || 'Ecuador' : city.trim();
+
   const whatsappMessage = encodeURIComponent(
-    `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${city.trim() || 'Ecuador'}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Acceso: Beta Privada VIP`
+    `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${resolvedCity}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Acceso: Beta Privada VIP`
   );
   const whatsappUrl = `https://wa.me/593979116551?text=${whatsappMessage}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clubName.trim() || !city.trim() || !ownerName.trim() || !email.trim() || !whatsapp.trim() || isSubmitting) {
+    if (city === 'Otra ciudad...' && !customCity.trim()) {
+      setErrorMessage('Por favor escribe el nombre de tu ciudad.');
+      return;
+    }
+
+    if (!clubName.trim() || !resolvedCity || !ownerName.trim() || !email.trim() || !whatsapp.trim() || isSubmitting) {
       return;
     }
 
@@ -56,7 +89,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
     try {
       const response = await registerBetaClubOnline({
         clubName: clubName.trim(),
-        city: city.trim(),
+        city: resolvedCity,
         ownerName: ownerName.trim(),
         email: email.trim(),
         whatsapp: whatsapp.trim(),
@@ -152,17 +185,35 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
               <div className="saas-form-group" style={{ marginBottom: 0 }}>
-                <label className="saas-form-label">Ciudad</label>
-                <input
-                  type="text"
+                <label className="saas-form-label" htmlFor="saas-lead-city">Ciudad</label>
+                <select
+                  id="saas-lead-city"
                   required
-                  maxLength={80}
-                  placeholder="Quito, Guayaquil..."
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="saas-form-input"
+                  className="saas-form-select"
                   disabled={isSubmitting}
-                />
+                >
+                  {ECUADOR_CITIES.map((cityName) => (
+                    <option key={cityName} value={cityName}>
+                      {cityName}
+                    </option>
+                  ))}
+                </select>
+                {city === 'Otra ciudad...' && (
+                  <input
+                    type="text"
+                    required
+                    maxLength={80}
+                    placeholder="Escribe tu ciudad..."
+                    value={customCity}
+                    onChange={(e) => setCustomCity(e.target.value)}
+                    className="saas-form-input"
+                    style={{ marginTop: '6px' }}
+                    disabled={isSubmitting}
+                    autoFocus
+                  />
+                )}
               </div>
 
               <div className="saas-form-group" style={{ marginBottom: 0 }}>
