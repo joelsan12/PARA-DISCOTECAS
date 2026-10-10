@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, ExternalLink, Sun, Moon } from 'lucide-react';
+import { Compass, Sun, Moon } from 'lucide-react';
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import { useSaasTheme } from './useSaasTheme';
 
@@ -74,16 +74,6 @@ export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
             <Compass size={14} />
             <span>Directorio</span>
           </Link>
-
-          <a
-            href="https://nightflow-admin.web.app/"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-ghost"
-          >
-            <span>Acceso Club</span>
-            <ExternalLink size={12} />
-          </a>
 
           <button
             type="button"
