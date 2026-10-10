@@ -25,3 +25,14 @@ export interface WelcomeCredentialsOptions {
     brandUrl: string;
 }
 export declare function sendWelcomeCredentialsEmail(options: WelcomeCredentialsOptions): Promise<SendEmailResult>;
+export interface FeedbackNotificationOptions {
+    to?: string | undefined;
+    rating: number;
+    category: string;
+    message: string;
+    contact?: string | undefined;
+    path?: string | undefined;
+    portal?: string | undefined;
+    clientVersion?: string | undefined;
+}
+export declare function sendFeedbackNotificationEmail(options: FeedbackNotificationOptions): Promise<SendEmailResult>;

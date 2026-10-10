@@ -16,6 +16,7 @@ import { createBusinessTenant as createBusinessTenantLogic } from "./tenant.js";
 import { updateBusinessLegalProfileFor } from "./legalProfile.js";
 import { configurePaymentAccountFor, getPaymentAccountFor } from "./paymentAccount.js";
 import { registerAndActivateBetaClub, parseRegisterBetaInput } from "./betaRegistration.js";
+import { parseFeedbackInput, submitFeedbackAndNotify } from "./feedback.js";
 
 export { releaseHoldTask };
 
@@ -286,3 +287,34 @@ export const registerBetaClubHttp = onRequest({
   invoker: "public",
   region: runtimeConfig.region
 }, handleRegisterBetaClubHttp);
+
+export const submitBetaFeedback = onCall({
+  cors: true,
+  enforceAppCheck: false,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    const input = parseFeedbackInput(request.data);
+    return await submitFeedbackAndNotify(input);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+async function handleSubmitBetaFeedbackHttp(request: FirebaseRequest, response: Response): Promise<void> {
+  try {
+    requirePost(request);
+    const body = parseJsonBody(request);
+    const input = parseFeedbackInput(body);
+    const result = await submitFeedbackAndNotify(input);
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendHttpError(response, error);
+  }
+}
+
+export const submitBetaFeedbackHttp = onRequest({
+  cors: true,
+  invoker: "public",
+  region: runtimeConfig.region
+}, handleSubmitBetaFeedbackHttp);

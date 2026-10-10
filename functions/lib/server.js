@@ -71,7 +71,8 @@ const CALLABLE_NAMES = [
     "createBusinessSession",
     "emergencyRevoke",
     "privacyDeletionRequest",
-    "registerBetaClub"
+    "registerBetaClub",
+    "submitBetaFeedback"
 ];
 const TICK_INTERVAL_MS = Math.max(2_000, Number(process.env.HOLD_TICK_INTERVAL_MS ?? 8_000) || 8_000);
 async function main() {
@@ -120,6 +121,7 @@ async function main() {
         handler(request, response, next);
     });
     app.all("/v1/beta/register", fns.registerBetaClubHttp);
+    app.all("/v1/feedback/submit", fns.submitBetaFeedbackHttp);
     app.all("/otp/request", fns.requestOtpHttp);
     app.all("/otp/verify", fns.verifyOtpHttp);
     app.post("/payments/webhook", fns.paymentWebhook);

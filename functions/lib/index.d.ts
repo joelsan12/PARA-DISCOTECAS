@@ -27,3 +27,5 @@ export declare const verifyOtpHttp: import("firebase-functions/v2/https").HttpsF
 export declare const paymentWebhook: import("firebase-functions/v2/https").HttpsFunction;
 export declare const registerBetaClub: import("firebase-functions/v2/https").CallableFunction<any, Promise<import("./betaRegistration.js").RegisterBetaClubResult>, unknown>;
 export declare const registerBetaClubHttp: import("firebase-functions/v2/https").HttpsFunction;
+export declare const submitBetaFeedback: import("firebase-functions/v2/https").CallableFunction<any, Promise<import("./feedback.js").FeedbackResult>, unknown>;
+export declare const submitBetaFeedbackHttp: import("firebase-functions/v2/https").HttpsFunction;

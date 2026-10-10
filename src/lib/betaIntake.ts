@@ -147,11 +147,44 @@ export function sanitizeLead(input: BetaLeadInput): SanitizedBetaLead {
 }
 
 export async function submitBetaFeedback(input: BetaFeedbackInput): Promise<{ id: string }> {
+  const sanitized = sanitizeFeedback(input);
+
+  // 1. Intentar vía endpoint HTTP en backend (registra en DB y despacha correo a contacto@j2sdynamics.com)
+  const backendUrl = typeof window !== 'undefined' && (import.meta.env.VITE_BACKEND_URL as string | undefined);
+  if (backendUrl) {
+    try {
+      const response = await fetch(`${backendUrl.replace(/\/+$/, '')}/v1/feedback/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sanitized)
+      });
+
+      if (response.ok) {
+        const data = await response.json() as { id: string };
+        return { id: data.id };
+      }
+    } catch (err) {
+      console.warn('⚠️ [BetaIntake] HTTP /v1/feedback/submit no disponible, probando callable:', err);
+    }
+  }
+
+  // 2. Intentar vía callable de Firebase Functions
+  try {
+    const result = await callFunctions<{ id: string }>('submitBetaFeedback', sanitized);
+    if (result?.id) {
+      return { id: result.id };
+    }
+  } catch (callableError) {
+    console.warn('⚠️ [BetaIntake] Callable submitBetaFeedback no disponible, fallback directo a Firestore:', callableError);
+  }
+
+  // 3. Fallback directo a Firestore cliente (garantía fail-closed contra pérdida de feedback)
   if (!isFirebaseConfigured || !db) {
     throw new Error('El servicio de base de datos no está disponible actualmente');
   }
 
-  const sanitized = sanitizeFeedback(input);
   const docRef = await addDoc(collection(db, 'betaFeedback'), {
     ...sanitized,
     createdAt: serverTimestamp()

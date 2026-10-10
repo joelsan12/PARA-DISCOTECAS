@@ -258,3 +258,163 @@ Soporte WhatsApp: +593 979 116 551
 
   return await sendEmail({ to, subject, html, text });
 }
+
+export interface FeedbackNotificationOptions {
+  to?: string | undefined;
+  rating: number;
+  category: string;
+  message: string;
+  contact?: string | undefined;
+  path?: string | undefined;
+  portal?: string | undefined;
+  clientVersion?: string | undefined;
+}
+
+const CATEGORY_NAMES_ES: Record<string, string> = {
+  suggestion: "Sugerencia",
+  bug: "Reporte de Error",
+  reservation: "Reservas",
+  design: "Diseño VIP"
+};
+
+export async function sendFeedbackNotificationEmail(options: FeedbackNotificationOptions): Promise<SendEmailResult> {
+  const primaryRecipient = options.to?.trim() || process.env.FEEDBACK_NOTIFICATION_EMAIL?.trim() || "contacto@j2sdynamics.com";
+  const categoryLabel = CATEGORY_NAMES_ES[options.category] ?? options.category;
+  const starsString = "★".repeat(Math.max(1, Math.min(5, options.rating))) + "☆".repeat(Math.max(0, 5 - options.rating));
+
+  const subject = `🔔 [Feedback VIP] ${starsString} (${categoryLabel}) — Nightflow`;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Feedback Beta — Nightflow VIP</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #08090d; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f3f4f6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #08090d; min-height: 100vh; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 580px; background: linear-gradient(180deg, #11121a 0%, #0c0d12 100%); border: 1px solid rgba(229, 181, 79, 0.35); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8);" cellspacing="0" cellpadding="0">
+          
+          <!-- Banner Superior Dorado -->
+          <tr>
+            <td style="background: linear-gradient(90deg, #d4af37 0%, #f3e5ab 50%, #aa7c11 100%); height: 4px;"></td>
+          </tr>
+
+          <!-- Encabezado -->
+          <tr>
+            <td style="padding: 30px 36px 16px; text-align: left;">
+              <div style="display: inline-block; padding: 4px 12px; background: rgba(229, 181, 79, 0.12); border: 1px solid rgba(229, 181, 79, 0.3); border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #e5b54f; text-transform: uppercase; margin-bottom: 10px;">
+                NUEVO FEEDBACK BETA RECIBIDO
+              </div>
+              <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff;">
+                Notificación de Experiencia VIP
+              </h1>
+              <p style="margin: 6px 0 0; font-size: 13px; color: #9ca3af;">
+                Un usuario ha enviado sus comentarios directamente desde la plataforma.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Resumen de Valoración y Categoría -->
+          <tr>
+            <td style="padding: 10px 36px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: rgba(18, 19, 26, 0.95); border: 1px solid rgba(229, 181, 79, 0.25); border-radius: 12px; padding: 18px 20px;">
+                <tr>
+                  <td style="width: 50%; vertical-align: top;">
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; display: block; margin-bottom: 4px;">Calificación</span>
+                    <strong style="font-size: 18px; color: #e5b54f; letter-spacing: 2px;">${starsString}</strong>
+                    <span style="font-size: 12px; color: #d1d5db; display: block; margin-top: 2px;">(${options.rating} de 5 estrellas)</span>
+                  </td>
+                  <td style="width: 50%; vertical-align: top;">
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; display: block; margin-bottom: 4px;">Categoría</span>
+                    <strong style="font-size: 15px; color: #ffffff;">${categoryLabel}</strong>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Mensaje del Usuario -->
+          <tr>
+            <td style="padding: 14px 36px;">
+              <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; display: block; margin-bottom: 8px;">Mensaje o Sugerencia:</span>
+              <div style="background: #08090e; border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #e5b54f; border-radius: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.6; color: #ffffff; white-space: pre-wrap;">
+${options.message}
+              </div>
+            </td>
+          </tr>
+
+          <!-- Contacto del Usuario (si aplica) -->
+          <tr>
+            <td style="padding: 6px 36px 14px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 12px 16px;">
+                <tr>
+                  <td>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; display: block;">Datos de Contacto:</span>
+                    <strong style="font-size: 14px; color: ${options.contact ? '#e5b54f' : '#6b7280'};">
+                      ${options.contact || 'No especificado (anónimo)'}
+                    </strong>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Metadatos Técnicos -->
+          <tr>
+            <td style="padding: 10px 36px 26px;">
+              <p style="margin: 0; font-size: 11px; color: #6b7280; line-height: 1.5;">
+                • Ruta: <code>${options.path || '/'}</code> | Portal: <code>${options.portal || 'web'}</code> | Versión: <code>${options.clientVersion || 'beta'}</code>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Pie de Página -->
+          <tr>
+            <td style="padding: 18px 36px; background: rgba(8, 9, 13, 0.8); border-top: 1px solid rgba(255, 255, 255, 0.06); text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #4b5563;">
+                © 2026 NIGHTFLOW VIP • Sistema de Notificaciones de Soporte Beta
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+
+  const text = `
+NIGHTFLOW VIP — Nuevo Feedback Recibido
+Calificación: ${starsString} (${options.rating}/5)
+Categoría: ${categoryLabel}
+
+Mensaje:
+${options.message}
+
+Contacto: ${options.contact || 'No especificado'}
+Ruta: ${options.path || '/'}
+Portal: ${options.portal || 'web'}
+Versión: ${options.clientVersion || 'beta'}
+  `.trim();
+
+  // Intento 1: Enviar al destinatario primario (contacto@j2sdynamics.com)
+  const result = await sendEmail({ to: primaryRecipient, subject, html, text });
+  if (result.sent) {
+    return result;
+  }
+
+  // Fallback seguro a la cuenta de prueba en Resend para garantizar entrega
+  const fallbackEmail = "geremia23sancan@gmail.com";
+  if (primaryRecipient !== fallbackEmail) {
+    console.warn(`⚠️ [Feedback] Envío a ${primaryRecipient} falló (${result.error}). Intentando fallback a ${fallbackEmail}...`);
+    return await sendEmail({ to: fallbackEmail, subject, html, text });
+  }
+
+  return result;
+}
