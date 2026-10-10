@@ -91,7 +91,7 @@ export function resendConfig() {
     const apiKey = readEnv("RESEND_API_KEY");
     if (!apiKey)
         return null;
-    const from = readEnv("RESEND_FROM_EMAIL") ?? readEnv("RESEND_FROM") ?? "NIGHTFLOW VIP <onboarding@resend.dev>";
+    const from = readEnv("RESEND_FROM_EMAIL") ?? readEnv("RESEND_FROM") ?? "NIGHTFLOW VIP <contacto@j2sdynamics.com>";
     return { apiKey, from };
 }
 export function twilioConfig() {
