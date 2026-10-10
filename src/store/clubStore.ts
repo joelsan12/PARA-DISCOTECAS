@@ -357,7 +357,7 @@ class ClubStore {
       actor: 'Superadministrador',
       role: 'super_admin',
       action: 'TENANT_CREATED',
-      details: `Nuevo club aprovisionado en Firestore: ${newClub.name} (${result.businessId}) con ${result.resourceIds.length} mesas`
+      details: `Nuevo club aprovisionado en Firestore: ${newClub.name} (${result.businessId}) con sala limpia (0 mesas iniciales)`
     });
 
     this.persistAndNotify();

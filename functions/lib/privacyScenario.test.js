@@ -143,9 +143,10 @@ async function cleanupFixture() {
     await batch.commit().catch(() => undefined);
 }
 async function resetPrivacyRequest() {
-    const { sha256 } = await import("./crypto.js");
-    const privacyRequestId = `privacy_${sha256(`${BUSINESS_ID}:${TARGET_UID}`).slice(0, 40)}`;
-    await db.collection("privacyRequests").doc(privacyRequestId).delete().catch(() => undefined);
+    const requests = await db.collection("privacyRequests").where("businessId", "==", BUSINESS_ID).get();
+    for (const doc of requests.docs) {
+        await doc.ref.delete().catch(() => undefined);
+    }
 }
 describe("Escenario 02:00 AM — Fase 9 privacidad LOPDP (Test #11)", () => {
     before(async () => {

@@ -47,6 +47,15 @@ describe('PWA instalable: manifest, iconos PNG y Service Worker (E3)', () => {
     const { width, height } = pngSize('public/icons/apple-touch-icon.png');
     assert.equal(width, 180);
     assert.equal(height, 180);
+    // Verificar que también existe en la raíz para navegadores iOS Safari que buscan /apple-touch-icon.png
+    const rootIcon = pngSize('public/apple-touch-icon.png');
+    assert.equal(rootIcon.width, 180);
+    assert.equal(rootIcon.height, 180);
+    // Verificar alias maskable-512
+    const maskableAlias = pngSize('public/icons/maskable-512.png');
+    assert.equal(maskableAlias.width, 512);
+    assert.equal(maskableAlias.height, 512);
+
     const html = read('index.html');
     assert.ok(html.includes('rel="apple-touch-icon"'), 'index.html debe enlazar el apple-touch-icon');
     assert.ok(html.includes('rel="manifest"'), 'index.html debe enlazar el manifest estáticamente');

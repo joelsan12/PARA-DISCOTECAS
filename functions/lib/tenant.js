@@ -59,30 +59,11 @@ export async function createBusinessTenant(input) {
         createdAt: now,
         updatedAt: now
     });
-    // 3. Create initial resources (tables)
-    const defaultResources = [
-        { resourceId: 'tbl_vip_01', status: 'AVAILABLE', active: true, holdAmount: 150 },
-        { resourceId: 'tbl_vip_02', status: 'AVAILABLE', active: true, holdAmount: 150 },
-        { resourceId: 'tbl_vip_03', status: 'AVAILABLE', active: true, holdAmount: 120 },
-        { resourceId: 'tbl_standard_01', status: 'AVAILABLE', active: true, holdAmount: 80 },
-        { resourceId: 'tbl_standard_02', status: 'AVAILABLE', active: true, holdAmount: 80 },
-        { resourceId: 'tbl_standard_03', status: 'AVAILABLE', active: true, holdAmount: 80 },
-    ];
-    for (const resource of defaultResources) {
-        const resourceRef = businessRef.collection('resources').doc(resource.resourceId);
-        batch.set(resourceRef, {
-            ...resource,
-            eventId: null,
-            holdTokenHash: null,
-            holdExpiresAt: null,
-            updatedAt: now
-        });
-    }
     await batch.commit();
     return {
         businessId,
         directoryId,
-        resourceIds: defaultResources.map(r => r.resourceId)
+        resourceIds: []
     };
 }
 //# sourceMappingURL=tenant.js.map

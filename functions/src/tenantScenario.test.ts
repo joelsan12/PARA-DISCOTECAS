@@ -17,15 +17,16 @@ const CITY = "Quito, Ecuador";
 describe("Fase A5 - createBusinessTenant", () => {
   before(async () => {
     // Cleanup any previous test data
-    const directoryRef = testDb.collection("businessDirectory").doc("club_test_vip");
-    await directoryRef.delete().catch(() => undefined);
-    const businessRef = testDb.collection("businesses").doc("club_test_vip");
-    await businessRef.delete().catch(() => undefined);
-    const resourcesRef = testDb.collection("businesses").doc("club_test_vip").collection("resources");
+    const { createHash } = await import("node:crypto");
+    const businessId = `club_${createHash("sha256").update(`${BUSINESS_NAME}:${CITY}`).digest("hex").slice(0, 20)}`;
+    await testDb.collection("businessDirectory").doc(businessId).delete().catch(() => undefined);
+    const businessRef = testDb.collection("businesses").doc(businessId);
+    const resourcesRef = businessRef.collection("resources");
     const leftoverResources = await resourcesRef.get();
     const batch = testDb.batch();
     leftoverResources.forEach((doc: any) => batch.delete(doc.ref));
     await batch.commit();
+    await businessRef.delete().catch(() => undefined);
 
     // Set current user as superadmin for the test
     await testDb.collection("users").doc("test_superadmin").set({
@@ -95,29 +96,12 @@ describe("Fase A5 - createBusinessTenant", () => {
     assert.strictEqual(businessData.customerCount, 0, "customerCount debe ser 0");
     assert.ok(typeof businessData.createdAt?.toMillis === "function", "createdAt debe ser Timestamp");
 
-    // Verify initial resources exist
+    // Verify initial resources: limpio por diseño para personalización desde el Diseñador de Planos
     const resourcesSnapshot = await testDb.collection("businesses").doc(result.businessId).collection("resources").get();
-    assert.ok(!resourcesSnapshot.empty, "Recursos deben crearse");
-    const resourceDocs: any[] = resourcesSnapshot.docs;
-    assert.strictEqual(resourceDocs.length, 6, `Deben crearse exactamente 6 recursos, obtuvimos ${resourceDocs.length}`);
+    assert.strictEqual(resourcesSnapshot.size, 0, "Un nuevo club debe iniciar limpio con 0 mesas precreadas");
+    assert.strictEqual(result.resourceIds.length, 0, "resourceIds devuelto debe ser un arreglo vacío");
 
-    // Verify resource types
-    const resourceIds = resourceDocs.map((doc: any) => doc.id);
-    assert.ok(resourceIds.includes("tbl_vip_01"), "Debe crearse tbl_vip_01");
-    assert.ok(resourceIds.includes("tbl_vip_02"), "Debe crearse tbl_vip_02");
-    assert.ok(resourceIds.includes("tbl_vip_03"), "Debe crearse tbl_vip_03");
-    assert.ok(resourceIds.includes("tbl_standard_01"), "Debe crearse tbl_standard_01");
-    assert.ok(resourceIds.includes("tbl_standard_02"), "Debe crearse tbl_standard_02");
-    assert.ok(resourceIds.includes("tbl_standard_03"), "Debe crearse tbl_standard_03");
-
-    // Verify resource states
-    for (const doc of resourceDocs) {
-      const data: any = doc.data();
-      assert.strictEqual(data.status, "AVAILABLE", `Recurso ${doc.id} debe estar AVAILABLE`);
-      assert.ok(data.active, `Recurso ${doc.id} debe estar activo`);
-    }
-
-    console.log(`✅ Tenant creado: ${result.businessId} con ${result.resourceIds.length} recursos`);
+    console.log(`✅ Tenant creado: ${result.businessId} limpio con 0 mesas iniciales`);
   });
 
   it("should fail when user is not superadmin", async () => {
