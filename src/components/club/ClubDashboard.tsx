@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useClubStore } from '../../store/clubStore';
 import { InteractiveFloorPlan } from '../client/InteractiveFloorPlan';
 import { FloorPlanEditor } from './FloorPlanEditor';
@@ -10,6 +10,8 @@ import { AuditLogsView } from './dashboard/AuditLogsView';
 import { LegalProfileForm } from './dashboard/LegalProfileForm';
 import { PaymentGatewayManager } from './dashboard/PaymentGatewayManager';
 import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
+import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
+import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed } from '../../lib/clubPermissions';
 import type { DashboardTabKey } from './AdminSidebar';
 
@@ -21,6 +23,7 @@ export const ClubDashboard = () => {
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
+  const [isCustomPlanModalOpen, setIsCustomPlanModalOpen] = useState(false);
 
   // Si la pestaña actual no está permitida por el plan del club, regresar a MONITOR
   useEffect(() => {
@@ -69,15 +72,23 @@ export const ClubDashboard = () => {
 
       {/* Tab: MONITOR */}
       {activeTab === 'MONITOR' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
-          <InteractiveFloorPlan
-            tables={clubTables}
-            eventPricings={eventPricings}
-            selectedTableId={null}
-            onSelectTable={() => {}}
+        clubTables.length === 0 ? (
+          <ClubFloorPlanEmptyState
+            clubName={activeClub.name}
+            onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
+            onRequestCustomPlan={() => setIsCustomPlanModalOpen(true)}
           />
-          <OperatingTablesList tables={clubTables} eventPricings={eventPricings} />
-        </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
+            <InteractiveFloorPlan
+              tables={clubTables}
+              eventPricings={eventPricings}
+              selectedTableId={null}
+              onSelectTable={() => {}}
+            />
+            <OperatingTablesList tables={clubTables} eventPricings={eventPricings} />
+          </div>
+        )
       )}
 
       {/* Tab: LAYOUT_BUILDER */}
@@ -99,6 +110,7 @@ export const ClubDashboard = () => {
           eventPricings={eventPricings}
           activeEvent={activeEvent}
           onUpdatePricing={handleUpdatePricing}
+          onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
         />
       )}
 
@@ -121,6 +133,14 @@ export const ClubDashboard = () => {
       {activeTab === 'SUBSCRIPTION' && (
         <ClubPlanAndProposalsView activeClub={activeClub} />
       )}
+
+      {/* Modal para solicitar digitalización de croquis */}
+      <CustomFloorPlanRequestModal
+        isOpen={isCustomPlanModalOpen}
+        onClose={() => setIsCustomPlanModalOpen(false)}
+        clubName={activeClub.name}
+        clubCity={activeClub.city}
+      />
     </div>
   );
 };

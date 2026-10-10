@@ -94,6 +94,12 @@ export const OperatingTablesList = ({ tables, eventPricings }: Props) => {
             </div>
           );
         })}
+
+        {tables.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-dim)', fontSize: '0.84rem' }}>
+            No hay mesas configuradas en sala.
+          </div>
+        )}
       </div>
     </div>
   );

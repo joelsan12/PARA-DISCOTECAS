@@ -229,14 +229,18 @@ export const TableReservationDrawer = ({
             color: 'rgba(255, 255, 255, 0.5)',
             fontWeight: 500,
           }}>
-            Toca una mesa en el plano para ver precios y reservar
+            {totalTablesCount > 0
+              ? 'Toca una mesa en el plano para ver precios y reservar'
+              : 'Plano de reservas en preparación'}
           </p>
           <p style={{
             fontSize: '0.65rem',
             color: 'rgba(255, 255, 255, 0.25)',
             marginTop: '4px',
           }}>
-            {totalTablesCount} mesas disponibles • {eventGenre}
+            {totalTablesCount > 0
+              ? `${totalTablesCount} mesas disponibles • ${eventGenre}`
+              : `Próximamente disponible • ${eventGenre}`}
           </p>
         </div>
       )}

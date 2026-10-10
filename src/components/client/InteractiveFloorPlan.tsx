@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const InteractiveFloorPlan = ({
+  tables,
   eventPricings,
   selectedTableId,
   onSelectTable
@@ -18,10 +19,12 @@ export const InteractiveFloorPlan = ({
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const layoutType: ClubLayoutType = activeClub.layout_type || 'horseshoe_vip';
 
-  const venueTables = store.tables.filter(t => t.club_id === activeClub.id);
+  const venueTables = tables ?? store.tables.filter(t => t.club_id === activeClub.id);
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
-  const venuePricings = store.eventPricing.filter(p => p.event_id === activeEvent?.id);
+  const venuePricings = activeEvent
+    ? store.eventPricing.filter(p => p.event_id === activeEvent.id)
+    : [];
 
   const [, setHoveredTableId] = useState<string | null>(null);
 
@@ -220,6 +223,30 @@ export const InteractiveFloorPlan = ({
           </button>
         );
       })}
+
+      {venueTables.length === 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(10, 11, 16, 0.9)',
+          border: '1px solid rgba(229, 181, 79, 0.35)',
+          borderRadius: '14px',
+          padding: '16px 24px',
+          textAlign: 'center',
+          zIndex: 10,
+          backdropFilter: 'blur(8px)',
+          maxWidth: '300px',
+        }}>
+          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fff', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Plano en Configuración
+          </span>
+          <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', margin: '4px 0 0', lineHeight: 1.4 }}>
+            Este establecimiento aún no ha publicado la distribución de sus mesas.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -119,6 +119,12 @@ export const AuditLogsView = ({ auditLogs }: Props) => {
             </span>
           </div>
         ))}
+
+        {auditLogs.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--text-dim)', fontSize: '0.84rem' }}>
+            No hay registros de auditoría todavía para esta cuenta.
+          </div>
+        )}
       </div>
     </div>
   );

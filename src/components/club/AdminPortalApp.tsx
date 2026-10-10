@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 import { useClubStore } from '../../store/clubStore';
 import { ClubDashboard } from './ClubDashboard';
 import { DoorCheckIn } from '../door/DoorCheckIn';
@@ -37,9 +39,48 @@ export function AdminPortalApp() {
       if (state.status === 'authenticated') {
         const session = state.session;
         // Si el usuario autenticado pertenece a un club específico (ej. club activado en la beta),
-        // sincronizar la consola de mando automáticamente con su club:
-        if (session.clubId && session.clubId !== store.activeClubId) {
-          store.setActiveClub(session.clubId);
+        // hidratar los datos de su club desde Firestore y sincronizar la consola de mando:
+        if (session.clubId) {
+          const clubExists = store.clubs.some(c => c.id === session.clubId);
+          const firestore = db;
+          if (!clubExists && firestore) {
+            getDoc(doc(firestore, 'businesses', session.clubId)).then(bizSnap => {
+              if (bizSnap.exists()) {
+                const data = bizSnap.data();
+                store.registerClubFromRemote({
+                  id: session.clubId!,
+                  name: data.name || 'Mi Establecimiento',
+                  slug: data.slug || session.clubId,
+                  city: data.city || 'Ecuador',
+                  plan_id: data.planId || data.plan_id || 'pro',
+                  logo: data.logoUrl || data.logo,
+                  banner: data.coverUrl || data.banner,
+                  status: data.status || 'active',
+                  layout_type: data.layout_type || 'horseshoe_vip'
+                });
+                store.setActiveClub(session.clubId!);
+              } else {
+                getDoc(doc(firestore, 'businessDirectory', session.clubId!)).then(dirSnap => {
+                  if (dirSnap.exists()) {
+                    const data = dirSnap.data();
+                    store.registerClubFromRemote({
+                      id: session.clubId!,
+                      name: data.name || 'Mi Establecimiento',
+                      slug: data.slug || session.clubId,
+                      city: data.city || 'Ecuador',
+                      plan_id: 'pro',
+                      logo: data.logoUrl || data.logo,
+                      banner: data.coverUrl || data.banner,
+                      status: data.status || 'active'
+                    });
+                    store.setActiveClub(session.clubId!);
+                  }
+                }).catch(() => {});
+              }
+            }).catch(() => {});
+          } else if (session.clubId !== store.activeClubId) {
+            store.setActiveClub(session.clubId);
+          }
         }
         if (session.role === 'DOOR_CHECKIN') {
           setCurrentView('DOOR');

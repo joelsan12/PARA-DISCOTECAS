@@ -9,6 +9,7 @@ interface Props {
   eventPricings: EventTablePricing[];
   activeEvent?: ClubEvent;
   onUpdatePricing: (tableId: string, minSpend: number, deposit: number) => void;
+  onGoToDesigner?: () => void;
 }
 
 export const PricingManager = ({
@@ -16,11 +17,62 @@ export const PricingManager = ({
   eventPricings,
   activeEvent,
   onUpdatePricing,
+  onGoToDesigner,
 }: Props) => {
   const [editingTableId, setEditingTableId] = useState<string | null>(null);
   const [newMinSpend, setNewMinSpend] = useState<number>(0);
   const [newDeposit, setNewDeposit] = useState<number>(0);
   const [selectedZone, setSelectedZone] = useState<string>('ALL');
+
+  if (clubTables.length === 0) {
+    return (
+      <div
+        className="glass-card"
+        style={{
+          padding: '48px 32px',
+          textAlign: 'center',
+          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 16, 0.98) 100%)',
+          border: '1px solid rgba(229, 181, 79, 0.25)',
+          borderRadius: '18px',
+        }}
+      >
+        <div
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '16px',
+            background: 'rgba(229, 181, 79, 0.12)',
+            border: '1px solid rgba(229, 181, 79, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            color: 'var(--brand-gold)',
+          }}
+        >
+          <Coins size={28} />
+        </div>
+
+        <h3 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '0 0 8px' }}>
+          Sin mesas configuradas para tarifar
+        </h3>
+        <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', maxWidth: '500px', margin: '0 auto 24px', lineHeight: 1.5 }}>
+          Para establecer consumos mínimos y anticipos requeridos en pasarela, primero debes diseñar y ubicar las mesas de tu sala en el diseñador.
+        </p>
+
+        {onGoToDesigner && (
+          <button
+            type="button"
+            onClick={onGoToDesigner}
+            className="btn-gold"
+            style={{ padding: '10px 24px' }}
+          >
+            Ir al Diseñador de Planos →
+          </button>
+        )}
+      </div>
+    );
+  }
 
   const handleStartEditPricing = (tableId: string, currentMin: number, currentDeposit: number) => {
     setEditingTableId(tableId);

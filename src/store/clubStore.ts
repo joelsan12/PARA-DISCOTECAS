@@ -171,10 +171,38 @@ class ClubStore {
     this.persistAndNotify();
   }
 
+  registerClubFromRemote(clubData: Partial<Club> & { id: string }) {
+    const existingIndex = this.clubs.findIndex(c => c.id === clubData.id);
+    if (existingIndex >= 0) {
+      this.clubs[existingIndex] = { ...this.clubs[existingIndex], ...clubData };
+    } else {
+      const newClub: Club = {
+        id: clubData.id,
+        name: clubData.name || 'Mi Establecimiento',
+        slug: clubData.slug || clubData.id,
+        city: clubData.city || 'Ecuador',
+        tagline: clubData.tagline || 'Sala VIP & Club',
+        logo: clubData.logo || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=150',
+        banner: clubData.banner || 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1200',
+        address: clubData.address || 'Zona de entretenimiento',
+        instagram: clubData.instagram || '@' + (clubData.slug || 'nightflow'),
+        whatsapp_number: clubData.whatsapp_number || '',
+        status: clubData.status || 'active',
+        plan_id: clubData.plan_id || 'pro',
+        layout_type: clubData.layout_type || 'horseshoe_vip',
+        primary_color: clubData.primary_color || '#e5b54f',
+        accent_color: clubData.accent_color || '#06b6d4',
+        created_at: clubData.created_at || new Date().toISOString().split('T')[0]
+      };
+      this.clubs.push(newClub);
+    }
+    this.persistAndNotify();
+  }
+
   setActiveClub(clubId: string) {
     this.activeClubId = clubId;
     const evts = this.events.filter(e => e.club_id === clubId);
-    if (evts.length > 0) this.activeEventId = evts[0].id;
+    this.activeEventId = evts.length > 0 ? evts[0].id : '';
     this.initFirebase();
     this.persistAndNotify();
   }

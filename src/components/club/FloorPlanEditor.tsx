@@ -16,8 +16,10 @@ export const FloorPlanEditor: React.FC = () => {
   const layoutType: ClubLayoutType = activeClub.layout_type || 'horseshoe_vip';
 
   const clubTables = store.tables.filter(t => t.club_id === activeClub.id);
-  const activeEvent = store.events.find(e => e.club_id === activeClub.id) || store.events[0];
-  const eventPricings = store.eventPricing.filter(p => p.event_id === activeEvent?.id);
+  const activeEvent = store.events.find(e => e.club_id === activeClub.id);
+  const eventPricings = activeEvent
+    ? store.eventPricing.filter(p => p.event_id === activeEvent.id)
+    : [];
 
   const [selectedTableId, setSelectedTableId] = useState<string | null>(clubTables[0]?.id || null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

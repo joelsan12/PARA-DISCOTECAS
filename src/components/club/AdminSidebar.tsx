@@ -53,10 +53,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
-  const activeEvent = store.events.find(e => e.club_id === activeClub?.id) || store.events[0];
-  const eventReservations = store.reservations.filter(
-    r => r.club_id === activeClub?.id && r.event_id === activeEvent?.id
-  );
+  const activeEvent = store.events.find(e => e.club_id === activeClub?.id);
+  const eventReservations = activeEvent
+    ? store.reservations.filter(r => r.club_id === activeClub?.id && r.event_id === activeEvent.id)
+    : [];
 
   const roleLabel = session.role === 'DOOR_CHECKIN'
     ? 'PERSONAL PUERTA'

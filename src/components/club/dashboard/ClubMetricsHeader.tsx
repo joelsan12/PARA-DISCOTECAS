@@ -138,11 +138,17 @@ export const ClubMetricsHeader = ({
               onChange={(e) => onSelectEvent(e.target.value)}
               style={{ minWidth: '220px' }}
             >
-              {clubEvents.map((e) => (
-                <option key={e.id} value={e.id} style={{ background: '#0e121a', color: '#fff' }}>
-                  {e.day_label} — {e.title}
+              {clubEvents.length === 0 ? (
+                <option value="" style={{ background: '#0e121a', color: '#94a3b8' }}>
+                  Sin eventos en cartelera
                 </option>
-              ))}
+              ) : (
+                clubEvents.map((e) => (
+                  <option key={e.id} value={e.id} style={{ background: '#0e121a', color: '#fff' }}>
+                    {e.day_label} — {e.title}
+                  </option>
+                ))
+              )}
             </select>
             <ChevronDown size={14} className="admin-select-chevron" />
           </div>

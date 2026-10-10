@@ -109,25 +109,8 @@ export async function registerAndActivateBetaClub(input) {
         createdAt: now,
         updatedAt: now
     });
-    // 3.3 Recursos Iniciales (Mesas VIP y Estándar)
-    const defaultResources = [
-        { resourceId: "tbl_vip_01", status: "AVAILABLE", active: true, holdAmount: 150 },
-        { resourceId: "tbl_vip_02", status: "AVAILABLE", active: true, holdAmount: 150 },
-        { resourceId: "tbl_vip_03", status: "AVAILABLE", active: true, holdAmount: 120 },
-        { resourceId: "tbl_std_01", status: "AVAILABLE", active: true, holdAmount: 80 },
-        { resourceId: "tbl_std_02", status: "AVAILABLE", active: true, holdAmount: 80 },
-        { resourceId: "tbl_std_03", status: "AVAILABLE", active: true, holdAmount: 80 }
-    ];
-    for (const resource of defaultResources) {
-        const resourceRef = businessRef.collection("resources").doc(resource.resourceId);
-        batch.set(resourceRef, {
-            ...resource,
-            eventId: null,
-            holdTokenHash: null,
-            holdExpiresAt: null,
-            updatedAt: now
-        });
-    }
+    // 3.3 Inicialización de inventario limpio (sin mesas pre-fabricadas; el club diseña su propio plano)
+    // resources se deja vacío para que el establecimiento arranque 100% nuevo.
     // 3.4 Ficha de Personal como OWNER (businesses/{businessId}/staff/{uid})
     const staffRef = businessRef.collection("staff").doc(userRecord.uid);
     batch.set(staffRef, {

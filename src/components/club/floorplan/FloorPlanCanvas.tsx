@@ -264,6 +264,44 @@ export const FloorPlanCanvas: React.FC<Props> = ({
               </g>
             );
           })}
+
+          {clubTables.length === 0 && (
+            <g pointerEvents="none">
+              <rect
+                x={viewBoxWidth * 0.18}
+                y={viewBoxHeight * 0.41}
+                width={viewBoxWidth * 0.64}
+                height={viewBoxHeight * 0.18}
+                rx="14"
+                fill="rgba(10, 11, 16, 0.94)"
+                stroke="rgba(229, 181, 79, 0.35)"
+                strokeWidth="1.5"
+              />
+              <text
+                x={viewBoxWidth / 2}
+                y={viewBoxHeight * 0.48}
+                fill="#ffffff"
+                fontSize="14"
+                fontWeight="800"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{ fontFamily: 'var(--font-brand)', letterSpacing: '0.04em' }}
+              >
+                SALA EN BLANCO · SIN MESAS REGISTRADAS
+              </text>
+              <text
+                x={viewBoxWidth / 2}
+                y={viewBoxHeight * 0.54}
+                fill="#94a3b8"
+                fontSize="11"
+                fontWeight="500"
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                Haz clic en "+ Nueva Mesa" arriba o aplica una "Plantilla Cenital"
+              </text>
+            </g>
+          )}
         </svg>
       </div>
     </div>
