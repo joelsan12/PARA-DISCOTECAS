@@ -106,15 +106,16 @@ export function SaasFaqPage() {
               <p>
                 Escríbenos directamente para revisar la distribución de tus puertas, conectividad o integración con tu sistema de punto de venta.
               </p>
-              <button
-                type="button"
+              <a
+                href={`https://wa.me/593979116551?text=${encodeURIComponent('Hola, me gustaría hablar con un asesor sobre NIGHTFLOW VIP para mi discoteca.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-gold"
-                onClick={() => setIsModalOpen(true)}
-                style={{ width: '100%', marginTop: '14px' }}
+                style={{ width: '100%', marginTop: '14px', textDecoration: 'none' }}
               >
                 <MessageSquare size={15} />
                 <span>Hablar con un Asesor</span>
-              </button>
+              </a>
             </div>
           </div>
 
