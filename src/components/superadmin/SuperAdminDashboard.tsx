@@ -7,18 +7,20 @@ import {
   ShieldAlert,
   Building,
   Layers,
-  History
+  History,
+  CreditCard,
 } from 'lucide-react';
 import { SaaSMetricsCards } from './SaaSMetricsCards';
 import { TenantClubsTable } from './TenantClubsTable';
 import { SubscriptionPlansList } from './SubscriptionPlansList';
+import { SuperAdminSubscriptionsView } from './SuperAdminSubscriptionsView';
 import { CreateClubModal } from './CreateClubModal';
 import { EditClubModal } from './EditClubModal';
 import { EditPlanModal } from './EditPlanModal';
 import { PlatformEmergencyModal } from './PlatformEmergencyModal';
 import type { Club, SubscriptionPlan, SubscriptionPlanId } from '../../types';
 
-export type SuperAdminTab = 'CLUBS' | 'PLANS' | 'AUDIT';
+export type SuperAdminTab = 'CLUBS' | 'PLANS' | 'SUBSCRIPTIONS' | 'AUDIT';
 
 export interface SuperAdminDashboardProps {
   hideHeader?: boolean;
@@ -276,6 +278,29 @@ export const SuperAdminDashboard = ({
 
         <button
           type="button"
+          onClick={() => setActiveTab('SUBSCRIPTIONS')}
+          style={{
+            padding: '7px 15px',
+            borderRadius: '6px',
+            background: activeTab === 'SUBSCRIPTIONS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+            border: '1px solid',
+            borderColor: activeTab === 'SUBSCRIPTIONS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
+            color: activeTab === 'SUBSCRIPTIONS' ? '#f5d38a' : '#71717a',
+            fontSize: '0.8rem',
+            fontWeight: activeTab === 'SUBSCRIPTIONS' ? 600 : 500,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <CreditCard size={14} color={activeTab === 'SUBSCRIPTIONS' ? '#e5b54f' : '#71717a'} />
+          <span>Suscripciones &amp; Cobros SaaS</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('AUDIT')}
           style={{
             padding: '7px 15px',
@@ -325,6 +350,12 @@ export const SuperAdminDashboard = ({
             setIsPlanModalOpen(true);
           }}
           onDeletePlan={handleDeletePlan}
+        />
+      )}
+
+      {activeTab === 'SUBSCRIPTIONS' && (
+        <SuperAdminSubscriptionsView
+          clubs={store.clubs}
         />
       )}
 

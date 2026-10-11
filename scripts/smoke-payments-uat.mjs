@@ -9,7 +9,6 @@ const root = resolve(here, '..');
 const functionsRequire = createRequire(resolve(root, 'functions/package.json'));
 const { initializeApp, cert } = functionsRequire('firebase-admin/app');
 const { getFirestore, FieldValue } = functionsRequire('firebase-admin/firestore');
-const { getAuth } = functionsRequire('firebase-admin/auth');
 
 const keyPath = resolve(root, 'serviceAccountKey.json');
 if (!existsSync(keyPath)) {
@@ -20,7 +19,6 @@ if (!existsSync(keyPath)) {
 const sa = JSON.parse(readFileSync(keyPath, 'utf8'));
 const app = initializeApp({ credential: cert(sa), projectId: sa.project_id });
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 function parseArgs() {
   const args = process.argv.slice(2);

@@ -408,6 +408,13 @@ class ClubStore {
         details: `Plan de ${club.name} actualizado a ${esPlan(newPlanId)}`
       });
       this.persistAndNotify();
+      callFunctions('updateSubscriptionStatusManual', {
+        businessId: clubId,
+        status: 'active',
+        planId: newPlanId,
+      }).catch(err => {
+        console.warn('No se pudo sincronizar plan con el backend:', err);
+      });
     }
   }
 

@@ -79,6 +79,8 @@ function attach(c) {
   });
 }
 
+killEmulatorJava();
+
 child = spawn(
   "firebase",
   args,

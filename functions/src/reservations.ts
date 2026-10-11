@@ -104,16 +104,27 @@ export async function createReservationHoldFor(request: CallableRequest<unknown>
   const expiresAt = Timestamp.fromMillis(Date.now() + runtimeConfig.holdDurationSeconds * 1000);
   const inputRequestHash = requestHash(input);
   const transactionResult = await db.runTransaction(async (transaction) => {
-    const [businessSnapshot, resourceSnapshot, holdSnapshot, eventSnapshot] = await Promise.all([
+    const subReference = businessReference.collection("private").doc("subscription");
+    const [businessSnapshot, resourceSnapshot, holdSnapshot, eventSnapshot, subSnapshot] = await Promise.all([
       transaction.get(businessReference),
       transaction.get(resourceReference),
       transaction.get(holdReference),
-      transaction.get(eventReference)
+      transaction.get(eventReference),
+      transaction.get(subReference)
     ]);
     if (!businessSnapshot.exists) throw new AppError("not-found", "Business not found", 404);
     const business = dataRecord(businessSnapshot.data());
     const status = typeof business.status === "string" ? business.status.toLowerCase() : "";
     if (status !== "active" && status !== "trial") throw new AppError("failed-precondition", "Business is not active", 412);
+    const planId = typeof business.planId === "string" ? business.planId.toLowerCase() : "";
+    if (planId !== "beta_vip" && planId !== "beta") {
+      if (subSnapshot.exists) {
+        const subData = dataRecord(subSnapshot.data());
+        if (subData.status === "expired") {
+          throw new AppError("failed-precondition", "La suscripción de este establecimiento ha expirado", 402);
+        }
+      }
+    }
     if (!eventSnapshot.exists) throw new AppError("not-found", "Event not found", 404);
     const eventData = dataRecord(eventSnapshot.data());
     if (eventData.is_published === false) {

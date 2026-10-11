@@ -359,3 +359,90 @@ export const submitBetaFeedbackHttp = onRequest({
   invoker: "public",
   region: runtimeConfig.region
 }, handleSubmitBetaFeedbackHttp);
+
+// ---------------------------------------------------------------------------
+// Flujo B: Suscripciones SaaS (PayPhone / Manual / Trial)
+// ---------------------------------------------------------------------------
+
+import {
+  getBusinessSubscription as getBusinessSubscriptionLogic,
+  selectSubscriptionPlan as selectSubscriptionPlanLogic,
+  registerSubscriptionTransfer as registerSubscriptionTransferLogic,
+  updateSubscriptionStatusManual as updateSubscriptionStatusManualLogic,
+  listPlatformSubscriptions as listPlatformSubscriptionsLogic,
+  handlePayPhoneWebhook,
+} from "./subscriptions.js";
+
+export const getBusinessSubscription = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await getBusinessSubscriptionLogic(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const selectSubscriptionPlan = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await selectSubscriptionPlanLogic(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const registerSubscriptionTransfer = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await registerSubscriptionTransferLogic(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const updateSubscriptionStatusManual = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await updateSubscriptionStatusManualLogic(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const listPlatformSubscriptions = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await listPlatformSubscriptionsLogic(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const payphoneWebhook = onRequest({
+  cors: true,
+  invoker: "public",
+  region: runtimeConfig.region,
+}, async (req, res) => {
+  await handlePayPhoneWebhook(req as any, res as any);
+});
+

@@ -76,7 +76,12 @@ const CALLABLE_NAMES = [
   "emergencyRevoke",
   "privacyDeletionRequest",
   "registerBetaClub",
-  "submitBetaFeedback"
+  "submitBetaFeedback",
+  "getBusinessSubscription",
+  "selectSubscriptionPlan",
+  "registerSubscriptionTransfer",
+  "updateSubscriptionStatusManual",
+  "listPlatformSubscriptions"
 ] as const;
 
 const TICK_INTERVAL_MS = Math.max(2_000, Number(process.env.HOLD_TICK_INTERVAL_MS ?? 8_000) || 8_000);
@@ -84,10 +89,11 @@ const TICK_INTERVAL_MS = Math.max(2_000, Number(process.env.HOLD_TICK_INTERVAL_M
 async function main(): Promise<void> {
   initAdmin();
 
-  const [fns, reservationsModule, configModule] = await Promise.all([
+  const [fns, reservationsModule, configModule, subscriptionsModule] = await Promise.all([
     import("./index.js"),
     import("./reservations.js"),
-    import("./config.js")
+    import("./config.js"),
+    import("./subscriptions.js")
   ]);
   const { db, runtimeConfig } = configModule;
   const { releaseHoldById } = reservationsModule;
@@ -139,6 +145,7 @@ async function main(): Promise<void> {
   app.all("/otp/verify", fns.verifyOtpHttp as unknown as express.Handler);
   app.post("/payments/webhook", fns.paymentWebhook as unknown as express.Handler);
   app.post("/v1/payments/webhooks/:provider/:merchantId", fns.paymentWebhook as unknown as express.Handler);
+  app.post("/v1/saas/webhooks/payphone", fns.payphoneWebhook as unknown as express.Handler);
 
   const doorAppPath = process.env.DOOR_APP_PATH?.trim()
     || path.resolve(functionsRoot, "..", "services", "door-service", "dist", "app.js");
@@ -229,9 +236,15 @@ async function main(): Promise<void> {
     console.info(`   región=${runtimeConfig.region} appCheckEnforced=${runtimeConfig.appCheckEnforced} door=${doorEnabled ? "sí" : "no"}`);
   });
 
-  const ticker = setInterval(() => { void releaseExpiredHolds(); }, TICK_INTERVAL_MS);
+  const ticker = setInterval(() => {
+    void releaseExpiredHolds();
+    void subscriptionsModule.processSubscriptionTicker();
+  }, TICK_INTERVAL_MS);
   ticker.unref();
-  const initialTick = setTimeout(() => { void releaseExpiredHolds(); }, 3_000);
+  const initialTick = setTimeout(() => {
+    void releaseExpiredHolds();
+    void subscriptionsModule.processSubscriptionTicker();
+  }, 3_000);
   initialTick.unref();
 
   const shutdown = (signal: string): void => {

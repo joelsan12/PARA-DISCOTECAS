@@ -44,3 +44,91 @@ export declare const registerBetaClub: import("firebase-functions/v2/https").Cal
 export declare const registerBetaClubHttp: import("firebase-functions/v2/https").HttpsFunction;
 export declare const submitBetaFeedback: import("firebase-functions/v2/https").CallableFunction<any, Promise<import("./feedback.js").FeedbackResult>, unknown>;
 export declare const submitBetaFeedbackHttp: import("firebase-functions/v2/https").HttpsFunction;
+export declare const getBusinessSubscription: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    isFounderBypass: boolean;
+    businessId: string;
+    planId: import("./types/subscription.js").CanonicalPlanId;
+    cycle: import("./types/subscription.js").BillingCycle;
+    status: import("./types/subscription.js").SubscriptionStatus;
+    trialEndsAt?: number;
+    currentPeriodEnd: number;
+    payphoneCardTokenId?: string;
+    paymentMethod: import("./types/subscription.js").SubscriptionPaymentMethod;
+    startedAt: number;
+    updatedAt: number;
+}>, unknown>;
+export declare const selectSubscriptionPlan: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    planId: string;
+    status: string;
+    currentPeriodEnd: number;
+    trialGranted?: never;
+    trialEndsAt?: never;
+    pendingTransfer?: never;
+    reference?: never;
+    amount?: never;
+    cycle?: never;
+    checkoutUrl?: never;
+    paymentId?: never;
+    clientTransactionId?: never;
+} | {
+    success: boolean;
+    trialGranted: boolean;
+    status: string;
+    planId: "beta_vip" | "black_vip" | "starter" | "club_pro";
+    trialEndsAt: number;
+    currentPeriodEnd: number;
+    pendingTransfer?: never;
+    reference?: never;
+    amount?: never;
+    cycle?: never;
+    checkoutUrl?: never;
+    paymentId?: never;
+    clientTransactionId?: never;
+} | {
+    success: boolean;
+    pendingTransfer: boolean;
+    reference: string;
+    amount: number;
+    planId: "beta_vip" | "black_vip" | "starter" | "club_pro";
+    cycle: "monthly" | "annual" | undefined;
+    status?: never;
+    currentPeriodEnd?: never;
+    trialGranted?: never;
+    trialEndsAt?: never;
+    checkoutUrl?: never;
+    paymentId?: never;
+    clientTransactionId?: never;
+} | {
+    success: boolean;
+    checkoutUrl: string;
+    paymentId: string | number;
+    clientTransactionId: string;
+    planId?: never;
+    status?: never;
+    currentPeriodEnd?: never;
+    trialGranted?: never;
+    trialEndsAt?: never;
+    pendingTransfer?: never;
+    reference?: never;
+    amount?: never;
+    cycle?: never;
+}>, unknown>;
+export declare const registerSubscriptionTransfer: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    status: string;
+    planId: import("./types/subscription.js").CanonicalPlanId;
+    currentPeriodEnd: number;
+}>, unknown>;
+export declare const updateSubscriptionStatusManual: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    status: import("./types/subscription.js").SubscriptionStatus;
+    currentPeriodEnd: number;
+}>, unknown>;
+export declare const listPlatformSubscriptions: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    records: {
+        id: string;
+    }[];
+    count: number;
+}>, unknown>;
+export declare const payphoneWebhook: import("firebase-functions/v2/https").HttpsFunction;
