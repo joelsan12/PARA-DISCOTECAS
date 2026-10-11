@@ -32,12 +32,20 @@ export function subscribeToClubLayout(
   }
 }
 
+export interface SaveClubLayoutResult {
+  success: boolean;
+  inventorySynced?: boolean;
+  error?: string;
+}
+
 export async function saveClubLayoutToFirebase(
   clubId: string,
   tables: ClubTable[],
   layoutType?: ClubLayoutType
-): Promise<boolean> {
-  if (!isFirebaseConfigured || !db) return false;
+): Promise<SaveClubLayoutResult> {
+  if (!isFirebaseConfigured || !db) {
+    return { success: false, error: 'Firebase no está configurado' };
+  }
 
   try {
     const layoutRef = doc(db, 'businesses', clubId, 'layout', 'main');
@@ -47,10 +55,38 @@ export async function saveClubLayoutToFirebase(
       layout_type: layoutType,
       updated_at: new Date().toISOString()
     }, { merge: true });
-    return true;
+
+    // O.0.3: Sincronización one-way hacia inventario operativo (businesses/{id}/resources/{id})
+    let inventorySynced = false;
+    try {
+      const operationalTables = tables.map(t => ({
+        id: t.id,
+        table_code: t.table_code,
+        zone: t.zone,
+        capacity: t.capacity,
+        min_spend: (t as unknown as { min_spend?: number; minSpendDefault?: number }).min_spend ?? (t as unknown as { minSpendDefault?: number }).minSpendDefault ?? 0,
+        deposit_required: (t as unknown as { deposit_required?: number; depositRequired?: number }).deposit_required ?? (t as unknown as { depositRequired?: number }).depositRequired ?? 0,
+        is_active: (t as unknown as { is_active?: boolean }).is_active !== false
+      }));
+
+      await callFunctions('syncFloorPlanInventory', {
+        businessId: clubId,
+        tables: operationalTables
+      });
+      inventorySynced = true;
+    } catch (invErr) {
+      console.warn('[Firebase] Warning: no se pudo sincronizar inventario de recursos automáticamente:', invErr);
+      return {
+        success: true,
+        inventorySynced: false,
+        error: invErr instanceof Error ? invErr.message : 'Error sincronizando inventario'
+      };
+    }
+
+    return { success: true, inventorySynced };
   } catch (err) {
     console.error('[Firebase] Error al guardar plano en Firestore:', err);
-    return false;
+    return { success: false, error: err instanceof Error ? err.message : 'Error al guardar plano' };
   }
 }
 

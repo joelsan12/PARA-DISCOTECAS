@@ -19,6 +19,7 @@ import { registerAndActivateBetaClub, parseRegisterBetaInput } from "./betaRegis
 import { parseFeedbackInput, submitFeedbackAndNotify } from "./feedback.js";
 import { upsertBusinessEventFor } from "./events.js";
 import { listPaymentTransactionsFor, createPaymentRefundFor } from "./paymentAdmin.js";
+import { syncFloorPlanInventoryFor } from "./floorplanInventory.js";
 export { releaseHoldTask };
 function callableError(error) {
     throw toHttpsError(error);
@@ -427,5 +428,18 @@ export const payphoneWebhook = onRequest({
     region: runtimeConfig.region,
 }, async (req, res) => {
     await handlePayPhoneWebhook(req, res);
+});
+export const syncFloorPlanInventory = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region,
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await syncFloorPlanInventoryFor(request);
+    }
+    catch (error) {
+        return callableError(error);
+    }
 });
 //# sourceMappingURL=index.js.map

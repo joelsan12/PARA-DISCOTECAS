@@ -160,14 +160,23 @@ export const FloorPlanEditor: React.FC = () => {
     setTimeout(() => setSaveToast(null), 3000);
   };
 
-  const handleSaveFloorPlan = () => {
+  const handleSaveFloorPlan = async () => {
     setIsSaving(true);
-    store.persistNow();
-    setTimeout(() => {
+    try {
+      const result = await store.syncLayoutAsync();
       setIsSaving(false);
-      setSaveToast('✓ ¡Plano y arquetipo guardados con éxito en memoria persistente!');
-      setTimeout(() => setSaveToast(null), 3500);
-    }, 150);
+      if (result && !result.success) {
+        setSaveToast(`⚠️ Error al guardar: ${result.error || 'Fallo desconocido'}`);
+      } else if (result && result.inventorySynced === false) {
+        setSaveToast(`⚠️ Plano guardado, pero falló la sincronización de inventario: ${result.error || 'Revisa tu conexión'}`);
+      } else {
+        setSaveToast('✓ ¡Plano e inventario operativo sincronizados con éxito en tiempo real!');
+      }
+    } catch (error) {
+      setIsSaving(false);
+      setSaveToast(`⚠️ Error al guardar plano: ${error instanceof Error ? error.message : 'Error inesperado'}`);
+    }
+    setTimeout(() => setSaveToast(null), 4000);
   };
 
   const handleResetDefaults = () => {

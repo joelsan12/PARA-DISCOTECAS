@@ -14,8 +14,10 @@ import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
 import { EventsManager } from './dashboard/EventsManager';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed } from '../../lib/clubPermissions';
+import { subscribeOperations, type OperationalTableItem } from '../../services/operationsService';
 import type { DashboardTabKey } from './AdminSidebar';
 import type { AdminStaffSession } from '../../lib/adminAuth';
+import type { ClubTable, EventTablePricing, Reservation, TableReservationStatus, TableZone } from '../../types';
 
 interface ClubDashboardProps {
   session?: AdminStaffSession;
@@ -31,6 +33,28 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
   const [isCustomPlanModalOpen, setIsCustomPlanModalOpen] = useState(false);
 
+  // Suscripción reactiva multiusuario a operaciones (resources + reservations + door sessions)
+  const [operationalTables, setOperationalTables] = useState<OperationalTableItem[] | null>(null);
+  const [liveReservations, setLiveReservations] = useState<Reservation[] | null>(null);
+
+  useEffect(() => {
+    if (!activeClub?.id) return;
+    const unsub = subscribeOperations({
+      businessId: activeClub.id,
+      eventId: activeEvent?.id,
+      onUpdate: (tables, reservations) => {
+        setOperationalTables(tables);
+        if (reservations) {
+          setLiveReservations(reservations);
+        }
+      },
+      onError: (err) => {
+        console.warn('[ClubDashboard] Error sincronizando operaciones en vivo:', err);
+      }
+    });
+    return () => unsub();
+  }, [activeClub?.id, activeEvent?.id]);
+
   // Si la pestaña actual no está permitida por el plan del club, regresar a MONITOR
   useEffect(() => {
     if (!isDashboardTabAllowed(activeTab, activeClub, activePlan)) {
@@ -45,12 +69,59 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   );
   const eventReservations = store.reservations.filter(r => r.club_id === activeClub.id && r.event_id === activeEvent?.id);
 
-  const totalTables = clubTables.length;
-  const availableCount = eventPricings.filter(p => p.status === 'AVAILABLE').length;
-  const heldCount = eventPricings.filter(p => p.status === 'HELD').length;
-  const confirmedCount = eventPricings.filter(p => p.status === 'CONFIRMED').length;
-  const checkedInCount = eventPricings.filter(p => p.status === 'CHECKED_IN').length;
-  const totalDeposits = eventReservations.reduce((acc, curr) => acc + curr.deposit_amount, 0);
+  // Sintetizar mesas si store.tables aún no se ha poblado visualmente
+  const effectiveTables: ClubTable[] = clubTables.length > 0
+    ? clubTables
+    : (operationalTables || []).map(t => ({
+        id: t.resourceId,
+        club_id: activeClub.id,
+        table_code: t.tableCode,
+        zone: t.zone as TableZone,
+        capacity: t.capacity,
+        x: 0,
+        y: 0,
+        shape: 'circle' as const,
+        is_active: t.isActive
+      }));
+
+  // Combinar tarifas y estados en tiempo real desde Firestore
+  const effectiveEventPricings: EventTablePricing[] = (operationalTables && operationalTables.length > 0)
+    ? operationalTables.map(t => {
+        const localPricing = eventPricings.find(p => p.table_id === t.resourceId);
+        return {
+          table_id: t.resourceId,
+          event_id: activeEvent?.id || '',
+          status: (t.state === 'INSIDE' ? 'CHECKED_IN' : t.state) as TableReservationStatus,
+          min_spend: t.minSpend || localPricing?.min_spend || 0,
+          deposit_required: t.depositRequired || localPricing?.deposit_required || 0,
+          includes: localPricing?.includes || [],
+          active_reservation_id: t.activeReservationId || localPricing?.active_reservation_id || undefined
+        };
+      })
+    : eventPricings;
+
+  const effectiveReservations = (liveReservations && liveReservations.length > 0)
+    ? liveReservations
+    : eventReservations;
+
+  const totalTables = effectiveTables.length;
+  const availableCount = (operationalTables && operationalTables.length > 0)
+    ? operationalTables.filter(t => t.state === 'AVAILABLE').length
+    : eventPricings.filter(p => p.status === 'AVAILABLE').length;
+
+  const heldCount = (operationalTables && operationalTables.length > 0)
+    ? operationalTables.filter(t => t.state === 'HELD').length
+    : eventPricings.filter(p => p.status === 'HELD').length;
+
+  const confirmedCount = (operationalTables && operationalTables.length > 0)
+    ? operationalTables.filter(t => t.state === 'CONFIRMED').length
+    : eventPricings.filter(p => p.status === 'CONFIRMED').length;
+
+  const checkedInCount = (operationalTables && operationalTables.length > 0)
+    ? operationalTables.filter(t => t.state === 'INSIDE').length
+    : eventPricings.filter(p => p.status === 'CHECKED_IN').length;
+
+  const totalDeposits = effectiveReservations.reduce((acc, curr) => acc + (curr.deposit_amount || 0), 0);
 
   const handleUpdatePricing = (tableId: string, minSpend: number, deposit: number) => {
     if (activeEvent) {
@@ -78,7 +149,7 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
       {/* Tab: MONITOR */}
       {activeTab === 'MONITOR' && (
-        clubTables.length === 0 ? (
+        effectiveTables.length === 0 ? (
           <ClubFloorPlanEmptyState
             clubName={activeClub.name}
             onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
@@ -87,12 +158,12 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
             <InteractiveFloorPlan
-              tables={clubTables}
-              eventPricings={eventPricings}
+              tables={effectiveTables}
+              eventPricings={effectiveEventPricings}
               selectedTableId={null}
               onSelectTable={() => {}}
             />
-            <OperatingTablesList tables={clubTables} eventPricings={eventPricings} />
+            <OperatingTablesList tables={effectiveTables} eventPricings={effectiveEventPricings} />
           </div>
         )
       )}
@@ -110,15 +181,15 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
       {/* Tab: RESERVATIONS */}
       {activeTab === 'RESERVATIONS' && (
         <ReservationsTable
-          reservations={eventReservations}
+          reservations={effectiveReservations}
         />
       )}
 
       {/* Tab: PRICING */}
       {activeTab === 'PRICING' && (
         <PricingManager
-          clubTables={clubTables}
-          eventPricings={eventPricings}
+          clubTables={effectiveTables}
+          eventPricings={effectiveEventPricings}
           activeEvent={activeEvent}
           onUpdatePricing={handleUpdatePricing}
           onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}

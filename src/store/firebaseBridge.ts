@@ -36,8 +36,8 @@ export class FirebaseBridge {
   }
 
   async syncClubLayout(clubId: string, tables: ClubTable[], layoutType?: ClubLayoutType) {
-    if (!isFirebaseConfigured) return;
-    await saveClubLayoutToFirebase(clubId, tables, layoutType);
+    if (!isFirebaseConfigured) return { success: true, inventorySynced: false, error: 'Firebase no configurado' };
+    return await saveClubLayoutToFirebase(clubId, tables, layoutType);
   }
 }
 

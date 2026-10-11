@@ -132,3 +132,10 @@ export declare const listPlatformSubscriptions: import("firebase-functions/v2/ht
     count: number;
 }>, unknown>;
 export declare const payphoneWebhook: import("firebase-functions/v2/https").HttpsFunction;
+export declare const syncFloorPlanInventory: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    businessId: string;
+    syncedCount: number;
+    deactivatedCount: number;
+    skippedHoldsCount: number;
+}>, unknown>;
