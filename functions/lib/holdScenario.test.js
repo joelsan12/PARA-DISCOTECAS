@@ -54,6 +54,15 @@ async function seedFixture() {
         name: "Club Test Holds",
         updatedAt: new Date().toISOString()
     }, { merge: true });
+    const eventRef = businessRef.collection("events").doc(EVENT_ID);
+    batch.set(eventRef, {
+        id: EVENT_ID,
+        club_id: BUSINESS_ID,
+        title: "Test Event VIP",
+        date: "2026-10-31",
+        is_published: true,
+        updatedAt: new Date().toISOString()
+    }, { merge: true });
     batch.set(resourceRef, {
         eventId: EVENT_ID,
         status: "AVAILABLE",
@@ -253,6 +262,21 @@ describe("Escenario 02:00 AM — Fase 7 holds y pagos", () => {
             return true;
         });
         await holdRef.delete();
+    });
+    it("Endurecimiento R2: createReservationHoldFor rechaza reservas contra eventos inexistentes", async () => {
+        await assert.rejects(async () => {
+            await createReservationHoldFor(callableRequest({
+                businessId: BUSINESS_ID,
+                eventId: "evt_inexistente_fantasma",
+                resourceId: RESOURCE_ID,
+                currency: "USD",
+                idempotencyKey: `ghost-evt-key-${Date.now()}`
+            }, CUSTOMER_UID));
+        }, (error) => {
+            assert.ok(typeof error === "object" && error !== null);
+            assert.equal(error.code, "not-found");
+            return true;
+        });
     });
 });
 //# sourceMappingURL=holdScenario.test.js.map

@@ -86,6 +86,10 @@ export function isDashboardTabAllowed(
         ['floor_plan', 'disenador_plano', 'editor_mesas', 'mapa_interactivo']
       );
 
+    case 'EVENTS':
+      // Cartelera de Eventos: Básico, Pro, Empresarial o Beta VIP
+      return canClubAccessFeature(club, plan, 'EVENTS', ['events', 'eventos', 'cartelera']);
+
     case 'RESERVATIONS':
       // Reservas Activas: Básico, Pro o Empresarial
       return canClubAccessFeature(club, plan, 'RESERVATIONS', ['reservas']);

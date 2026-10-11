@@ -61,6 +61,7 @@ function initAdmin(): void {
 const CALLABLE_NAMES = [
   "createBusinessTenant",
   "updateBusinessLegalProfile",
+  "upsertBusinessEvent",
   "getPaymentAccount",
   "configurePaymentAccount",
   "requestOtp",

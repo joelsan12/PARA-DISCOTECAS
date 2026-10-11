@@ -1,10 +1,11 @@
 import {
-  doc, getDoc, setDoc, onSnapshot,
+  collection, doc, getDoc, setDoc, onSnapshot,
   type Unsubscribe
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../lib/firebase';
 import { parseLegalProfileDocument, type LegalProfile } from '../lib/legalProfile';
-import type { ClubTable, ClubLayoutType } from '../types';
+import { callFunctions } from '../lib/functionsClient';
+import type { ClubTable, ClubLayoutType, ClubEvent } from '../types';
 
 export function subscribeToClubLayout(
   clubId: string,
@@ -69,3 +70,65 @@ export async function fetchBusinessLegalProfile(clubId: string): Promise<LegalPr
     return null;
   }
 }
+
+export function subscribeToBusinessEvents(
+  clubId: string,
+  onUpdate: (events: ClubEvent[]) => void
+): Unsubscribe | null {
+  if (!isFirebaseConfigured || !db || !clubId) return null;
+
+  try {
+    const eventsRef = collection(db, 'businesses', clubId, 'events');
+    return onSnapshot(eventsRef, (snapshot) => {
+      const events: ClubEvent[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        events.push({
+          id: docSnap.id,
+          club_id: clubId,
+          title: data.title || 'Evento Especial',
+          subtitle: data.subtitle || '',
+          date: data.date || '',
+          day_label: data.day_label || data.date || '',
+          door_time: data.door_time || '22:00',
+          cover_price: Number(data.cover_price) || 0,
+          dj_guest: data.dj_guest || '',
+          genre: data.genre || '',
+          flyer_url: data.flyer_url || '',
+          is_published: data.is_published === true,
+          experience_type: data.experience_type,
+          floor_plan_version_id: data.floor_plan_version_id
+        });
+      });
+      events.sort((a, b) => a.date.localeCompare(b.date));
+      onUpdate(events);
+    }, (err) => {
+      console.warn('[Firebase] Error en suscripción de eventos de negocio:', err);
+    });
+  } catch (err) {
+    console.warn('[Firebase] Excepción al suscribir a eventos:', err);
+    return null;
+  }
+}
+
+export async function upsertBusinessEventRemote(
+  eventData: {
+    businessId: string;
+    eventId?: string;
+    title: string;
+    subtitle?: string;
+    date: string;
+    day_label?: string;
+    door_time?: string;
+    cover_price?: number;
+    dj_guest?: string;
+    genre?: string;
+    flyer_url?: string;
+    is_published: boolean;
+    experience_type?: string;
+    floor_plan_version_id?: string;
+  }
+): Promise<{ success: boolean; eventId: string; event: Record<string, unknown> }> {
+  return await callFunctions('upsertBusinessEvent', eventData);
+}
+

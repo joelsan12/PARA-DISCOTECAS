@@ -160,7 +160,14 @@ service cloud.firestore {
       }
 
       match /events/{eventId} {
-        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin()
+          || (resource.data.is_published == true
+              && resource.data.keys().hasOnly([
+                'id', 'club_id', 'title', 'subtitle', 'date', 'day_label',
+                'door_time', 'cover_price', 'dj_guest', 'genre', 'flyer_url',
+                'is_published', 'experience_type', 'floor_plan_version_id',
+                'createdAt', 'updatedAt'
+              ]));
         allow create, update, delete: if false;
       }
 

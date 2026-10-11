@@ -6,6 +6,8 @@ import type { BusinessDirectoryEntry } from '../../types/saas';
 import { findBusinessBySlug } from '../../lib/businessDirectory';
 import { useBusinessDirectory } from '../../lib/useBusinessDirectory';
 import { subscribeToBusinessAuth, type BusinessAuthUser } from '../../lib/businessAuth';
+import { subscribeToBusinessEvents } from '../../services/firebaseService';
+import type { ClubEvent } from '../../types';
 import { FavoriteButton, SaasAmbient, SaasFooter, SaasHeader, SaasSectionKicker, VenueTypeBadge } from './saas-ui';
 
 function BusinessNotFound() {
@@ -71,8 +73,19 @@ export function BusinessBrandPage() {
   const { entries } = useBusinessDirectory();
   const business = useMemo(() => findBusinessBySlug(entries, slug), [slug, entries]);
   const [sessionUser, setSessionUser] = useState<BusinessAuthUser | null>(null);
+  const [events, setEvents] = useState<ClubEvent[]>([]);
 
   useEffect(() => subscribeToBusinessAuth(setSessionUser), []);
+
+  useEffect(() => {
+    if (!business?.id) return;
+    const unsub = subscribeToBusinessEvents(business.id, (loadedEvents) => {
+      setEvents(loadedEvents.filter(e => e.is_published));
+    });
+    return () => {
+      if (unsub) unsub();
+    };
+  }, [business?.id]);
 
   if (!business) return <BusinessNotFound />;
 
@@ -121,6 +134,89 @@ export function BusinessBrandPage() {
             <span className="saas-feature-card__caption"><Clock3 size={13} /> Listo cuando llegues</span>
           </article>
         </section>
+
+        {events.length > 0 && (
+          <section className="saas-container" style={{ margin: '48px auto' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <SaasSectionKicker>Cartelera Oficial</SaasSectionKicker>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--saas-ink)' }}>
+                Próximos eventos en <em>{business.name}</em>
+              </h2>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '20px'
+            }}>
+              {events.map((evt) => (
+                <article
+                  key={evt.id}
+                  style={{
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    background: 'var(--saas-panel-solid)',
+                    border: '1px solid var(--saas-line)',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <div style={{
+                    height: '140px',
+                    background: `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(10,11,16,0.95) 100%), url(${evt.flyer_url || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200'}) center/cover`,
+                    position: 'relative',
+                    padding: '14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end'
+                  }}>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      color: 'var(--saas-gold)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em'
+                    }}>
+                      {evt.day_label || evt.date} · {evt.door_time}
+                    </span>
+                    <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#fff', margin: '2px 0 0' }}>
+                      {evt.title}
+                    </h3>
+                  </div>
+
+                  <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {evt.subtitle && (
+                      <p style={{ fontSize: '0.82rem', color: 'var(--saas-muted)', margin: 0 }}>
+                        {evt.subtitle}
+                      </p>
+                    )}
+                    {evt.dj_guest && (
+                      <p style={{ fontSize: '0.78rem', color: 'var(--saas-muted)', margin: 0 }}>
+                        DJ Invitado: <strong style={{ color: '#fff' }}>{evt.dj_guest}</strong>
+                      </p>
+                    )}
+                    {evt.genre && (
+                      <p style={{ fontSize: '0.76rem', color: 'var(--saas-dim)', margin: 0 }}>
+                        {evt.genre}
+                      </p>
+                    )}
+
+                    <div style={{ marginTop: 'auto', paddingTop: '12px' }}>
+                      <Link
+                        className="saas-button saas-button--gold"
+                        to={entryPath}
+                        style={{ width: '100%', justifyContent: 'center', fontSize: '0.84rem' }}
+                      >
+                        Reservar Mesa <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="saas-brand-cta saas-container">
           <div className="saas-brand-cta__orb" />
           <div>

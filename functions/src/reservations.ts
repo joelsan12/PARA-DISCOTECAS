@@ -97,21 +97,28 @@ export async function createReservationHoldFor(request: CallableRequest<unknown>
   await enforceRateLimit("hold-create", [input.customerUid, input.businessId, input.resourceId], 10, 60);
   const businessReference = db.collection("businesses").doc(input.businessId);
   const resourceReference = businessReference.collection("resources").doc(input.resourceId);
+  const eventReference = businessReference.collection("events").doc(input.eventId);
   const holdId = `hold_${sha256(`${input.businessId}:${input.customerUid}:${input.idempotencyKey}`).slice(0, 40)}`;
   const holdReference = db.collection("holds").doc(holdId);
   const holdToken = tokenForHold(holdId);
   const expiresAt = Timestamp.fromMillis(Date.now() + runtimeConfig.holdDurationSeconds * 1000);
   const inputRequestHash = requestHash(input);
   const transactionResult = await db.runTransaction(async (transaction) => {
-    const [businessSnapshot, resourceSnapshot, holdSnapshot] = await Promise.all([
+    const [businessSnapshot, resourceSnapshot, holdSnapshot, eventSnapshot] = await Promise.all([
       transaction.get(businessReference),
       transaction.get(resourceReference),
-      transaction.get(holdReference)
+      transaction.get(holdReference),
+      transaction.get(eventReference)
     ]);
     if (!businessSnapshot.exists) throw new AppError("not-found", "Business not found", 404);
     const business = dataRecord(businessSnapshot.data());
     const status = typeof business.status === "string" ? business.status.toLowerCase() : "";
     if (status !== "active" && status !== "trial") throw new AppError("failed-precondition", "Business is not active", 412);
+    if (!eventSnapshot.exists) throw new AppError("not-found", "Event not found", 404);
+    const eventData = dataRecord(eventSnapshot.data());
+    if (eventData.is_published === false) {
+      throw new AppError("failed-precondition", "Event is not published", 412);
+    }
     if (holdSnapshot.exists) {
       const existing = dataRecord(holdSnapshot.data());
       if (existing.requestHash !== inputRequestHash) {

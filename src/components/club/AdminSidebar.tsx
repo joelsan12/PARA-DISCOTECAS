@@ -3,6 +3,7 @@ import { useClubStore } from '../../store/clubStore';
 import {
   MonitorPlay,
   Sliders,
+  CalendarDays,
   Ticket,
   Coins,
   CreditCard,
@@ -22,6 +23,7 @@ import { isDashboardTabAllowed, isDoorAccessAllowed } from '../../lib/clubPermis
 export type DashboardTabKey =
   | 'MONITOR'
   | 'LAYOUT_BUILDER'
+  | 'EVENTS'
   | 'RESERVATIONS'
   | 'PRICING'
   | 'PAYMENTS'
@@ -53,7 +55,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
-  const activeEvent = store.events.find(e => e.club_id === activeClub?.id);
+  const clubEvents = store.events.filter(e => e.club_id === activeClub?.id);
+  const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
   const eventReservations = activeEvent
     ? store.reservations.filter(r => r.club_id === activeClub?.id && r.event_id === activeEvent.id)
     : [];
@@ -246,6 +249,26 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     </span>
                     <span>Diseñador de Plano</span>
                   </div>
+                </button>
+              )}
+
+              {isDashboardTabAllowed('EVENTS', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'EVENTS' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('EVENTS')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <CalendarDays size={15} />
+                    </span>
+                    <span>Cartelera de Eventos</span>
+                  </div>
+                  {clubEvents.length > 0 && (
+                    <span className="admin-nav-item-tag">
+                      {clubEvents.length}
+                    </span>
+                  )}
                 </button>
               )}
 

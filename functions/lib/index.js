@@ -17,6 +17,7 @@ import { updateBusinessLegalProfileFor } from "./legalProfile.js";
 import { configurePaymentAccountFor, getPaymentAccountFor } from "./paymentAccount.js";
 import { registerAndActivateBetaClub, parseRegisterBetaInput } from "./betaRegistration.js";
 import { parseFeedbackInput, submitFeedbackAndNotify } from "./feedback.js";
+import { upsertBusinessEventFor } from "./events.js";
 export { releaseHoldTask };
 function callableError(error) {
     throw toHttpsError(error);
@@ -48,6 +49,19 @@ export const updateBusinessLegalProfile = onCall({
     try {
         assertCallableAppCheck(request);
         return await updateBusinessLegalProfileFor(request);
+    }
+    catch (error) {
+        return callableError(error);
+    }
+});
+export const upsertBusinessEvent = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await upsertBusinessEventFor(request);
     }
     catch (error) {
         return callableError(error);

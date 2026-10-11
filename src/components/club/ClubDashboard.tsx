@@ -11,6 +11,7 @@ import { LegalProfileForm } from './dashboard/LegalProfileForm';
 import { PaymentGatewayManager } from './dashboard/PaymentGatewayManager';
 import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
 import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
+import { EventsManager } from './dashboard/EventsManager';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed } from '../../lib/clubPermissions';
 import type { DashboardTabKey } from './AdminSidebar';
@@ -94,6 +95,11 @@ export const ClubDashboard = () => {
       {/* Tab: LAYOUT_BUILDER */}
       {activeTab === 'LAYOUT_BUILDER' && (
         <FloorPlanEditor />
+      )}
+
+      {/* Tab: EVENTS */}
+      {activeTab === 'EVENTS' && (
+        <EventsManager activeClub={activeClub} />
       )}
 
       {/* Tab: RESERVATIONS */}

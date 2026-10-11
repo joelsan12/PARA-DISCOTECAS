@@ -5,7 +5,7 @@ import type {
   ClubProposal, CustomClubFeature, ProposalStatus
 } from '../types';
 import {
-  INITIAL_PLANS, INITIAL_CLUBS, INITIAL_EVENTS, INITIAL_TABLES,
+  INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES,
   INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS
 } from '../data';
 import { loadStorageState, saveStorageState, applyLoadedStorageData } from './storage';
@@ -27,11 +27,11 @@ import { callFunctions } from '../lib/functionsClient';
 import { formatUsd } from '../lib/formatUsd';
 import { esClubStatus, esLayout, esPlan } from '../lib/esLabels';
 
-export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_EVENTS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS };
+export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS };
 
 class ClubStore {
   clubs: Club[] = INITIAL_CLUBS;
-  events: ClubEvent[] = INITIAL_EVENTS;
+  events: ClubEvent[] = [];
   tables: ClubTable[] = INITIAL_TABLES;
   eventPricing: EventTablePricing[] = INITIAL_EVENT_PRICING;
   reservations: Reservation[] = import.meta.env.DEV ? INITIAL_RESERVATIONS : [];
@@ -40,7 +40,7 @@ class ClubStore {
   private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
 
   activeClubId: string = 'club-sensorial';
-  activeEventId: string = 'event-fri-reggaeton';
+  activeEventId: string = '';
   currentRole: ViewRole = 'CLIENT';
   dashboardTab: string = 'MONITOR';
   customArchetypeLayouts: Record<string, { tables: ClubTable[]; pricings?: EventTablePricing[] }> = {};
@@ -69,9 +69,31 @@ class ClubStore {
         }
         this.saveToStorage();
         this.notify();
+      },
+      (remoteEvents) => {
+        this.setRemoteEvents(this.activeClubId, remoteEvents);
       }
     );
     void this.hydrateLegalProfile(this.activeClubId);
+  }
+
+  setRemoteEvents(clubId: string, remoteEvents: ClubEvent[]) {
+    const others = this.events.filter(e => e.club_id !== clubId);
+    this.events = [...others, ...remoteEvents];
+
+    // Ajuste #4: Auto-selección de activeEventId cuando los eventos llegan asíncronos
+    if (this.activeClubId === clubId) {
+      const activeClubEvents = this.events.filter(e => e.club_id === clubId);
+      const activeStillExists = activeClubEvents.some(e => e.id === this.activeEventId);
+      if (!activeStillExists && activeClubEvents.length > 0) {
+        this.activeEventId = activeClubEvents[0].id;
+      } else if (activeClubEvents.length === 0) {
+        this.activeEventId = '';
+      }
+    }
+
+    this.saveToStorage();
+    this.notify();
   }
 
   /**

@@ -6,6 +6,11 @@ export declare const createBusinessTenant: import("firebase-functions/v2/https")
     resourceIds: string[];
 }>, unknown>;
 export declare const updateBusinessLegalProfile: import("firebase-functions/v2/https").CallableFunction<any, Promise<Record<string, unknown>>, unknown>;
+export declare const upsertBusinessEvent: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    eventId: string;
+    event: Record<string, unknown>;
+}>, unknown>;
 export declare const getPaymentAccount: import("firebase-functions/v2/https").CallableFunction<any, Promise<Record<string, unknown>>, unknown>;
 export declare const configurePaymentAccount: import("firebase-functions/v2/https").CallableFunction<any, Promise<Record<string, unknown>>, unknown>;
 export declare const requestOtp: import("firebase-functions/v2/https").CallableFunction<any, Promise<{

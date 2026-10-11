@@ -1,16 +1,18 @@
 import { isFirebaseConfigured } from '../lib/firebase';
 import {
   subscribeToClubLayout,
-  saveClubLayoutToFirebase
+  saveClubLayoutToFirebase,
+  subscribeToBusinessEvents
 } from '../services/firebaseService';
-import type { ClubTable, ClubLayoutType } from '../types';
+import type { ClubTable, ClubLayoutType, ClubEvent } from '../types';
 
 export class FirebaseBridge {
   private unsubs: Array<() => void> = [];
 
   attachClubListeners(
     clubId: string,
-    onTablesReceived: (tables: ClubTable[], layoutType?: ClubLayoutType) => void
+    onTablesReceived: (tables: ClubTable[], layoutType?: ClubLayoutType) => void,
+    onEventsReceived?: (events: ClubEvent[]) => void
   ) {
     if (!isFirebaseConfigured) return;
     this.detach();
@@ -21,6 +23,11 @@ export class FirebaseBridge {
       }
     });
     if (unsubClub) this.unsubs.push(unsubClub);
+
+    if (onEventsReceived) {
+      const unsubEvents = subscribeToBusinessEvents(clubId, onEventsReceived);
+      if (unsubEvents) this.unsubs.push(unsubEvents);
+    }
   }
 
   detach() {
