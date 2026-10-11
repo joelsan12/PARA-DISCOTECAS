@@ -9,6 +9,8 @@ import { PricingManager } from './dashboard/PricingManager';
 import { AuditLogsView } from './dashboard/AuditLogsView';
 import { LegalProfileForm } from './dashboard/LegalProfileForm';
 import { PaymentGatewayManager } from './dashboard/PaymentGatewayManager';
+import { StaffManager } from './dashboard/StaffManager';
+import { ConsumptionCatalogManager } from './dashboard/ConsumptionCatalogManager';
 import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
 import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
 import { EventsManager } from './dashboard/EventsManager';
@@ -164,7 +166,13 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
               selectedTableId={null}
               onSelectTable={() => {}}
             />
-            <OperatingTablesList tables={effectiveTables} eventPricings={effectiveEventPricings} />
+            <OperatingTablesList
+              tables={effectiveTables}
+              eventPricings={effectiveEventPricings}
+              operationalTables={operationalTables}
+              session={session}
+              activeClubId={activeClub.id}
+            />
           </div>
         )
       )}
@@ -188,18 +196,26 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
       {/* Tab: PRICING */}
       {activeTab === 'PRICING' && (
-        <PricingManager
-          clubTables={effectiveTables}
-          eventPricings={effectiveEventPricings}
-          activeEvent={activeEvent}
-          onUpdatePricing={handleUpdatePricing}
-          onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          <PricingManager
+            clubTables={effectiveTables}
+            eventPricings={effectiveEventPricings}
+            activeEvent={activeEvent}
+            onUpdatePricing={handleUpdatePricing}
+            onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
+          />
+          <ConsumptionCatalogManager activeClub={activeClub} session={session} />
+        </div>
       )}
 
       {/* Tab: PAYMENTS */}
       {activeTab === 'PAYMENTS' && (
         <PaymentGatewayManager key={activeClub.id} activeClub={activeClub} session={session} />
+      )}
+
+      {/* Tab: STAFF */}
+      {activeTab === 'STAFF' && session && (
+        <StaffManager key={activeClub.id} activeClub={activeClub} session={session} />
       )}
 
       {/* Tab: LEGAL */}

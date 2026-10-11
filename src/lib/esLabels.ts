@@ -43,9 +43,11 @@ const roleLabels: Record<string, string> = {
   CLUB_OWNER: 'Propietario del club',
   DOOR_CHECKIN: 'Personal de puerta',
   SUPER_ADMIN: 'Superadministrador',
+  WAITER: 'Mesero',
   super_admin: 'Superadministrador',
   club_owner: 'Propietario del club',
   door_staff: 'Personal de puerta',
+  waiter: 'Mesero',
   client: 'Cliente',
   system: 'Sistema',
 };

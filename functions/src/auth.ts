@@ -3,7 +3,7 @@ import { db } from "./config.js";
 import { AppError } from "./errors.js";
 import { asRecord } from "./validation.js";
 
-export type StaffRole = "owner" | "manager" | "door" | "finance";
+export type StaffRole = "owner" | "manager" | "door" | "finance" | "waiter";
 
 export interface StaffProfile {
   uid: string;
@@ -14,6 +14,7 @@ export interface StaffProfile {
 }
 
 const roleRank: Record<StaffRole, number> = {
+  waiter: 0,
   door: 1,
   finance: 2,
   manager: 3,
@@ -31,7 +32,7 @@ export function roleAtLeast(role: StaffRole, minimum: StaffRole): boolean {
 }
 
 export function isStaffRole(value: unknown): value is StaffRole {
-  return value === "owner" || value === "manager" || value === "door" || value === "finance";
+  return value === "owner" || value === "manager" || value === "door" || value === "finance" || value === "waiter";
 }
 
 export async function getStaffProfile(uid: string, businessId: string): Promise<StaffProfile | null> {

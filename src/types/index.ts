@@ -189,7 +189,7 @@ export interface AuditLog {
   timestamp: string;
 }
 
-export type ViewRole = 'CLIENT' | 'CLUB_ADMIN' | 'DOOR_CHECKIN' | 'SUPER_ADMIN';
+export type ViewRole = 'CLIENT' | 'CLUB_ADMIN' | 'DOOR_CHECKIN' | 'SUPER_ADMIN' | 'WAITER';
 
 export type ClientAuthProvider = 'phone_otp' | 'whatsapp' | 'apple' | 'google' | 'password' | 'email_otp' | 'sms_otp';
 

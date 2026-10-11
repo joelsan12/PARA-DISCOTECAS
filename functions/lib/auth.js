@@ -2,6 +2,7 @@ import { db } from "./config.js";
 import { AppError } from "./errors.js";
 import { asRecord } from "./validation.js";
 const roleRank = {
+    waiter: 0,
     door: 1,
     finance: 2,
     manager: 3,
@@ -17,7 +18,7 @@ export function roleAtLeast(role, minimum) {
     return roleRank[role] >= roleRank[minimum];
 }
 export function isStaffRole(value) {
-    return value === "owner" || value === "manager" || value === "door" || value === "finance";
+    return value === "owner" || value === "manager" || value === "door" || value === "finance" || value === "waiter";
 }
 export async function getStaffProfile(uid, businessId) {
     const snapshot = await db.collection("businesses").doc(businessId).collection("staff").doc(uid).get();

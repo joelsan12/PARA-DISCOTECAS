@@ -7,7 +7,7 @@ import { asRecord, assertAllowedKeys, requiredId, requiredString } from "./valid
 import { dataRecord } from "./firestore.js";
 import { randomId } from "./crypto.js";
 import { writeAudit } from "./audit.js";
-const roles = ["owner", "manager", "door", "finance"];
+const roles = ["owner", "manager", "door", "finance", "waiter"];
 function parseInput(value) {
     const record = asRecord(value);
     assertAllowedKeys(record, ["businessId", "role", "deviceId", "eventId"]);

@@ -140,6 +140,15 @@ export function isDashboardTabAllowed(
         ['online_payment', 'kushki_gateway', 'pasarela_kushki', 'pagos']
       );
 
+    case 'STAFF':
+      // Personal & Meseros: Requiere Plan Pro o Empresarial (STAFF_MANAGEMENT)
+      return canClubAccessFeature(
+        club,
+        plan,
+        'STAFF_MANAGEMENT',
+        ['staff_management', 'personal', 'meseros', 'staff', 'equipo']
+      );
+
     case 'LEGAL':
       // Identidad Legal SRI: Siempre visible (perfil fiscal y facturación del negocio)
       return true;
@@ -160,6 +169,18 @@ export function isDashboardTabAllowed(
     default:
       return false;
   }
+}
+
+/**
+ * Valida si un rol de staff o superadministrador tiene permisos para realizar
+ * el cierre manual de cuenta de mesa (O.2 / settleTableTab).
+ * Requiere rol finance, manager u owner; bloquea terminantemente a waiter y door.
+ */
+export function canStaffSettleTab(staffRole?: string, isSuperAdmin?: boolean): boolean {
+  if (isSuperAdmin === true) return true;
+  if (!staffRole) return false;
+  const role = staffRole.toLowerCase();
+  return role === 'finance' || role === 'manager' || role === 'owner';
 }
 
 /**

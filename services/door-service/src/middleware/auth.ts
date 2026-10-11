@@ -81,9 +81,9 @@ export const getCallerContext = (response: Response): CallerContext => {
   return { uid: user.uid, role }
 }
 
-export type StaffRole = 'owner' | 'manager' | 'door' | 'finance'
+export type StaffRole = 'owner' | 'manager' | 'door' | 'finance' | 'waiter'
 
-const roleRank: Record<StaffRole, number> = { owner: 4, manager: 3, door: 2, finance: 1 }
+const roleRank: Record<StaffRole, number> = { owner: 4, manager: 3, door: 2, finance: 1, waiter: 0 }
 
 export const isStaffRole = (value: string): value is StaffRole => value in roleRank
 

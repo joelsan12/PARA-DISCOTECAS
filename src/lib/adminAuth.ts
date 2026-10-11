@@ -10,7 +10,8 @@ export interface AdminStaffSession {
   role: ViewRole;
   isSuperAdmin: boolean;
   clubId?: string;
-  staffRole?: 'owner' | 'manager' | 'door' | 'finance';
+  staffRole?: 'owner' | 'manager' | 'door' | 'finance' | 'waiter';
+  assignedZones?: string[];
 }
 
 export type AdminAuthState =
@@ -65,7 +66,15 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
           const data = staffSnapshot.data();
           if (data?.status === 'ACTIVE') {
             const rawRole = (data.role || 'manager').toLowerCase();
-            const role: ViewRole = rawRole === 'door' ? 'DOOR_CHECKIN' : 'CLUB_ADMIN';
+            let role: ViewRole = 'CLUB_ADMIN';
+            if (rawRole === 'door') {
+              role = 'DOOR_CHECKIN';
+            } else if (rawRole === 'waiter') {
+              role = 'WAITER';
+            }
+            const assignedZones = Array.isArray(data.assignedZones)
+              ? data.assignedZones.filter((z): z is string => typeof z === 'string')
+              : [];
             return {
               uid: user.uid,
               email: user.email || '',
@@ -73,7 +82,8 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
               role,
               isSuperAdmin: false,
               clubId: targetClubId,
-              staffRole: rawRole as AdminStaffSession['staffRole']
+              staffRole: rawRole as AdminStaffSession['staffRole'],
+              assignedZones
             };
           }
         }

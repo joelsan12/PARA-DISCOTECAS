@@ -9,7 +9,7 @@ import { dataRecord } from "./firestore.js";
 import { randomId } from "./crypto.js";
 import { writeAudit } from "./audit.js";
 
-const roles: readonly StaffRole[] = ["owner", "manager", "door", "finance"];
+const roles: readonly StaffRole[] = ["owner", "manager", "door", "finance", "waiter"];
 
 interface SessionInput {
   businessId: string;

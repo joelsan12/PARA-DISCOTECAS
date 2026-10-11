@@ -26,6 +26,17 @@ export interface OperationalTableItem {
   attendanceState?: 'INSIDE' | 'OUTSIDE_TEMPORARY' | 'ABSENT';
   guestName?: string;
   partySize?: number;
+  tableTab?: {
+    reservationId: string;
+    subtotal: number;
+    depositAmount: number;
+    minSpend: number;
+    status: 'OPEN' | 'SETTLED';
+    itemsCount: number;
+    settlementMethod?: string | null;
+  } | null;
+  consumptionTotal?: number;
+  tabStatus?: 'OPEN' | 'SETTLED';
 }
 
 export interface OperationsSubscriptionOptions {
@@ -118,10 +129,11 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
     return () => {};
   }
 
-  // En producción: triple onSnapshot unificado
+  // En producción: cuádruple onSnapshot unificado (resources, reservations, sessions, tableTabs)
   let resourcesData: Array<Record<string, unknown>> = [];
   let reservationsData: Array<Record<string, unknown>> = [];
   let sessionsData: Map<string, Record<string, unknown>> = new Map();
+  let tabsData: Map<string, Record<string, unknown>> = new Map();
 
   function recalculateAndNotify() {
     try {
@@ -149,10 +161,17 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
           : resourceId;
         const matchingSession = ticketId ? sessionsData.get(ticketId) : null;
 
+        // Buscar cuenta de consumo (tableTab) por reservationId
+        const resIdKey = matchingReservation
+          ? ((matchingReservation.id || matchingReservation.reservationId) as string)
+          : null;
+        const matchingTab = resIdKey ? tabsData.get(resIdKey) : null;
+
         const state = deriveTableOperationalState(
           resData as any,
           matchingReservation as any,
-          matchingSession as any
+          matchingSession as any,
+          matchingTab as any
         );
 
         const tableCode = (resData.label || resData.name || resourceId) as string;
@@ -170,6 +189,10 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
           ? Number(matchingReservation.guests_count || matchingReservation.partySize || capacity)
           : undefined;
 
+        const rawSubtotal = matchingTab ? Number(matchingTab.subtotal || 0) : 0;
+        const tabStatus = matchingTab ? ((matchingTab.status as 'OPEN' | 'SETTLED') || 'OPEN') : undefined;
+        const itemsCount = matchingTab && Array.isArray(matchingTab.items) ? matchingTab.items.length : 0;
+
         return {
           resourceId,
           tableCode,
@@ -184,7 +207,18 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
           reservation: matchingReservation as unknown as Reservation | null,
           attendanceState: matchingSession?.state as 'INSIDE' | 'OUTSIDE_TEMPORARY' | 'ABSENT' | undefined,
           guestName: customerName,
-          partySize
+          partySize,
+          consumptionTotal: rawSubtotal,
+          tabStatus,
+          tableTab: matchingTab ? {
+            reservationId: resIdKey || '',
+            subtotal: rawSubtotal,
+            depositAmount: Number(matchingTab.depositAmount ?? depositRequired),
+            minSpend: Number(matchingTab.minSpend ?? minSpend),
+            status: tabStatus || 'OPEN',
+            itemsCount,
+            settlementMethod: (matchingTab.settlementMethod as string | null) ?? null
+          } : null
         };
       });
 
@@ -284,9 +318,28 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
     }
   );
 
+  // 4. Suscribirse a tableTabs (Consumos y Cierres en vivo)
+  const tabsRef = collection(db, 'businesses', businessId, 'tableTabs');
+  const unsubTabs = onSnapshot(
+    tabsRef,
+    (snapshot) => {
+      const nextMap = new Map<string, Record<string, unknown>>();
+      for (const doc of snapshot.docs) {
+        nextMap.set(doc.id, doc.data());
+      }
+      tabsData = nextMap;
+      recalculateAndNotify();
+    },
+    (err) => {
+      console.warn('[OperationsService] Error en snapshot de tableTabs:', err);
+      if (onError) onError(err);
+    }
+  );
+
   return () => {
     unsubResources();
     unsubReservations();
     unsubSessions();
+    unsubTabs();
   };
 }

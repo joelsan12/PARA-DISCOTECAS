@@ -269,7 +269,13 @@ function identityScope(identity: AuthIdentity): string {
 }
 
 function toGatewayRole(role: StaffRole): GatewayRole {
-  return role === "door" ? "terminal" : "admin";
+  if (role === "door") {
+    return "terminal";
+  }
+  if (role === "owner" || role === "manager") {
+    return "admin";
+  }
+  return "observer";
 }
 
 function validateFreshness(identity: AuthIdentity, config: GatewayConfig): string | null {

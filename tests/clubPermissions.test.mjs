@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 // Import compiled or transpile test
-import { isDashboardTabAllowed, isDoorAccessAllowed, canStaffRefund } from '../src/lib/clubPermissions.ts';
+import { isDashboardTabAllowed, isDoorAccessAllowed, canStaffRefund, canStaffSettleTab } from '../src/lib/clubPermissions.ts';
 
 const mockPlans = [
   {
@@ -215,4 +215,39 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(canStaffRefund(undefined, false), false);
     assert.strictEqual(canStaffRefund('', false), false);
   });
+
+  await t.test('Pestaña STAFF exige STAFF_MANAGEMENT (O.1-C)', () => {
+    const enterprisePlan = mockPlans.find(p => p.id === 'enterprise');
+    const proPlan = mockPlans.find(p => p.id === 'pro');
+    const basicPlan = mockPlans.find(p => p.id === 'basic');
+
+    // Sensorial (Enterprise) y Rumaj (Pro con STAFF_MANAGEMENT) tienen acceso
+    assert.strictEqual(isDashboardTabAllowed('STAFF', sensorialClub, enterprisePlan), true);
+    assert.strictEqual(isDashboardTabAllowed('STAFF', rumajClub, proPlan), true);
+
+    // Velvet (Básico sin STAFF_MANAGEMENT) queda estrictamente bloqueado
+    assert.strictEqual(isDashboardTabAllowed('STAFF', velvetClub, basicPlan), false);
+  });
+
+  await t.test('Permisos de cierre de cuenta de mesa en sala (O.2: canStaffSettleTab)', () => {
+    // Roles con autorización de cierre manual
+    assert.strictEqual(canStaffSettleTab('finance', false), true);
+    assert.strictEqual(canStaffSettleTab('manager', false), true);
+    assert.strictEqual(canStaffSettleTab('owner', false), true);
+    assert.strictEqual(canStaffSettleTab('FINANCE', false), true);
+    assert.strictEqual(canStaffSettleTab('MANAGER', false), true);
+
+    // SuperAdmin siempre autorizado
+    assert.strictEqual(canStaffSettleTab(undefined, true), true);
+    assert.strictEqual(canStaffSettleTab('waiter', true), true);
+    assert.strictEqual(canStaffSettleTab('door', true), true);
+
+    // Roles estrictamente bloqueados (mesero, puerta, anónimo)
+    assert.strictEqual(canStaffSettleTab('waiter', false), false, 'Waiter nunca debe tener permiso de cierre de cuenta');
+    assert.strictEqual(canStaffSettleTab('door', false), false, 'Door nunca debe tener permiso de cierre de cuenta');
+    assert.strictEqual(canStaffSettleTab('reception', false), false);
+    assert.strictEqual(canStaffSettleTab(undefined, false), false);
+    assert.strictEqual(canStaffSettleTab('', false), false);
+  });
 });
+

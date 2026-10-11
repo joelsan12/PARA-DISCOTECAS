@@ -2,7 +2,7 @@ import type { VenueType } from './domain';
 
 export type BusinessDirectoryStatus = 'active' | 'trial' | 'hidden';
 export type CustomerAuthMethod = 'password' | 'email_otp' | 'whatsapp_otp' | 'sms_otp';
-export type BusinessStaffRole = 'owner' | 'manager' | 'door' | 'finance';
+export type BusinessStaffRole = 'owner' | 'manager' | 'door' | 'finance' | 'waiter';
 export type ReentryMode = 'digital_passkey' | 'physical_band';
 export type PresenceState = 'ABSENT' | 'INSIDE' | 'OUTSIDE_TEMPORARY';
 export type AttendanceAction = 'CHECK_IN' | 'EXIT' | 'REENTRY' | 'MANUAL_OVERRIDE';
@@ -171,3 +171,40 @@ export interface OtpVerifyRequest {
   appCheckToken?: string;
   captchaToken?: string;
 }
+
+export interface ConsumptionCatalogItem {
+  sku: string;
+  name: string;
+  price: number;
+  category: string;
+}
+
+export interface ConsumptionItem {
+  id: string;
+  sku?: string;
+  name: string;
+  qty: number;
+  unitPrice: number;
+  total: number;
+  addedBy: string;
+  addedAt: string;
+}
+
+export interface TableTabRecord {
+  businessId: string;
+  reservationId: string;
+  resourceId: string;
+  eventId: string;
+  items: ConsumptionItem[];
+  subtotal: number;
+  depositAmount: number;
+  minSpend: number;
+  status: 'OPEN' | 'SETTLED';
+  settlementMethod?: string;
+  settledBy?: string;
+  settledAt?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

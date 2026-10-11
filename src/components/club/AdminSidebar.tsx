@@ -13,7 +13,9 @@ import {
   LogOut,
   X,
   Building,
-  Crown
+  Crown,
+  Users,
+  Wine
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -27,14 +29,15 @@ export type DashboardTabKey =
   | 'RESERVATIONS'
   | 'PRICING'
   | 'PAYMENTS'
+  | 'STAFF'
   | 'LEGAL'
   | 'AUDIT'
   | 'SUBSCRIPTION';
 
 interface AdminSidebarProps {
-  currentView: 'DASHBOARD' | 'DOOR';
+  currentView: 'DASHBOARD' | 'DOOR' | 'WAITER';
   dashboardTab: DashboardTabKey;
-  onSelectView: (view: 'DASHBOARD' | 'DOOR') => void;
+  onSelectView: (view: 'DASHBOARD' | 'DOOR' | 'WAITER') => void;
   onSelectTab: (tab: DashboardTabKey) => void;
   session: AdminStaffSession;
   onSignOut: () => void;
@@ -62,17 +65,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     ? store.reservations.filter(r => r.club_id === activeClub?.id && r.event_id === activeEvent.id)
     : [];
 
-  const roleLabel = session.role === 'DOOR_CHECKIN'
+  const roleLabel = session.role === 'WAITER' || session.staffRole === 'waiter'
+    ? 'MESERO SALA'
+    : session.role === 'DOOR_CHECKIN'
     ? 'PERSONAL PUERTA'
     : 'ADMIN CLUB VIP';
 
-  const roleBadgeColor = session.role === 'DOOR_CHECKIN'
+  const roleBadgeColor = session.role === 'WAITER' || session.staffRole === 'waiter'
+    ? '#38bdf8'
+    : session.role === 'DOOR_CHECKIN'
     ? '#34d399'
     : 'var(--brand-gold)';
 
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = (session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN')
     && isDoorAccessAllowed(activeClub, activePlan);
+  const canAccessWaiter = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'WAITER';
 
   const handleTabClick = (tab: DashboardTabKey) => {
     onSelectView('DASHBOARD');
@@ -292,6 +300,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   )}
                 </button>
               )}
+
+              {isDashboardTabAllowed('STAFF', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'STAFF' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('STAFF')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <Users size={15} />
+                    </span>
+                    <span>Personal &amp; Meseros</span>
+                  </div>
+                </button>
+              )}
             </div>
           )}
 
@@ -417,6 +440,34 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 </div>
                 <span className="admin-nav-item-tag admin-nav-item-tag--live">
                   ACTIVO
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Section: Terminal Mesero */}
+          {canAccessWaiter && (
+            <div className="admin-sidebar-section">
+              <span className="admin-sidebar-section-title">
+                <span>Servicio de Sala</span>
+              </span>
+
+              <button
+                type="button"
+                className={`admin-nav-item ${currentView === 'WAITER' ? 'active' : ''}`}
+                onClick={() => {
+                  onSelectView('WAITER');
+                  onCloseMobile();
+                }}
+              >
+                <div className="admin-nav-item-left">
+                  <span className="admin-nav-item-icon">
+                    <Wine size={15} />
+                  </span>
+                  <span>Terminal de Mesero</span>
+                </div>
+                <span className="admin-nav-item-tag admin-nav-item-tag--live" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
+                  PWA
                 </span>
               </button>
             </div>

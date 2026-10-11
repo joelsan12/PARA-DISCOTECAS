@@ -141,6 +141,8 @@ export async function callFunctions<T>(functionName: string, data: unknown): Pro
   }
 }
 
+export const callFunction = callFunctions;
+
 function cloudFunctionsUrl(functionName: string): string {
   if (hasCustomBackend()) {
     const mapped = HTTP_FUNCTION_PATHS[functionName];

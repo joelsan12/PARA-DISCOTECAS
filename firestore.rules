@@ -238,6 +238,20 @@ service cloud.firestore {
         allow get, list: if isFinance(businessId) || isSuperAdmin();
         allow create, update, delete: if false;
       }
+
+      match /tableTabs/{tabId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+
+      match /consumptionCatalog/{catalogId} {
+        allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /tableTabs/{tabId} {
+      allow get, list, create, update, delete: if false;
     }
 
     match /customers/{customerId} {

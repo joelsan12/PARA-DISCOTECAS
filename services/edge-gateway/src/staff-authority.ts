@@ -12,7 +12,7 @@ import type { GatewayConfig } from "./types.js";
  * de eventos para cualquier usuario registrado del proyecto.
  */
 
-export type StaffRole = "owner" | "manager" | "door" | "finance";
+export type StaffRole = "owner" | "manager" | "door" | "finance" | "waiter";
 
 export interface StaffAuthorization {
   uid: string;
@@ -132,5 +132,5 @@ function normalizeRole(value: unknown): StaffRole | null {
     return null;
   }
   const role = value.trim().toLowerCase();
-  return role === "owner" || role === "manager" || role === "door" || role === "finance" ? role : null;
+  return role === "owner" || role === "manager" || role === "door" || role === "finance" || role === "waiter" ? role : null;
 }

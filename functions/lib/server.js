@@ -81,7 +81,14 @@ const CALLABLE_NAMES = [
     "registerSubscriptionTransfer",
     "updateSubscriptionStatusManual",
     "listPlatformSubscriptions",
-    "syncFloorPlanInventory"
+    "syncFloorPlanInventory",
+    "listBusinessStaff",
+    "upsertStaffMember",
+    "revokeStaffMember",
+    "getConsumptionCatalog",
+    "saveConsumptionCatalog",
+    "addConsumptionItem",
+    "settleTableTab"
 ];
 const TICK_INTERVAL_MS = Math.max(2_000, Number(process.env.HOLD_TICK_INTERVAL_MS ?? 8_000) || 8_000);
 async function main() {

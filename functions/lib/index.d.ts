@@ -139,3 +139,41 @@ export declare const syncFloorPlanInventory: import("firebase-functions/v2/https
     deactivatedCount: number;
     skippedHoldsCount: number;
 }>, unknown>;
+export declare const listBusinessStaff: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    staff: import("./staffAdmin.js").StaffMemberRecord[];
+}>, unknown>;
+export declare const upsertStaffMember: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    uid: string;
+    name: string;
+    email: string;
+    whatsapp?: string | null;
+    role: import("./auth.js").StaffRole;
+    status: "ACTIVE";
+    assignedZones: string[];
+    temporaryPassword?: string;
+}>, unknown>;
+export declare const revokeStaffMember: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    uid: string;
+    status: "REVOKED";
+}>, unknown>;
+export declare const getConsumptionCatalog: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    items: import("./consumption.js").ConsumptionCatalogItem[];
+}>, unknown>;
+export declare const saveConsumptionCatalog: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: true;
+    count: number;
+}>, unknown>;
+export declare const addConsumptionItem: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    tab: import("./consumption.js").TableTabRecord;
+}>, unknown>;
+export declare const settleTableTab: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    status: "SETTLED";
+    reservationId: string;
+    subtotal: number;
+    settledBy: string;
+    replay?: boolean;
+}>, unknown>;

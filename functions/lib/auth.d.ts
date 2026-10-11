@@ -1,5 +1,5 @@
 import type { CallableRequest } from "firebase-functions/v2/https";
-export type StaffRole = "owner" | "manager" | "door" | "finance";
+export type StaffRole = "owner" | "manager" | "door" | "finance" | "waiter";
 export interface StaffProfile {
     uid: string;
     businessId: string;

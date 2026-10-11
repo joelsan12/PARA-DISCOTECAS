@@ -4,6 +4,7 @@ import { db } from '../../lib/firebase';
 import { useClubStore } from '../../store/clubStore';
 import { ClubDashboard } from './ClubDashboard';
 import { DoorCheckIn } from '../door/DoorCheckIn';
+import { WaiterPwaApp } from '../waiter/WaiterPwaApp';
 import { AdminSidebar, type DashboardTabKey } from './AdminSidebar';
 import { AdminCommandBar } from './AdminCommandBar';
 import { AdminLoginView } from './AdminLoginView';
@@ -11,7 +12,7 @@ import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState } from '../../l
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import '../../styles/adminLayout.css';
 
-type AdminView = 'DASHBOARD' | 'DOOR';
+export type AdminView = 'DASHBOARD' | 'DOOR' | 'WAITER';
 
 function normalizePlanId(rawPlanId?: string): string {
   if (!rawPlanId) return 'beta_vip';
@@ -102,7 +103,9 @@ export function AdminPortalApp() {
             store.setActiveClub(session.clubId);
           }
         }
-        if (session.role === 'DOOR_CHECKIN') {
+        if (session.role === 'WAITER') {
+          setCurrentView('WAITER');
+        } else if (session.role === 'DOOR_CHECKIN') {
           setCurrentView('DOOR');
         } else {
           setCurrentView('DASHBOARD');
@@ -167,6 +170,7 @@ export function AdminPortalApp() {
   const session = authState.session;
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN';
+  const canAccessWaiter = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'WAITER';
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
 
@@ -197,6 +201,7 @@ export function AdminPortalApp() {
         <main className="admin-canvas">
           {currentView === 'DASHBOARD' && canAccessDashboard && <ClubDashboard session={session} />}
           {currentView === 'DOOR' && canAccessDoor && <DoorCheckIn />}
+          {currentView === 'WAITER' && canAccessWaiter && <WaiterPwaApp session={session} />}
         </main>
       </div>
     </div>

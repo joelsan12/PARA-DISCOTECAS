@@ -20,6 +20,8 @@ import { parseFeedbackInput, submitFeedbackAndNotify } from "./feedback.js";
 import { upsertBusinessEventFor } from "./events.js";
 import { listPaymentTransactionsFor, createPaymentRefundFor } from "./paymentAdmin.js";
 import { syncFloorPlanInventoryFor } from "./floorplanInventory.js";
+import { listBusinessStaffFor, upsertStaffMemberFor, revokeStaffMemberFor } from "./staffAdmin.js";
+import { getConsumptionCatalogFor, saveConsumptionCatalogFor, addConsumptionItemFor, settleTableTabFor } from "./consumption.js";
 
 export { releaseHoldTask };
 
@@ -459,4 +461,97 @@ export const syncFloorPlanInventory = onCall({
     return callableError(error);
   }
 });
+
+export const listBusinessStaff = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await listBusinessStaffFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const upsertStaffMember = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await upsertStaffMemberFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const revokeStaffMember = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await revokeStaffMemberFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const getConsumptionCatalog = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await getConsumptionCatalogFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const saveConsumptionCatalog = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await saveConsumptionCatalogFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const addConsumptionItem = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await addConsumptionItemFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const settleTableTab = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region,
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await settleTableTabFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+
 

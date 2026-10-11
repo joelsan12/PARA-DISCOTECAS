@@ -3,7 +3,7 @@ import { Menu, ExternalLink, Clock } from 'lucide-react';
 import type { DashboardTabKey } from './AdminSidebar';
 
 interface AdminCommandBarProps {
-  currentView: 'DASHBOARD' | 'DOOR';
+  currentView: 'DASHBOARD' | 'DOOR' | 'WAITER';
   dashboardTab: DashboardTabKey;
   onOpenMobileMenu: () => void;
 }
@@ -35,6 +35,9 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
   }, []);
 
   const getBreadcrumb = () => {
+    if (currentView === 'WAITER') {
+      return { category: 'Servicio de Sala', section: 'Terminal de Mesero PWA' };
+    }
     if (currentView === 'DOOR') {
       return { category: 'Control de Puerta', section: 'Escáner QR en Vivo' };
     }
@@ -49,6 +52,8 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
         return { category: 'Comercial', section: 'Tarifario & Anticipos' };
       case 'PAYMENTS':
         return { category: 'Finanzas', section: 'Pasarela de Cobros Kushki' };
+      case 'STAFF':
+        return { category: 'Equipo', section: 'Gestión de Personal & Meseros' };
       case 'SUBSCRIPTION':
         return { category: 'Comercial', section: 'Mi Plan & Propuestas' };
       case 'LEGAL':

@@ -72,7 +72,7 @@ export function loadStorageState(): LoadedStorageData {
     if (storedClub) result.activeClubId = storedClub;
 
     const storedRole = localStorage.getItem(STORAGE_KEYS.CURRENT_ROLE);
-    if (storedRole && ['CLIENT', 'CLUB_ADMIN', 'DOOR_CHECKIN', 'SUPER_ADMIN'].includes(storedRole)) {
+    if (storedRole && ['CLIENT', 'CLUB_ADMIN', 'DOOR_CHECKIN', 'SUPER_ADMIN', 'WAITER'].includes(storedRole)) {
       result.currentRole = storedRole as ViewRole;
     }
 
