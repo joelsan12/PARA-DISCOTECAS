@@ -239,10 +239,17 @@ async function checkLayoutAndResources() {
   }
 
   if (layoutTables.length > 0 && resourcesCount > 0) {
-    if (layoutTables.length === resourcesCount) {
-      recordResult('INV-3', 'Paridad 1:1 Layout vs Resources', 'PASS', `Sincronía perfecta: ${layoutTables.length} mesas en plano === ${resourcesCount} recursos operativos`);
+    const resourceIds = new Set(resourcesSnap.docs.map((d) => d.id));
+    const missingTables = layoutTables.filter((t) => !resourceIds.has(t.id || t.table_id || t.tableId));
+
+    if (missingTables.length === 0) {
+      if (layoutTables.length === resourcesCount) {
+        recordResult('INV-3', 'Paridad Layout vs Resources', 'PASS', `Sincronía perfecta: ${layoutTables.length} mesas en plano === ${resourcesCount} recursos operativos`);
+      } else {
+        recordResult('INV-3', 'Cobertura de Layout en Resources', 'PASS', `100% de mesas del plano cubiertas (${layoutTables.length}/${layoutTables.length}) + ${resourcesCount - layoutTables.length} recursos de compatibilidad/seed`);
+      }
     } else {
-      recordResult('INV-3', 'Paridad 1:1 Layout vs Resources', 'WARN', `Divergencia detectada: ${layoutTables.length} mesas en plano != ${resourcesCount} en resources`, 'Ejecutar npm run backfill:resources');
+      recordResult('INV-3', 'Cobertura de Layout en Resources', 'WARN', `${missingTables.length} mesas del plano no tienen recurso operativo creado`, 'Ejecutar npm run backfill:resources');
     }
   }
 }
