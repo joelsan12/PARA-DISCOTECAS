@@ -119,11 +119,11 @@ export const FloorPlanBackdrops: React.FC<{ layoutType: ClubLayoutType }> = ({ l
           PISTA
         </text>
         <rect x="170" y="300" width="60" height="110" fill="#1f2937" stroke="#ec4899" strokeWidth="1.5" />
-        <text x="200" y="360" fill="#ec4899" fontSize="22" textAnchor="middle">🍸</text>
+        <text x="200" y="360" fill="#ec4899" fontSize="13" fontWeight="800" letterSpacing="1" textAnchor="middle">BAR</text>
         <rect x="380" y="335" width="40" height="100" fill="#1f2937" stroke="#ec4899" strokeWidth="1.5" />
-        <text x="400" y="390" fill="#ec4899" fontSize="18" textAnchor="middle">🍸</text>
+        <text x="400" y="390" fill="#ec4899" fontSize="12" fontWeight="800" letterSpacing="1" textAnchor="middle">BAR</text>
         <rect x="425" y="335" width="65" height="100" fill="#1f2937" stroke="#ec4899" strokeWidth="1.5" />
-        <text x="457" y="390" fill="#fff" fontSize="20" textAnchor="middle">🎧</text>
+        <text x="457" y="390" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="1" textAnchor="middle">DJ</text>
         <g stroke="#ec4899" strokeWidth="2" fill="#111827">
           <rect x="440" y="40" width="55" height="60" />
           <text x="467" y="70" fill="#fff" fontSize="10" fontWeight="800" textAnchor="middle">SUITE 1</text>

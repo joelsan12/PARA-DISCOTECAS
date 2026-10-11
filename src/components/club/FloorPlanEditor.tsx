@@ -100,7 +100,7 @@ export const FloorPlanEditor: React.FC = () => {
     setIsAddModalOpen(false);
     setNewTableCode('');
     setNewTableBadge('');
-    setSaveToast(`✨ ¡Mesa ${newTbl.table_code} creada con éxito! Arrástrala en el plano para ubicarla.`);
+    setSaveToast(`Mesa ${newTbl.table_code} creada con éxito. Arrástrala en el plano para ubicarla.`);
     setTimeout(() => setSaveToast(null), 4000);
   };
 

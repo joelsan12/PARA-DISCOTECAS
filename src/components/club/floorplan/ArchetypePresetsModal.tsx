@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ClubLayoutType } from '../../../types';
-import { X, Sparkles, Check, Building2 } from 'lucide-react';
+import { X, Sparkles, Check, Building2, LayoutTemplate, Grid, Wine, Layers } from 'lucide-react';
 import { formatUsd } from '../../../lib/formatUsd';
 import { esLayout, esPlan } from '../../../lib/esLabels';
 
@@ -19,7 +19,7 @@ interface ArchetypeCard {
   description: string;
   features: string[];
   recommendedFor: string;
-  icon: string;
+  icon: React.ComponentType<{ size?: number; color?: string }>;
 }
 
 const ARCHETYPES: ArchetypeCard[] = [
@@ -27,7 +27,7 @@ const ARCHETYPES: ArchetypeCard[] = [
     id: 'horseshoe_vip',
     title: `${esLayout('horseshoe_vip')} y sala principal`,
     badge: 'Totalmente simétrico',
-    icon: '🏛️',
+    icon: Layers,
     description: 'Distribución en U con balcón VIP panorámico superior, pista central despejada y cabina del DJ frontal.',
     features: ['Balcón ultravip elevado (4 mesas)', 'Palcos laterales simétricos', 'Pista central libre de obstáculos', 'Espacios privados junto a la cabina del DJ'],
     recommendedFor: 'Grandes discotecas, macro-salas y clubes nocturnos con zona VIP perimetral.'
@@ -36,7 +36,7 @@ const ARCHETYPES: ArchetypeCard[] = [
     id: 'u_amphitheater',
     title: `${esLayout('u_amphitheater')} tipo estadio`,
     badge: 'Varios niveles',
-    icon: '🏟️',
+    icon: LayoutTemplate,
     description: 'Estructura concéntrica en gradas escalonadas con escenario frontal para espectáculos y mesas de cóctel.',
     features: ['Escenario central frontal', 'Graderías VIP en varios niveles', 'Mesas de salón y de cóctel', 'Acceso directo a la barra'],
     recommendedFor: 'Salas de conciertos, clubes con presentaciones en vivo y teatros reconvertidos.'
@@ -45,7 +45,7 @@ const ARCHETYPES: ArchetypeCard[] = [
     id: 'downtown_suites',
     title: `${esLayout('downtown_suites')} con vista panorámica`,
     badge: 'Reservas privadas',
-    icon: '🍸',
+    icon: Wine,
     description: 'Suites privadas exclusivas con balcones panorámicos, terraza exterior para baile y barra con vista a la ciudad.',
     features: ['Suites VIP cerradas con atención privada', 'Terraza exterior para baile', 'Barra de cóctel panorámica', 'Acceso por ascensores VIP'],
     recommendedFor: 'Azoteas, terrazas de hotel de lujo y salones con reservas privadas.'
@@ -54,7 +54,7 @@ const ARCHETYPES: ArchetypeCard[] = [
     id: 'custom_open',
     title: `${esLayout('custom_open')} y abierto`,
     badge: 'Espacio abierto',
-    icon: '📐',
+    icon: Grid,
     description: 'Cuadrícula arquitectónica abierta lista para arrastrar mesas y adaptarse a planos singulares.',
     features: ['Distribución totalmente flexible', 'Cuadrícula con ajuste láser al 1 %', 'Capacidades y formas libres', 'Ideal para planos personalizados'],
     recommendedFor: 'Establecimientos con arquitectura atípica o distribuciones cambiantes.'
@@ -96,7 +96,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.4rem' }}>🏛️</span>
+              <LayoutTemplate size={22} color="var(--brand-gold)" />
               <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: 0 }}>
                 Plantillas de Arquetipos Arquitectónicos (Planos Cenitales)
               </h2>
@@ -135,6 +135,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
         }}>
           {ARCHETYPES.map(arch => {
             const isCurrent = currentLayout === arch.id;
+            const IconComp = arch.icon;
             return (
               <div
                 key={arch.id}
@@ -153,7 +154,18 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
               >
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{arch.icon}</span>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '6px',
+                      background: isCurrent ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: isCurrent ? 'var(--brand-gold)' : 'var(--text-main)'
+                    }}>
+                      <IconComp size={18} />
+                    </div>
                     <span style={{
                       fontSize: '0.66rem',
                       fontWeight: 700,
@@ -182,8 +194,8 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     ))}
                   </div>
 
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    💡 {arch.recommendedFor}
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                    {arch.recommendedFor}
                   </p>
                 </div>
 

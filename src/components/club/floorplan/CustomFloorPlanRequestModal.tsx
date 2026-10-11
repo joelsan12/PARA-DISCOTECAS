@@ -33,13 +33,13 @@ export const CustomFloorPlanRequestModal: React.FC<Props> = ({
   const hasInteractivePlan = currentPlan?.enabled_features?.includes('FLOOR_PLAN') ?? true;
 
   const handleSendWhatsApp = (formattedPhone: string) => {
-    const text = `🏛️ *SOLICITUD DE PLANO A MEDIDA NIGHTFLOW*
+    const text = `*SOLICITUD DE PLANO A MEDIDA NIGHTFLOW*
 ---------------------------------------
-📍 *Establecimiento:* ${clubName} (${clubCity})
-🏢 *Tipo de espacio:* ${esVenueType(venueType)}
-🪑 *Mesas estimadas:* ${estimatedTables}
-📱 *Contacto directo:* ${formattedPhone}
-📋 *Detalles:* ${notes || 'Adjunto plano o fotos de la discoteca a continuación'}
+*Establecimiento:* ${clubName} (${clubCity})
+*Tipo de espacio:* ${esVenueType(venueType)}
+*Mesas estimadas:* ${estimatedTables}
+*Contacto directo:* ${formattedPhone}
+*Detalles:* ${notes || 'Adjunto plano o fotos de la discoteca a continuación'}
 
 _Acepto la tarifa única de configuración y calibración arquitectónica (${formatUsd(49)}) para activar el plan Profesional o Empresarial._`;
 

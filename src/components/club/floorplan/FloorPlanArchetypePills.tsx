@@ -1,33 +1,35 @@
 import React from 'react';
 import type { ClubLayoutType } from '../../../types';
-import { esLayout } from '../../../lib/esLabels';
 
 interface Props {
   layoutType: ClubLayoutType;
   onPresetChange: (preset: ClubLayoutType) => void;
 }
 
-const ARCHETYPE_OPTIONS: { id: ClubLayoutType; label: string; icon: string; short: string }[] = [
-  { id: 'horseshoe_vip', label: `${esLayout('horseshoe_vip')} y cabina del DJ`, short: esLayout('horseshoe_vip'), icon: '🏛️' },
-  { id: 'u_amphitheater', label: `${esLayout('u_amphitheater')} de terciopelo`, short: esLayout('u_amphitheater'), icon: '🏟️' },
-  { id: 'downtown_suites', label: `${esLayout('downtown_suites')} panorámicas`, short: esLayout('downtown_suites'), icon: '🍸' },
-  { id: 'custom_open', label: 'Plano abierto y personalizado', short: esLayout('custom_open'), icon: '📐' }
+const ARCHETYPE_OPTIONS: { id: ClubLayoutType; label: string }[] = [
+  { id: 'horseshoe_vip', label: 'Herradura VIP' },
+  { id: 'u_amphitheater', label: 'Anfiteatro en U' },
+  { id: 'downtown_suites', label: 'Suites Urbanas' },
+  { id: 'custom_open', label: 'Personalizado' },
 ];
 
 export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetChange }) => {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-      <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 700 }}>Arquetipo:</span>
-      <div style={{
-        display: 'flex',
-        background: 'rgba(8, 8, 12, 0.85)',
-        padding: '3px',
-        borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        gap: '4px',
-        flexWrap: 'wrap'
-      }}>
-        {ARCHETYPE_OPTIONS.map(opt => {
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        Arquetipo:
+      </span>
+      <div
+        style={{
+          display: 'inline-flex',
+          background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+          padding: '2px',
+          borderRadius: '7px',
+          border: '1px solid var(--border-light, rgba(229, 181, 79, 0.2))',
+          gap: '2px',
+        }}
+      >
+        {ARCHETYPE_OPTIONS.map((opt) => {
           const isActive = layoutType === opt.id;
           return (
             <button
@@ -35,22 +37,19 @@ export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetC
               type="button"
               onClick={() => onPresetChange(opt.id)}
               style={{
-                padding: '5px 11px',
-                borderRadius: 'var(--radius-xs)',
-                background: isActive ? 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)' : 'transparent',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                background: isActive ? 'var(--brand-gold, #e5b54f)' : 'transparent',
                 border: 'none',
-                color: isActive ? '#08080c' : '#cbd5e1',
-                fontSize: '0.78rem',
+                color: isActive ? '#08080c' : 'var(--text-muted, #cbd5e1)',
+                fontSize: '0.76rem',
                 fontWeight: isActive ? 800 : 600,
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap',
               }}
             >
-              <span>{opt.icon}</span>
-              <span>{opt.short}</span>
+              {opt.label}
             </button>
           );
         })}
