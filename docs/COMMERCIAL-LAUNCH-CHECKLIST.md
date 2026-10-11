@@ -13,7 +13,7 @@ Antes de iniciar el onboarding de un nuevo club, verificar que la infraestructur
   * Verificación de puerta: `GET https://nightflow-backend.onrender.com/health.door` responde `200 OK`.
 - [ ] **1.2 Cuenta PayPhone Business de NIGHTFLOW (SaaS):**
   * Cuenta comercial PayPhone verificada para el cobro de planes SaaS a los clubes (consultar [docs/SAAS-BILLING-PAYPHONE-ONBOARDING.md](file:///d:/PROYECTOS/PARA%20DISCOTECAS/docs/SAAS-BILLING-PAYPHONE-ONBOARDING.md)).
-  * Variables configuradas en Render: `PAYPHONE_TOKEN`, `PAYPHONE_CLIENT_ID`, `PAYPHONE_SECRET`.
+  * Variables configuradas en Render: `PAYPHONE_SAAS_TOKEN`, `PAYPHONE_SAAS_STORE_ID`, `PAYPHONE_ENV` (`sandbox` o `production`).
 - [ ] **1.3 Base de Datos y Credenciales:**
   * Cloud Firestore y Firebase Auth activos en modo Spark / híbrido.
   * `serviceAccountKey.json` disponible para tooling y scripts administrativos.
@@ -22,7 +22,7 @@ Antes de iniciar el onboarding de un nuevo club, verificar que la infraestructur
 
 ## 2. Alta y Registro del Club
 - [ ] **2.1 Registro del Establecimiento:**
-  * **Opción A (Auto-registro Beta):** El dueño del club completa el formulario en `https://nightflow-vip.web.app/beta`. El sistema aprovisiona automáticamente el tenant con plan fundador `beta_vip` y las 12 características habilitadas.
+  * **Opción A (Auto-registro Beta):** El dueño del club completa el formulario en `https://nightflow-vip.web.app/beta`. El sistema aprovisiona automáticamente el tenant con plan fundador `beta_vip` y las 13 características habilitadas (incluyendo `LIVE_FLOOR_OPS`).
   * **Opción B (Manual Superadmin):** Desde la consola de Superadmin (`/superadmin`), ejecutar `createBusinessTenant` especificando `businessId`, nombre comercial, slug, ciudad y tipo (`discoteca`, `lounge`, `rooftop`, `bar`).
 - [ ] **2.2 Verificación en Directorio Público:**
   * Consultar `businessDirectory/{businessId}` en Firestore.
@@ -34,8 +34,8 @@ Antes de iniciar el onboarding de un nuevo club, verificar que la infraestructur
 - [ ] **3.1 Asignación de Plan:**
   * Acceder con cuenta de dueño o superadmin a la consola del club (`/admin`).
   * En la pestaña **Mi Plan** o consola de Superadmin, ejecutar `selectSubscriptionPlan`:
-    * Plan recomendado inicial: `trial` (30 días de prueba gratuita) o `beta_vip` (fundadores).
-    * Planes comerciales disponibles: *Lounge Free* ($0), *Club Pro* ($149/mes), *Black VIP* ($299/mes), *Enterprise* ($599/mes).
+    * Plan recomendado inicial: `trial` (30 días de prueba gratuita) o `beta_vip` (fundadores, bypass de cobro).
+    * Planes comerciales disponibles: *Lounge Free* ($0), *Starter Club* ($5/mes), *Club Pro* ($15/mes), *Black VIP* ($45/mes).
 - [ ] **3.2 Confirmación de Cobro:**
   * Si es pago por transferencia bancaria directa: el superadmin aprueba y extiende el periodo con `registerSubscriptionTransfer`.
   * Si es pago con tarjeta PayPhone: se genera el botón de pago y se confirma vía webhook `/v1/saas/webhooks/payphone`.
