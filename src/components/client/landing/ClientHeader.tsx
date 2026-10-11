@@ -1,4 +1,4 @@
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Bell } from 'lucide-react';
 import type { Club, ClubEvent, ClientUser } from '../../../types';
 
 const formatEventDate = (date: string) => {
@@ -23,6 +23,8 @@ interface Props {
   onSignOut?: () => void;
   onSelectClub: (clubId: string) => void;
   onOpenIdentity: () => void;
+  onOpenConcierge?: () => void;
+  showConcierge?: boolean;
 }
 
 function LegendDot({ color, borderColor, bgColor, label, textColor, bold, dim }: {
@@ -67,6 +69,8 @@ export const ClientHeader = ({
   onSignOut,
   onSelectClub,
   onOpenIdentity,
+  onOpenConcierge,
+  showConcierge,
 }: Props) => {
   return (
     <header style={{
@@ -162,6 +166,33 @@ export const ClientHeader = ({
               <path d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+
+          {/* Concierge Button (gated by showConcierge) */}
+          {showConcierge && onOpenConcierge && (
+            <button
+              id="concierge-header-btn"
+              type="button"
+              onClick={onOpenConcierge}
+              title="Concierge VIP en Sala"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 10px',
+                borderRadius: '9999px',
+                background: 'rgba(56, 189, 248, 0.12)',
+                border: '1px solid rgba(56, 189, 248, 0.35)',
+                cursor: 'pointer',
+                color: '#38bdf8',
+                fontSize: '0.66rem',
+                fontWeight: 700,
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Bell size={12} />
+              <span>Concierge</span>
+            </button>
+          )}
 
           {/* VIP Member / Login Button */}
           <button

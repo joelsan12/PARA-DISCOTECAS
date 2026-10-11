@@ -14,6 +14,7 @@ import { ConsumptionCatalogManager } from './dashboard/ConsumptionCatalogManager
 import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
 import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
 import { EventsManager } from './dashboard/EventsManager';
+import { FloorOpsView } from './dashboard/FloorOpsView';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed, normalizeCanonicalPlanId } from '../../lib/clubPermissions';
 import { subscribeOperations, type OperationalTableItem } from '../../services/operationsService';
@@ -175,6 +176,11 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
             />
           </div>
         )
+      )}
+
+      {/* Tab: FLOOR_OPS */}
+      {activeTab === 'FLOOR_OPS' && session && (
+        <FloorOpsView activeClub={activeClub} session={session} />
       )}
 
       {/* Tab: LAYOUT_BUILDER */}

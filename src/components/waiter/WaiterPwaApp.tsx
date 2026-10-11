@@ -9,13 +9,18 @@ import {
   AlertCircle,
   X,
   RefreshCw,
-  ReceiptText
+  ReceiptText,
+  Bell,
+  Sparkles,
+  Flame,
+  CheckCircle2
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { useClubStore } from '../../store/clubStore';
 import { subscribeOperations, type OperationalTableItem } from '../../services/operationsService';
+import { subscribeVenueConciergeRequests } from '../../services/conciergeService';
 import { callFunctions } from '../../lib/functionsClient';
-import type { ConsumptionCatalogItem } from '../../types/saas';
+import type { ConsumptionCatalogItem, ConciergeRequestRecord } from '../../types/saas';
 
 interface Props {
   session: AdminStaffSession;
@@ -25,6 +30,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
 
+  const [mainTab, setMainTab] = useState<'TABLES' | 'CONCIERGE'>('TABLES');
   const [tables, setTables] = useState<OperationalTableItem[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>('all');
   const [selectedTable, setSelectedTable] = useState<OperationalTableItem | null>(null);
@@ -41,6 +47,12 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
   const [cart, setCart] = useState<Record<string, { item: ConsumptionCatalogItem; qty: number }>>({});
   const [addingConsumption, setAddingConsumption] = useState(false);
   const [orderFeedback, setOrderFeedback] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+
+  // Concierge Requests State
+  const [conciergeRequests, setConciergeRequests] = useState<ConciergeRequestRecord[]>([]);
+  const [conciergeFilter, setConciergeFilter] = useState<'ALL' | 'PENDING' | 'IN_PROGRESS' | 'DONE'>('ALL');
+  const [updatingReqId, setUpdatingReqId] = useState<string | null>(null);
+  const [conciergeFeedback, setConciergeFeedback] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
 
   const assignedZones = session.assignedZones && session.assignedZones.length > 0
     ? session.assignedZones
@@ -70,7 +82,48 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
     return () => unsubscribe();
   }, [activeClubId, store.activeEventId]);
 
-  // 2. Fetch Catalog when Drawer Opens
+  // 2. Subscribe to Venue Concierge Requests
+  useEffect(() => {
+    if (!activeClubId) return;
+
+    const unsubscribe = subscribeVenueConciergeRequests({
+      businessId: activeClubId,
+      onUpdate: (requests) => {
+        setConciergeRequests(requests);
+      },
+      onError: (err) => {
+        console.error('[WaiterPWA] Error en suscripción concierge:', err);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [activeClubId]);
+
+  const handleUpdateConciergeStatus = async (requestId: string, status: 'IN_PROGRESS' | 'DONE') => {
+    if (!activeClubId) return;
+    setUpdatingReqId(requestId);
+    setConciergeFeedback(null);
+    try {
+      await callFunctions('updateConciergeRequestStatus', {
+        businessId: activeClubId,
+        requestId,
+        status
+      });
+      setConciergeFeedback({
+        kind: 'success',
+        message: status === 'IN_PROGRESS' ? '¡Has tomado la solicitud! Atendiendo ahora.' : '¡Solicitud completada con éxito!'
+      });
+    } catch (err: unknown) {
+      setConciergeFeedback({
+        kind: 'error',
+        message: err instanceof Error ? err.message : 'Error al actualizar la solicitud.'
+      });
+    } finally {
+      setUpdatingReqId(null);
+    }
+  };
+
+  // 3. Fetch Catalog when Drawer Opens
   const loadCatalog = useCallback(async () => {
     if (!activeClubId) return;
     setCatalogLoading(true);
@@ -111,6 +164,41 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
       ? assignedZones
       : tables.map(t => String(t.zone))
   ));
+
+  const waiterRequests = conciergeRequests.filter(req => {
+    if (assignedZones.length > 0 && req.zone && !assignedZones.includes(req.zone)) {
+      return false;
+    }
+    if (selectedZone !== 'all' && req.zone && req.zone !== selectedZone) {
+      return false;
+    }
+    if (conciergeFilter === 'PENDING') return req.status === 'PENDING';
+    if (conciergeFilter === 'IN_PROGRESS') return req.status === 'IN_PROGRESS';
+    if (conciergeFilter === 'DONE') return req.status === 'DONE';
+    return true;
+  });
+
+  const pendingRequestsCount = conciergeRequests.filter(req => {
+    if (assignedZones.length > 0 && req.zone && !assignedZones.includes(req.zone)) {
+      return false;
+    }
+    return req.status === 'PENDING';
+  }).length;
+
+  const getConciergeTypeMeta = (type: string) => {
+    switch (type) {
+      case 'WAITER':
+        return { label: 'Llamar Mesero', color: '#38bdf8', icon: Bell };
+      case 'BOTTLE':
+        return { label: 'Botella VIP', color: '#a855f7', icon: Wine };
+      case 'HOOKAH':
+        return { label: 'Hookah / Narguile', color: '#f97316', icon: Flame };
+      case 'SERVICE':
+        return { label: 'Servicio / Hielo', color: '#34d399', icon: Sparkles };
+      default:
+        return { label: 'Otro Pedido', color: '#e5b54f', icon: AlertCircle };
+    }
+  };
 
   const updateCartQty = (item: ConsumptionCatalogItem, delta: number) => {
     setCart(prev => {
@@ -253,7 +341,105 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
         </div>
       </div>
 
-      {/* 2. Zone Filter Pills */}
+      {/* 2. Navegación Principal: Mesas vs Concierge */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '8px',
+        background: 'rgba(15, 23, 42, 0.7)',
+        padding: '5px',
+        borderRadius: '14px',
+        border: '1px solid rgba(255, 255, 255, 0.08)'
+      }}>
+        <button
+          type="button"
+          onClick={() => setMainTab('TABLES')}
+          style={{
+            padding: '10px 12px',
+            borderRadius: '10px',
+            fontSize: '0.82rem',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            cursor: 'pointer',
+            border: 'none',
+            background: mainTab === 'TABLES' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+            color: mainTab === 'TABLES' ? '#38bdf8' : '#94a3b8',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Wine size={16} />
+          <span>Mesas ({visibleTables.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMainTab('CONCIERGE')}
+          style={{
+            padding: '10px 12px',
+            borderRadius: '10px',
+            fontSize: '0.82rem',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            cursor: 'pointer',
+            border: 'none',
+            background: mainTab === 'CONCIERGE' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
+            color: mainTab === 'CONCIERGE' ? '#fbbf24' : '#94a3b8',
+            transition: 'all 0.15s ease',
+            position: 'relative'
+          }}
+        >
+          <Bell size={16} />
+          <span>Concierge</span>
+          {pendingRequestsCount > 0 && (
+            <span style={{
+              background: '#ef4444',
+              color: '#ffffff',
+              fontSize: '0.68rem',
+              fontWeight: 800,
+              padding: '1px 6px',
+              borderRadius: '999px',
+              marginLeft: '4px'
+            }}>
+              {pendingRequestsCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Banner Feedback Concierge */}
+      {conciergeFeedback && (
+        <div style={{
+          padding: '10px 14px',
+          borderRadius: '10px',
+          background: conciergeFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+          border: `1px solid ${conciergeFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+          color: conciergeFeedback.kind === 'success' ? '#34d399' : '#f87171',
+          fontSize: '0.8rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {conciergeFeedback.kind === 'success' ? <Check size={16} /> : <AlertCircle size={16} />}
+            <span>{conciergeFeedback.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setConciergeFeedback(null)}
+            style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* 3. Filtro de Zonas (Compartido) */}
       {uniqueZones.length > 1 && (
         <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
           <button
@@ -297,7 +483,8 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
       )}
 
       {/* 3. Table Cards Grid */}
-      {visibleTables.length === 0 ? (
+      {mainTab === 'TABLES' ? (
+        visibleTables.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '48px 24px',
@@ -458,6 +645,253 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
               </div>
             );
           })}
+        </div>
+      )
+    ) : (
+        /* Peticiones Concierge */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Subfiltros por estado */}
+          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+            {[
+              { id: 'ALL' as const, label: `Todas (${waiterRequests.length})` },
+              { id: 'PENDING' as const, label: `Pendientes (${pendingRequestsCount})` },
+              { id: 'IN_PROGRESS' as const, label: 'En atención' },
+              { id: 'DONE' as const, label: 'Atendidas' }
+            ].map(f => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setConciergeFilter(f.id)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '8px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  background: conciergeFilter === f.id ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                  color: conciergeFilter === f.id ? '#fbbf24' : '#94a3b8',
+                  border: conciergeFilter === f.id ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {waiterRequests.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '48px 24px',
+              background: 'rgba(14, 18, 26, 0.6)',
+              borderRadius: '16px',
+              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              color: '#64748b'
+            }}>
+              <Bell size={36} style={{ margin: '0 auto 12px auto', opacity: 0.5, color: '#fbbf24' }} />
+              <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem', color: '#f4f1ea' }}>
+                No hay peticiones de concierge en este filtro.
+              </p>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.76rem', color: '#94a3b8' }}>
+                Las solicitudes en vivo de tus zonas asignadas aparecerán aquí.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {waiterRequests.map(req => {
+                const meta = getConciergeTypeMeta(req.type);
+                const IconComponent = meta.icon;
+                const isPending = req.status === 'PENDING';
+                const isInProgress = req.status === 'IN_PROGRESS';
+                const isDone = req.status === 'DONE';
+                const isUpdating = updatingReqId === req.requestId;
+
+                let statusBorder = 'rgba(255, 255, 255, 0.08)';
+                let statusBadgeBg = 'rgba(148, 163, 184, 0.15)';
+                let statusBadgeColor = '#94a3b8';
+                let statusText: string = req.status;
+
+                if (isPending) {
+                  statusBorder = 'rgba(245, 158, 11, 0.4)';
+                  statusBadgeBg = 'rgba(245, 158, 11, 0.15)';
+                  statusBadgeColor = '#fbbf24';
+                  statusText = 'PENDIENTE';
+                } else if (isInProgress) {
+                  statusBorder = 'rgba(56, 189, 248, 0.4)';
+                  statusBadgeBg = 'rgba(56, 189, 248, 0.15)';
+                  statusBadgeColor = '#38bdf8';
+                  statusText = 'EN ATENCIÓN';
+                } else if (isDone) {
+                  statusBorder = 'rgba(52, 211, 153, 0.3)';
+                  statusBadgeBg = 'rgba(52, 211, 153, 0.15)';
+                  statusBadgeColor = '#34d399';
+                  statusText = 'COMPLETADA';
+                }
+
+                return (
+                  <div
+                    key={req.requestId}
+                    style={{
+                      background: 'linear-gradient(145deg, rgba(16, 20, 30, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%)',
+                      border: `1px solid ${statusBorder}`,
+                      borderRadius: '14px',
+                      padding: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      boxShadow: isPending ? '0 4px 20px rgba(245, 158, 11, 0.1)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{
+                          background: 'rgba(229, 181, 79, 0.15)',
+                          border: '1px solid rgba(229, 181, 79, 0.3)',
+                          color: '#e5b54f',
+                          fontWeight: 800,
+                          fontSize: '0.82rem',
+                          padding: '3px 8px',
+                          borderRadius: '6px'
+                        }}>
+                          {req.tableCode ? `Mesa ${req.tableCode}` : (req.resourceId ? `Mesa ${req.resourceId}` : 'General')}
+                        </span>
+                        {req.zone && (
+                          <span style={{
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            color: '#94a3b8',
+                            fontWeight: 700,
+                            fontSize: '0.72rem',
+                            padding: '2px 6px',
+                            borderRadius: '4px'
+                          }}>
+                            {req.zone}
+                          </span>
+                        )}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: `${meta.color}15`,
+                          color: meta.color,
+                          border: `1px solid ${meta.color}35`,
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: '999px'
+                        }}>
+                          <IconComponent size={12} />
+                          <span>{meta.label}</span>
+                        </div>
+                      </div>
+
+                      <span style={{
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        background: statusBadgeBg,
+                        color: statusBadgeColor,
+                        letterSpacing: '0.04em',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {statusText}
+                      </span>
+                    </div>
+
+                    <div style={{
+                      background: 'rgba(0, 0, 0, 0.25)',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      color: '#f4f1ea',
+                      fontSize: '0.86rem',
+                      lineHeight: 1.4
+                    }}>
+                      "{req.message}"
+                    </div>
+
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '0.72rem',
+                      color: '#94a3b8',
+                      flexWrap: 'wrap',
+                      gap: '8px'
+                    }}>
+                      <div>
+                        {req.customerName && (
+                          <span style={{ color: '#cbd5e1', fontWeight: 600 }}>
+                            Cliente: {req.customerName} {req.customerPhone ? `(${req.customerPhone})` : ''} ·{' '}
+                          </span>
+                        )}
+                        {req.assignedWaiterName && (
+                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>
+                            Atendido por {req.assignedWaiterName} ·{' '}
+                          </span>
+                        )}
+                        <span>
+                          {req.createdAt ? new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {isPending && (
+                          <button
+                            type="button"
+                            disabled={isUpdating}
+                            onClick={() => handleUpdateConciergeStatus(req.requestId, 'IN_PROGRESS')}
+                            style={{
+                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '8px 14px',
+                              color: '#0a0d14',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              cursor: isUpdating ? 'wait' : 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
+                            }}
+                          >
+                            <Bell size={14} />
+                            <span>{isUpdating ? 'Asignando...' : 'Tomar Solicitud'}</span>
+                          </button>
+                        )}
+
+                        {isInProgress && (
+                          <button
+                            type="button"
+                            disabled={isUpdating}
+                            onClick={() => handleUpdateConciergeStatus(req.requestId, 'DONE')}
+                            style={{
+                              background: 'linear-gradient(135deg, #34d399 0%, #059669 100%)',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '8px 14px',
+                              color: '#0a0d14',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              cursor: isUpdating ? 'wait' : 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              boxShadow: '0 4px 12px rgba(52, 211, 153, 0.3)'
+                            }}
+                          >
+                            <CheckCircle2 size={14} />
+                            <span>{isUpdating ? 'Guardando...' : 'Marcar Atendida'}</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

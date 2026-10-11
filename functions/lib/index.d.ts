@@ -177,3 +177,20 @@ export declare const settleTableTab: import("firebase-functions/v2/https").Calla
     settledBy: string;
     replay?: boolean;
 }>, unknown>;
+export declare const createConciergeRequest: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    requestId: string;
+    request: import("./concierge.js").ConciergeRequestRecord;
+}>, unknown>;
+export declare const updateConciergeRequestStatus: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    requestId: string;
+    status: import("./concierge.js").ConciergeRequestStatus;
+    replay?: boolean;
+}>, unknown>;
+export declare const cancelConciergeRequest: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    ok: true;
+    requestId: string;
+    status: "CANCELLED";
+    replay?: boolean;
+}>, unknown>;

@@ -9,6 +9,7 @@ import { CheckoutModal } from './CheckoutModal';
 import { DigitalPassModal } from './DigitalPassModal';
 import { ClientHeader } from './landing/ClientHeader';
 import { TableReservationDrawer } from './landing/TableReservationDrawer';
+import { canClubAccessFeature } from '../../lib/clubPermissions';
 
 interface ClubLandingProps {
   hideClubSelector?: boolean;
@@ -77,6 +78,9 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
     ? `https://wa.me/${normalizeEcuadorPhone(conciergePhone).replace(/\D/g, '')}?text=Hola,%20quisiera%20reservar%20una%20mesa%20VIP%20en%20${encodeURIComponent(activeClub.name)}`
     : undefined;
 
+  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
+  const showConcierge = canClubAccessFeature(activeClub, activePlan, 'LIVE_FLOOR_OPS');
+
   return (
     <div style={{
       height: '100vh',
@@ -105,6 +109,8 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
           setSelectedTable(null);
         }}
         onOpenIdentity={() => store.setClientSubTab('IDENTITY')}
+        onOpenConcierge={() => store.setClientSubTab('CONCIERGE')}
+        showConcierge={showConcierge}
       />
 
       {/* ════════ INTERACTIVE MAP (center) ════════ */}

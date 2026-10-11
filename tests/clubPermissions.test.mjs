@@ -21,7 +21,7 @@ const mockPlans = [
     max_events_per_month: 20,
     features: ['Plano interactivo', 'Puerta QR'],
     plan_tier: 'PRO',
-    enabled_features: ['RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION', 'ONLINE_PAYMENT', 'QR_CHECKIN']
+    enabled_features: ['RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION', 'ONLINE_PAYMENT', 'QR_CHECKIN', 'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS']
   },
   {
     id: 'enterprise',
@@ -33,7 +33,7 @@ const mockPlans = [
     enabled_features: [
       'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
       'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
-      'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+      'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
     ]
   }
 ];
@@ -248,6 +248,19 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(canStaffSettleTab('reception', false), false);
     assert.strictEqual(canStaffSettleTab(undefined, false), false);
     assert.strictEqual(canStaffSettleTab('', false), false);
+  });
+
+  await t.test('Pestaña FLOOR_OPS (Piso & Concierge) exige LIVE_FLOOR_OPS (O.4-A)', () => {
+    const enterprisePlan = mockPlans.find(p => p.id === 'enterprise');
+    const proPlan = mockPlans.find(p => p.id === 'pro');
+    const basicPlan = mockPlans.find(p => p.id === 'basic');
+
+    // Sensorial (Enterprise) y Rumaj (Pro con LIVE_FLOOR_OPS) tienen acceso
+    assert.strictEqual(isDashboardTabAllowed('FLOOR_OPS', sensorialClub, enterprisePlan), true);
+    assert.strictEqual(isDashboardTabAllowed('FLOOR_OPS', rumajClub, proPlan), true);
+
+    // Velvet (Básico sin LIVE_FLOOR_OPS) queda estrictamente bloqueado
+    assert.strictEqual(isDashboardTabAllowed('FLOOR_OPS', velvetClub, basicPlan), false);
   });
 });
 

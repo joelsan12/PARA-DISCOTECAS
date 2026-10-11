@@ -44,6 +44,8 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
     switch (dashboardTab) {
       case 'MONITOR':
         return { category: 'Operaciones', section: 'Sala en Vivo' };
+      case 'FLOOR_OPS':
+        return { category: 'Operaciones', section: 'Piso & Concierge' };
       case 'LAYOUT_BUILDER':
         return { category: 'Operaciones', section: 'Diseñador de Plano & Mesas' };
       case 'RESERVATIONS':

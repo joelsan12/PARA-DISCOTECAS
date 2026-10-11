@@ -23,6 +23,7 @@
     "seed:directory": "node scripts/seed-directory.mjs",
     "seed:resources": "node scripts/seed-resources.mjs",
     "backfill:resources": "node scripts/backfill-resources.mjs",
+    "backfill:beta-features": "node scripts/backfill-beta-features.mjs",
     "seed:all": "npm run seed:directory && npm run seed:resources",
     "provision:production": "node scripts/provision-production.mjs",
     "provision:payments": "node scripts/provision-payment-account.mjs",

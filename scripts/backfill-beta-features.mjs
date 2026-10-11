@@ -19,6 +19,7 @@ const BETA_VIP_FEATURES = [
   'ONLINE_PAYMENT',
   'QR_CHECKIN',
   'STAFF_MANAGEMENT',
+  'LIVE_FLOOR_OPS',
   'ADVANCED_ANALYTICS',
   'CUSTOM_DOMAIN',
   'MULTI_LOCATION'
@@ -56,7 +57,7 @@ async function main() {
       updatedAt: now
     }, { merge: true });
     updatedCount++;
-    console.log(`✅ [Backfill] Preparado club fundador: ${clubId} -> planId: 'beta_vip' (12 features)`);
+    console.log(`✅ [Backfill] Preparado club fundador: ${clubId} -> planId: 'beta_vip' (13 features)`);
   }
 
   // 2. Backfill todos los clubes en businesses registrados

@@ -26,6 +26,7 @@ export type FeatureFlag =
   | 'ONLINE_PAYMENT'
   | 'QR_CHECKIN'
   | 'STAFF_MANAGEMENT'
+  | 'LIVE_FLOOR_OPS'
   | 'ADVANCED_ANALYTICS'
   | 'CUSTOM_DOMAIN'
   | 'MULTI_LOCATION';

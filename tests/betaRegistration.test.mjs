@@ -5,16 +5,17 @@ import { sendWelcomeCredentialsEmail } from '../functions/lib/email.js';
 
 describe('Beta Registration & Instant Provisioning Suite', () => {
   describe('normalizePlanId', () => {
-    it('normaliza aliases de beta y pro a beta_vip canónico con 12 features', () => {
+    it('normaliza aliases de beta y pro a beta_vip canónico con 13 features', () => {
       assert.equal(normalizePlanId('Club Pro'), 'beta_vip');
       assert.equal(normalizePlanId('Beta Privada'), 'beta_vip');
       assert.equal(normalizePlanId('Beta Privada VIP'), 'beta_vip');
       assert.equal(normalizePlanId('beta'), 'beta_vip');
       assert.equal(normalizePlanId(undefined), 'beta_vip');
       assert.equal(normalizePlanId(''), 'beta_vip');
-      assert.equal(BETA_VIP_FEATURES.length, 12);
+      assert.equal(BETA_VIP_FEATURES.length, 13);
       assert.ok(BETA_VIP_FEATURES.includes('ADVANCED_ANALYTICS'));
       assert.ok(BETA_VIP_FEATURES.includes('FLOOR_PLAN'));
+      assert.ok(BETA_VIP_FEATURES.includes('LIVE_FLOOR_OPS'));
     });
 
     it('respeta planes explícitos no beta', () => {

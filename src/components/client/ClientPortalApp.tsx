@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useClubStore } from '../../store/clubStore';
 import { ClubLanding } from './ClubLanding';
 import { ClientIdentityHub } from './ClientIdentityHub';
+import { ConciergeView } from './ConciergeView';
 import { subscribeToBusinessAuth, signOutBusinessCustomer, type BusinessAuthUser } from '../../lib/businessAuth';
 
 interface ClientPortalAppProps {
@@ -52,11 +53,14 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
   };
 
   const showIdentity = store.clientSubTab === 'IDENTITY' && Boolean(store.clientUser);
+  const showConcierge = store.clientSubTab === 'CONCIERGE' && Boolean(store.clientUser);
 
   return (
     <div style={{ minHeight: '100vh', background: '#090A0F', overflow: 'hidden' }}>
       {showIdentity ? (
         <ClientIdentityHub onGoToMap={() => store.setClientSubTab('MAP')} onSignOut={handleGlobalSignOut} />
+      ) : showConcierge ? (
+        <ConciergeView onBack={() => store.setClientSubTab('MAP')} />
       ) : (
         <ClubLanding
           hideClubSelector={businessScoped}

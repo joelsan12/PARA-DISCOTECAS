@@ -208,3 +208,27 @@ export interface TableTabRecord {
   updatedAt?: string;
 }
 
+export type ConciergeRequestType = 'SERVICE' | 'BOTTLE' | 'HOOKAH' | 'WAITER' | 'OTHER';
+export type ConciergeRequestStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
+
+export interface ConciergeRequestRecord {
+  requestId: string;
+  businessId: string;
+  uid: string;
+  customerName?: string;
+  customerPhone?: string;
+  reservationId?: string;
+  resourceId?: string;
+  tableCode?: string;
+  zone?: string;
+  type: ConciergeRequestType;
+  message: string;
+  status: ConciergeRequestStatus;
+  assignedWaiterUid?: string;
+  assignedWaiterName?: string;
+  source: 'in_app' | 'whatsapp';
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+

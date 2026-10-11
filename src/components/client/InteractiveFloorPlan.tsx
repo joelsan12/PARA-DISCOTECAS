@@ -2,18 +2,29 @@ import { useState } from 'react';
 import type { ClubTable, EventTablePricing, ClubLayoutType } from '../../types';
 import { useClubStore } from '../../store/clubStore';
 
+export interface TableStateOverride {
+  state?: string;
+  color?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  label?: string;
+  clickable?: boolean;
+}
+
 interface Props {
   tables: ClubTable[];
   eventPricings: EventTablePricing[];
   selectedTableId: string | null;
   onSelectTable: (table: ClubTable) => void;
+  tableStateOverrides?: Record<string, TableStateOverride>;
 }
 
 export const InteractiveFloorPlan = ({
   tables,
   eventPricings,
   selectedTableId,
-  onSelectTable
+  onSelectTable,
+  tableStateOverrides
 }: Props) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
@@ -177,11 +188,17 @@ export const InteractiveFloorPlan = ({
 
       {/* ── 3. Capa de nodos / mesas interactivas (HTML Buttons) ── */}
       {venueTables.map(table => {
-        const status = getTableStatus(table.id);
+        const override = tableStateOverrides ? (tableStateOverrides[table.id] || tableStateOverrides[table.table_code]) : undefined;
+        const status = override?.state || getTableStatus(table.id);
         const isSelected = selectedTableId === table.id;
-        const isOccupied = status === 'CONFIRMED' || status === 'CHECKED_IN';
+        const isOccupied = status === 'CONFIRMED' || status === 'CHECKED_IN' || status === 'INSIDE';
         const isHeld = status === 'HELD';
         const isAvailable = status === 'AVAILABLE';
+        const isSettled = status === 'SETTLED';
+
+        const isClickable = override
+          ? (override.clickable !== undefined ? override.clickable : true)
+          : isAvailable;
 
         const badgeText = table.badge_number || table.table_code.replace(/^VIP-/, '').replace(/^[A-Z]+-/, '');
         const displayText = badgeText.length > 3 ? badgeText.slice(0, 3) : badgeText;
@@ -192,15 +209,19 @@ export const InteractiveFloorPlan = ({
           ? 'table-node-btn occupied'
           : isHeld
           ? 'table-node-btn held'
+          : isSettled
+          ? 'table-node-btn occupied'
           : 'table-node-btn available';
 
-        const statusLabel = isSelected
+        const statusLabel = override?.label || (isSelected
           ? 'seleccionada'
           : isOccupied
           ? 'ocupada'
           : isHeld
           ? 'en proceso de reserva'
-          : 'disponible';
+          : isSettled
+          ? 'cuenta cerrada'
+          : 'disponible');
 
         return (
           <button
@@ -208,15 +229,19 @@ export const InteractiveFloorPlan = ({
             type="button"
             className={buttonClass}
             onClick={() => {
-              if (isAvailable) onSelectTable(table);
+              if (isClickable) onSelectTable(table);
             }}
-            disabled={!isAvailable}
+            disabled={!isClickable}
             aria-label={`Mesa ${table.table_code} (${displayText}) — ${statusLabel}`}
-            onMouseEnter={() => isAvailable && setHoveredTableId(table.id)}
+            onMouseEnter={() => isClickable && setHoveredTableId(table.id)}
             onMouseLeave={() => setHoveredTableId(null)}
             style={{
               left: `${table.x}%`,
               top: `${table.y}%`,
+              cursor: isClickable ? 'pointer' : 'default',
+              ...(override?.backgroundColor ? { background: override.backgroundColor } : {}),
+              ...(override?.borderColor ? { borderColor: override.borderColor, boxShadow: isSelected ? '0 0 16px rgba(56, 189, 248, 0.7)' : undefined } : {}),
+              ...(override?.color ? { color: override.color } : {})
             }}
           >
             <span>{displayText}</span>

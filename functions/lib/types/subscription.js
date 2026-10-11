@@ -30,6 +30,7 @@ export const CANONICAL_PLANS = {
             'ONLINE_PAYMENT',
             'QR_CHECKIN',
             'STAFF_MANAGEMENT',
+            'LIVE_FLOOR_OPS',
         ],
     },
     black_vip: {
@@ -47,6 +48,7 @@ export const CANONICAL_PLANS = {
             'ONLINE_PAYMENT',
             'QR_CHECKIN',
             'STAFF_MANAGEMENT',
+            'LIVE_FLOOR_OPS',
             'ADVANCED_ANALYTICS',
             'CUSTOM_DOMAIN',
             'MULTI_LOCATION',
@@ -67,6 +69,7 @@ export const CANONICAL_PLANS = {
             'ONLINE_PAYMENT',
             'QR_CHECKIN',
             'STAFF_MANAGEMENT',
+            'LIVE_FLOOR_OPS',
             'ADVANCED_ANALYTICS',
             'CUSTOM_DOMAIN',
             'MULTI_LOCATION',

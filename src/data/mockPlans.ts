@@ -54,7 +54,7 @@ export const INITIAL_PLANS: Plan[] = [
     plan_tier: 'PRO',
     enabled_features: [
       'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
-      'ONLINE_PAYMENT', 'QR_CHECKIN', 'STAFF_MANAGEMENT'
+      'ONLINE_PAYMENT', 'QR_CHECKIN', 'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS'
     ]
   },
   {
@@ -76,7 +76,7 @@ export const INITIAL_PLANS: Plan[] = [
     enabled_features: [
       'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
       'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
-      'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+      'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
     ]
   },
   {
@@ -100,7 +100,7 @@ export const INITIAL_PLANS: Plan[] = [
     enabled_features: [
       'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
       'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
-      'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+      'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
     ]
   },
   // Compatibilidad legacy
@@ -122,7 +122,7 @@ export const INITIAL_PLANS: Plan[] = [
     max_events_per_month: 20,
     features: ['Plano cenital', 'Control QR'],
     plan_tier: 'PRO',
-    enabled_features: ['RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION', 'ONLINE_PAYMENT', 'QR_CHECKIN']
+    enabled_features: ['RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION', 'ONLINE_PAYMENT', 'QR_CHECKIN', 'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS']
   },
   {
     id: 'enterprise',
@@ -135,7 +135,7 @@ export const INITIAL_PLANS: Plan[] = [
     enabled_features: [
       'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
       'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
-      'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+      'STAFF_MANAGEMENT', 'LIVE_FLOOR_OPS', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
     ]
   }
 ];

@@ -248,6 +248,17 @@ service cloud.firestore {
         allow get, list: if isActiveStaff(businessId) || isSuperAdmin();
         allow create, update, delete: if false;
       }
+
+      match /conciergeRequests/{requestId} {
+        allow get, list: if isActiveStaff(businessId)
+          || isSuperAdmin()
+          || (signedIn() && resource.data.uid == request.auth.uid);
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /conciergeRequests/{requestId} {
+      allow get, list, create, update, delete: if false;
     }
 
     match /tableTabs/{tabId} {

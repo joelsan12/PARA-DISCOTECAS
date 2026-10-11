@@ -22,6 +22,7 @@ import { listPaymentTransactionsFor, createPaymentRefundFor } from "./paymentAdm
 import { syncFloorPlanInventoryFor } from "./floorplanInventory.js";
 import { listBusinessStaffFor, upsertStaffMemberFor, revokeStaffMemberFor } from "./staffAdmin.js";
 import { getConsumptionCatalogFor, saveConsumptionCatalogFor, addConsumptionItemFor, settleTableTabFor } from "./consumption.js";
+import { createConciergeRequestFor, updateConciergeRequestStatusFor, cancelConciergeRequestFor } from "./concierge.js";
 export { releaseHoldTask };
 function callableError(error) {
     throw toHttpsError(error);
@@ -530,6 +531,45 @@ export const settleTableTab = onCall({
     try {
         assertCallableAppCheck(request);
         return await settleTableTabFor(request);
+    }
+    catch (error) {
+        return callableError(error);
+    }
+});
+export const createConciergeRequest = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region,
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await createConciergeRequestFor(request);
+    }
+    catch (error) {
+        return callableError(error);
+    }
+});
+export const updateConciergeRequestStatus = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region,
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await updateConciergeRequestStatusFor(request);
+    }
+    catch (error) {
+        return callableError(error);
+    }
+});
+export const cancelConciergeRequest = onCall({
+    enforceAppCheck: runtimeConfig.appCheckEnforced,
+    consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+    region: runtimeConfig.region,
+}, async (request) => {
+    try {
+        assertCallableAppCheck(request);
+        return await cancelConciergeRequestFor(request);
     }
     catch (error) {
         return callableError(error);

@@ -15,7 +15,8 @@ import {
   Building,
   Crown,
   Users,
-  Wine
+  Wine,
+  Compass
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -24,6 +25,7 @@ import { isDashboardTabAllowed, isDoorAccessAllowed, normalizeCanonicalPlanId } 
 
 export type DashboardTabKey =
   | 'MONITOR'
+  | 'FLOOR_OPS'
   | 'LAYOUT_BUILDER'
   | 'EVENTS'
   | 'RESERVATIONS'
@@ -242,6 +244,24 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   </div>
                   <span className="admin-nav-item-tag admin-nav-item-tag--live">
                     LIVE
+                  </span>
+                </button>
+              )}
+
+              {isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'FLOOR_OPS' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('FLOOR_OPS')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <Compass size={15} />
+                    </span>
+                    <span>Piso &amp; Concierge</span>
+                  </div>
+                  <span className="admin-nav-item-tag admin-nav-item-tag--live">
+                    OPS
                   </span>
                 </button>
               )}

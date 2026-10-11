@@ -68,6 +68,7 @@ export function canClubAccessFeature(
       'ONLINE_PAYMENT',
       'QR_CHECKIN',
       'STAFF_MANAGEMENT',
+      'LIVE_FLOOR_OPS',
     ];
     return proAllowed.includes(feature);
   }
@@ -147,6 +148,15 @@ export function isDashboardTabAllowed(
         plan,
         'STAFF_MANAGEMENT',
         ['staff_management', 'personal', 'meseros', 'staff', 'equipo']
+      );
+
+    case 'FLOOR_OPS':
+      // Piso & Concierge: Requiere Plan Pro o Empresarial (LIVE_FLOOR_OPS)
+      return canClubAccessFeature(
+        club,
+        plan,
+        'LIVE_FLOOR_OPS',
+        ['live_floor_ops', 'piso_concierge', 'concierge', 'floor_ops']
       );
 
     case 'LEGAL':
