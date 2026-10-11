@@ -287,7 +287,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                 dominantBaseline="middle"
                 style={{ fontFamily: 'var(--font-brand)', letterSpacing: '0.04em' }}
               >
-                SALA EN BLANCO · SIN MESAS REGISTRADAS
+                DISTRIBUCIÓN DE SALA · SIN MESAS REGISTRADAS
               </text>
               <text
                 x={viewBoxWidth / 2}

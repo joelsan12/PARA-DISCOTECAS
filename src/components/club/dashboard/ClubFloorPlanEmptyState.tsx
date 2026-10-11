@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, Sparkles, Plus, FileUp, CheckCircle2, Clock, Lock } from 'lucide-react';
+import { Plus, FileUp, CheckCircle2, Clock, Lock } from 'lucide-react';
 
 interface Props {
   clubName: string;
@@ -24,31 +24,6 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
       }}
     >
-      {/* Icono de bienvenida */}
-      <div
-        style={{
-          width: '68px',
-          height: '68px',
-          borderRadius: '18px',
-          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.2) 0%, rgba(229, 181, 79, 0.05) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.35)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px',
-          color: 'var(--brand-gold)',
-          boxShadow: '0 8px 24px rgba(229, 181, 79, 0.15)',
-        }}
-      >
-        <LayoutGrid size={34} />
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 12px', borderRadius: '999px', background: 'rgba(229, 181, 79, 0.12)', border: '1px solid rgba(229, 181, 79, 0.3)', marginBottom: '14px' }}>
-        <Sparkles size={12} color="var(--brand-gold)" />
-        <span style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', color: 'var(--brand-gold)', textTransform: 'uppercase' }}>
-          CLUB NUEVO • SALA EN BLANCO
-        </span>
-      </div>
 
       <h2
         className="font-brand"
