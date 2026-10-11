@@ -8,7 +8,7 @@ process.env.APP_SECRET = process.env.APP_SECRET || 'smoke_app_secret_32_characte
 const functionsRequire = createRequire(resolve('functions/package.json'));
 const { initializeApp, cert } = functionsRequire('firebase-admin/app');
 const { getAuth } = functionsRequire('firebase-admin/auth');
-const { getFirestore, Timestamp } = functionsRequire('firebase-admin/firestore');
+const { getFirestore } = functionsRequire('firebase-admin/firestore');
 
 const sa = JSON.parse(readFileSync('./serviceAccountKey.json', 'utf8'));
 const app = initializeApp({ credential: cert(sa), projectId: sa.project_id }, 'smoke-events-r2');
