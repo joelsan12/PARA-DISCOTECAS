@@ -113,9 +113,20 @@ async function runPayAtDoorSmoke(businessId, backendUrl) {
     updatedAt: new Date().toISOString()
   }, { merge: true });
 
-  // Asegurar recurso de prueba AVAILABLE
-  const resourceId = process.env.SMOKE_RESOURCE_ID || 'tbl-s4';
-  const eventId = process.env.SMOKE_EVENT_ID || 'event-fri-reggaeton';
+  // Resolver evento publicado del negocio
+  let eventId = process.env.SMOKE_EVENT_ID;
+  if (!eventId) {
+    const evSnap = await db.collection('businesses').doc(businessId).collection('events').where('is_published', '==', true).limit(1).get();
+    eventId = !evSnap.empty ? evSnap.docs[0].id : 'event-fri-reggaeton';
+  }
+
+  // Resolver recurso operativo del negocio
+  let resourceId = process.env.SMOKE_RESOURCE_ID;
+  if (!resourceId) {
+    const resSnap = await db.collection('businesses').doc(businessId).collection('resources').limit(1).get();
+    resourceId = !resSnap.empty ? resSnap.docs[0].id : 'tbl-s4';
+  }
+
   const resourceRef = db.collection('businesses').doc(businessId).collection('resources').doc(resourceId);
   await resourceRef.set({
     businessId,
@@ -130,7 +141,7 @@ async function runPayAtDoorSmoke(businessId, backendUrl) {
     holdExpiresAt: null,
     updatedAt: new Date().toISOString()
   }, { merge: true });
-  console.log(`✔ Recurso de prueba ${resourceId} verificado en estado AVAILABLE`);
+  console.log(`✔ Evento ${eventId} y recurso de prueba ${resourceId} verificados en estado AVAILABLE`);
 
   // 2. Crear Hold de reserva mediante callable
   console.log('\n2. Creando Hold de reserva de 12 minutos (createReservationHold)...');
