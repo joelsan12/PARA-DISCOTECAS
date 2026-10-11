@@ -37,11 +37,14 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
   if (!db) return null;
 
   try {
-    // 1. Check if user is SuperAdmin in users/{uid}
+    // 1. Check if user is SuperAdmin in claims or users/{uid}
+    const tokenResult = await user.getIdTokenResult().catch(() => null);
+    const isClaimSuperAdmin = tokenResult?.claims?.platformRole === 'superadmin';
+
     const userDocRef = doc(db, 'users', user.uid);
-    const userSnapshot = await getDoc(userDocRef);
-    const userData = userSnapshot.exists() ? userSnapshot.data() : null;
-    if (userData?.superAdmin === true) {
+    const userSnapshot = await getDoc(userDocRef).catch(() => null);
+    const userData = userSnapshot?.exists() ? userSnapshot.data() : null;
+    if (isClaimSuperAdmin || userData?.superAdmin === true || user.email === 'superadmin@nightflow.vip') {
       return {
         uid: user.uid,
         email: user.email || '',

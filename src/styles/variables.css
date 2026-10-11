@@ -113,3 +113,84 @@
   --brand-muted: #a1a1aa;
   --glow-brand-gold: 0 0 20px rgba(229, 181, 79, 0.4);
 }
+
+[data-theme="light"] {
+  /* Ultra-Luxury Alabaster Marble Palette (Haute Nocturne Light) */
+  --bg-void: #f8f6f0;
+  --bg-base: #fbfaf7;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1ede4;
+  --bg-input: #ffffff;
+  --bg-hover: #ede8dc;
+
+  /* Glassmorphism Tokens */
+  --bg-glass: rgba(255, 255, 255, 0.90);
+  --bg-glass-strong: rgba(255, 255, 255, 0.97);
+  --bg-glass-card: rgba(255, 255, 255, 0.94);
+
+  /* Hairline Borders */
+  --border: rgba(14, 17, 24, 0.08);
+  --border-light: rgba(14, 17, 24, 0.14);
+  --border-focus: rgba(184, 134, 11, 0.65);
+
+  /* Typography — Maximum legibility against warm ivory */
+  --text-main: #0e1118;
+  --text-muted: #4a4f5d;
+  --text-dim: #717786;
+  --text-high: #06080c;
+
+  /* Semantic State Tokens (Optimized contrast for light backgrounds) */
+  --state-success: #059669;
+  --state-success-subtle: rgba(5, 150, 105, 0.10);
+  --state-success-border: rgba(5, 150, 105, 0.30);
+  --state-hold: #d97706;
+  --state-hold-subtle: rgba(217, 119, 6, 0.10);
+  --state-hold-border: rgba(217, 119, 6, 0.30);
+  --state-danger: #e11d48;
+  --state-danger-text: #be123c;
+  --state-danger-subtle: rgba(225, 29, 72, 0.10);
+  --state-danger-border: rgba(225, 29, 72, 0.30);
+  --state-info: #2563eb;
+  --state-info-subtle: rgba(37, 99, 235, 0.10);
+  --state-info-border: rgba(37, 99, 235, 0.30);
+  --state-neutral: #475569;
+  --state-neutral-subtle: rgba(0, 0, 0, 0.05);
+  --state-neutral-border: rgba(0, 0, 0, 0.12);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 2px #f8f6f0, 0 0 0 4px rgba(184, 134, 11, 0.75);
+
+  /* Antique Burnished Gold Accents */
+  --accent: #b8860b;
+  --accent-hover: #9e7308;
+  --accent-subtle: rgba(184, 134, 11, 0.10);
+  --glow-cyan: 0 0 16px rgba(184, 134, 11, 0.22);
+
+  --gold: #b8860b;
+  --gold-hover: #9e7308;
+  --gold-subtle: rgba(184, 134, 11, 0.10);
+  --glow-gold: 0 0 18px rgba(184, 134, 11, 0.25);
+
+  --emerald: #059669;
+  --emerald-subtle: rgba(5, 150, 105, 0.10);
+  --glow-emerald: 0 0 16px rgba(5, 150, 105, 0.25);
+
+  --violet: #9333ea;
+  --violet-subtle: rgba(147, 51, 234, 0.10);
+  --glow-violet: 0 0 16px rgba(147, 51, 234, 0.25);
+
+  --rose: #e11d48;
+  --rose-subtle: rgba(225, 29, 72, 0.10);
+  --glow-rose: 0 0 16px rgba(225, 29, 72, 0.25);
+
+  /* Brand Gold */
+  --brand-gold: #b8860b;
+  --brand-gold-light: #d4a017;
+  --brand-gold-dark: #8c6504;
+  --brand-surface: #ffffff;
+  --brand-card: #ffffff;
+  --brand-border: rgba(184, 134, 11, 0.24);
+  --brand-muted: #525866;
+  --glow-brand-gold: 0 0 16px rgba(184, 134, 11, 0.25);
+}
+

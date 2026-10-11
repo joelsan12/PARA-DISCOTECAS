@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { ShieldCheck, Lock, Mail, AlertTriangle, ArrowRight, Loader2 } from 'lucide-react';
 import { signInAdminWithPassword } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
+import { ThemeToggleSwitch } from '../common/ThemeToggleSwitch';
+
 
 interface Props {
   onSuccess?: () => void;
@@ -122,11 +124,21 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#08080c',
+      background: 'var(--bg-void, #08080c)',
       padding: '24px',
       position: 'relative',
       overflow: 'hidden'
     }}>
+      {/* Top Right Theme Toggle Switch */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        right: '24px',
+        zIndex: 10
+      }}>
+        <ThemeToggleSwitch variant="compact" />
+      </div>
+
       {/* Decorative background glows */}
       <div style={{
         position: 'absolute',
@@ -146,8 +158,8 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
         padding: '36px 32px',
         position: 'relative',
         zIndex: 1,
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        background: 'linear-gradient(180deg, rgba(16, 16, 24, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
+        border: '1px solid var(--border-light, rgba(229, 181, 79, 0.25))',
+        background: 'var(--bg-glass-strong, rgba(16, 16, 24, 0.95))',
         boxShadow: '0 0 50px rgba(229, 181, 79, 0.12)'
       }}>
         {/* Header */}
@@ -175,13 +187,13 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
           <h1 className="font-brand" style={{
             fontSize: '1.7rem',
             fontWeight: 800,
-            color: '#fff',
+            color: 'var(--text-high, #fff)',
             letterSpacing: '0.03em',
             margin: '0 0 6px'
           }}>
             NIGHTFLOW VIP
           </h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', margin: 0 }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted, var(--text-dim))', margin: 0 }}>
             Consola Operativa de Personal y Administración
           </p>
         </div>
@@ -208,11 +220,11 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted, #cbd5e1)', marginBottom: '6px' }}>
               CORREO CORPORATIVO
             </label>
             <div style={{ position: 'relative' }}>
-              <Mail size={16} color="rgba(255, 255, 255, 0.4)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Mail size={16} color="var(--text-dim, rgba(255, 255, 255, 0.4))" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="email"
                 value={email}
@@ -223,9 +235,9 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                   width: '100%',
                   padding: '12px 14px 12px 38px',
                   borderRadius: '8px',
-                  background: 'rgba(8, 8, 12, 0.85)',
-                  border: '1px solid rgba(229, 181, 79, 0.3)',
-                  color: '#fff',
+                  background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                  border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
+                  color: 'var(--text-main, #fff)',
                   fontSize: '0.86rem',
                   outline: 'none',
                   boxSizing: 'border-box'
@@ -235,11 +247,11 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted, #cbd5e1)', marginBottom: '6px' }}>
               CONTRASEÑA
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={16} color="rgba(255, 255, 255, 0.4)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Lock size={16} color="var(--text-dim, rgba(255, 255, 255, 0.4))" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="password"
                 value={password}
@@ -250,9 +262,9 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                   width: '100%',
                   padding: '12px 14px 12px 38px',
                   borderRadius: '8px',
-                  background: 'rgba(8, 8, 12, 0.85)',
-                  border: '1px solid rgba(229, 181, 79, 0.3)',
-                  color: '#fff',
+                  background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                  border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
+                  color: 'var(--text-main, #fff)',
                   fontSize: '0.86rem',
                   outline: 'none',
                   boxSizing: 'border-box'

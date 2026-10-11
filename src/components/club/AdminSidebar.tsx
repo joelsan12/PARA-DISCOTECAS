@@ -16,12 +16,14 @@ import {
   Crown,
   Users,
   Wine,
-  Compass
+  Compass,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
+import { ThemeToggleSwitch } from '../common/ThemeToggleSwitch';
 import { esPlan } from '../../lib/esLabels';
 import { isDashboardTabAllowed, isDoorAccessAllowed, normalizeCanonicalPlanId } from '../../lib/clubPermissions';
+
 
 export type DashboardTabKey =
   | 'MONITOR'
@@ -494,8 +496,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           )}
         </div>
 
-        {/* 3. Footer with User Profile */}
+        {/* 3. Footer with Theme Switch & User Profile */}
         <div className="admin-sidebar-footer">
+          <ThemeToggleSwitch variant="detailed" className="admin-sidebar-theme-toggle" />
+
           <div className="admin-user-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
               <div className="admin-user-avatar">

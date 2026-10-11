@@ -13,24 +13,13 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
   onRequestCustomPlan,
 }) => {
   return (
-    <div
-      className="glass-card"
-      style={{
-        padding: '48px 36px',
-        textAlign: 'center',
-        background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.96) 0%, rgba(10, 11, 16, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        borderRadius: '18px',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-      }}
-    >
-
+    <div className="glass-card club-empty-state-card">
       <h2
-        className="font-brand"
+        className="font-brand club-empty-state-title"
         style={{
           fontSize: '1.65rem',
           fontWeight: 800,
-          color: '#ffffff',
+          color: 'var(--text-high, #ffffff)',
           margin: '0 0 10px',
           letterSpacing: '-0.01em',
         }}
@@ -39,9 +28,10 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
       </h2>
 
       <p
+        className="club-empty-state-desc"
         style={{
           fontSize: '0.92rem',
-          color: 'var(--text-dim)',
+          color: 'var(--text-muted, var(--text-dim))',
           maxWidth: '560px',
           margin: '0 auto 32px',
           lineHeight: 1.6,
@@ -64,12 +54,12 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
         {/* Opción 1: Diseñador */}
         <div
           onClick={onGoToDesigner}
-          className="glass-card"
+          className="glass-card club-empty-state-tile"
           style={{
             padding: '24px',
             borderRadius: '14px',
-            border: '1px solid rgba(229, 181, 79, 0.3)',
-            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
+            background: 'var(--bg-glass-card, rgba(255, 255, 255, 0.02))',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             display: 'flex',
@@ -82,7 +72,7 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
             e.currentTarget.style.boxShadow = '0 10px 30px rgba(229, 181, 79, 0.12)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.3)';
+            e.currentTarget.style.borderColor = 'var(--border-light, rgba(229, 181, 79, 0.3))';
             e.currentTarget.style.transform = 'none';
             e.currentTarget.style.boxShadow = 'none';
           }}
@@ -103,7 +93,10 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
             >
               <Plus size={20} />
             </div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px' }}>
+            <h3
+              className="club-empty-state-tile-title"
+              style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '0 0 6px' }}
+            >
               Diseñar Plano de Mesas
             </h3>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>
@@ -126,12 +119,12 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
         {/* Opción 2: Asistencia con Croquis */}
         <div
           onClick={onRequestCustomPlan}
-          className="glass-card"
+          className="glass-card club-empty-state-tile"
           style={{
             padding: '24px',
             borderRadius: '14px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid var(--border-light, rgba(255, 255, 255, 0.1))',
+            background: 'var(--bg-glass-card, rgba(255, 255, 255, 0.02))',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             display: 'flex',
@@ -139,12 +132,12 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
             justifyContent: 'space-between',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+            e.currentTarget.style.borderColor = 'var(--brand-gold, rgba(255, 255, 255, 0.25))';
             e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+            e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'var(--border-light, rgba(255, 255, 255, 0.1))';
             e.currentTarget.style.transform = 'none';
             e.currentTarget.style.boxShadow = 'none';
           }}
@@ -155,17 +148,20 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
                 width: '40px',
                 height: '40px',
                 borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.06)',
+                background: 'rgba(229, 181, 79, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#e2e8f0',
+                color: 'var(--brand-gold, #e2e8f0)',
                 marginBottom: '14px',
               }}
             >
               <FileUp size={20} />
             </div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: '0 0 6px' }}>
+            <h3
+              className="club-empty-state-tile-title"
+              style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '0 0 6px' }}
+            >
               Subir Croquis Arquitectónico
             </h3>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>
@@ -189,7 +185,7 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
       {/* Checklist de Inicio Rápido */}
       <div
         style={{
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          borderTop: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
           paddingTop: '24px',
           maxWidth: '680px',
           margin: '0 auto',
@@ -202,7 +198,7 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <CheckCircle2 size={14} color="#34d399" />
+          <CheckCircle2 size={14} color="var(--state-success, #34d399)" />
           <span>1. Cuenta y Club Creados</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -210,11 +206,11 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
           <span style={{ color: 'var(--brand-gold)', fontWeight: 700 }}>2. Diseñar Plano de Sala</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Lock size={14} color="rgba(255, 255, 255, 0.3)" />
+          <Lock size={14} color="var(--text-dim, rgba(255, 255, 255, 0.3))" />
           <span>3. Definir Consumos Mínimos</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Lock size={14} color="rgba(255, 255, 255, 0.3)" />
+          <Lock size={14} color="var(--text-dim, rgba(255, 255, 255, 0.3))" />
           <span>4. Operar Puerta QR</span>
         </div>
       </div>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, ExternalLink, Clock } from 'lucide-react';
 import type { DashboardTabKey } from './AdminSidebar';
+import { ThemeToggleSwitch } from '../common/ThemeToggleSwitch';
 
 interface AdminCommandBarProps {
   currentView: 'DASHBOARD' | 'DOOR' | 'WAITER';
   dashboardTab: DashboardTabKey;
   onOpenMobileMenu: () => void;
 }
+
 
 export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
   currentView,
@@ -100,8 +102,10 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
         )}
       </div>
 
-      {/* Right: Direct Link to Client Portal */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      {/* Right: Theme Toggle Switch + Direct Link to Client Portal */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <ThemeToggleSwitch variant="compact" />
+
         <a
           href={import.meta.env.PROD ? 'https://nightflow-vip.web.app' : 'http://localhost:5173'}
           target="_blank"

@@ -51,7 +51,7 @@ async function main() {
   console.log('========================================================\n');
 
   const now = new Date().toISOString();
-  const tsNow = Timestamp.now();
+  const _tsNow = Timestamp.now();
 
   // 1. Obtener UID de owner y door
   const ownerUser = await auth.getUserByEmail(ownerEmail);

@@ -326,3 +326,50 @@
   border-color: transparent;
   font-weight: 700;
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES FOR BASE COMPONENTS
+   ═════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] .card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .card-hover:hover {
+  border-color: rgba(184, 134, 11, 0.35);
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .btn-secondary {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-main);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.22);
+  color: #0e1118;
+}
+
+[data-theme="light"] .btn-ghost {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .btn-ghost:hover {
+  color: #0e1118;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .role-pill {
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .role-pill:hover {
+  color: #0e1118;
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
