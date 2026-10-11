@@ -41,7 +41,8 @@ export async function sendEmail(options) {
                     to: [options.to],
                     subject: options.subject,
                     html: options.html,
-                    ...(options.text ? { text: options.text } : {})
+                    ...(options.text ? { text: options.text } : {}),
+                    ...(options.replyTo ? { reply_to: options.replyTo } : {})
                 })
             });
             const id = typeof result.id === "string" ? result.id : undefined;
@@ -83,7 +84,7 @@ export async function sendEmail(options) {
 }
 export async function sendWelcomeCredentialsEmail(options) {
     const { to, ownerName, clubName, city, tempPassword, adminUrl, brandUrl } = options;
-    const subject = `🍸 ¡Acceso Activado! Credenciales VIP para ${clubName} — Nightflow`;
+    const subject = `Acceso y credenciales para ${clubName} — Nightflow VIP`;
     const html = `
 <!DOCTYPE html>
 <html lang="es">
@@ -228,7 +229,7 @@ CREDENCIALES DE ACCESO:
 Página pública de tu club: ${brandUrl}
 Soporte WhatsApp: +593 979 116 551
   `.trim();
-    return await sendEmail({ to, subject, html, text });
+    return await sendEmail({ to, subject, html, text, replyTo: "contacto@j2sdynamics.com" });
 }
 const CATEGORY_NAMES_ES = {
     suggestion: "Sugerencia",
