@@ -149,7 +149,9 @@ async function main(): Promise<void> {
 
   const doorAppPath = process.env.DOOR_APP_PATH?.trim()
     || path.resolve(functionsRoot, "..", "services", "door-service", "dist", "app.js");
+  const doorRequired = process.env.DOOR_REQUIRED === "true" || process.env.DOOR_REQUIRED === "1";
   let doorEnabled = false;
+
   if (existsSync(doorAppPath)) {
     try {
       const doorModule = await import(pathToFileURL(doorAppPath).href) as {
@@ -169,11 +171,25 @@ async function main(): Promise<void> {
     console.warn("⚠️ [Server] dist de door-service no encontrado:", doorAppPath);
   }
 
+  if (doorRequired && !doorEnabled) {
+    throw new Error(`[Server] DOOR_REQUIRED=true pero door-service no pudo montarse desde ${doorAppPath}. Abortando arranque.`);
+  }
+
+  app.get("/health.door", (_request: Request, response: Response) => {
+    if (!doorEnabled) {
+      response.status(503).json({ ok: false, door: false, error: "door-service no disponible" });
+      return;
+    }
+    response.json({ ok: true, door: true });
+  });
+
   app.get("/health", (_request: Request, response: Response) => {
-    response.json({
-      ok: true,
+    const isHealthy = !doorRequired || doorEnabled;
+    response.status(isHealthy ? 200 : 503).json({
+      ok: isHealthy,
       service: "nightflow-api",
       door: doorEnabled,
+      doorRequired,
       project: runtimeConfig.projectId ?? null,
       appCheckEnforced: runtimeConfig.appCheckEnforced
     });

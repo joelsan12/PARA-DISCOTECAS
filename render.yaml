@@ -1,0 +1,25 @@
+# Blueprint de Despliegue en Render — NIGHTFLOW VIP API + Door Service
+# Fase D (§14 Modalidad Híbrida Spark)
+
+services:
+  - type: web
+    name: nightflow-backend
+    runtime: node
+    plan: free
+    buildCommand: npm run build:backend
+    startCommand: npm run start:backend
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DOOR_REQUIRED
+        value: "true"
+      - key: APP_CHECK_ENFORCED
+        value: "false"
+      - key: APP_CHECK_REQUIRED
+        value: "false"
+      - key: PAYMENT_PROVIDER
+        value: none
+      - key: CAPTCHA_REQUIRED
+        value: "false"
