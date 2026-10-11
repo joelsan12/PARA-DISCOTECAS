@@ -8,7 +8,8 @@ import {
   Building,
   Phone,
   LayoutGrid,
-  List
+  List,
+  Trash2
 } from 'lucide-react';
 import { formatEcuadorPhone } from '../../lib/formatEcuador';
 import { formatUsd } from '../../lib/formatUsd';
@@ -25,6 +26,8 @@ interface Props {
   onToggleStatus: (clubId: string) => void;
   onUpdatePlan: (clubId: string, newPlanId: SubscriptionPlanId) => void;
   onManageCustomFeatures?: (club: Club) => void;
+  onDeleteClub?: (clubId: string) => void;
+  onPurgeAllClubs?: () => void;
 }
 
 export const TenantClubsTable = ({
@@ -36,6 +39,8 @@ export const TenantClubsTable = ({
   onToggleStatus,
   onUpdatePlan,
   onManageCustomFeatures,
+  onDeleteClub,
+  onPurgeAllClubs,
 }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'suspended'>('all');
@@ -133,6 +138,34 @@ export const TenantClubsTable = ({
               <List size={14} />
             </button>
           </div>
+
+          {onPurgeAllClubs && clubs.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('⚠️ ¿Estás seguro de que deseas ELIMINAR TODOS los negocios de la consola? Esta acción purgará mesas, eventos y reservas asociadas.')) {
+                  onPurgeAllClubs();
+                }
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
+                color: '#f87171',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+              title="Eliminar todos los negocios de la consola"
+            >
+              <Trash2 size={13} />
+              <span>Borrar Todos</span>
+            </button>
+          )}
         </div>
       </div>
       {/* Content: Empty State, Grid View, or Table View */}
@@ -264,6 +297,31 @@ export const TenantClubsTable = ({
                     <LogIn size={13} />
                     <span>Gestionar Club ↗</span>
                   </button>
+
+                  {onDeleteClub && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`¿Eliminar permanentemente el negocio "${club.name}" de la consola?`)) {
+                          onDeleteClub(club.id);
+                        }
+                      }}
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.25)',
+                        color: '#f87171',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Eliminar este negocio de la consola"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -400,6 +458,31 @@ export const TenantClubsTable = ({
                           <LogIn size={12} />
                           <span>Gestionar ↗</span>
                         </button>
+
+                        {onDeleteClub && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`¿Eliminar permanentemente el negocio "${club.name}" de la consola?`)) {
+                                onDeleteClub(club.id);
+                              }
+                            }}
+                            style={{
+                              padding: '6px 8px',
+                              borderRadius: '6px',
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              border: '1px solid rgba(239, 68, 68, 0.25)',
+                              color: '#f87171',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                            title="Eliminar este negocio de la consola"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

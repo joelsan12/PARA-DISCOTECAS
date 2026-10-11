@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Building } from 'lucide-react';
 import { useClubStore } from '../../store/clubStore';
 import { InteractiveFloorPlan } from '../client/InteractiveFloorPlan';
 import { FloorPlanEditor } from './FloorPlanEditor';
@@ -31,7 +32,7 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id)
     || store.plans.find(p => normalizeCanonicalPlanId(p.id) === normalizeCanonicalPlanId(activeClub?.plan_id));
-  const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
+  const clubEvents = store.events.filter(e => e.club_id === activeClub?.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
@@ -65,6 +66,62 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
       store.setDashboardTab('MONITOR');
     }
   }, [activeTab, activeClub, activePlan, store]);
+
+  if (!activeClub) {
+    return (
+      <div style={{
+        padding: '4rem 1.5rem',
+        maxWidth: '680px',
+        margin: '0 auto',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh'
+      }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '16px',
+          background: 'rgba(229, 181, 79, 0.1)',
+          border: '1px solid rgba(229, 181, 79, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--brand-gold)',
+          marginBottom: '1.5rem'
+        }}>
+          <Building size={32} />
+        </div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '0.75rem' }}>
+          No hay negocios registrados
+        </h2>
+        <p style={{ color: 'var(--text-dim)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '480px', marginBottom: '1.75rem' }}>
+          La base de datos se encuentra completamente limpia y sin negocios activos.
+          Puedes registrar un nuevo establecimiento desde la página de onboarding o solicitar acceso a la Beta Privada VIP.
+        </p>
+        <a
+          href="/beta"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 24px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #e5b54f 0%, #c49632 100%)',
+            color: '#0a0a0f',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            textDecoration: 'none',
+            boxShadow: '0 4px 16px rgba(229, 181, 79, 0.3)'
+          }}
+        >
+          Registrar Nuevo Negocio (Beta VIP)
+        </a>
+      </div>
+    );
+  }
 
   const clubTables = store.tables.filter(t => t.club_id === activeClub.id);
   const clubTableIds = new Set(clubTables.map(t => t.id));

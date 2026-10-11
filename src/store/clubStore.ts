@@ -8,7 +8,7 @@ import {
   INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES,
   INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS
 } from '../data';
-import { loadStorageState, saveStorageState, applyLoadedStorageData } from './storage';
+import { loadStorageState, saveStorageState, applyLoadedStorageData, clearAllStorage } from './storage';
 import {
   cleanupExpiredHolds, holdTableOperation, releaseHoldOperation,
   confirmReservationOperation
@@ -40,7 +40,7 @@ class ClubStore {
   proposals: ClubProposal[] = INITIAL_PROPOSALS;
   private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
 
-  activeClubId: string = 'club-sensorial';
+  activeClubId: string = '';
   activeEventId: string = '';
   currentRole: ViewRole = 'CLIENT';
   dashboardTab: string = 'MONITOR';
@@ -431,6 +431,45 @@ class ClubStore {
     }
   }
 
+  purgeAllClubs() {
+    this.clubs = [];
+    this.tables = [];
+    this.events = [];
+    this.eventPricing = [];
+    this.reservations = [];
+    this.activeClubId = '';
+    this.activeEventId = '';
+    clearAllStorage();
+    this.addAuditLog({
+      actor: 'Superadministrador',
+      role: 'super_admin',
+      action: 'ALL_TENANTS_PURGED',
+      details: 'Todos los negocios, mesas, eventos y reservas fueron purgados de la consola'
+    });
+    this.persistAndNotify();
+  }
+
+  deleteClub(clubId: string) {
+    const club = this.clubs.find(c => c.id === clubId);
+    this.clubs = this.clubs.filter(c => c.id !== clubId);
+    this.tables = this.tables.filter(t => t.club_id !== clubId);
+    this.events = this.events.filter(e => e.club_id !== clubId);
+    this.reservations = this.reservations.filter(r => r.club_id !== clubId);
+    if (this.activeClubId === clubId) {
+      this.activeClubId = this.clubs[0]?.id || '';
+      const evts = this.events.filter(e => e.club_id === this.activeClubId);
+      this.activeEventId = evts[0]?.id || '';
+    }
+    this.addAuditLog({
+      club_id: clubId,
+      actor: 'Superadministrador',
+      role: 'super_admin',
+      action: 'TENANT_DELETED',
+      details: `Establecimiento ${club?.name || clubId} eliminado del sistema`
+    });
+    this.persistAndNotify();
+  }
+
   submitClubProposal(proposalData: {
     club_id: string;
     club_name: string;
@@ -660,6 +699,11 @@ class ClubStore {
 }
 
 export const clubStore = new ClubStore();
+
+if (typeof window !== 'undefined') {
+  (window as unknown as { __nightflowStore?: ClubStore; purgeAllClubs?: () => void }).__nightflowStore = clubStore;
+  (window as unknown as { __nightflowStore?: ClubStore; purgeAllClubs?: () => void }).purgeAllClubs = () => clubStore.purgeAllClubs();
+}
 
 export function useClubStore() {
   const [, setTick] = useState(0);

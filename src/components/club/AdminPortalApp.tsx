@@ -43,10 +43,10 @@ export function AdminPortalApp() {
   const [currentView, setCurrentView] = useState<AdminView>('DASHBOARD');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
 
-  // Garantizar que la consola de club tenga un club base seleccionado si aún no hay uno
+  // Seleccionar automáticamente el primer club disponible si existe y no hay ninguno seleccionado
   useEffect(() => {
-    if (!store.activeClubId) {
-      store.setActiveClub('club-sensorial');
+    if (!store.activeClubId && store.clubs.length > 0) {
+      store.setActiveClub(store.clubs[0].id);
     }
   }, [store]);
 

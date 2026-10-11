@@ -12,20 +12,20 @@ import type {
 import { normalizeCanonicalPlanId } from '../lib/clubPermissions.ts';
 
 export const STORAGE_KEYS = {
-  TABLES: 'nightflow_tables_v6',
-  PRICING: 'nightflow_pricing_v6',
-  CLUBS: 'nightflow_clubs_v6',
-  RESERVATIONS: 'nightflow_reservations_v6',
-  ACTIVE_CLUB: 'nightflow_active_club_id_v6',
-  ACTIVE_EVENT: 'nightflow_active_event_id_v6',
-  CURRENT_ROLE: 'nightflow_current_role_v6',
-  DASHBOARD_TAB: 'nightflow_dashboard_tab_v6',
-  ARCHETYPE_PRESETS: 'nightflow_archetype_presets_v6',
-  CLIENT_USER: 'nightflow_client_user_v6',
-  STAFF_USER: 'nightflow_staff_user_v6',
-  CLIENT_SUBTAB: 'nightflow_client_subtab_v6',
-  PLANS: 'nightflow_plans_v6',
-  PROPOSALS: 'nightflow_proposals_v6'
+  TABLES: 'nightflow_tables_v7',
+  PRICING: 'nightflow_pricing_v7',
+  CLUBS: 'nightflow_clubs_v7',
+  RESERVATIONS: 'nightflow_reservations_v7',
+  ACTIVE_CLUB: 'nightflow_active_club_id_v7',
+  ACTIVE_EVENT: 'nightflow_active_event_id_v7',
+  CURRENT_ROLE: 'nightflow_current_role_v7',
+  DASHBOARD_TAB: 'nightflow_dashboard_tab_v7',
+  ARCHETYPE_PRESETS: 'nightflow_archetype_presets_v7',
+  CLIENT_USER: 'nightflow_client_user_v7',
+  STAFF_USER: 'nightflow_staff_user_v7',
+  CLIENT_SUBTAB: 'nightflow_client_subtab_v7',
+  PLANS: 'nightflow_plans_v7',
+  PROPOSALS: 'nightflow_proposals_v7'
 };
 
 export interface LoadedStorageData {
@@ -186,5 +186,22 @@ export function saveStorageState(data: {
     localStorage.setItem(STORAGE_KEYS.CLIENT_SUBTAB, data.clientSubTab);
   } catch (err) {
     console.warn('Error writing to localStorage:', err);
+  }
+}
+
+export function clearAllStorage() {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('nightflow_')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch (err) {
+    console.warn('Error clearing localStorage:', err);
   }
 }

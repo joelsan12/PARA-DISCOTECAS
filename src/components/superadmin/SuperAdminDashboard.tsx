@@ -334,6 +334,8 @@ export const SuperAdminDashboard = ({
           onEditClub={club => setEditingClub(club)}
           onToggleStatus={handleToggleClubStatus}
           onUpdatePlan={handleUpdateClubPlan}
+          onDeleteClub={clubId => store.deleteClub(clubId)}
+          onPurgeAllClubs={() => store.purgeAllClubs()}
         />
       )}
 

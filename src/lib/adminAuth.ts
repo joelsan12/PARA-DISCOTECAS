@@ -48,7 +48,7 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
         displayName: user.displayName || user.email?.split('@')[0] || 'SuperAdmin',
         role: 'SUPER_ADMIN',
         isSuperAdmin: true,
-        clubId: (userData?.businessId as string | undefined) || currentClubId || 'club-sensorial'
+        clubId: (userData?.businessId as string | undefined) || currentClubId || ''
       };
     }
 
