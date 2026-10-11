@@ -100,11 +100,11 @@ describe('Beta Registration & Instant Provisioning Suite', () => {
   describe('sendWelcomeCredentialsEmail', () => {
     it('ejecuta de forma fail-safe sin arrojar excepción cuando no hay proveedor configurado', async () => {
       const result = await sendWelcomeCredentialsEmail({
-        to: 'tester@nightflow.vip',
+        to: 'tester@example.com',
         ownerName: 'Juan Pérez',
         clubName: 'Club Neón VIP',
         city: 'Cuenca',
-        tempPassword: 'NF-7821!Vip',
+        tempPassword: 'mock-temp-password',
         adminUrl: 'https://nightflow-admin.web.app',
         brandUrl: 'https://nightflow-vip.web.app/negocio/club-neon-vip'
       });
