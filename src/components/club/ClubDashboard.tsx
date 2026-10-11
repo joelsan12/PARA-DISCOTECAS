@@ -13,7 +13,7 @@ import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
 import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
 import { EventsManager } from './dashboard/EventsManager';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
-import { isDashboardTabAllowed } from '../../lib/clubPermissions';
+import { isDashboardTabAllowed, normalizeCanonicalPlanId } from '../../lib/clubPermissions';
 import { subscribeOperations, type OperationalTableItem } from '../../services/operationsService';
 import type { DashboardTabKey } from './AdminSidebar';
 import type { AdminStaffSession } from '../../lib/adminAuth';
@@ -26,7 +26,8 @@ interface ClubDashboardProps {
 export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
-  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
+  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id)
+    || store.plans.find(p => normalizeCanonicalPlanId(p.id) === normalizeCanonicalPlanId(activeClub?.plan_id));
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 

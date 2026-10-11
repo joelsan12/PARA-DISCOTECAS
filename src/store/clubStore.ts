@@ -26,6 +26,7 @@ import type { LegalProfile } from '../lib/legalProfile';
 import { callFunctions } from '../lib/functionsClient';
 import { formatUsd } from '../lib/formatUsd';
 import { esClubStatus, esLayout, esPlan } from '../lib/esLabels';
+import { normalizeCanonicalPlanId } from '../lib/clubPermissions';
 
 export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS };
 
@@ -201,9 +202,14 @@ class ClubStore {
   }
 
   registerClubFromRemote(clubData: Partial<Club> & { id: string }) {
+    const canonicalPlan = normalizeCanonicalPlanId(clubData.plan_id) as SubscriptionPlanId;
     const existingIndex = this.clubs.findIndex(c => c.id === clubData.id);
     if (existingIndex >= 0) {
-      this.clubs[existingIndex] = { ...this.clubs[existingIndex], ...clubData };
+      this.clubs[existingIndex] = {
+        ...this.clubs[existingIndex],
+        ...clubData,
+        plan_id: canonicalPlan
+      };
     } else {
       const newClub: Club = {
         id: clubData.id,
@@ -217,7 +223,7 @@ class ClubStore {
         instagram: clubData.instagram || '@' + (clubData.slug || 'nightflow'),
         whatsapp_number: clubData.whatsapp_number || '',
         status: clubData.status || 'active',
-        plan_id: clubData.plan_id || 'beta_vip',
+        plan_id: canonicalPlan,
         enabled_features: clubData.enabled_features,
         custom_features: clubData.custom_features,
         layout_type: clubData.layout_type || 'horseshoe_vip',
@@ -360,7 +366,7 @@ class ClubStore {
       city: data.city,
       instagram: '@' + slug,
       whatsapp_number: data.whatsapp_number,
-      plan_id: data.plan_id,
+      plan_id: normalizeCanonicalPlanId(data.plan_id) as SubscriptionPlanId,
       status: 'active',
       primary_color: '#a855f7',
       accent_color: '#06b6d4',

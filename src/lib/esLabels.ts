@@ -1,3 +1,5 @@
+import { normalizeCanonicalPlanId } from './clubPermissions';
+
 const tableZoneLabels: Record<string, string> = {
   'VIP Stage': 'Escenario VIP',
   'Dance Floor': 'Pista de baile',
@@ -125,7 +127,11 @@ export const esTableZone = (value: string) => tableZoneLabels[value] ?? fallback
 export const esTableStatus = (value: string) => tableStatusLabels[value] ?? fallbackLabel(value);
 export const esVipTier = (value: string) => vipTierLabels[value] ?? fallbackLabel(value);
 export const esRole = (value: string) => roleLabels[value] ?? fallbackLabel(value);
-export const esPlan = (value: string) => planLabels[value] ?? fallbackLabel(value);
+export const esPlan = (value: string) => {
+  if (!value) return 'Básico';
+  const canonical = normalizeCanonicalPlanId(value);
+  return planLabels[canonical] ?? planLabels[value] ?? fallbackLabel(value);
+};
 export const esClubStatus = (value: string) => clubStatusLabels[value] ?? fallbackLabel(value);
 export const esPaymentMethod = (value: string) => paymentMethodLabels[value] ?? fallbackLabel(value);
 export const esAuditAction = (value: string) => auditActionLabels[value] ?? fallbackLabel(value);

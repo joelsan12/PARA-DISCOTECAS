@@ -9,6 +9,7 @@ import type {
   Plan,
   ClubProposal
 } from '../types';
+import { normalizeCanonicalPlanId } from '../lib/clubPermissions.ts';
 
 export const STORAGE_KEYS = {
   TABLES: 'nightflow_tables_v6',
@@ -104,8 +105,18 @@ export function loadStorageState(): LoadedStorageData {
 export function applyLoadedStorageData(target: any, d: LoadedStorageData) {
   if (d.tables) target.tables = d.tables;
   if (d.pricing) target.eventPricing = d.pricing;
-  if (d.clubs) target.clubs = d.clubs;
-  if (d.plans && Array.isArray(d.plans) && d.plans.length > 0) target.plans = d.plans;
+  if (d.clubs) {
+    target.clubs = d.clubs.map((c: any) => ({
+      ...c,
+      plan_id: normalizeCanonicalPlanId(c.plan_id)
+    }));
+  }
+  if (d.plans && Array.isArray(d.plans) && d.plans.length > 0) {
+    const existingIds = new Set(d.plans.map((p: any) => p.id));
+    const fallbackPlans = Array.isArray(target.plans) ? target.plans : [];
+    const missingCanonical = fallbackPlans.filter((p: any) => !existingIds.has(p.id));
+    target.plans = [...d.plans, ...missingCanonical];
+  }
   if (d.proposals && Array.isArray(d.proposals)) target.proposals = d.proposals;
   if (d.reservations) target.reservations = d.reservations;
   if (d.activeClubId) target.activeClubId = d.activeClubId;

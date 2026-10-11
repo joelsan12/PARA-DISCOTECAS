@@ -2,6 +2,23 @@ import type { Club, Plan, FeatureFlag } from '../types';
 import type { DashboardTabKey } from '../components/club/AdminSidebar';
 
 /**
+ * Normaliza cualquier identificador o alias de plan a su clave canónica interna.
+ * Tolera mayúsculas, espacios ("Beta Privada VIP", "Plan Beta Privada"), guiones y aliases.
+ */
+export function normalizeCanonicalPlanId(raw?: string): string {
+  if (!raw) return 'beta_vip';
+  const clean = raw.trim().toLowerCase().replace(/[-_]/g, ' ');
+  if (clean.includes('enterprise') || clean.includes('empresarial')) return 'enterprise';
+  if (clean.includes('black')) return 'black_vip';
+  if (clean.includes('beta')) return 'beta_vip';
+  if (clean.includes('club pro') || clean === 'pro' || clean.includes('profesional')) return 'club_pro';
+  if (clean.includes('starter')) return 'starter';
+  if (clean.includes('basic') || clean.includes('basico') || clean.includes('básico')) return 'basic';
+  if (clean.includes('free') || clean.includes('lounge')) return 'free';
+  return clean.replace(/\s+/g, '_');
+}
+
+/**
  * Valida si un club tiene acceso a una característica específica,
  * considerando:
  * 1. Beneficios/características exclusivas VIP otorgadas por soporte/desarrollo (custom_features).
@@ -37,8 +54,8 @@ export function canClubAccessFeature(
     return true;
   }
 
-  // 4. Fallback canónico por tier de plan
-  const planId = club.plan_id;
+  // 4. Fallback canónico por tier de plan (insensible a mayúsculas, espacios y aliases como 'Beta Privada VIP')
+  const planId = normalizeCanonicalPlanId(club.plan_id);
   if (planId === 'enterprise' || planId === 'beta_vip' || planId === 'black_vip') {
     return true; // Plan Empresarial, Beta Privada VIP y Black VIP disponen de todas las capacidades operativas
   }

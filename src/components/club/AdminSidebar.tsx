@@ -18,7 +18,7 @@ import {
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import { esPlan } from '../../lib/esLabels';
-import { isDashboardTabAllowed, isDoorAccessAllowed } from '../../lib/clubPermissions';
+import { isDashboardTabAllowed, isDoorAccessAllowed, normalizeCanonicalPlanId } from '../../lib/clubPermissions';
 
 export type DashboardTabKey =
   | 'MONITOR'
@@ -54,7 +54,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
-  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
+  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id)
+    || store.plans.find(p => normalizeCanonicalPlanId(p.id) === normalizeCanonicalPlanId(activeClub?.plan_id));
   const clubEvents = store.events.filter(e => e.club_id === activeClub?.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
   const eventReservations = activeEvent

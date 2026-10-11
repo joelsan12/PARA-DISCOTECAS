@@ -137,6 +137,10 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
           </div>
           <button
             type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onGoToDesigner();
+            }}
             className="btn-gold"
             style={{ width: '100%', marginTop: '18px', padding: '10px 16px' }}
           >
@@ -176,7 +180,7 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
                 width: '40px',
                 height: '40px',
                 borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.08)',
+                background: 'rgba(255, 255, 255, 0.06)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -195,6 +199,10 @@ export const ClubFloorPlanEmptyState: React.FC<Props> = ({
           </div>
           <button
             type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRequestCustomPlan();
+            }}
             className="btn-secondary"
             style={{ width: '100%', marginTop: '18px', padding: '10px 16px' }}
           >

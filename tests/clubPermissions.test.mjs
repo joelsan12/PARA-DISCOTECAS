@@ -178,6 +178,26 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDoorAccessAllowed(bareBetaClub, undefined), true);
   });
 
+  await t.test('Tolerancia canónica: club con plan_id "Beta Privada Vip" (con espacios o mayúsculas) desbloquea diseñador y todos los módulos', () => {
+    const stringVariants = ['Beta Privada Vip', 'Beta Privada VIP', 'beta privada', 'BETA_VIP', 'Plan Beta Privada'];
+    for (const planId of stringVariants) {
+      const clubVariant = {
+        id: 'club_oficina',
+        name: 'Oficina',
+        plan_id: planId,
+        city: 'Guayaquil'
+      };
+      assert.strictEqual(isDashboardTabAllowed('MONITOR', clubVariant, undefined), true, `MONITOR falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', clubVariant, undefined), true, `LAYOUT_BUILDER falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('EVENTS', clubVariant, undefined), true, `EVENTS falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', clubVariant, undefined), true, `RESERVATIONS falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('PRICING', clubVariant, undefined), true, `PRICING falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('PAYMENTS', clubVariant, undefined), true, `PAYMENTS falló para ${planId}`);
+      assert.strictEqual(isDashboardTabAllowed('AUDIT', clubVariant, undefined), true, `AUDIT falló para ${planId}`);
+      assert.strictEqual(isDoorAccessAllowed(clubVariant, undefined), true, `DOOR falló para ${planId}`);
+    }
+  });
+
   await t.test('Permisos de reembolso de pasarela (Fase C: canStaffRefund)', () => {
     // Roles con autorización
     assert.strictEqual(canStaffRefund('finance', false), true);

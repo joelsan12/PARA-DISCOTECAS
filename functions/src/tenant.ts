@@ -2,6 +2,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { db } from "./config.js";
 import { sha256 } from "./crypto.js";
 import { AppError } from "./errors.js";
+import { BETA_VIP_FEATURES, normalizePlanId } from "./betaRegistration.js";
 
 interface CreateBusinessTenantInput {
   name: string;
@@ -82,6 +83,8 @@ export async function createBusinessTenant(input: CreateBusinessTenantInput & { 
       : 'digital_passkey',
     reentryMinutes: 30,
     customerCount: 0,
+    planId: normalizePlanId(input.planId || 'beta_vip'),
+    enabled_features: BETA_VIP_FEATURES,
     createdAt: now,
     updatedAt: now
   });
