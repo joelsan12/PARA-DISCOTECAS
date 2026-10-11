@@ -22,5 +22,7 @@ export interface RegisterBetaClubResult {
     emailSent: boolean;
     message: string;
 }
+export declare const BETA_VIP_FEATURES: string[];
+export declare function normalizePlanId(planInput?: string): string;
 export declare function parseRegisterBetaInput(value: unknown): RegisterBetaClubInput;
 export declare function registerAndActivateBetaClub(input: RegisterBetaClubInput): Promise<RegisterBetaClubResult>;

@@ -39,8 +39,8 @@ export function canClubAccessFeature(
 
   // 4. Fallback canónico por tier de plan
   const planId = club.plan_id;
-  if (planId === 'enterprise') {
-    return true; // Plan Empresarial dispone de todas las capacidades operativas
+  if (planId === 'enterprise' || planId === 'beta_vip') {
+    return true; // Plan Empresarial y Beta Privada VIP disponen de todas las capacidades operativas
   }
   if (planId === 'pro') {
     const proAllowed: FeatureFlag[] = [

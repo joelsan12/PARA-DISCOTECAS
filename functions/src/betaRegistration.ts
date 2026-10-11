@@ -46,6 +46,36 @@ function generateTemporaryPassword(): string {
   return `NF-${pin}!Vip`;
 }
 
+export const BETA_VIP_FEATURES = [
+  "RESERVATIONS",
+  "EVENTS",
+  "FLOOR_PLAN",
+  "TABLE_SELECTION",
+  "SEAT_SELECTION",
+  "CAPACITY_POOL",
+  "ONLINE_PAYMENT",
+  "QR_CHECKIN",
+  "STAFF_MANAGEMENT",
+  "ADVANCED_ANALYTICS",
+  "CUSTOM_DOMAIN",
+  "MULTI_LOCATION"
+];
+
+export function normalizePlanId(planInput?: string): string {
+  if (!planInput) return "beta_vip";
+  const clean = planInput.trim().toLowerCase();
+  if (clean.includes("enter") || clean.includes("empres")) return "enterprise";
+  if (clean.includes("basic") || clean.includes("básic")) return "basic";
+  if (
+    clean.includes("beta") ||
+    clean.includes("pro") ||
+    clean.includes("vip")
+  ) {
+    return "beta_vip";
+  }
+  return "beta_vip";
+}
+
 export function parseRegisterBetaInput(value: unknown): RegisterBetaClubInput {
   const record = asRecord(value, "registro beta");
   const clubName = requiredString(record, "clubName", 2, 80);
@@ -142,7 +172,8 @@ export async function registerAndActivateBetaClub(
     reentryMode: "digital_passkey",
     reentryMinutes: 30,
     customerCount: 0,
-    planId: plan,
+    planId: normalizePlanId(plan),
+    enabled_features: BETA_VIP_FEATURES,
     contactEmail: email,
     contactPhone: whatsapp,
     createdAt: now,

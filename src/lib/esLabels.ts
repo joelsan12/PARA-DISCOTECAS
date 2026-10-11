@@ -55,6 +55,8 @@ const planLabels: Record<string, string> = {
   PRO: 'Profesional',
   enterprise: 'Empresarial',
   ENTERPRISE: 'Empresarial',
+  beta_vip: 'Beta Privada VIP',
+  BETA_VIP: 'Beta Privada VIP',
 };
 
 const clubStatusLabels: Record<string, string> = {

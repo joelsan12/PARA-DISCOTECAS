@@ -129,4 +129,52 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', basicClubWithCustomKushki, basicPlan), false);
     assert.strictEqual(isDashboardTabAllowed('AUDIT', basicClubWithCustomKushki, basicPlan), false);
   });
+
+  await t.test('Club en Plan Beta Privada VIP tiene acceso a todos los 9 módulos de la consola y control de puerta', () => {
+    const betaVipPlan = {
+      id: 'beta_vip',
+      name: 'Beta Privada VIP',
+      plan_tier: 'PREMIUM',
+      enabled_features: [
+        'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
+        'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
+        'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+      ]
+    };
+    const betaClub = {
+      id: 'club_beta_test',
+      name: 'Paradiso Beta VIP',
+      plan_id: 'beta_vip',
+      city: 'Guayaquil',
+      enabled_features: betaVipPlan.enabled_features
+    };
+
+    assert.strictEqual(isDashboardTabAllowed('MONITOR', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('PRICING', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('PAYMENTS', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('LEGAL', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('AUDIT', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('SUBSCRIPTION', betaClub, betaVipPlan), true);
+    assert.strictEqual(isDoorAccessAllowed(betaClub, betaVipPlan), true);
+  });
+
+  await t.test('Fallback por tier: club con plan_id "beta_vip" sin enabled_features explícitos desbloquea todo', () => {
+    const bareBetaClub = {
+      id: 'club_bare_beta',
+      name: 'Bare Beta Club',
+      plan_id: 'beta_vip',
+      city: 'Cuenca'
+    };
+    assert.strictEqual(isDashboardTabAllowed('MONITOR', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('PRICING', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('PAYMENTS', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('LEGAL', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('AUDIT', bareBetaClub, undefined), true);
+    assert.strictEqual(isDashboardTabAllowed('SUBSCRIPTION', bareBetaClub, undefined), true);
+    assert.strictEqual(isDoorAccessAllowed(bareBetaClub, undefined), true);
+  });
 });

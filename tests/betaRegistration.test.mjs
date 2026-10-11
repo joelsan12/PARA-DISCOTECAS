@@ -1,9 +1,28 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRegisterBetaInput } from '../functions/lib/betaRegistration.js';
+import { parseRegisterBetaInput, normalizePlanId, BETA_VIP_FEATURES } from '../functions/lib/betaRegistration.js';
 import { sendWelcomeCredentialsEmail } from '../functions/lib/email.js';
 
 describe('Beta Registration & Instant Provisioning Suite', () => {
+  describe('normalizePlanId', () => {
+    it('normaliza aliases de beta y pro a beta_vip canónico con 12 features', () => {
+      assert.equal(normalizePlanId('Club Pro'), 'beta_vip');
+      assert.equal(normalizePlanId('Beta Privada'), 'beta_vip');
+      assert.equal(normalizePlanId('Beta Privada VIP'), 'beta_vip');
+      assert.equal(normalizePlanId('beta'), 'beta_vip');
+      assert.equal(normalizePlanId(undefined), 'beta_vip');
+      assert.equal(normalizePlanId(''), 'beta_vip');
+      assert.equal(BETA_VIP_FEATURES.length, 12);
+      assert.ok(BETA_VIP_FEATURES.includes('ADVANCED_ANALYTICS'));
+      assert.ok(BETA_VIP_FEATURES.includes('FLOOR_PLAN'));
+    });
+
+    it('respeta planes explícitos no beta', () => {
+      assert.equal(normalizePlanId('enterprise'), 'enterprise');
+      assert.equal(normalizePlanId('Plan Empresarial'), 'enterprise');
+      assert.equal(normalizePlanId('Plan Básico'), 'basic');
+    });
+  });
   describe('parseRegisterBetaInput', () => {
     it('valida y normaliza un payload completo de registro beta', () => {
       const input = {

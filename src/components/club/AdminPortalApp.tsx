@@ -13,6 +13,21 @@ import '../../styles/adminLayout.css';
 
 type AdminView = 'DASHBOARD' | 'DOOR';
 
+function normalizePlanId(rawPlanId?: string): string {
+  if (!rawPlanId) return 'beta_vip';
+  const clean = rawPlanId.trim().toLowerCase();
+  if (clean.includes('enter') || clean.includes('empres')) return 'enterprise';
+  if (clean.includes('basic') || clean.includes('básic')) return 'basic';
+  if (
+    clean.includes('beta') ||
+    clean.includes('pro') ||
+    clean.includes('vip')
+  ) {
+    return 'beta_vip';
+  }
+  return 'beta_vip';
+}
+
 /**
  * Portal Exclusivo para Administradores, Staff y Personal de Puerta de Sensorial Club VIP.
  * Arquitectura ejecutiva de consola de mando con barra lateral, command bar
@@ -52,7 +67,9 @@ export function AdminPortalApp() {
                   name: data.name || 'Mi Establecimiento',
                   slug: data.slug || session.clubId,
                   city: data.city || 'Ecuador',
-                  plan_id: data.planId || data.plan_id || 'pro',
+                  plan_id: normalizePlanId(data.planId || data.plan_id),
+                  enabled_features: data.enabled_features,
+                  custom_features: data.custom_features,
                   logo: data.logoUrl || data.logo,
                   banner: data.coverUrl || data.banner,
                   status: data.status || 'active',
@@ -68,7 +85,7 @@ export function AdminPortalApp() {
                       name: data.name || 'Mi Establecimiento',
                       slug: data.slug || session.clubId,
                       city: data.city || 'Ecuador',
-                      plan_id: 'pro',
+                      plan_id: normalizePlanId(data.planId || data.plan_id),
                       logo: data.logoUrl || data.logo,
                       banner: data.coverUrl || data.banner,
                       status: data.status || 'active'

@@ -53,5 +53,27 @@ export const INITIAL_PLANS: Plan[] = [
       'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
       'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
     ]
+  },
+  {
+    id: 'beta_vip',
+    name: 'Beta Privada VIP',
+    monthly_price: 0,
+    max_events_per_month: 999,
+    features: [
+      'Acceso total a todos los módulos operativos (Early Access)',
+      'Diseñador de planos y arquetipos arquitectónicos',
+      'Cartelera y gestión de eventos en tiempo real',
+      'Reservas y tarifario dinámico por evento',
+      'Pasarela de pagos y depósitos en línea',
+      'Control de acceso con escáner QR y passkeys',
+      'Bitácora de auditoría y seguridad',
+      'Soporte prioritario directo con fundadores'
+    ],
+    plan_tier: 'PREMIUM',
+    enabled_features: [
+      'RESERVATIONS', 'EVENTS', 'FLOOR_PLAN', 'TABLE_SELECTION',
+      'SEAT_SELECTION', 'CAPACITY_POOL', 'ONLINE_PAYMENT', 'QR_CHECKIN',
+      'STAFF_MANAGEMENT', 'ADVANCED_ANALYTICS', 'CUSTOM_DOMAIN', 'MULTI_LOCATION'
+    ]
   }
 ];
