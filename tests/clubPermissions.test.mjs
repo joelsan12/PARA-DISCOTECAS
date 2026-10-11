@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 // Import compiled or transpile test
-import { isDashboardTabAllowed, isDoorAccessAllowed } from '../src/lib/clubPermissions.ts';
+import { isDashboardTabAllowed, isDoorAccessAllowed, canStaffRefund } from '../src/lib/clubPermissions.ts';
 
 const mockPlans = [
   {
@@ -176,5 +176,23 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDashboardTabAllowed('AUDIT', bareBetaClub, undefined), true);
     assert.strictEqual(isDashboardTabAllowed('SUBSCRIPTION', bareBetaClub, undefined), true);
     assert.strictEqual(isDoorAccessAllowed(bareBetaClub, undefined), true);
+  });
+
+  await t.test('Permisos de reembolso de pasarela (Fase C: canStaffRefund)', () => {
+    // Roles con autorización
+    assert.strictEqual(canStaffRefund('finance', false), true);
+    assert.strictEqual(canStaffRefund('manager', false), true);
+    assert.strictEqual(canStaffRefund('owner', false), true);
+    assert.strictEqual(canStaffRefund('FINANCE', false), true);
+
+    // SuperAdmin siempre autorizado
+    assert.strictEqual(canStaffRefund(undefined, true), true);
+    assert.strictEqual(canStaffRefund('door', true), true);
+
+    // Roles no autorizados
+    assert.strictEqual(canStaffRefund('door', false), false);
+    assert.strictEqual(canStaffRefund('waiter', false), false);
+    assert.strictEqual(canStaffRefund(undefined, false), false);
+    assert.strictEqual(canStaffRefund('', false), false);
   });
 });

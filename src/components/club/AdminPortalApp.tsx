@@ -16,8 +16,11 @@ type AdminView = 'DASHBOARD' | 'DOOR';
 function normalizePlanId(rawPlanId?: string): string {
   if (!rawPlanId) return 'beta_vip';
   const clean = rawPlanId.trim().toLowerCase();
-  if (clean.includes('enter') || clean.includes('empres')) return 'enterprise';
-  if (clean.includes('basic') || clean.includes('básic')) return 'basic';
+  if (clean === 'enterprise' || clean === 'plan empresarial') return 'enterprise';
+  if (clean === 'basic' || clean === 'plan básico' || clean === 'plan basico') return 'basic';
+  if (clean.includes('black')) return 'black_vip';
+  if (clean.includes('starter')) return 'starter';
+  if (clean.includes('free') || clean.includes('lounge')) return 'free';
   if (
     clean.includes('beta') ||
     clean.includes('pro') ||
@@ -192,7 +195,7 @@ export function AdminPortalApp() {
 
         {/* Lienzo Dinámico según sección activa */}
         <main className="admin-canvas">
-          {currentView === 'DASHBOARD' && canAccessDashboard && <ClubDashboard />}
+          {currentView === 'DASHBOARD' && canAccessDashboard && <ClubDashboard session={session} />}
           {currentView === 'DOOR' && canAccessDoor && <DoorCheckIn />}
         </main>
       </div>

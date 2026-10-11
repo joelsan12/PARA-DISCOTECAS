@@ -67,5 +67,35 @@ describe("raw body byte-exacto del webhook de pagos", () => {
             server.close();
         }
     });
+    it("la ruta Express parametrizada /v1/payments/webhooks/:provider/:merchantId expone provider y merchantId", async () => {
+        const app = express();
+        app.use(express.json({
+            limit: "1mb",
+            verify: (request, _response, buffer) => {
+                request.rawBody = buffer;
+            }
+        }));
+        app.post("/v1/payments/webhooks/:provider/:merchantId", (request, response) => {
+            response.json({
+                provider: request.params.provider,
+                merchantId: request.params.merchantId
+            });
+        });
+        const server = app.listen(0);
+        try {
+            const port = server.address().port;
+            const res = await fetch(`http://127.0.0.1:${port}/v1/payments/webhooks/kushki/merchant_test_123`, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ event: "test" })
+            });
+            const data = await res.json();
+            assert.equal(data.provider, "kushki");
+            assert.equal(data.merchantId, "merchant_test_123");
+        }
+        finally {
+            server.close();
+        }
+    });
 });
 //# sourceMappingURL=webhookRawBody.test.js.map

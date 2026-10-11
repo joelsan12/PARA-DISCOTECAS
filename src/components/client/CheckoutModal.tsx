@@ -363,20 +363,44 @@ export const CheckoutModal = ({
                 <span>Moneda</span>
                 <span style={{ color: '#fff', fontWeight: 700 }}>USD · Ecuador</span>
               </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingTop: '6px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+              }}>
+                <span style={{ color: 'var(--text-muted)' }}>Tiempo restante del Hold:</span>
+                <span className="font-mono" style={{ color: 'var(--brand-gold)', fontWeight: 800, fontSize: '0.92rem' }}>
+                  {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                </span>
+              </div>
             </div>
 
             <div style={{
               padding: '12px 14px',
               borderRadius: 'var(--radius-sm)',
-              background: isDevMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(239, 68, 68, 0.1)',
-              border: `1px solid ${isDevMode ? 'rgba(59, 130, 246, 0.35)' : 'rgba(239, 68, 68, 0.3)'}`,
-              fontSize: '0.76rem',
-              color: isDevMode ? '#93c5fd' : '#fca5a5',
+              background: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.28)',
+              fontSize: '0.75rem',
+              color: '#fef3c7',
+              lineHeight: 1.5
+            }}>
+              <strong>Ventana estricta de 12 minutos:</strong> Completa tu pago en la pasarela antes de que expire la cuenta regresiva. Si el pago se procesa después de que la mesa haya sido liberada por timeout, el sistema registrará la transacción en estado de <em>Reembolso Requerido</em> y el administrador emitirá la devolución o reubicación inmediata vía soporte.
+            </div>
+
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-sm)',
+              background: isDevMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+              border: `1px solid ${isDevMode ? 'rgba(59, 130, 246, 0.35)' : 'rgba(255, 255, 255, 0.08)'}`,
+              fontSize: '0.73rem',
+              color: isDevMode ? '#93c5fd' : 'var(--text-muted)',
               lineHeight: 1.45
             }}>
               {isDevMode
                 ? 'MODO DESARROLLO (DEV): no hay webhook de pago real configurado. La reserva queda PENDIENTE y no se confirma desde el navegador.'
-                : 'El pago se confirma únicamente cuando el webhook del proveedor notifica a Nightflow. No se marcó como pagado desde el cliente.'}
+                : 'El pago se confirma únicamente cuando el webhook de Kushki notifica a Nightflow. No se marcó como pagado desde el cliente.'}
             </div>
 
             <button

@@ -15,8 +15,13 @@ import { EventsManager } from './dashboard/EventsManager';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed } from '../../lib/clubPermissions';
 import type { DashboardTabKey } from './AdminSidebar';
+import type { AdminStaffSession } from '../../lib/adminAuth';
 
-export const ClubDashboard = () => {
+interface ClubDashboardProps {
+  session?: AdminStaffSession;
+}
+
+export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
@@ -122,7 +127,7 @@ export const ClubDashboard = () => {
 
       {/* Tab: PAYMENTS */}
       {activeTab === 'PAYMENTS' && (
-        <PaymentGatewayManager key={activeClub.id} activeClub={activeClub} />
+        <PaymentGatewayManager key={activeClub.id} activeClub={activeClub} session={session} />
       )}
 
       {/* Tab: LEGAL */}

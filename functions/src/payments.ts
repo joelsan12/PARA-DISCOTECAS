@@ -415,7 +415,7 @@ async function finalizePaymentEvent(args: FinalizePaymentEventInput): Promise<Pa
     let reservationReference: DocumentReference | undefined;
     let existingReservation: DocumentSnapshot | undefined;
     if (resultStatus === "PAID" && hold && holdReference && resourceReference) {
-      reservationId = reservationId ?? `res_${sha256(holdId as string).slice(0, 40)}`;
+      reservationId = reservationId ?? (holdId as string);
       reservationReference = db.collection("businesses").doc(businessId).collection("reservations").doc(reservationId);
       existingReservation = await transaction.get(reservationReference);
     }

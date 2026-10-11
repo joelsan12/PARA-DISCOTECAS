@@ -39,10 +39,10 @@ export function canClubAccessFeature(
 
   // 4. Fallback canónico por tier de plan
   const planId = club.plan_id;
-  if (planId === 'enterprise' || planId === 'beta_vip') {
-    return true; // Plan Empresarial y Beta Privada VIP disponen de todas las capacidades operativas
+  if (planId === 'enterprise' || planId === 'beta_vip' || planId === 'black_vip') {
+    return true; // Plan Empresarial, Beta Privada VIP y Black VIP disponen de todas las capacidades operativas
   }
-  if (planId === 'pro') {
+  if (planId === 'pro' || planId === 'club_pro') {
     const proAllowed: FeatureFlag[] = [
       'RESERVATIONS',
       'EVENTS',
@@ -50,10 +50,21 @@ export function canClubAccessFeature(
       'TABLE_SELECTION',
       'ONLINE_PAYMENT',
       'QR_CHECKIN',
+      'STAFF_MANAGEMENT',
     ];
     return proAllowed.includes(feature);
   }
-  if (planId === 'basic') {
+  if (planId === 'starter') {
+    const starterAllowed: FeatureFlag[] = [
+      'RESERVATIONS',
+      'EVENTS',
+      'FLOOR_PLAN',
+      'TABLE_SELECTION',
+      'QR_CHECKIN',
+    ];
+    return starterAllowed.includes(feature);
+  }
+  if (planId === 'basic' || planId === 'free') {
     const basicAllowed: FeatureFlag[] = ['RESERVATIONS', 'EVENTS'];
     return basicAllowed.includes(feature);
   }
@@ -142,4 +153,16 @@ export function isDoorAccessAllowed(
   plan: Plan | undefined
 ): boolean {
   return canClubAccessFeature(club, plan, 'QR_CHECKIN', ['qr_checkin', 'puerta_qr', 'scanner']);
+}
+
+/**
+ * Valida si un rol de staff o superadministrador tiene permisos para emitir
+ * reembolsos transaccionales en la pasarela de pagos (AGENTS Fase C).
+ * Requiere rol finance, manager u owner; bloquea a door.
+ */
+export function canStaffRefund(staffRole?: string, isSuperAdmin?: boolean): boolean {
+  if (isSuperAdmin === true) return true;
+  if (!staffRole) return false;
+  const role = staffRole.toLowerCase();
+  return role === 'finance' || role === 'manager' || role === 'owner';
 }

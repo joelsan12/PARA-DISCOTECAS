@@ -13,6 +13,16 @@ export declare const upsertBusinessEvent: import("firebase-functions/v2/https").
 }>, unknown>;
 export declare const getPaymentAccount: import("firebase-functions/v2/https").CallableFunction<any, Promise<Record<string, unknown>>, unknown>;
 export declare const configurePaymentAccount: import("firebase-functions/v2/https").CallableFunction<any, Promise<Record<string, unknown>>, unknown>;
+export declare const listPaymentTransactions: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    transactions: Array<Record<string, unknown>>;
+}>, unknown>;
+export declare const createPaymentRefund: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    replay: boolean;
+    status: string;
+    refundId: string;
+}>, unknown>;
 export declare const requestOtp: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
     challengeId: string;
     expiresAt: string;

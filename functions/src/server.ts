@@ -64,6 +64,8 @@ const CALLABLE_NAMES = [
   "upsertBusinessEvent",
   "getPaymentAccount",
   "configurePaymentAccount",
+  "listPaymentTransactions",
+  "createPaymentRefund",
   "requestOtp",
   "verifyOtp",
   "createBusinessCustomerProfile",

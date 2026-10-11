@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { SaasNavbar } from './SaasNavbar';
 import { SaasFooterBar } from './SaasFooterBar';
 import { SaasLeadModal } from './SaasLeadModal';
+import { INITIAL_PLANS } from '../../data/mockPlans';
 import '../../styles/saas-landing/index.css';
 
 export function SaasPricingPage() {
@@ -16,76 +17,23 @@ export function SaasPricingPage() {
     setIsModalOpen(true);
   };
 
-  const plans = [
-    {
-      name: 'Lounge Free',
-      desc: 'Para bares, pubs y rooftops pequeños que están digitalizando sus reservas.',
-      price: '$0',
-      cycle: '/mes',
-      featured: false,
-      features: [
-        'Hasta 8 mesas en sala',
-        '2 eventos por mes',
-        'Reservas enviadas al WhatsApp del club',
-        '1 usuario administrador',
-        'Soporte por correo electrónico',
-      ],
-      ctaText: 'Comenzar Gratis',
-      ctaClass: 'btn-secondary',
-    },
-    {
-      name: 'Starter Club',
-      desc: 'Para discotecas en crecimiento que necesitan control de entradas con QR en puerta.',
-      price: billingCycle === 'annual' ? '$50' : '$5',
-      cycle: billingCycle === 'annual' ? 'USD / año' : 'USD / mes',
-      featured: false,
-      features: [
-        'Hasta 16 mesas con plano cenital',
-        '6 eventos por mes',
-        '1 escáner de puerta QR PWA',
-        'Holds automáticos de 12 minutos',
-        '2 usuarios del personal',
-        'Soporte estándar',
-      ],
-      ctaText: 'Elegir Starter',
-      ctaClass: 'btn-secondary',
-    },
-    {
-      name: 'Club Pro',
-      badge: 'MÁS POPULAR',
-      desc: 'El estándar de la industria nocturna: anticipos bancarios directos y 4 puertas activas.',
-      price: billingCycle === 'annual' ? '$150' : '$15',
-      cycle: billingCycle === 'annual' ? 'USD / año' : 'USD / mes',
-      featured: true,
-      features: [
-        'Hasta 45 mesas con editor de planos',
-        'Eventos ilimitados todo el año',
-        'Pasarela Kushki: anticipos directos a tu banco',
-        '4 terminales de puerta simultáneas',
-        'Reingreso con Passkey Biométrica',
-        'Soporte prioritario WhatsApp',
-      ],
-      ctaText: 'Elegir Club Pro',
-      ctaClass: 'btn-gold',
-    },
-    {
-      name: 'Black VIP',
-      desc: 'Macro-discotecas, cadenas de ocio, palcos y festivales multi-sala de alta escala.',
-      price: billingCycle === 'annual' ? '$450' : '$45',
-      cycle: billingCycle === 'annual' ? 'USD / año' : 'USD / mes',
-      featured: false,
-      features: [
-        'Mesas ilimitadas (sin ningún tope)',
-        'Soporte multi-sala (Rooftop, VIP, Main Room)',
-        'Terminales de puerta ilimitadas',
-        'Bitácora forense de auditoría en vivo',
-        'SLA garantizado 99.9% a las 02:00 AM',
-        'Atención 24/7 con ingeniero dedicado',
-      ],
-      ctaText: 'Elegir Black VIP',
-      ctaClass: 'btn-secondary',
-    },
-  ];
+  const plans = INITIAL_PLANS
+    .filter(p => ['free', 'starter', 'club_pro', 'black_vip'].includes(p.id))
+    .map(p => ({
+      name: p.name,
+      desc: p.description || '',
+      price: p.monthly_price === 0
+        ? '$0'
+        : (billingCycle === 'annual' ? `$${p.annual_price}` : `$${p.monthly_price}`),
+      cycle: p.monthly_price === 0
+        ? '/mes'
+        : (billingCycle === 'annual' ? 'USD / año' : 'USD / mes'),
+      featured: p.id === 'club_pro',
+      badge: p.id === 'club_pro' ? 'MÁS POPULAR' : undefined,
+      features: p.features,
+      ctaText: p.id === 'free' ? 'Comenzar Gratis' : `Elegir ${p.name}`,
+      ctaClass: p.id === 'club_pro' ? 'btn-gold' : 'btn-secondary',
+    }));
 
   return (
     <div className="saas-page">

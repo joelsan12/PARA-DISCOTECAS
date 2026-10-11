@@ -6,7 +6,16 @@ import type {
   ReservationItem
 } from './domain';
 
-export type SubscriptionPlanId = 'basic' | 'pro' | 'enterprise' | (string & {});
+export type SubscriptionPlanId =
+  | 'free'
+  | 'starter'
+  | 'club_pro'
+  | 'black_vip'
+  | 'beta_vip'
+  | 'basic'
+  | 'pro'
+  | 'enterprise'
+  | (string & {});
 
 export type ProposalStatus = 'PENDING' | 'IN_REVIEW' | 'IMPLEMENTED' | 'REJECTED';
 
@@ -40,6 +49,8 @@ export interface Plan {
   id: SubscriptionPlanId;
   name: string;
   monthly_price: number;
+  annual_price?: number;
+  description?: string;
   max_events_per_month: number;
   features: string[];
   plan_tier?: SubscriptionPlanTier;
@@ -158,6 +169,8 @@ export interface Reservation {
   status: TableReservationStatus;
   payment_method: 'credit_card' | 'transfer' | 'cash_door';
   payment_status: 'paid' | 'pending';
+  paymentState?: string;
+  refundStatus?: string;
   qr_token: string;
   hold_expires_at: number; // epoch ms
   checked_in_at?: string;

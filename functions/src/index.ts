@@ -18,6 +18,7 @@ import { configurePaymentAccountFor, getPaymentAccountFor } from "./paymentAccou
 import { registerAndActivateBetaClub, parseRegisterBetaInput } from "./betaRegistration.js";
 import { parseFeedbackInput, submitFeedbackAndNotify } from "./feedback.js";
 import { upsertBusinessEventFor } from "./events.js";
+import { listPaymentTransactionsFor, createPaymentRefundFor } from "./paymentAdmin.js";
 
 export { releaseHoldTask };
 
@@ -91,6 +92,32 @@ export const configurePaymentAccount = onCall({
   try {
     assertCallableAppCheck(request);
     return await configurePaymentAccountFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const listPaymentTransactions = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await listPaymentTransactionsFor(request);
+  } catch (error) {
+    return callableError(error);
+  }
+});
+
+export const createPaymentRefund = onCall({
+  enforceAppCheck: runtimeConfig.appCheckEnforced,
+  consumeAppCheckToken: runtimeConfig.appCheckEnforced,
+  region: runtimeConfig.region
+}, async (request) => {
+  try {
+    assertCallableAppCheck(request);
+    return await createPaymentRefundFor(request);
   } catch (error) {
     return callableError(error);
   }

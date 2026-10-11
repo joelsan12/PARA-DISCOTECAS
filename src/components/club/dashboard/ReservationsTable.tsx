@@ -31,6 +31,48 @@ const formatEntryTime = (value?: string) => {
   });
 };
 
+const getPaymentBadge = (res: Reservation) => {
+  const state = (res.paymentState || (res.payment_status === 'paid' ? 'PAID' : 'PENDING')).toUpperCase();
+  if (res.refundStatus === 'REQUIRED' || state === 'REFUND_REQUIRED') {
+    return {
+      label: 'REEMBOLSO REQ.',
+      bg: 'rgba(239, 68, 68, 0.2)',
+      color: '#f87171',
+      border: '1px solid rgba(239, 68, 68, 0.4)'
+    };
+  }
+  if (res.refundStatus === 'COMPLETED' || state === 'REFUNDED') {
+    return {
+      label: 'REEMBOLSADO',
+      bg: 'rgba(168, 85, 247, 0.15)',
+      color: '#c084fc',
+      border: '1px solid rgba(168, 85, 247, 0.3)'
+    };
+  }
+  if (state === 'PAID') {
+    return {
+      label: 'PAGADO',
+      bg: 'rgba(34, 197, 94, 0.15)',
+      color: '#4ade80',
+      border: '1px solid rgba(34, 197, 94, 0.3)'
+    };
+  }
+  if (state === 'FAILED') {
+    return {
+      label: 'FALLIDO',
+      bg: 'rgba(239, 68, 68, 0.15)',
+      color: '#fca5a5',
+      border: '1px solid rgba(239, 68, 68, 0.3)'
+    };
+  }
+  return {
+    label: res.payment_method === 'cash_door' ? 'PUERTA' : 'PENDIENTE',
+    bg: 'rgba(234, 179, 8, 0.15)',
+    color: '#facc15',
+    border: '1px solid rgba(234, 179, 8, 0.3)'
+  };
+};
+
 export const ReservationsTable = ({ reservations }: Props) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'CONFIRMED' | 'CHECKED_IN'>('ALL');
@@ -216,6 +258,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
               <th style={{ padding: '12px 10px' }}>CONTACTO</th>
               <th style={{ padding: '12px 10px' }}>INVITADOS</th>
               <th style={{ padding: '12px 10px' }}>ANTICIPO</th>
+              <th style={{ padding: '12px 10px' }}>PAGO</th>
               <th style={{ padding: '12px 10px' }}>ESTADO</th>
               <th style={{ padding: '12px 10px', textAlign: 'right' }}>INGRESO</th>
             </tr>
@@ -335,6 +378,30 @@ export const ReservationsTable = ({ reservations }: Props) => {
                   color: res.deposit_amount > 0 ? '#34d399' : 'var(--text-dim)'
                 }}>
                   {res.deposit_amount > 0 ? formatUsd(res.deposit_amount) : '—'}
+                </td>
+
+                {/* Pago (Fase C) */}
+                <td style={{ padding: '14px 10px' }}>
+                  {(() => {
+                    const badge = getPaymentBadge(res);
+                    return (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.04em',
+                          background: badge.bg,
+                          color: badge.color,
+                          border: badge.border,
+                        }}
+                      >
+                        {badge.label}
+                      </span>
+                    );
+                  })()}
                 </td>
 
                 {/* Estado */}

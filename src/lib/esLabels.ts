@@ -49,6 +49,14 @@ const roleLabels: Record<string, string> = {
 };
 
 const planLabels: Record<string, string> = {
+  free: 'Lounge Free',
+  FREE: 'Lounge Free',
+  starter: 'Starter Club',
+  STARTER: 'Starter Club',
+  club_pro: 'Club Pro',
+  CLUB_PRO: 'Club Pro',
+  black_vip: 'Black VIP',
+  BLACK_VIP: 'Black VIP',
   basic: 'Básico',
   BASIC: 'Básico',
   pro: 'Profesional',

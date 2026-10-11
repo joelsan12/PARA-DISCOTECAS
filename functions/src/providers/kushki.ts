@@ -5,7 +5,7 @@
  *  - WebCheckout: POST /smartlink/v1/webcheckout
  *  - Webhooks: X-Kushki-Signature, X-Kushki-SimpleSignature, X-Kushki-Id, X-Kushki-Key
  *  - Transacciones: GET /v1/transactions/{transactionId}
- *  - Reembolsos: POST /v1/refund/{transactionId}
+ *  - Reembolsos: POST /v1/transactions/{transactionId}/refund (alternativa: /v1/refund/{transactionId})
  *
  * Reglas de seguridad (AGENTS.md):
  *  - Raw body preservado byte-exacto para verificación HMAC.
