@@ -12,11 +12,14 @@ import {
   Edit2,
   Ban,
   Sparkles,
-  Layers
+  Layers,
+  RefreshCw
 } from 'lucide-react';
 import type { Club } from '../../../types';
 import type { AdminStaffSession } from '../../../lib/adminAuth';
 import { callFunctions } from '../../../lib/functionsClient';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../../lib/firebase';
 
 export interface StaffItem {
   uid: string;
@@ -93,13 +96,44 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
     setLoading(true);
     setError(null);
     try {
+      // 1. Consulta primaria al backend seguro
       const res = await callFunctions<{ staff: StaffItem[] }>('listBusinessStaff', {
         businessId: activeClub.id
       });
       setStaffList(res.staff || []);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'No se pudo cargar la lista de personal.';
-      setError(msg);
+      return;
+    } catch {
+      // 2. Consulta de respaldo directo en Firestore si el backend está reiniciando
+      try {
+        if (db) {
+          const snapshot = await getDocs(collection(db, 'businesses', activeClub.id, 'staff'));
+          if (!snapshot.empty) {
+            const list: StaffItem[] = snapshot.docs.map(docSnap => {
+              const data = docSnap.data();
+              return {
+                uid: docSnap.id,
+                businessId: activeClub.id,
+                name: (data.name as string) || 'Colaborador',
+                email: (data.email as string) || '',
+                whatsapp: (data.whatsapp as string) || null,
+                role: (data.role as StaffItem['role']) || 'waiter',
+                status: (data.status as StaffItem['status']) || 'ACTIVE',
+                assignedZones: Array.isArray(data.assignedZones) ? data.assignedZones : [],
+                createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,
+                updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
+              };
+            });
+            setStaffList(list);
+            return;
+          }
+        }
+      } catch {
+        // Fallback de Firestore no disponible
+      }
+
+      setError(
+        'El servicio de gestión de personal no pudo sincronizarse. Verifica tu conexión con el backend de Nightflow o pulsa en reintentar.'
+      );
     } finally {
       setLoading(false);
     }
@@ -342,14 +376,43 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
         </div>
       ) : error ? (
         <div style={{
-          padding: '16px',
+          padding: '16px 20px',
           borderRadius: '12px',
-          background: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
+          background: 'rgba(239, 68, 68, 0.08)',
+          border: '1px solid rgba(239, 68, 68, 0.25)',
           color: '#f87171',
-          fontSize: '0.86rem'
+          fontSize: '0.86rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px'
         }}>
-          {error}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <AlertTriangle size={18} color="#ef4444" />
+            <span>{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => void loadStaff()}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              color: '#ffffff',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <RefreshCw size={13} />
+            <span>Reintentar Conexión</span>
+          </button>
         </div>
       ) : filteredStaff.length === 0 ? (
         <div style={{
