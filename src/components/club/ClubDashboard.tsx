@@ -193,8 +193,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards (oculto en módulos financieros: Cobros y Pasarelas) */}
-      {activeTab !== 'PAYMENTS' && activeTab !== 'TRANSACTIONS' && (
+      {/* Top Bar & 4 Executive KPI Cards (oculto en módulos comerciales/financieros y suscripción) */}
+      {activeTab !== 'PAYMENTS' && activeTab !== 'TRANSACTIONS' && activeTab !== 'SUBSCRIPTION' && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}
