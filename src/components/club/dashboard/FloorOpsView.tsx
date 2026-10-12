@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Compass,
+  MonitorPlay,
   Wine,
   Bell,
   AlertCircle,
@@ -19,18 +20,28 @@ import { useClubStore } from '../../../store/clubStore';
 import { subscribeOperations, type OperationalTableItem } from '../../../services/operationsService';
 import { subscribeVenueConciergeRequests } from '../../../services/conciergeService';
 import { InteractiveFloorPlan, type TableStateOverride } from '../../client/InteractiveFloorPlan';
+import { OperatingTablesList } from './OperatingTablesList';
 import { callFunctions } from '../../../lib/functionsClient';
-import { canStaffSettleTab } from '../../../lib/clubPermissions';
+import { canStaffSettleTab, isDashboardTabAllowed, normalizeCanonicalPlanId } from '../../../lib/clubPermissions';
 import { normalizeEcuadorPhone } from '../../../lib/formatEcuador';
 import type { ConciergeRequestRecord } from '../../../types/saas';
 
 interface FloorOpsViewProps {
   activeClub: Club;
-  session: AdminStaffSession;
+  session?: AdminStaffSession;
+  initialMode?: 'MAP' | 'CONCIERGE';
 }
 
-export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session }) => {
+export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session, initialMode }) => {
   const store = useClubStore();
+  const activePlan = store.plans.find(p => p.id === activeClub?.plan_id)
+    || store.plans.find(p => normalizeCanonicalPlanId(p.id) === normalizeCanonicalPlanId(activeClub?.plan_id));
+  const canAccessConcierge = isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan);
+
+  const [modeOverride, setModeOverride] = useState<'MAP' | 'CONCIERGE' | null>(null);
+  const opsMode = modeOverride ?? (initialMode || (store.dashboardTab === 'FLOOR_OPS' && canAccessConcierge ? 'CONCIERGE' : 'MAP'));
+  const setOpsMode = (mode: 'MAP' | 'CONCIERGE') => setModeOverride(mode);
+
   const clubTables = store.tables.filter(t => t.club_id === activeClub.id);
   const clubEvents = store.events.filter(e => e.club_id === activeClub.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
@@ -308,57 +319,159 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
         </div>
       )}
 
-      {/* ── Leyenda de Estados en Vivo ── */}
+      {/* ── Cabecera Ejecutiva Unificada: Sala & Concierge ── */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(14, 20, 30, 0.95) 0%, rgba(8, 11, 18, 0.98) 100%)',
         border: '1px solid rgba(229, 181, 79, 0.25)',
         borderRadius: '16px',
         padding: '16px 20px',
         display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '12px'
+        flexDirection: 'column',
+        gap: '14px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'rgba(229, 181, 79, 0.12)',
-            border: '1px solid rgba(229, 181, 79, 0.35)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#e5b54f'
-          }}>
-            <Compass size={20} />
+        {/* Fila Superior: Título + Selector de Modo Segmentado */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '14px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '11px',
+              background: 'rgba(229, 181, 79, 0.12)',
+              border: '1px solid rgba(229, 181, 79, 0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#e5b54f',
+              boxShadow: '0 0 16px rgba(229, 181, 79, 0.15)',
+            }}>
+              {opsMode === 'MAP' ? <MonitorPlay size={20} /> : <Compass size={20} />}
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#f4f1ea' }}>
+                  {opsMode === 'MAP' ? 'Sala en Vivo · Plano & Mesas' : 'Piso & Concierge · Control de Operaciones'}
+                </h3>
+                <span style={{
+                  fontSize: '0.62rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  padding: '2px 7px',
+                  borderRadius: '999px',
+                  background: 'rgba(52, 211, 153, 0.12)',
+                  color: '#34d399',
+                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                }}>
+                  LIVE
+                </span>
+              </div>
+              <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+                {activeClub.name} · {clubTables.length} mesas configuradas · Sincronización en vivo
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#f4f1ea' }}>
-              Piso &amp; Concierge · Control de Operaciones
-            </h3>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#94a3b8' }}>
-              {activeClub.name} · {clubTables.length} mesas configuradas · Sincronización en vivo (§6 / §7)
-            </p>
-          </div>
+
+          {/* Selector Segmentado de Modo (Colores VIP Nightflow) */}
+          {canAccessConcierge && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px',
+              borderRadius: '10px',
+              background: 'rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(229, 181, 79, 0.22)',
+            }}>
+              <button
+                type="button"
+                onClick={() => setOpsMode('MAP')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '7px',
+                  padding: '7px 14px',
+                  borderRadius: '7px',
+                  border: opsMode === 'MAP' ? '1px solid rgba(229, 181, 79, 0.45)' : '1px solid transparent',
+                  background: opsMode === 'MAP' ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.2) 0%, rgba(229, 181, 79, 0.08) 100%)' : 'transparent',
+                  color: opsMode === 'MAP' ? '#f4f1ea' : 'rgba(255, 255, 255, 0.55)',
+                  fontSize: '0.8rem',
+                  fontWeight: opsMode === 'MAP' ? 800 : 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  boxShadow: opsMode === 'MAP' ? '0 2px 10px rgba(229, 181, 79, 0.18)' : 'none',
+                }}
+              >
+                <MonitorPlay size={14} style={{ color: opsMode === 'MAP' ? '#e5b54f' : 'inherit' }} />
+                <span>Sala en Vivo</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOpsMode('CONCIERGE')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '7px',
+                  padding: '7px 14px',
+                  borderRadius: '7px',
+                  border: opsMode === 'CONCIERGE' ? '1px solid rgba(229, 181, 79, 0.45)' : '1px solid transparent',
+                  background: opsMode === 'CONCIERGE' ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.2) 0%, rgba(229, 181, 79, 0.08) 100%)' : 'transparent',
+                  color: opsMode === 'CONCIERGE' ? '#f4f1ea' : 'rgba(255, 255, 255, 0.55)',
+                  fontSize: '0.8rem',
+                  fontWeight: opsMode === 'CONCIERGE' ? 800 : 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  boxShadow: opsMode === 'CONCIERGE' ? '0 2px 10px rgba(229, 181, 79, 0.18)' : 'none',
+                }}
+              >
+                <Compass size={14} style={{ color: opsMode === 'CONCIERGE' ? '#e5b54f' : 'inherit' }} />
+                <span>Piso &amp; Concierge</span>
+                {pendingRequestsCount > 0 && (
+                  <span style={{
+                    padding: '1px 6px',
+                    borderRadius: '999px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)'
+                  }}>
+                    {pendingRequestsCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Legend Badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        {/* Fila Inferior: Contadores de Estados de Mesas */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          flexWrap: 'wrap',
+          paddingTop: '10px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+        }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
             padding: '4px 10px',
             borderRadius: '8px',
-            background: 'rgba(52, 211, 153, 0.12)',
-            border: '1px solid rgba(52, 211, 153, 0.3)',
+            background: 'rgba(52, 211, 153, 0.1)',
+            border: '1px solid rgba(52, 211, 153, 0.25)',
             fontSize: '0.72rem',
             color: '#34d399',
             fontWeight: 700
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 8px #34d399' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
             <span>En Sala ({counts.inside})</span>
           </div>
 
@@ -368,13 +481,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             gap: '6px',
             padding: '4px 10px',
             borderRadius: '8px',
-            background: 'rgba(229, 181, 79, 0.12)',
-            border: '1px solid rgba(229, 181, 79, 0.3)',
+            background: 'rgba(229, 181, 79, 0.1)',
+            border: '1px solid rgba(229, 181, 79, 0.25)',
             fontSize: '0.72rem',
             color: '#e5b54f',
             fontWeight: 700
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e5b54f' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#e5b54f' }} />
             <span>Reservada ({counts.confirmed})</span>
           </div>
 
@@ -384,13 +497,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             gap: '6px',
             padding: '4px 10px',
             borderRadius: '8px',
-            background: 'rgba(245, 158, 11, 0.12)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
+            background: 'rgba(245, 158, 11, 0.1)',
+            border: '1px solid rgba(245, 158, 11, 0.25)',
             fontSize: '0.72rem',
             color: '#fbbf24',
             fontWeight: 700
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#f59e0b' }} />
             <span>Hold ({counts.held})</span>
           </div>
 
@@ -400,13 +513,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             gap: '6px',
             padding: '4px 10px',
             borderRadius: '8px',
-            background: 'rgba(168, 85, 247, 0.12)',
-            border: '1px solid rgba(168, 85, 247, 0.3)',
+            background: 'rgba(168, 85, 247, 0.1)',
+            border: '1px solid rgba(168, 85, 247, 0.25)',
             fontSize: '0.72rem',
             color: '#c084fc',
             fontWeight: 700
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#a855f7' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#a855f7' }} />
             <span>Cerrada ({counts.settled})</span>
           </div>
 
@@ -416,13 +529,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             gap: '6px',
             padding: '4px 10px',
             borderRadius: '8px',
-            background: 'rgba(100, 116, 139, 0.12)',
-            border: '1px solid rgba(100, 116, 139, 0.3)',
+            background: 'rgba(100, 116, 139, 0.1)',
+            border: '1px solid rgba(100, 116, 139, 0.25)',
             fontSize: '0.72rem',
             color: '#cbd5e1',
             fontWeight: 700
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#64748b' }} />
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#64748b' }} />
             <span>Disponible ({counts.available})</span>
           </div>
         </div>
@@ -837,22 +950,34 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             </div>
           ) : (
             <div style={{
-              background: 'rgba(15, 23, 42, 0.5)',
-              border: '1px dashed rgba(255, 255, 255, 0.08)',
-              borderRadius: '16px',
-              padding: '24px',
-              textAlign: 'center',
-              color: '#64748b'
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '12px 18px',
+              borderRadius: '12px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              color: '#94a3b8',
+              fontSize: '0.78rem',
+              fontWeight: 600,
             }}>
-              <Compass size={28} style={{ margin: '0 auto 8px auto', opacity: 0.4 }} />
-              <p style={{ margin: 0, fontWeight: 700, fontSize: '0.84rem' }}>
-                Selecciona cualquier mesa en el plano para inspeccionar su reserva, consumo y peticiones.
-              </p>
+              <Compass size={14} style={{ color: '#e5b54f' }} />
+              <span>Toca cualquier mesa en el plano para ver comanda, pedidos y gestionar cuenta.</span>
             </div>
           )}
         </div>
 
-        {/* Columna Derecha: Cola de Concierge en Vivo */}
+        {/* Columna Derecha: Dinámica según modo seleccionado */}
+        {opsMode === 'MAP' ? (
+          <OperatingTablesList
+            tables={clubTables}
+            eventPricings={eventPricings}
+            operationalTables={operationalTables}
+            session={session}
+            activeClubId={activeClub.id}
+          />
+        ) : (
         <div style={{
           background: 'linear-gradient(180deg, rgba(16, 20, 30, 0.95) 0%, rgba(9, 11, 16, 0.98) 100%)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -1119,6 +1244,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session 
             </div>
           )}
         </div>
+        )}
       </div>
     </div>
   );
