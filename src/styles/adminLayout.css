@@ -142,12 +142,14 @@
   font-size: 0.57rem;
   font-weight: 800;
   letter-spacing: 0.06em;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 9999px;
   background: rgba(229, 181, 79, 0.1);
   color: rgba(229, 181, 79, 0.9);
   border: 1px solid rgba(229, 181, 79, 0.25);
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .admin-nav-item-tag--live {

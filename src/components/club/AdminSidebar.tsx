@@ -51,6 +51,16 @@ interface AdminSidebarProps {
   onCloseMobile: () => void;
 }
 
+function formatPlanSidebarTag(planId?: string): string {
+  const raw = (planId || '').toLowerCase();
+  if (raw.includes('beta')) return 'BETA VIP';
+  if (raw.includes('black') || raw.includes('enterprise')) return 'VIP';
+  if (raw.includes('pro')) return 'PRO';
+  if (raw.includes('starter') || raw.includes('basic')) return 'STARTER';
+  if (raw.includes('free') || raw.includes('lounge')) return 'FREE';
+  return 'VIP';
+}
+
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   currentView,
   dashboardTab,
@@ -404,17 +414,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     <span className="admin-nav-item-icon">
                       <Crown size={15} />
                     </span>
-                    <span>Mi Plan &amp; Propuestas</span>
+                    <span>Mi Plan</span>
                   </div>
-                  {activeClub.custom_features && activeClub.custom_features.length > 0 ? (
-                    <span className="admin-nav-item-tag admin-nav-item-tag--live" style={{ background: 'rgba(229, 181, 79, 0.2)', color: '#e5b54f', borderColor: 'rgba(229, 181, 79, 0.4)' }}>
-                      VIP
-                    </span>
-                  ) : (
-                    <span className="admin-nav-item-tag">
-                      {esPlan(activeClub.plan_id)}
-                    </span>
-                  )}
+                  <span
+                    className="admin-nav-item-tag"
+                    style={{
+                      background: 'rgba(229, 181, 79, 0.15)',
+                      color: '#e5b54f',
+                      borderColor: 'rgba(229, 181, 79, 0.35)',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {activeClub.custom_features && activeClub.custom_features.length > 0
+                      ? 'VIP'
+                      : formatPlanSidebarTag(activeClub.plan_id)}
+                  </span>
                 </button>
               )}
             </div>
