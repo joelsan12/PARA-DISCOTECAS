@@ -13,7 +13,6 @@ import {
   Receipt,
   FileText,
   Printer,
-  Calendar,
 } from 'lucide-react';
 import { useClubStore } from '../../../store/clubStore';
 import type { Club, SubscriptionPlanId } from '../../../types';
@@ -472,319 +471,186 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
       )}
 
       {/* 2. Sección Ejecutiva: Plan Actual, Vigencia & Factura Oficial del Plan */}
+      {/* 2. Sección Ejecutiva Simplificada: Plan Actual, Vigencia & Factura SRI */}
       <div
         className="glass-card"
         style={{
-          background: 'linear-gradient(180deg, rgba(14, 15, 23, 0.98) 0%, rgba(9, 10, 15, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.28)',
-          borderRadius: '16px',
-          padding: '24px',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.45)',
+          background: 'linear-gradient(135deg, rgba(17, 18, 27, 0.95) 0%, rgba(10, 11, 18, 0.98) 100%)',
+          border: '1px solid rgba(229, 181, 79, 0.22)',
+          borderRadius: '14px',
+          padding: '20px 24px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
         }}
       >
+        {/* Cabecera limpia */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '20px',
+            marginBottom: '16px',
             flexWrap: 'wrap',
-            gap: '12px',
+            gap: '10px',
           }}
         >
-          <div>
-            <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Receipt size={20} color="var(--brand-gold)" />
-              <span>Tu Membresía Actual, Vigencia &amp; Facturación</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Crown size={17} color="var(--brand-gold)" />
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: '#fff', letterSpacing: '-0.01em' }}>
+              Tu Plan &amp; Facturación
             </h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '3px 0 0 0' }}>
-              Consulta el plan contratado por tu discoteca, el tiempo restante del ciclo y el comprobante fiscal electrónico.
-            </p>
           </div>
+
           <span
             style={{
-              fontSize: '0.72rem',
-              fontWeight: 800,
-              padding: '4px 10px',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              padding: '3px 10px',
               borderRadius: '9999px',
               background: 'rgba(34, 197, 94, 0.12)',
-              color: '#4ade80',
+              color: '#34d399',
               border: '1px solid rgba(34, 197, 94, 0.3)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }} />
-            <span>ESTADO: {isFounder ? 'VITALICIO FUNDADOR' : isTrial ? 'PRUEBA GRATUITA' : isPastDue ? 'PAGO PENDIENTE' : 'ACTIVO / AL DÍA'}</span>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
+            <span>{isFounder ? 'VITALICIO FUNDADOR' : isTrial ? 'PRUEBA GRATUITA' : isPastDue ? 'PAGO PENDIENTE' : 'ACTIVO / AL DÍA'}</span>
           </span>
         </div>
 
-        {/* Grid de 3 Columnas Ejecutivas */}
+        {/* 3 Bloques Simples y Directos */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '16px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '14px',
           }}
         >
-          {/* Card 1: Plan Actual & Modalidad */}
+          {/* Bloque 1: Plan Actual */}
           <div
             style={{
-              background: 'rgba(229, 181, 79, 0.04)',
-              border: '1px solid rgba(229, 181, 79, 0.22)',
-              borderRadius: '12px',
-              padding: '18px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(229, 181, 79, 0.15)',
+              borderRadius: '10px',
+              padding: '16px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              gap: '14px',
+              gap: '10px',
             }}
           >
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-gold)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Crown size={14} />
-                  <span>PLAN QUE TIENES AHORA</span>
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '2px 7px',
-                    borderRadius: '4px',
-                    background: 'rgba(255, 255, 255, 0.06)',
-                    color: '#fff',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                  }}
-                >
-                  MODALIDAD {isAnnualPlan ? 'ANUAL' : 'MENSUAL'}
-                </span>
-              </div>
-
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-gold)' }}>
+                PLAN ACTUAL
+              </span>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
                 {esPlan(activePlanId)}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                {isFounder
-                  ? 'Membresía preferencial vitalicia sin expiración asignada para fundadores.'
-                  : `Plan ${isAnnualPlan ? 'anual con tarifa preferencial (ahorro de 2 meses)' : 'mensual recurrente'} para ${activeClub.name}.`}
+              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+                Modalidad {isAnnualPlan ? 'Anual' : 'Mensual'} &bull; {isFounder || planRawAmount === 0 ? 'USD 0.00 (Vitalicio)' : isAnnualPlan ? `${formatUsd(planRawAmount)} / año` : `${formatUsd(planRawAmount)} / mes`}
+              </p>
+            </div>
+            <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.45)' }}>
+              {isFounder ? 'Acceso permanente para fundadores' : `Suscripción para ${activeClub.name}`}
+            </div>
+          </div>
+
+          {/* Bloque 2: Tiempo Restante */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(59, 130, 246, 0.15)',
+              borderRadius: '10px',
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: '10px',
+            }}
+          >
+            <div>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#60a5fa' }}>
+                TIEMPO RESTANTE
+              </span>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isFounder ? '#34d399' : '#60a5fa', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
+                {isFounder ? 'VITALICIO' : `${effectiveDaysLeft} DÍAS`}
+              </div>
+              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+                {isFounder ? 'Sin fecha de vencimiento asignada' : `Próximo corte: ${formatEcuadorDate(periodEndTimestamp)}`}
               </p>
             </div>
 
-            <div
-              style={{
-                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                paddingTop: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                fontSize: '0.74rem',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Cuota pactada:</span>
-                <span style={{ color: 'var(--brand-gold)', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
-                  {isFounder || planRawAmount === 0
-                    ? 'USD 0.00 / Vitalicio'
-                    : isAnnualPlan
-                    ? `${formatUsd(planRawAmount)} / año`
-                    : `${formatUsd(planRawAmount)} / mes`}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Método de pago:</span>
-                <span style={{ color: '#fff' }}>
-                  {subDetails?.paymentMethod === 'payphone_token' || subDetails?.paymentMethod === 'payphone_sale'
-                    ? 'Tarjeta de Crédito (PayPhone)'
-                    : subDetails?.paymentMethod === 'transfer'
-                    ? 'Transferencia Bancaria'
-                    : isFounder
-                    ? 'Bypass Fundador VIP'
-                    : 'Sin costo / Directo'}
-                </span>
+            {/* Barra fina de progreso */}
+            <div>
+              <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.06)', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    width: `${percentUsed}%`,
+                    height: '100%',
+                    background: isFounder
+                      ? 'linear-gradient(90deg, #e5b54f, #34d399)'
+                      : 'linear-gradient(90deg, #38bdf8, #e5b54f)',
+                    borderRadius: '2px',
+                  }}
+                />
               </div>
             </div>
           </div>
 
-          {/* Card 2: Cuánto Tiempo le Queda */}
+          {/* Bloque 3: Factura SRI */}
           <div
             style={{
-              background: 'rgba(59, 130, 246, 0.04)',
-              border: '1px solid rgba(59, 130, 246, 0.22)',
-              borderRadius: '12px',
-              padding: '18px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(16, 185, 129, 0.15)',
+              borderRadius: '10px',
+              padding: '16px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              gap: '14px',
+              gap: '10px',
             }}
           >
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Clock size={14} />
-                  <span>CUÁNTO TIEMPO LE QUEDA</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#34d399' }}>
+                  COMPROBANTE SRI
                 </span>
-                <span
-                  style={{
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '2px 7px',
-                    borderRadius: '4px',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    color: '#93c5fd',
-                    border: '1px solid rgba(59, 130, 246, 0.25)',
-                  }}
-                >
-                  CICLO: {cycleTotalDays} DÍAS
-                </span>
-              </div>
-
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#60a5fa', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
-                {isFounder ? 'VITALICIO' : `${effectiveDaysLeft} DÍAS RESTANTES`}
-              </div>
-              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                {isFounder
-                  ? 'Tu club cuenta con acceso permanente garantizado. No requiere renovaciones periódicas.'
-                  : `De tu ciclo de facturación ${isAnnualPlan ? 'anual (365 días)' : 'mensual (30 días)'}.`}
-              </p>
-            </div>
-
-            <div>
-              {/* Barra de progreso de vigencia */}
-              <div style={{ marginBottom: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', marginBottom: '4px' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Vigencia del ciclo:</span>
-                  <span style={{ color: '#fff', fontWeight: 700 }}>{isFounder ? '100% activa' : `${percentUsed}% transcurrido`}</span>
-                </div>
-                <div style={{ width: '100%', height: '6px', borderRadius: '3px', background: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
-                  <div
-                    style={{
-                      width: `${percentUsed}%`,
-                      height: '100%',
-                      background: isFounder
-                        ? 'linear-gradient(90deg, #e5b54f, #34d399)'
-                        : 'linear-gradient(90deg, #38bdf8, #e5b54f)',
-                      borderRadius: '3px',
-                      transition: 'width 0.3s ease',
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.72rem',
-                  color: 'rgba(255, 255, 255, 0.75)',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                  paddingTop: '8px',
-                }}
-              >
-                <Calendar size={12} color="var(--brand-gold)" />
-                <span>
-                  {isFounder
-                    ? 'Renovación automática vitalicia sin corte'
-                    : `Próximo corte: ${formatEcuadorDate(periodEndTimestamp)}`}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Factura de ese Plan (Mes o Anual) */}
-          <div
-            style={{
-              background: 'rgba(16, 185, 129, 0.04)',
-              border: '1px solid rgba(16, 185, 129, 0.22)',
-              borderRadius: '12px',
-              padding: '18px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              gap: '14px',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Receipt size={14} />
-                  <span>FACTURA / COMPROBANTE SRI</span>
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '2px 7px',
-                    borderRadius: '4px',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    color: '#4ade80',
-                    border: '1px solid rgba(16, 185, 129, 0.25)',
-                  }}
-                >
+                <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.1)', color: '#34d399' }}>
                   PAGADA
                 </span>
               </div>
-
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
                 {invoiceNumber}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
-                Emisor: NIGHTFLOW VIP S.A.S. (RUC: 0993345892001) para {activeClub.legal_profile?.legalName || activeClub.name}.
+              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+                Total: {formatUsd(totalAmount)} USD &bull; IVA 15% incluido
               </p>
             </div>
 
-            <div>
-              <div
-                style={{
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                  paddingTop: '8px',
-                  marginBottom: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px',
-                  fontSize: '0.72rem',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Subtotal ({isAnnualPlan ? '12 meses' : '1 mes'}):</span>
-                  <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{formatUsd(subtotalAmount)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>IVA 15% (Ecuador SRI):</span>
-                  <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{formatUsd(ivaAmount)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800 }}>
-                  <span style={{ color: '#fff' }}>Total Factura:</span>
-                  <span style={{ color: '#34d399', fontFamily: 'var(--font-mono)' }}>{formatUsd(totalAmount)} USD</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setInvoiceModalOpen(true)}
-                className="btn-secondary"
-                style={{
-                  width: '100%',
-                  padding: '7px 12px',
-                  fontSize: '0.74rem',
-                  fontWeight: 700,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  border: '1px solid rgba(229, 181, 79, 0.35)',
-                  background: 'rgba(229, 181, 79, 0.08)',
-                  color: 'var(--brand-gold)',
-                }}
-              >
-                <FileText size={13} />
-                <span>Ver Factura Digital SRI</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setInvoiceModalOpen(true)}
+              style={{
+                width: '100%',
+                padding: '6px 12px',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                borderRadius: '6px',
+                border: '1px solid rgba(229, 181, 79, 0.35)',
+                background: 'rgba(229, 181, 79, 0.08)',
+                color: 'var(--brand-gold)',
+                transition: 'background 0.15s ease',
+              }}
+            >
+              <FileText size={13} />
+              <span>Ver Factura Digital SRI</span>
+            </button>
           </div>
         </div>
       </div>
