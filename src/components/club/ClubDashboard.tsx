@@ -192,19 +192,21 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards */}
-      <ClubMetricsHeader
-        activeClub={activeClub}
-        clubEvents={clubEvents}
-        activeEventId={store.activeEventId}
-        onSelectEvent={id => store.setActiveEvent(id)}
-        availableCount={availableCount}
-        totalTables={totalTables}
-        heldCount={heldCount}
-        confirmedCount={confirmedCount}
-        checkedInCount={checkedInCount}
-        totalDeposits={totalDeposits}
-      />
+      {/* Top Bar & 4 Executive KPI Cards (oculto en el módulo de Cobros & Pasarelas) */}
+      {activeTab !== 'PAYMENTS' && (
+        <ClubMetricsHeader
+          activeClub={activeClub}
+          clubEvents={clubEvents}
+          activeEventId={store.activeEventId}
+          onSelectEvent={id => store.setActiveEvent(id)}
+          availableCount={availableCount}
+          totalTables={totalTables}
+          heldCount={heldCount}
+          confirmedCount={confirmedCount}
+          checkedInCount={checkedInCount}
+          totalDeposits={totalDeposits}
+        />
+      )}
 
       {/* La navegación vive exclusivamente en el AdminSidebar (una sola fuente) */}
 
