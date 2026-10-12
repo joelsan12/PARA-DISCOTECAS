@@ -77,7 +77,7 @@ export function AdminPortalApp() {
                   logo: data.logoUrl || data.logo,
                   banner: data.coverUrl || data.banner,
                   status: data.status || 'active',
-                  layout_type: data.layout_type || 'horseshoe_vip'
+                  layout_type: data.layout_type || 'custom_open'
                 });
                 store.setActiveClub(session.clubId!);
               } else {

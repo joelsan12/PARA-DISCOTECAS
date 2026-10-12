@@ -13,7 +13,7 @@ import { esLayout } from '../../lib/esLabels';
 export const FloorPlanEditor: React.FC = () => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
-  const layoutType: ClubLayoutType = activeClub.layout_type || 'horseshoe_vip';
+  const layoutType: ClubLayoutType = activeClub.layout_type || 'custom_open';
 
   const clubTables = store.tables.filter(t => t.club_id === activeClub.id);
   const activeEvent = store.events.find(e => e.club_id === activeClub.id);

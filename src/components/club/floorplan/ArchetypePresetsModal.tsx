@@ -3,6 +3,7 @@ import type { ClubLayoutType } from '../../../types';
 import { X, Sparkles, Check, Building2, LayoutTemplate, Grid, Wine, Layers } from 'lucide-react';
 import { formatUsd } from '../../../lib/formatUsd';
 import { esLayout, esPlan } from '../../../lib/esLabels';
+import { ArchetypeBlueprintPreview } from './ArchetypeBlueprintPreview';
 
 interface Props {
   isOpen: boolean;
@@ -26,7 +27,7 @@ const ARCHETYPES: ArchetypeCard[] = [
   {
     id: 'horseshoe_vip',
     title: `${esLayout('horseshoe_vip')} y sala principal`,
-    badge: 'Totalmente simétrico',
+    badge: '12 mesas · Simetría VIP',
     icon: Layers,
     description: 'Distribución en U con balcón VIP panorámico superior, pista central despejada y cabina del DJ frontal.',
     features: ['Balcón ultravip elevado (4 mesas)', 'Palcos laterales simétricos', 'Pista central libre de obstáculos', 'Espacios privados junto a la cabina del DJ'],
@@ -35,7 +36,7 @@ const ARCHETYPES: ArchetypeCard[] = [
   {
     id: 'u_amphitheater',
     title: `${esLayout('u_amphitheater')} tipo estadio`,
-    badge: 'Varios niveles',
+    badge: '14 mesas · Varios niveles',
     icon: LayoutTemplate,
     description: 'Estructura concéntrica en gradas escalonadas con escenario frontal para espectáculos y mesas de cóctel.',
     features: ['Escenario central frontal', 'Graderías VIP en varios niveles', 'Mesas de salón y de cóctel', 'Acceso directo a la barra'],
@@ -44,7 +45,7 @@ const ARCHETYPES: ArchetypeCard[] = [
   {
     id: 'downtown_suites',
     title: `${esLayout('downtown_suites')} con vista panorámica`,
-    badge: 'Reservas privadas',
+    badge: '12 mesas · Reservas privadas',
     icon: Wine,
     description: 'Suites privadas exclusivas con balcones panorámicos, terraza exterior para baile y barra con vista a la ciudad.',
     features: ['Suites VIP cerradas con atención privada', 'Terraza exterior para baile', 'Barra de cóctel panorámica', 'Acceso por ascensores VIP'],
@@ -52,12 +53,12 @@ const ARCHETYPES: ArchetypeCard[] = [
   },
   {
     id: 'custom_open',
-    title: `${esLayout('custom_open')} y abierto`,
-    badge: 'Espacio abierto',
+    title: `${esLayout('custom_open')} (Lienzo en Blanco)`,
+    badge: '0 mesas · Espacio libre',
     icon: Grid,
-    description: 'Cuadrícula arquitectónica abierta lista para arrastrar mesas y adaptarse a planos singulares.',
-    features: ['Distribución totalmente flexible', 'Cuadrícula con ajuste láser al 1 %', 'Capacidades y formas libres', 'Ideal para planos personalizados'],
-    recommendedFor: 'Establecimientos con arquitectura atípica o distribuciones cambiantes.'
+    description: 'Cuadrícula arquitectónica abierta sin mesas prefijadas. Ideal para diseñar la sala desde cero con total libertad.',
+    features: ['Distribución totalmente flexible', 'Cuadrícula con ajuste láser al 1 %', 'Sin mesas forzadas de entrada', 'Ideal para planos personalizados'],
+    recommendedFor: 'Establecimientos con arquitectura atípica, salas nuevas o distribuciones libres.'
   }
 ];
 
@@ -83,7 +84,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
       padding: '20px'
     }}>
       <div className="glass-card" style={{
-        maxWidth: '920px',
+        maxWidth: '960px',
         width: '100%',
         maxHeight: '92vh',
         overflowY: 'auto',
@@ -98,11 +99,11 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <LayoutTemplate size={22} color="var(--brand-gold)" />
               <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: 0 }}>
-                Plantillas de Arquetipos Arquitectónicos (Planos Cenitales)
+                Plantillas de Arquetipos Arquitectónicos
               </h2>
             </div>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Elige una plantilla para transformar la distribución cenital de tu local al instante, o personalízala arrastrando mesas.
+              Previsualiza la distribución de cada plano antes de aplicarlo a tu local, o comienza con un lienzo en blanco.
             </p>
           </div>
           <button
@@ -126,10 +127,10 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Archetype Cards Grid */}
+        {/* Archetype Cards Grid with Visual Previews */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '16px',
           marginBottom: '24px'
         }}>
@@ -143,20 +144,25 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                   background: isCurrent ? 'rgba(229, 181, 79, 0.08)' : 'rgba(255, 255, 255, 0.03)',
                   border: isCurrent ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.08)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '18px',
+                  padding: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  gap: '14px',
+                  gap: '12px',
                   transition: 'all 0.2s ease',
                   position: 'relative'
                 }}
               >
                 <div>
+                  {/* Visual Blueprint Preview */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <ArchetypeBlueprintPreview layoutType={arch.id} />
+                  </div>
+
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <div style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '28px',
+                      height: '28px',
                       borderRadius: '6px',
                       background: isCurrent ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.06)',
                       display: 'flex',
@@ -164,7 +170,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                       justifyContent: 'center',
                       color: isCurrent ? 'var(--brand-gold)' : 'var(--text-main)'
                     }}>
-                      <IconComp size={18} />
+                      <IconComp size={16} />
                     </div>
                     <span style={{
                       fontSize: '0.66rem',
@@ -178,14 +184,14 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     </span>
                   </div>
 
-                  <h3 className="font-brand" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
+                  <h3 className="font-brand" style={{ fontSize: '1.02rem', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
                     {arch.title}
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4', marginBottom: '12px' }}>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4', marginBottom: '10px' }}>
                     {arch.description}
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '10px' }}>
                     {arch.features.map((feat, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--text-main)' }}>
                         <Check size={12} color="#e5b54f" />
@@ -194,7 +200,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     ))}
                   </div>
 
-                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>
                     {arch.recommendedFor}
                   </p>
                 </div>
@@ -215,10 +221,11 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    marginTop: '8px'
                   }}
                 >
-                  {isCurrent ? '✓ Plantilla en uso' : 'Cargar esta plantilla'}
+                  {isCurrent ? '✓ Plantilla en uso' : arch.id === 'custom_open' ? 'Usar lienzo en blanco' : 'Cargar esta plantilla'}
                 </button>
               </div>
             );

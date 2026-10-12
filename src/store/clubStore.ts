@@ -226,7 +226,7 @@ class ClubStore {
         plan_id: canonicalPlan,
         enabled_features: clubData.enabled_features,
         custom_features: clubData.custom_features,
-        layout_type: clubData.layout_type || 'horseshoe_vip',
+        layout_type: clubData.layout_type || 'custom_open',
         primary_color: clubData.primary_color || '#e5b54f',
         accent_color: clubData.accent_color || '#06b6d4',
         created_at: clubData.created_at || new Date().toISOString().split('T')[0]
