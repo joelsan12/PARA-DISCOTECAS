@@ -112,7 +112,7 @@ export const FloorPlanEditor: React.FC = () => {
       store.deleteTable(selectedTableId);
       setSelectedTableId(null);
       setConfirmDeleteId(null);
-      setSaveToast(`🗑️ ${tableCode} eliminada correctamente.`);
+      setSaveToast(`${tableCode} eliminada correctamente.`);
       setTimeout(() => setSaveToast(null), 4000);
     } else {
       setConfirmDeleteId(selectedTableId);
@@ -135,7 +135,7 @@ export const FloorPlanEditor: React.FC = () => {
           setSelectedTableId(null);
           setConfirmDeleteId(null);
           const keyLabel = e.key === 'Backspace' ? 'Retroceso' : 'Suprimir';
-          setSaveToast(`🗑️ ${tableCode} eliminada (tecla ${keyLabel}).`);
+          setSaveToast(`${tableCode} eliminada (tecla ${keyLabel}).`);
           setTimeout(() => setSaveToast(null), 4000);
         }
       }
@@ -156,7 +156,7 @@ export const FloorPlanEditor: React.FC = () => {
   const handlePresetChange = (preset: ClubLayoutType) => {
     store.loadLayoutPreset(activeClub.id, preset);
     setSelectedTableId(null);
-    setSaveToast(`✓ Arquetipo "${esLayout(preset)}" cargado y guardado.`);
+    setSaveToast(`Plantilla "${esLayout(preset)}" aplicada.`);
     setTimeout(() => setSaveToast(null), 3000);
   };
 
@@ -166,15 +166,15 @@ export const FloorPlanEditor: React.FC = () => {
       const result = await store.syncLayoutAsync();
       setIsSaving(false);
       if (result && !result.success) {
-        setSaveToast(`⚠️ Error al guardar: ${result.error || 'Fallo desconocido'}`);
+        setSaveToast(`Error al guardar: ${result.error || 'Fallo desconocido'}`);
       } else if (result && result.inventorySynced === false) {
-        setSaveToast(`⚠️ Plano guardado, pero falló la sincronización de inventario: ${result.error || 'Revisa tu conexión'}`);
+        setSaveToast(`Plano guardado, pero falló la sincronización de inventario: ${result.error || 'Revisa tu conexión'}`);
       } else {
-        setSaveToast('✓ ¡Plano e inventario operativo sincronizados con éxito en tiempo real!');
+        setSaveToast('Plano e inventario operativo sincronizados con éxito.');
       }
     } catch (error) {
       setIsSaving(false);
-      setSaveToast(`⚠️ Error al guardar plano: ${error instanceof Error ? error.message : 'Error inesperado'}`);
+      setSaveToast(`Error al guardar plano: ${error instanceof Error ? error.message : 'Error inesperado'}`);
     }
     setTimeout(() => setSaveToast(null), 4000);
   };

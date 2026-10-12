@@ -1,7 +1,6 @@
 import React from 'react';
 import type { ClubLayoutType } from '../../../types';
-import { Plus, Save, RotateCcw, Eye, CheckCircle2, LayoutTemplate, Sparkles } from 'lucide-react';
-import { formatUsd } from '../../../lib/formatUsd';
+import { Plus, Save, RotateCcw, Eye, CheckCircle2, LayoutTemplate } from 'lucide-react';
 
 interface Props {
   layoutType: ClubLayoutType;
@@ -20,7 +19,6 @@ interface Props {
 export const FloorPlanToolbar: React.FC<Props> = ({
   tableCount,
   onOpenArchetypesModal,
-  onOpenCustomRequestModal,
   onOpenAddModal,
   onSaveFloorPlan,
   isSaving,
@@ -46,6 +44,19 @@ export const FloorPlanToolbar: React.FC<Props> = ({
       >
         {/* Izquierda: Título y estado */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '6px',
+            background: 'var(--accent-subtle, rgba(229, 181, 79, 0.15))',
+            border: '1px solid var(--border-light, rgba(229, 181, 79, 0.25))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <LayoutTemplate size={15} color="var(--brand-gold, #e5b54f)" />
+          </div>
+
           <h2
             className="font-brand"
             style={{
@@ -100,7 +111,7 @@ export const FloorPlanToolbar: React.FC<Props> = ({
           </span>
         </div>
 
-        {/* Derecha: Botón + para agregar, Plantillas (con previsualizador), Asistencia y Acciones */}
+        {/* Derecha: Acciones principales limpias sin emojis ni anuncios */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {/* Botón + para agregar mesa */}
           <button
@@ -108,7 +119,7 @@ export const FloorPlanToolbar: React.FC<Props> = ({
             onClick={onOpenAddModal}
             className="btn-luxury-action"
             style={{
-              padding: '6px 13px',
+              padding: '6px 14px',
               fontSize: '0.8rem',
               borderRadius: '6px',
               gap: '5px',
@@ -116,7 +127,7 @@ export const FloorPlanToolbar: React.FC<Props> = ({
             }}
           >
             <Plus size={15} />
-            <span>Agregar Mesa</span>
+            <span>Nueva Mesa</span>
           </button>
 
           {/* Botón de Plantillas donde se previsualiza antes de editarlas */}
@@ -137,39 +148,6 @@ export const FloorPlanToolbar: React.FC<Props> = ({
             >
               <LayoutTemplate size={14} />
               <span>Plantillas</span>
-            </button>
-          )}
-
-          {/* Plano a Medida */}
-          {onOpenCustomRequestModal && (
-            <button
-              type="button"
-              onClick={onOpenCustomRequestModal}
-              title={`Solicitar modelado de plano a medida (${formatUsd(49)})`}
-              className="btn-secondary"
-              style={{
-                padding: '6px 11px',
-                fontSize: '0.76rem',
-                gap: '6px',
-                borderRadius: '6px',
-                color: 'var(--text-main)',
-                borderColor: 'var(--border-light)',
-              }}
-            >
-              <Sparkles size={13} color="var(--brand-gold)" />
-              <span>Plano a Medida</span>
-              <span
-                style={{
-                  fontSize: '0.62rem',
-                  background: 'var(--brand-gold)',
-                  color: '#08080c',
-                  padding: '1px 5px',
-                  borderRadius: '3px',
-                  fontWeight: 800,
-                }}
-              >
-                {formatUsd(49)}
-              </span>
             </button>
           )}
 

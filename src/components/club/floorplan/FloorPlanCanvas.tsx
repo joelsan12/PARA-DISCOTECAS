@@ -298,7 +298,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
-                Haz clic en "+ Nueva Mesa" arriba o aplica una "Plantilla Cenital"
+                Haz clic en "+ Nueva Mesa" o elige una plantilla arquitectónica
               </text>
             </g>
           )}

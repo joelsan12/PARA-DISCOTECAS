@@ -49,7 +49,7 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
       case 'FLOOR_OPS':
         return { category: 'Operaciones', section: 'Piso & Concierge' };
       case 'LAYOUT_BUILDER':
-        return { category: 'Operaciones', section: 'Diseñador de Plano & Mesas' };
+        return { category: 'Operaciones', section: 'Diseñador de Plano' };
       case 'RESERVATIONS':
         return { category: 'Operaciones', section: 'Bitácora Oficial de Reservas' };
       case 'PRICING':
