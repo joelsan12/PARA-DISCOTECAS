@@ -133,12 +133,13 @@ export function isDashboardTabAllowed(
       );
 
     case 'PAYMENTS':
-      // Pasarela Kushki: Requiere Plan Pro o Empresarial (ONLINE_PAYMENT)
+    case 'TRANSACTIONS':
+      // Pasarelas & Cobros: Requiere Plan Pro o Empresarial (ONLINE_PAYMENT)
       return canClubAccessFeature(
         club,
         plan,
         'ONLINE_PAYMENT',
-        ['online_payment', 'kushki_gateway', 'pasarela_kushki', 'pagos']
+        ['online_payment', 'kushki_gateway', 'pasarela_kushki', 'pagos', 'cobros']
       );
 
     case 'STAFF':

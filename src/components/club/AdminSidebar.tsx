@@ -17,6 +17,7 @@ import {
   Users,
   Wine,
   Compass,
+  History,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -32,6 +33,7 @@ export type DashboardTabKey =
   | 'EVENTS'
   | 'RESERVATIONS'
   | 'PRICING'
+  | 'TRANSACTIONS'
   | 'PAYMENTS'
   | 'STAFF'
   | 'LEGAL'
@@ -362,6 +364,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 </button>
               )}
 
+              {isDashboardTabAllowed('TRANSACTIONS', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'TRANSACTIONS' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('TRANSACTIONS')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <History size={15} />
+                    </span>
+                    <span>Cobros &amp; Reembolsos</span>
+                  </div>
+                </button>
+              )}
+
               {isDashboardTabAllowed('PAYMENTS', activeClub, activePlan) && (
                 <button
                   type="button"
@@ -372,7 +389,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     <span className="admin-nav-item-icon">
                       <CreditCard size={15} />
                     </span>
-                    <span>Cobros &amp; Pasarelas</span>
+                    <span>Pasarelas de Pago</span>
                   </div>
                 </button>
               )}

@@ -10,6 +10,7 @@ import { PricingManager } from './dashboard/PricingManager';
 import { AuditLogsView } from './dashboard/AuditLogsView';
 import { LegalProfileForm } from './dashboard/LegalProfileForm';
 import { PaymentGatewayManager } from './dashboard/PaymentGatewayManager';
+import { PaymentTransactionsManager } from './dashboard/PaymentTransactionsManager';
 import { StaffManager } from './dashboard/StaffManager';
 import { ConsumptionCatalogManager } from './dashboard/ConsumptionCatalogManager';
 import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
@@ -192,8 +193,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards (oculto en el módulo de Cobros & Pasarelas) */}
-      {activeTab !== 'PAYMENTS' && (
+      {/* Top Bar & 4 Executive KPI Cards (oculto en módulos financieros: Cobros y Pasarelas) */}
+      {activeTab !== 'PAYMENTS' && activeTab !== 'TRANSACTIONS' && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}
@@ -273,7 +274,12 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
         </div>
       )}
 
-      {/* Tab: PAYMENTS */}
+      {/* Tab: TRANSACTIONS (Historial de Cobros & Reembolsos) */}
+      {activeTab === 'TRANSACTIONS' && (
+        <PaymentTransactionsManager key={activeClub.id} activeClub={activeClub} session={session} />
+      )}
+
+      {/* Tab: PAYMENTS (Pasarelas de Pago) */}
       {activeTab === 'PAYMENTS' && (
         <PaymentGatewayManager key={activeClub.id} activeClub={activeClub} session={session} />
       )}
