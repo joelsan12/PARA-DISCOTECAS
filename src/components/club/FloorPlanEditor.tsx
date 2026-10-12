@@ -45,6 +45,7 @@ export const FloorPlanEditor: React.FC = () => {
     svgRef,
     isDragging,
     draggedTableId,
+    dragCoords,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
@@ -222,6 +223,7 @@ export const FloorPlanEditor: React.FC = () => {
           selectedTableId={selectedTableId}
           draggedTableId={draggedTableId}
           draggedTable={draggedTable}
+          dragCoords={dragCoords}
           hoveredTableId={hoveredTableId}
           isDragging={isDragging}
           snapToGrid={snapToGrid}

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ClubLayoutType, ClubTable } from '../../../types';
 import { FloorPlanBackdrops } from './FloorPlanBackdrops';
-import { Move, Grid, Crosshair } from 'lucide-react';
+import { Grid, Crosshair, Compass } from 'lucide-react';
 
 interface Props {
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -10,6 +10,7 @@ interface Props {
   selectedTableId: string | null;
   draggedTableId: string | null;
   draggedTable: ClubTable | null;
+  dragCoords: { x: number; y: number } | null;
   hoveredTableId: string | null;
   isDragging: boolean;
   snapToGrid: boolean;
@@ -29,6 +30,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
   selectedTableId,
   draggedTableId,
   draggedTable,
+  dragCoords,
   hoveredTableId,
   isDragging,
   snapToGrid,
@@ -40,87 +42,147 @@ export const FloorPlanCanvas: React.FC<Props> = ({
   viewBoxWidth,
   viewBoxHeight,
 }) => {
-  return (
-    <div className="glass-card" style={{
-      padding: '20px',
-      background: '#08080c',
-      border: '1px solid rgba(229, 181, 79, 0.2)',
-      borderRadius: 'var(--radius-md)',
-      position: 'relative'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Move size={14} color="var(--brand-gold)" />
-          Haz clic y <strong>arrastra cualquier mesa</strong> para reposicionarla con guías láser
-        </span>
+  const activeDraggedX = isDragging && dragCoords ? dragCoords.x : draggedTable?.x ?? 0;
+  const activeDraggedY = isDragging && dragCoords ? dragCoords.y : draggedTable?.y ?? 0;
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Snap to Grid Toggle */}
+  return (
+    <div style={{
+      padding: '20px',
+      background: 'linear-gradient(180deg, #0b0e17 0%, #07090f 100%)',
+      border: '1px solid rgba(229, 181, 79, 0.22)',
+      borderRadius: 'var(--radius-md)',
+      position: 'relative',
+      boxShadow: '0 18px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(229, 181, 79, 0.15)',
+      overflow: 'hidden'
+    }}>
+      {/* Top Gold Horizon Accent Line */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: '10%',
+        right: '10%',
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent, rgba(229, 181, 79, 0.6), transparent)',
+        pointerEvents: 'none'
+      }} />
+
+      {/* Header Controls Bar */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '14px',
+        flexWrap: 'wrap',
+        gap: '10px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '26px',
+            height: '26px',
+            borderRadius: '6px',
+            background: 'rgba(229, 181, 79, 0.12)',
+            border: '1px solid rgba(229, 181, 79, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Compass size={14} color="var(--brand-gold)" />
+          </div>
+          <div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.02em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Plano Operativo de Sala</span>
+              <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', fontWeight: 600 }}>
+                {clubTables.length} {clubTables.length === 1 ? 'mesa' : 'mesas'}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              Haz clic y arrastra cualquier mesa · Guías láser activas en tiempo real
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Active Dragging Real-Time Coordinates Badge */}
+          {isDragging && draggedTable && (
+            <div style={{
+              fontSize: '0.74rem',
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%)',
+              border: '1px solid var(--accent)',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontFamily: 'monospace',
+              boxShadow: '0 0 16px rgba(229, 181, 79, 0.45)',
+              animation: 'pulse 1.5s infinite'
+            }}>
+              <Crosshair size={13} color="var(--brand-gold)" />
+              <span>{draggedTable.table_code}</span>
+              <span style={{ color: 'var(--brand-gold)' }}>X: {activeDraggedX}% · Y: {activeDraggedY}%</span>
+            </div>
+          )}
+
+          {/* Snap to Grid Toggle Button */}
           <button
             type="button"
             onClick={() => setSnapToGrid(!snapToGrid)}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '5px',
-              padding: '3px 10px',
-              fontSize: '0.73rem',
-              borderRadius: '12px',
+              gap: '6px',
+              padding: '5px 12px',
+              fontSize: '0.74rem',
+              borderRadius: '16px',
               cursor: 'pointer',
-              background: snapToGrid ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255,255,255,0.05)',
-              border: snapToGrid ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+              background: snapToGrid ? 'rgba(229, 181, 79, 0.16)' : 'rgba(255, 255, 255, 0.04)',
+              border: snapToGrid ? '1px solid rgba(229, 181, 79, 0.55)' : '1px solid rgba(255, 255, 255, 0.1)',
               color: snapToGrid ? 'var(--brand-gold)' : 'var(--text-muted)',
-              fontWeight: 600,
+              fontWeight: 700,
+              boxShadow: snapToGrid ? '0 0 10px rgba(229, 181, 79, 0.2)' : 'none',
               transition: 'all 0.15s ease'
             }}
-            title="Ajusta mesas a coordenadas de rejilla limpia"
+            title="Ajustar mesas a saltos de rejilla limpia (1%) o movimiento milimétrico libre"
           >
-            <Grid size={12} />
-            <span>Ajuste 1%: {snapToGrid ? 'Activado' : 'Libre'}</span>
+            <Grid size={13} color={snapToGrid ? 'var(--brand-gold)' : 'currentColor'} />
+            <span>Imán 1%: {snapToGrid ? 'Activado' : 'Libre'}</span>
           </button>
-
-          {/* Active Dragging HUD Badge */}
-          {isDragging && draggedTable && (
-            <span style={{
-              fontSize: '0.73rem',
-              color: 'var(--brand-gold)',
-              background: 'rgba(229, 181, 79, 0.18)',
-              border: '1px solid var(--accent)',
-              padding: '3px 10px',
-              borderRadius: '12px',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: 'monospace',
-              boxShadow: '0 0 14px rgba(229, 181, 79, 0.4)'
-            }}>
-              <Crosshair size={12} className="animate-spin" />
-              {draggedTable.table_code} · X:{draggedTable.x}% Y:{draggedTable.y}%
-            </span>
-          )}
         </div>
       </div>
 
+      {/* Architectural SVG Canvas Container */}
       <div style={{
         position: 'relative',
         width: '100%',
         aspectRatio: layoutType === 'downtown_suites' ? '0.62/1' : layoutType === 'u_amphitheater' ? '0.77/1' : '1/1',
         maxHeight: '620px',
         margin: '0 auto',
-        background: layoutType === 'u_amphitheater' ? '#212734' : '#080c13',
-        borderRadius: layoutType === 'u_amphitheater' ? '32px' : '12px',
-        border: '2px solid rgba(255, 255, 255, 0.12)',
+        background: layoutType === 'u_amphitheater' ? '#171c26' : '#080c14',
+        borderRadius: layoutType === 'u_amphitheater' ? '28px' : '14px',
+        border: '1.5px solid rgba(229, 181, 79, 0.25)',
         overflow: 'hidden',
-        boxShadow: 'inset 0 0 50px rgba(0, 0, 0, 0.8)',
+        boxShadow: 'inset 0 0 60px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0,0,0,0.5)',
         userSelect: 'none'
       }}>
+        {/* Subtle Ambient Blueprint Grid Texture via CSS background */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'radial-gradient(rgba(229, 181, 79, 0.08) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+          pointerEvents: 'none',
+          opacity: 0.6
+        }} />
+
         <svg
           ref={svgRef}
           viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
           style={{
             width: '100%',
             height: '100%',
+            position: 'relative',
             cursor: isDragging ? 'grabbing' : 'default',
             touchAction: 'none'
           }}
@@ -128,19 +190,104 @@ export const FloorPlanCanvas: React.FC<Props> = ({
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
         >
-          {/* Layout Specific Architectural Backdrop */}
+          <defs>
+            {/* Architectural Blueprint CAD Grid Pattern */}
+            <pattern id="cad-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.025)" strokeWidth="0.8" />
+              <circle cx="0" cy="0" r="1" fill="rgba(229, 181, 79, 0.15)" />
+            </pattern>
+
+            {/* Glowing Laser Filters */}
+            <filter id="laser-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="table-drop-shadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="rgba(0,0,0,0.7)" />
+            </filter>
+            <filter id="table-active-shadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="rgba(229, 181, 79, 0.6)" />
+            </filter>
+          </defs>
+
+          {/* Background CAD Grid Layer */}
+          <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#cad-grid)" pointerEvents="none" />
+
+          {/* Corner CAD Alignment Markers */}
+          <g stroke="rgba(229, 181, 79, 0.3)" strokeWidth="1.5" fill="none" pointerEvents="none">
+            {/* Top-Left */}
+            <path d="M 16 32 L 16 16 L 32 16" />
+            {/* Top-Right */}
+            <path d={`M ${viewBoxWidth - 32} 16 L ${viewBoxWidth - 16} 16 L ${viewBoxWidth - 16} 32`} />
+            {/* Bottom-Left */}
+            <path d={`M 16 ${viewBoxHeight - 32} L 16 ${viewBoxHeight - 16} L 32 ${viewBoxHeight - 16}`} />
+            {/* Bottom-Right */}
+            <path d={`M ${viewBoxWidth - 32} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 32}`} />
+          </g>
+
+          {/* Layout-Specific Architectural Backdrop (Amphitheater / Horseshoe / Suites) */}
           <FloorPlanBackdrops layoutType={layoutType} />
 
           {/* Laser Alignment Crosshairs when Dragging */}
           {isDragging && draggedTable && (() => {
-            const cx = (draggedTable.x / 100) * viewBoxWidth;
-            const cy = (draggedTable.y / 100) * viewBoxHeight;
+            const cx = (activeDraggedX / 100) * viewBoxWidth;
+            const cy = (activeDraggedY / 100) * viewBoxHeight;
             return (
-              <g pointerEvents="none" opacity="0.9">
-                <line x1="0" y1={cy} x2={viewBoxWidth} y2={cy} stroke="var(--brand-gold)" strokeWidth="1.2" strokeDasharray="4 4" />
-                <line x1={cx} y1="0" x2={cx} y2={viewBoxHeight} stroke="var(--brand-gold)" strokeWidth="1.2" strokeDasharray="4 4" />
-                <circle cx={cx} cy={cy} r="28" fill="none" stroke="var(--brand-gold)" strokeWidth="1" strokeDasharray="2 3" opacity="0.7" />
-                <circle cx={cx} cy={cy} r="46" fill="none" stroke="var(--brand-gold)" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <g pointerEvents="none" filter="url(#laser-glow)">
+                {/* Full Horizontal & Vertical Laser Lines */}
+                <line
+                  x1="0"
+                  y1={cy}
+                  x2={viewBoxWidth}
+                  y2={cy}
+                  stroke="var(--brand-gold)"
+                  strokeWidth="1.2"
+                  strokeDasharray="4 4"
+                  opacity="0.85"
+                />
+                <line
+                  x1={cx}
+                  y1="0"
+                  x2={cx}
+                  y2={viewBoxHeight}
+                  stroke="var(--brand-gold)"
+                  strokeWidth="1.2"
+                  strokeDasharray="4 4"
+                  opacity="0.85"
+                />
+
+                {/* Laser Targeting Radar Circles */}
+                <circle cx={cx} cy={cy} r="32" fill="none" stroke="var(--brand-gold)" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.8" />
+                <circle cx={cx} cy={cy} r="52" fill="none" stroke="var(--brand-gold)" strokeWidth="0.8" strokeDasharray="5 5" opacity="0.4" />
+
+                {/* Floating HUD Coordinate Badge Directly Above Dragged Table */}
+                <g transform={`translate(${cx}, ${Math.max(34, cy - 44)})`}>
+                  <rect
+                    x="-55"
+                    y="-14"
+                    width="110"
+                    height="22"
+                    rx="11"
+                    fill="rgba(8, 12, 20, 0.95)"
+                    stroke="var(--brand-gold)"
+                    strokeWidth="1.2"
+                  />
+                  <text
+                    x="0"
+                    y="1"
+                    fill="var(--brand-gold)"
+                    fontSize="10"
+                    fontWeight="800"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                  >
+                    X:{activeDraggedX}% · Y:{activeDraggedY}%
+                  </text>
+                </g>
               </g>
             );
           })()}
@@ -151,12 +298,17 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             const isBeingDragged = draggedTableId === table.id;
             const isHovered = hoveredTableId === table.id;
 
-            const cx = (table.x / 100) * viewBoxWidth;
-            const cy = (table.y / 100) * viewBoxHeight;
+            // Use live drag coordinates when this specific table is being dragged!
+            const currentX = isBeingDragged && isDragging ? activeDraggedX : table.x;
+            const currentY = isBeingDragged && isDragging ? activeDraggedY : table.y;
+
+            const cx = (currentX / 100) * viewBoxWidth;
+            const cy = (currentY / 100) * viewBoxHeight;
             const isAmphi = layoutType === 'u_amphitheater';
-            const radius = isAmphi ? 13 : 24;
+            const radius = isAmphi ? 14 : 24;
             const tokenColor = table.tier_color || '#eab308';
             const rot = table.rotation || 0;
+            const capacity = Math.max(1, table.capacity || 4);
 
             return (
               <g
@@ -175,27 +327,52 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   transform={`rotate(${rot}, ${cx}, ${cy})`}
                   style={{
                     filter: isBeingDragged
-                      ? 'drop-shadow(0 0 14px rgba(229, 181, 79, 0.9))'
+                      ? 'url(#table-active-shadow)'
                       : isSelected
-                      ? 'drop-shadow(0 0 8px rgba(229, 181, 79, 0.5))'
+                      ? 'drop-shadow(0 0 10px rgba(229, 181, 79, 0.75))'
                       : isHovered
-                      ? 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.35))'
-                      : 'none',
+                      ? 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.45))'
+                      : 'url(#table-drop-shadow)',
                     transition: isBeingDragged ? 'none' : 'filter 0.15s ease'
                   }}
                 >
-                  {/* Selection / Drag Active Ring */}
+                  {/* VIP Seating Dots Surrounding Table Perimeter */}
+                  {table.shape === 'circle' && (() => {
+                    const seatCount = Math.min(12, capacity);
+                    const seatOrbit = radius + (isAmphi ? 6 : 9);
+                    const seats = [];
+                    for (let i = 0; i < seatCount; i++) {
+                      const angle = (i * 2 * Math.PI) / seatCount - Math.PI / 2;
+                      const sx = cx + Math.cos(angle) * seatOrbit;
+                      const sy = cy + Math.sin(angle) * seatOrbit;
+                      seats.push(
+                        <circle
+                          key={i}
+                          cx={sx}
+                          cy={sy}
+                          r={isAmphi ? 2.2 : 3.2}
+                          fill={isSelected || isBeingDragged ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.4)'}
+                          stroke="#080c14"
+                          strokeWidth="0.8"
+                          opacity={isSelected || isBeingDragged ? 0.95 : 0.65}
+                        />
+                      );
+                    }
+                    return <g pointerEvents="none">{seats}</g>;
+                  })()}
+
+                  {/* Active Selection / Drag Glowing Ring */}
                   {(isSelected || isBeingDragged) && (
                     table.shape === 'pill' ? (
                       <rect
-                        x={isAmphi ? cx - 16 : cx - 42}
-                        y={isAmphi ? cy - 25 : cy - 26}
-                        width={isAmphi ? 32 : 84}
-                        height={isAmphi ? 50 : 52}
-                        rx={isAmphi ? 16 : 20}
+                        x={isAmphi ? cx - 18 : cx - 44}
+                        y={isAmphi ? cy - 27 : cy - 28}
+                        width={isAmphi ? 36 : 88}
+                        height={isAmphi ? 54 : 56}
+                        rx={isAmphi ? 18 : 22}
                         fill="none"
                         stroke="var(--brand-gold)"
-                        strokeWidth="3"
+                        strokeWidth="2.5"
                         strokeDasharray={isBeingDragged ? '4 4' : 'none'}
                         opacity={1}
                       />
@@ -203,60 +380,100 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                       <circle
                         cx={cx}
                         cy={cy}
-                        r={radius + (isAmphi ? 5 : 8)}
+                        r={radius + (isAmphi ? 6 : 10)}
                         fill="none"
                         stroke="var(--brand-gold)"
-                        strokeWidth="3"
+                        strokeWidth="2.5"
                         strokeDasharray={isBeingDragged ? '4 4' : 'none'}
                         opacity={1}
                       />
                     )
                   )}
 
-                  {/* Table Token Shape */}
+                  {/* Table Token Shape Surface */}
                   {table.shape === 'pill' ? (
-                    <rect
-                      x={isAmphi ? cx - 12 : cx - 36}
-                      y={isAmphi ? cy - 21 : cy - 20}
-                      width={isAmphi ? 24 : 72}
-                      height={isAmphi ? 42 : 40}
-                      rx={isAmphi ? 12 : 16}
-                      fill={tokenColor}
-                      stroke="#ffffff"
-                      strokeWidth={isSelected || isBeingDragged ? 3 : 1.5}
-                    />
+                    <g>
+                      <rect
+                        x={isAmphi ? cx - 13 : cx - 36}
+                        y={isAmphi ? cy - 22 : cy - 20}
+                        width={isAmphi ? 26 : 72}
+                        height={isAmphi ? 44 : 40}
+                        rx={isAmphi ? 13 : 16}
+                        fill={tokenColor}
+                        stroke="#ffffff"
+                        strokeWidth={isSelected || isBeingDragged ? 2.5 : 1.5}
+                      />
+                      {/* Subtle Inner Highlight Glass Sheen */}
+                      <rect
+                        x={isAmphi ? cx - 10 : cx - 32}
+                        y={isAmphi ? cy - 19 : cy - 17}
+                        width={isAmphi ? 20 : 64}
+                        height={isAmphi ? 8 : 8}
+                        rx={4}
+                        fill="rgba(255, 255, 255, 0.35)"
+                        pointerEvents="none"
+                      />
+                    </g>
                   ) : table.shape === 'square' || table.shape === 'rect' ? (
-                    <rect
-                      x={cx - 20}
-                      y={cy - 20}
-                      width="40"
-                      height="40"
-                      rx="6"
-                      fill={tokenColor}
-                      stroke="#ffffff"
-                      strokeWidth={isSelected || isBeingDragged ? 3 : 1.5}
-                    />
+                    <g>
+                      <rect
+                        x={cx - (isAmphi ? 15 : 22)}
+                        y={cy - (isAmphi ? 15 : 22)}
+                        width={isAmphi ? 30 : 44}
+                        height={isAmphi ? 30 : 44}
+                        rx="7"
+                        fill={tokenColor}
+                        stroke="#ffffff"
+                        strokeWidth={isSelected || isBeingDragged ? 2.5 : 1.5}
+                      />
+                      {/* Glass Sheen */}
+                      <rect
+                        x={cx - (isAmphi ? 12 : 18)}
+                        y={cy - (isAmphi ? 12 : 18)}
+                        width={isAmphi ? 24 : 36}
+                        height="6"
+                        rx="3"
+                        fill="rgba(255, 255, 255, 0.35)"
+                        pointerEvents="none"
+                      />
+                    </g>
                   ) : (
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={radius}
-                      fill={tokenColor}
-                      stroke="#ffffff"
-                      strokeWidth={isSelected || isBeingDragged ? 3 : 1.5}
-                    />
+                    <g>
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={radius}
+                        fill={tokenColor}
+                        stroke="#ffffff"
+                        strokeWidth={isSelected || isBeingDragged ? 2.5 : 1.5}
+                      />
+                      {/* Radial Glass Sheen */}
+                      <ellipse
+                        cx={cx}
+                        cy={cy - radius * 0.35}
+                        rx={radius * 0.55}
+                        ry={radius * 0.25}
+                        fill="rgba(255, 255, 255, 0.4)"
+                        pointerEvents="none"
+                      />
+                    </g>
                   )}
 
-                  {/* Number / Code in center */}
+                  {/* Centered Table Code Badge */}
                   <text
                     x={cx}
-                    y={cy}
-                    fill="#000000"
+                    y={cy + 0.5}
+                    fill="#08080c"
                     fontSize={isAmphi ? '10' : '12'}
                     fontWeight="900"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    style={{ pointerEvents: 'none', userSelect: 'none' }}
+                    style={{
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                      letterSpacing: '-0.02em'
+                    }}
                   >
                     {table.badge_number || table.table_code}
                   </text>
@@ -265,6 +482,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             );
           })}
 
+          {/* Empty Floor Plan Notice */}
           {clubTables.length === 0 && (
             <g pointerEvents="none">
               <rect
@@ -307,3 +525,4 @@ export const FloorPlanCanvas: React.FC<Props> = ({
     </div>
   );
 };
+

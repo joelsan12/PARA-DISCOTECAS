@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import type { ClubTable } from '../../../types';
 
 interface DragOptions {
@@ -10,7 +10,18 @@ interface DragOptions {
 export function useFloorPlanDrag({ snapToGrid, onUpdateTablePosition, onDragEnd }: DragOptions) {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedTableId, setDraggedTableId] = useState<string | null>(null);
+  const [dragCoords, setDragCoords] = useState<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  const snapToGridRef = useRef(snapToGrid);
+  const onUpdateTablePositionRef = useRef(onUpdateTablePosition);
+  const onDragEndRef = useRef(onDragEnd);
+
+  useEffect(() => {
+    snapToGridRef.current = snapToGrid;
+    onUpdateTablePositionRef.current = onUpdateTablePosition;
+    onDragEndRef.current = onDragEnd;
+  }, [snapToGrid, onUpdateTablePosition, onDragEnd]);
 
   const dragStartRef = useRef<{
     pointerId: number;
@@ -22,14 +33,11 @@ export function useFloorPlanDrag({ snapToGrid, onUpdateTablePosition, onDragEnd 
     svgHeight: number;
   } | null>(null);
 
-  const handlePointerDown = (table: ClubTable, e: React.PointerEvent) => {
-    e.stopPropagation();
-    try {
-      (e.currentTarget as Element).setPointerCapture(e.pointerId);
-    } catch {
-      // Fallback
-    }
+  const draggedTableIdRef = useRef<string | null>(null);
+  const latestCoordsRef = useRef<{ x: number; y: number } | null>(null);
 
+  const handlePointerDown = useCallback((table: ClubTable, e: React.PointerEvent) => {
+    e.stopPropagation();
     if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
 
@@ -40,62 +48,96 @@ export function useFloorPlanDrag({ snapToGrid, onUpdateTablePosition, onDragEnd 
       tableStartX: table.x,
       tableStartY: table.y,
       svgWidth: rect.width,
-      svgHeight: rect.height
+      svgHeight: rect.height,
     };
 
-    setIsDragging(true);
+    draggedTableIdRef.current = table.id;
+    latestCoordsRef.current = { x: table.x, y: table.y };
+    setDragCoords({ x: table.x, y: table.y });
     setDraggedTableId(table.id);
-  };
+    setIsDragging(true);
+  }, []);
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !draggedTableId || !dragStartRef.current) return;
+  // Global window listeners while dragging to guarantee smooth 60fps movement anywhere on screen
+  useEffect(() => {
+    if (!isDragging) return;
 
-    const { startX, startY, tableStartX, tableStartY, svgWidth, svgHeight } = dragStartRef.current;
-    if (svgWidth <= 0 || svgHeight <= 0) return;
+    const onWindowPointerMove = (e: PointerEvent) => {
+      if (!dragStartRef.current || !draggedTableIdRef.current) return;
 
-    const deltaPixelX = e.clientX - startX;
-    const deltaPixelY = e.clientY - startY;
+      const { startX, startY, tableStartX, tableStartY, svgWidth, svgHeight } = dragStartRef.current;
+      if (svgWidth <= 0 || svgHeight <= 0) return;
 
-    const deltaPctX = (deltaPixelX / svgWidth) * 100;
-    const deltaPctY = (deltaPixelY / svgHeight) * 100;
+      const deltaPixelX = e.clientX - startX;
+      const deltaPixelY = e.clientY - startY;
 
-    let targetX = tableStartX + deltaPctX;
-    let targetY = tableStartY + deltaPctY;
+      const deltaPctX = (deltaPixelX / svgWidth) * 100;
+      const deltaPctY = (deltaPixelY / svgHeight) * 100;
 
-    if (snapToGrid) {
-      targetX = Math.round(targetX);
-      targetY = Math.round(targetY);
-    } else {
-      targetX = Math.round(targetX * 10) / 10;
-      targetY = Math.round(targetY * 10) / 10;
-    }
+      let targetX = tableStartX + deltaPctX;
+      let targetY = tableStartY + deltaPctY;
 
-    const clampedX = Math.max(3, Math.min(97, targetX));
-    const clampedY = Math.max(3, Math.min(97, targetY));
-
-    onUpdateTablePosition(draggedTableId, clampedX, clampedY);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (isDragging) {
-      try {
-        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
-      } catch {
-        // Fallback
+      if (snapToGridRef.current) {
+        targetX = Math.round(targetX);
+        targetY = Math.round(targetY);
+      } else {
+        targetX = Math.round(targetX * 10) / 10;
+        targetY = Math.round(targetY * 10) / 10;
       }
+
+      const clampedX = Math.max(2, Math.min(98, targetX));
+      const clampedY = Math.max(2, Math.min(98, targetY));
+
+      latestCoordsRef.current = { x: clampedX, y: clampedY };
+      setDragCoords({ x: clampedX, y: clampedY });
+      onUpdateTablePositionRef.current(draggedTableIdRef.current, clampedX, clampedY);
+    };
+
+    const onWindowPointerUp = () => {
+      const finalId = draggedTableIdRef.current;
+      const finalCoords = latestCoordsRef.current;
+
+      if (finalId && finalCoords) {
+        onUpdateTablePositionRef.current(finalId, finalCoords.x, finalCoords.y);
+      }
+
       setIsDragging(false);
       setDraggedTableId(null);
+      setDragCoords(null);
       dragStartRef.current = null;
-      onDragEnd();
-    }
-  };
+      latestCoordsRef.current = null;
+
+      onDragEndRef.current();
+    };
+
+    window.addEventListener('pointermove', onWindowPointerMove);
+    window.addEventListener('pointerup', onWindowPointerUp);
+    window.addEventListener('pointercancel', onWindowPointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', onWindowPointerMove);
+      window.removeEventListener('pointerup', onWindowPointerUp);
+      window.removeEventListener('pointercancel', onWindowPointerUp);
+    };
+  }, [isDragging]);
+
+  // Fallbacks for direct event handling on elements if needed
+  const handlePointerMove = useCallback((_e: React.PointerEvent) => {
+    // Handled by global window listener
+  }, []);
+
+  const handlePointerUp = useCallback((_e: React.PointerEvent) => {
+    // Handled by global window listener
+  }, []);
 
   return {
     svgRef,
     isDragging,
     draggedTableId,
+    dragCoords,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
   };
 }
+
