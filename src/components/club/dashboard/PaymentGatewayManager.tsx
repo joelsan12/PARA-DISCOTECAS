@@ -22,10 +22,10 @@ import {
   AlertCircle,
   Smartphone,
   QrCode,
-  HelpCircle,
   ChevronDown,
   ChevronUp,
   Headphones,
+  Info,
 } from 'lucide-react';
 import { callFunctions } from '../../../lib/functionsClient';
 import type { Club } from '../../../types';
@@ -495,22 +495,57 @@ export const PaymentGatewayManager = ({ activeClub, session }: Props) => {
         </div>
       </div>
 
-      {/* Tarjeta Educativa y Tranquilizadora: "¿Qué pasa si uso otra pasarela o datáfono?" */}
+      {/* Tarjeta Educativa y Guía: Información para el Dueño del Negocio */}
       <div
         className="glass-card"
         style={{
-          padding: '20px 24px',
+          padding: '22px 24px',
           borderRadius: 'var(--radius-md)',
           background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.75) 100%)',
           border: '1px solid rgba(148, 163, 184, 0.2)',
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-          <HelpCircle size={18} color="var(--brand-gold)" />
-          <h3 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
-            ¿Qué pasa si mi club ya tiene otra pasarela, datáfono Datafast o cobra por transferencia?
-          </h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'rgba(229, 181, 79, 0.15)',
+                border: '1px solid rgba(229, 181, 79, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Info size={17} color="var(--brand-gold)" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+                Información para el Dueño del Negocio: Modalidades de Cobro
+              </h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                NIGHTFLOW se adapta a tus herramientas actuales en Ecuador. Elige cómo recaudar según tu operación:
+              </p>
+            </div>
+          </div>
+
+          <span
+            style={{
+              fontSize: '0.64rem',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              padding: '3px 9px',
+              borderRadius: '9999px',
+              background: 'rgba(229, 181, 79, 0.14)',
+              color: 'var(--brand-gold)',
+              border: '1px solid rgba(229, 181, 79, 0.3)',
+            }}
+          >
+            GUÍA PARA EL PROPIETARIO
+          </span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
@@ -525,10 +560,10 @@ export const PaymentGatewayManager = ({ activeClub, session }: Props) => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <CreditCard size={15} color="#4ade80" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>1. Cobras con Datafast o POS físico</strong>
+              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Cobro con Datáfonos Datafast o POS Físico</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
-              Elige <strong style={{ color: '#4ade80' }}>Cobro en Puerta</strong> abajo. Tus clientes reservan en la web, su mesa se aparta al instante con Pase VIP QR, y cancelan con tu datáfono habitual al ingresar al club. ¡Cero trámites online!
+              Si cobras en caja con máquina de Datafast o Medianet: activa la opción <strong style={{ color: '#4ade80' }}>Cobro en Puerta</strong> abajo. Tus clientes reservan su mesa online y cancelan de forma presencial con tu datáfono habitual al ingresar al club. Cero trámites ni comisiones web.
             </p>
           </div>
 
@@ -543,10 +578,10 @@ export const PaymentGatewayManager = ({ activeClub, session }: Props) => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <Landmark size={15} color="var(--brand-gold)" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>2. Cobras por Transferencia Directa</strong>
+              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Cobro por Transferencia Directa o DeUna</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
-              El cliente aparta su cupo en la web y envía el comprobante de transferencia a tu WhatsApp o lo muestra en taquilla. Tu personal valida su pase QR en puerta en segundos.
+              Si prefieres transferencias a tu cuenta de Banco Pichincha, Guayaquil o Produbanco: el cliente aparta su mesa online y envía el comprobante por WhatsApp o lo presenta en taquilla. Tu personal valida su pase QR en puerta en segundos.
             </p>
           </div>
 
@@ -561,10 +596,10 @@ export const PaymentGatewayManager = ({ activeClub, session }: Props) => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <Headphones size={15} color="#38bdf8" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>3. Tienes otra pasarela contratada</strong>
+              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Pasarelas Online o Contratos Existentes</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
-              NIGHTFLOW VIP tiene arquitectura modular multi-pasarela. Elige <strong style={{ color: '#38bdf8' }}>Asistencia NIGHTFLOW</strong> y nuestro equipo conecta la pasarela de tu banco sin costo adicional.
+              Si deseas cobro web automático (Kushki, PayPhone, DeUna) o ya tienes un contrato con otra pasarela bancaria (PlacetoPay, Nuvei, Stripe): conecta tus llaves abajo o solicita <strong style={{ color: '#38bdf8' }}>Asistencia NIGHTFLOW</strong> para enlazar tu cuenta sin costo adicional.
             </p>
           </div>
         </div>
