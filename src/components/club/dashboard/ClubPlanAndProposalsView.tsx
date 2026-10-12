@@ -1090,7 +1090,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
         {/* Tarjetas de Planes */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '20px' }}>
           {store.plans
-            .filter(p => p.id !== 'beta_vip')
+            .filter(p => !['beta_vip', 'basic', 'pro', 'enterprise'].includes(p.id))
             .map(plan => {
               const isCurrent = (subDetails?.planId || activeClub.plan_id) === plan.id;
               const price = (billingCycle === 'annual' ? plan.annual_price : plan.monthly_price) ?? 0;
@@ -1566,11 +1566,13 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     fontSize: '0.85rem',
                   }}
                 >
-                  {store.plans.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {esPlan(p.id)} ({formatUsd(p.monthly_price)}/mes)
-                    </option>
-                  ))}
+                  {store.plans
+                    .filter(p => !['basic', 'pro', 'enterprise'].includes(p.id))
+                    .map(p => (
+                      <option key={p.id} value={p.id}>
+                        {esPlan(p.id)} ({formatUsd(p.monthly_price)}/mes)
+                      </option>
+                    ))}
                 </select>
               </div>
 
