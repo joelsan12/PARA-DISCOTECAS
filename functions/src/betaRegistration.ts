@@ -16,6 +16,13 @@ export interface RegisterBetaClubInput {
   source?: string;
 }
 
+export interface VisualGuideItem {
+  id: string;
+  title: string;
+  description: string;
+  pdfUrl: string;
+}
+
 export interface RegisterBetaClubResult {
   success: boolean;
   businessId: string;
@@ -28,9 +35,43 @@ export interface RegisterBetaClubResult {
     adminUrl: string;
     brandUrl: string;
   };
+  guides: VisualGuideItem[];
   emailSent: boolean;
   message: string;
 }
+
+export const OFFICIAL_VISUAL_GUIDES: VisualGuideItem[] = [
+  {
+    id: "floor-plan",
+    title: "Diseñador de Plano",
+    description: "Cómo crear y organizar el mapa de tus mesas, palcos y barras en 5 minutos.",
+    pdfUrl: "https://nightflow-vip.web.app/guias/Guia_Visual_Crear_Plano_Para_Clubes.pdf"
+  },
+  {
+    id: "floor-ops",
+    title: "Sala en Vivo & Concierge",
+    description: "Control de mesas, semáforo de colores en vivo y atención de pedidos VIP.",
+    pdfUrl: "https://nightflow-vip.web.app/guias/Guia_Visual_Sala_Concierge_Dueno.pdf"
+  },
+  {
+    id: "events",
+    title: "Cartelera de Eventos",
+    description: "Cómo publicar fiestas temáticas, fijar horarios de cover y vender entradas anticipadas.",
+    pdfUrl: "https://nightflow-vip.web.app/guias/Guia_Visual_Eventos_Dueno.pdf"
+  },
+  {
+    id: "reservations",
+    title: "Control de Reservas & Entrada",
+    description: "Búsqueda rápida por nombre o celular en puerta y verificación de anticipos pagados.",
+    pdfUrl: "https://nightflow-vip.web.app/guias/Guia_Visual_Reservas_Dueno.pdf"
+  },
+  {
+    id: "staff",
+    title: "Personal, Meseros & Roles",
+    description: "Cómo dar accesos individuales a tu equipo y asignar zonas de mesas para evitar cruces.",
+    pdfUrl: "https://nightflow-vip.web.app/guias/Guia_Visual_Personal_Staff_Dueno.pdf"
+  }
+];
 
 function generateSlug(name: string): string {
   return name
@@ -262,9 +303,10 @@ export async function registerAndActivateBetaClub(
       adminUrl,
       brandUrl
     },
+    guides: OFFICIAL_VISUAL_GUIDES,
     emailSent: emailResult.sent,
     message: emailResult.sent
-      ? `Se ha enviado un correo con tus credenciales a ${email}.`
+      ? `Se ha enviado un correo con tus credenciales y guías a ${email}.`
       : "Tu club ha sido activado. Guarda tus credenciales para acceder."
   };
 }

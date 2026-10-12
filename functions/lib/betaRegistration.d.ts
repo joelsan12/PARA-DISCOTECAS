@@ -7,6 +7,12 @@ export interface RegisterBetaClubInput {
     plan?: string;
     source?: string;
 }
+export interface VisualGuideItem {
+    id: string;
+    title: string;
+    description: string;
+    pdfUrl: string;
+}
 export interface RegisterBetaClubResult {
     success: boolean;
     businessId: string;
@@ -19,9 +25,11 @@ export interface RegisterBetaClubResult {
         adminUrl: string;
         brandUrl: string;
     };
+    guides: VisualGuideItem[];
     emailSent: boolean;
     message: string;
 }
+export declare const OFFICIAL_VISUAL_GUIDES: VisualGuideItem[];
 export declare const BETA_VIP_FEATURES: string[];
 export declare function normalizePlanId(planInput?: string): string;
 export declare function parseRegisterBetaInput(value: unknown): RegisterBetaClubInput;

@@ -202,7 +202,7 @@ export async function sendWelcomeCredentialsEmail(options: WelcomeCredentialsOpt
               </table>
 
               <!-- Módulos Incluidos -->
-              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;">
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px 20px; margin-bottom: 22px;">
                 <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #d1d5db; text-transform: uppercase; letter-spacing: 0.06em;">
                   Tu activación incluye:
                 </p>
@@ -211,6 +211,89 @@ export async function sendWelcomeCredentialsEmail(options: WelcomeCredentialsOpt
                   <li><strong>Scanner de Puerta Criptográfico:</strong> Control de aforo con QR rotativo y prevención de reenvío.</li>
                   <li><strong>Catálogo y Reservas Online:</strong> Tu página pública activa en <a href="${brandUrl}" style="color: #e5b54f; text-decoration: none;">${brandUrl}</a>.</li>
                 </ul>
+              </div>
+
+              <!-- Bloque Destacado: Guías Visuales Oficiales en PDF -->
+              <div style="background: linear-gradient(180deg, rgba(229, 181, 79, 0.08) 0%, rgba(229, 181, 79, 0.03) 100%); border: 1px solid rgba(229, 181, 79, 0.35); border-radius: 12px; padding: 20px; margin-bottom: 26px;">
+                <div style="margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 800; color: #e5b54f; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(229, 181, 79, 0.15); border: 1px solid rgba(229, 181, 79, 0.3); border-radius: 6px; padding: 3px 8px; display: inline-block; margin-bottom: 6px;">
+                    MATERIAL OFICIAL DE OPERACIÓN
+                  </span>
+                  <h3 style="margin: 4px 0 0; font-size: 16px; font-weight: 800; color: #ffffff;">
+                    📚 Guías Visuales Prácticas para tu Equipo (PDF)
+                  </h3>
+                  <p style="margin: 6px 0 0; font-size: 12.5px; color: #cbd5e1; line-height: 1.5;">
+                    Manuales ilustrados paso a paso (100% sencillos y sin palabras difíciles) diseñados para que tú, tus gerentes, cajeros y meseros operen la noche en minutos:
+                  </p>
+                </div>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size: 12.5px;">
+                  <tr>
+                    <td style="padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                      <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">
+                        🗺️ 1. Guía: Diseñador de Plano
+                      </div>
+                      <div style="color: #9ca3af; font-size: 11.5px; margin-bottom: 6px;">
+                        Cómo crear y organizar el mapa de tus mesas, palcos y barras en 5 minutos.
+                      </div>
+                      <a href="https://nightflow-vip.web.app/guias/Guia_Visual_Crear_Plano_Para_Clubes.pdf" target="_blank" style="display: inline-block; font-size: 11.5px; font-weight: 700; color: #e5b54f; text-decoration: none; border: 1px solid rgba(229, 181, 79, 0.4); padding: 4px 10px; border-radius: 6px; background: rgba(229, 181, 79, 0.1);">
+                        Descargar Guía de Plano (PDF) &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                      <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">
+                        🍸 2. Guía: Sala en Vivo & Concierge
+                      </div>
+                      <div style="color: #9ca3af; font-size: 11.5px; margin-bottom: 6px;">
+                        Control en tiempo real, semáforo de colores de mesas y despacho rápido de botellas.
+                      </div>
+                      <a href="https://nightflow-vip.web.app/guias/Guia_Visual_Sala_Concierge_Dueno.pdf" target="_blank" style="display: inline-block; font-size: 11.5px; font-weight: 700; color: #e5b54f; text-decoration: none; border: 1px solid rgba(229, 181, 79, 0.4); padding: 4px 10px; border-radius: 6px; background: rgba(229, 181, 79, 0.1);">
+                        Descargar Guía de Sala & Concierge (PDF) &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                      <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">
+                        🎟️ 3. Guía: Cartelera de Eventos
+                      </div>
+                      <div style="color: #9ca3af; font-size: 11.5px; margin-bottom: 6px;">
+                        Cómo publicar fiestas temáticas, fijar horarios de cover y vender entradas anticipadas.
+                      </div>
+                      <a href="https://nightflow-vip.web.app/guias/Guia_Visual_Eventos_Dueno.pdf" target="_blank" style="display: inline-block; font-size: 11.5px; font-weight: 700; color: #e5b54f; text-decoration: none; border: 1px solid rgba(229, 181, 79, 0.4); padding: 4px 10px; border-radius: 6px; background: rgba(229, 181, 79, 0.1);">
+                        Descargar Guía de Eventos (PDF) &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                      <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">
+                        📋 4. Guía: Control de Reservas & Entrada
+                      </div>
+                      <div style="color: #9ca3af; font-size: 11.5px; margin-bottom: 6px;">
+                        Búsqueda rápida por nombre o celular en puerta y verificación de anticipos pagados.
+                      </div>
+                      <a href="https://nightflow-vip.web.app/guias/Guia_Visual_Reservas_Dueno.pdf" target="_blank" style="display: inline-block; font-size: 11.5px; font-weight: 700; color: #e5b54f; text-decoration: none; border: 1px solid rgba(229, 181, 79, 0.4); padding: 4px 10px; border-radius: 6px; background: rgba(229, 181, 79, 0.1);">
+                        Descargar Guía de Reservas (PDF) &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                      <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">
+                        👥 5. Guía: Personal, Meseros & Roles de Sala
+                      </div>
+                      <div style="color: #9ca3af; font-size: 11.5px; margin-bottom: 6px;">
+                        Cómo dar accesos individuales a tu equipo y asignar zonas de mesas para evitar cruces.
+                      </div>
+                      <a href="https://nightflow-vip.web.app/guias/Guia_Visual_Personal_Staff_Dueno.pdf" target="_blank" style="display: inline-block; font-size: 11.5px; font-weight: 700; color: #e5b54f; text-decoration: none; border: 1px solid rgba(229, 181, 79, 0.4); padding: 4px 10px; border-radius: 6px; background: rgba(229, 181, 79, 0.1);">
+                        Descargar Guía de Personal & Meseros (PDF) &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                </table>
               </div>
 
               <!-- Soporte Directo WhatsApp -->
@@ -252,10 +335,18 @@ CREDENCIALES DE ACCESO:
 • Portal de Administración: ${adminUrl}
 • Usuario / Correo: ${to}
 • Contraseña Temporal: ${tempPassword}
-• Rol: OWNER (Propietario)
+• Rol: OWNER (Propietario / Acceso Total)
 
 Página pública de tu club: ${brandUrl}
-Soporte WhatsApp: +593 979 116 551
+
+GUÍAS VISUALES PRÁCTICAS OFICIALES (Descarga directa en PDF):
+1. Diseñador de Plano: https://nightflow-vip.web.app/guias/Guia_Visual_Crear_Plano_Para_Clubes.pdf
+2. Sala en Vivo & Concierge: https://nightflow-vip.web.app/guias/Guia_Visual_Sala_Concierge_Dueno.pdf
+3. Cartelera de Eventos: https://nightflow-vip.web.app/guias/Guia_Visual_Eventos_Dueno.pdf
+4. Control de Reservas & Entrada: https://nightflow-vip.web.app/guias/Guia_Visual_Reservas_Dueno.pdf
+5. Personal, Meseros & Roles: https://nightflow-vip.web.app/guias/Guia_Visual_Personal_Staff_Dueno.pdf
+
+Soporte WhatsApp VIP: +593 979 116 551
   `.trim();
 
   return await sendEmail({ to, subject, html, text, replyTo: "contacto@j2sdynamics.com" });

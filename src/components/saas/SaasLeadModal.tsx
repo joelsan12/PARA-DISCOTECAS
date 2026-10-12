@@ -14,9 +14,16 @@ import {
   Lock,
   Mail,
   Building,
-  UserCheck
+  UserCheck,
+  BookOpen,
+  FileText,
+  Download
 } from 'lucide-react';
-import { registerBetaClubOnline, type RegisterBetaClubOnlineResponse } from '../../lib/betaIntake';
+import {
+  registerBetaClubOnline,
+  OFFICIAL_VISUAL_GUIDES,
+  type RegisterBetaClubOnlineResponse
+} from '../../lib/betaIntake';
 
 const ECUADOR_CITIES = [
   'Quito',
@@ -410,6 +417,65 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                     PROPIETARIO (Beta Privada VIP • Acceso Total)
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* Sección de Descarga Directa de Guías Visuales */}
+            <div
+              style={{
+                background: 'rgba(229, 181, 79, 0.05)',
+                border: '1px solid rgba(229, 181, 79, 0.28)',
+                borderRadius: '12px',
+                padding: '14px 16px',
+                marginBottom: '18px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BookOpen size={16} color="#e5b54f" />
+                  <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#e5b54f', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                    Guías Visuales Prácticas (PDF)
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#34d399', background: 'rgba(52, 211, 153, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                  INCLUIDAS
+                </span>
+              </div>
+              <p style={{ fontSize: '0.76rem', color: 'var(--saas-text-secondary)', margin: '0 0 10px', lineHeight: 1.45 }}>
+                Enviamos estas guías a tu correo junto con tus credenciales. También puedes descargarlas o abrirlas directamente aquí para tu equipo:
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {(result?.guides || OFFICIAL_VISUAL_GUIDES).map((guide) => (
+                  <a
+                    key={guide.id}
+                    href={guide.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '7px 10px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '6px',
+                      textDecoration: 'none',
+                      color: '#ffffff',
+                      fontSize: '0.78rem',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                      <FileText size={13} color="#e5b54f" style={{ flexShrink: 0 }} />
+                      <span style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {guide.title}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#e5b54f', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontWeight: 700 }}>
+                      PDF <Download size={11} />
+                    </span>
+                  </a>
+                ))}
               </div>
             </div>
 
