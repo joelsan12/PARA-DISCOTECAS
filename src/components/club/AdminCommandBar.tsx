@@ -55,7 +55,7 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
       case 'PRICING':
         return { category: 'Comercial', section: 'Tarifario & Anticipos' };
       case 'PAYMENTS':
-        return { category: 'Finanzas', section: 'Pasarela de Cobros Kushki' };
+        return { category: 'Finanzas', section: 'Cobro de Reservas & Pasarelas' };
       case 'STAFF':
         return { category: 'Equipo', section: 'Gestión de Personal & Meseros' };
       case 'SUBSCRIPTION':

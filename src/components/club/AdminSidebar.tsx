@@ -372,7 +372,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     <span className="admin-nav-item-icon">
                       <CreditCard size={15} />
                     </span>
-                    <span>Pasarela Kushki</span>
+                    <span>Cobros &amp; Pasarelas</span>
                   </div>
                 </button>
               )}
