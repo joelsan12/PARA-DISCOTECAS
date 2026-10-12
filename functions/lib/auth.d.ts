@@ -10,6 +10,6 @@ export interface StaffProfile {
 export declare function callableUid(request: CallableRequest<unknown>): string;
 export declare function roleAtLeast(role: StaffRole, minimum: StaffRole): boolean;
 export declare function isStaffRole(value: unknown): value is StaffRole;
+export declare function isSuperAdmin(uid: string): Promise<boolean>;
 export declare function getStaffProfile(uid: string, businessId: string): Promise<StaffProfile | null>;
 export declare function requireStaff(uid: string, businessId: string, minimumRole?: StaffRole): Promise<StaffProfile>;
-export declare function isSuperAdmin(uid: string): Promise<boolean>;

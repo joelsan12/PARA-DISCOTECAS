@@ -191,8 +191,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards (oculto en finanzas, gobernanza/fiscal y suscripción) */}
-      {!['PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes(activeTab) && (
+      {/* Top Bar & 4 Executive KPI Cards (oculto en catálogo de consumo, personal y meseros, finanzas, pasarelas, gobernanza y suscripción) */}
+      {!['CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes(activeTab) && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}
