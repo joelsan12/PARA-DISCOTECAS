@@ -3,13 +3,20 @@ from pathlib import Path
 import typst
 
 manual_dir = Path(__file__).resolve().parent
-input_typ = manual_dir / "manual.typ"
-output_pdf = manual_dir / "Manual_Disenador_De_Plano_Nightflow_VIP.pdf"
 
-if not input_typ.exists():
-    print(f"Error: {input_typ} no existe")
-    sys.exit(1)
+docs = [
+    ("manual.typ", "Manual_Disenador_De_Plano_Nightflow_VIP.pdf"),
+    ("guia_visual_negocios.typ", "Guia_Visual_Crear_Plano_Para_Clubes.pdf")
+]
 
-print(f"Compilando {input_typ} -> {output_pdf}...")
-typst.compile(str(input_typ), output=str(output_pdf))
-print(f"¡PDF generado con éxito en: {output_pdf} ({output_pdf.stat().st_size} bytes)!")
+for typ_file, pdf_file in docs:
+    input_typ = manual_dir / typ_file
+    output_pdf = manual_dir / pdf_file
+    if input_typ.exists():
+        print(f"Compilando {typ_file} -> {pdf_file}...")
+        typst.compile(str(input_typ), output=str(output_pdf))
+        print(f"  [OK] Generado: {pdf_file} ({output_pdf.stat().st_size} bytes)")
+    else:
+        print(f"  [ALERTA] No se encontro {typ_file}")
+
+print("Todos los manuales PDF estan al dia.")
