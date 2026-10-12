@@ -16,7 +16,6 @@ import {
   Crown,
   Users,
   Wine,
-  Compass,
   History,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
@@ -245,38 +244,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 <span>Operaciones de Sala</span>
               </span>
 
-              {isDashboardTabAllowed('MONITOR', activeClub, activePlan) && (
+              {(isDashboardTabAllowed('MONITOR', activeClub, activePlan) || isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan)) && (
                 <button
                   type="button"
-                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'MONITOR' ? 'active' : ''}`}
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && (dashboardTab === 'MONITOR' || dashboardTab === 'FLOOR_OPS') ? 'active' : ''}`}
                   onClick={() => handleTabClick('MONITOR')}
                 >
                   <div className="admin-nav-item-left">
                     <span className="admin-nav-item-icon">
                       <MonitorPlay size={15} />
                     </span>
-                    <span>Sala en Vivo</span>
+                    <span>Sala &amp; Concierge</span>
                   </div>
                   <span className="admin-nav-item-tag admin-nav-item-tag--live">
                     LIVE
-                  </span>
-                </button>
-              )}
-
-              {isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan) && (
-                <button
-                  type="button"
-                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'FLOOR_OPS' ? 'active' : ''}`}
-                  onClick={() => handleTabClick('FLOOR_OPS')}
-                >
-                  <div className="admin-nav-item-left">
-                    <span className="admin-nav-item-icon">
-                      <Compass size={15} />
-                    </span>
-                    <span>Piso &amp; Concierge</span>
-                  </div>
-                  <span className="admin-nav-item-tag admin-nav-item-tag--live">
-                    OPS
                   </span>
                 </button>
               )}

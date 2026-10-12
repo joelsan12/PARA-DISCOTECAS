@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Building } from 'lucide-react';
+import { Building, MonitorPlay, Compass } from 'lucide-react';
 import { useClubStore } from '../../store/clubStore';
 import { InteractiveFloorPlan } from '../client/InteractiveFloorPlan';
 import { FloorPlanEditor } from './FloorPlanEditor';
@@ -38,6 +38,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
   const [isCustomPlanModalOpen, setIsCustomPlanModalOpen] = useState(false);
+  const [subTabOverride, setSubTabOverride] = useState<'MAP' | 'CONCIERGE' | null>(null);
+  const liveOpsSubTab = subTabOverride ?? (activeTab === 'FLOOR_OPS' ? 'CONCIERGE' : 'MAP');
 
   // Suscripción reactiva multiusuario a operaciones (resources + reservations + door sessions)
   const [operationalTables, setOperationalTables] = useState<OperationalTableItem[] | null>(null);
@@ -211,36 +213,97 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
       {/* La navegación vive exclusivamente en el AdminSidebar (una sola fuente) */}
 
-      {/* Tab: MONITOR */}
-      {activeTab === 'MONITOR' && (
-        effectiveTables.length === 0 ? (
-          <ClubFloorPlanEmptyState
-            clubName={activeClub.name}
-            onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
-            onRequestCustomPlan={() => setIsCustomPlanModalOpen(true)}
-          />
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
-            <InteractiveFloorPlan
-              tables={effectiveTables}
-              eventPricings={effectiveEventPricings}
-              selectedTableId={null}
-              onSelectTable={() => {}}
-            />
-            <OperatingTablesList
-              tables={effectiveTables}
-              eventPricings={effectiveEventPricings}
-              operationalTables={operationalTables}
-              session={session}
-              activeClubId={activeClub.id}
-            />
-          </div>
-        )
-      )}
+      {/* Tab: MONITOR o FLOOR_OPS (Unificado: Sala & Concierge) */}
+      {(activeTab === 'MONITOR' || activeTab === 'FLOOR_OPS') && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Selector de Sub-Pestaña Segmentado (Colores VIP de la web) */}
+          {isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan) && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, rgba(14, 20, 30, 0.85) 0%, rgba(8, 11, 18, 0.95) 100%)',
+              border: '1px solid rgba(229, 181, 79, 0.22)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+              width: 'fit-content',
+            }}>
+              <button
+                type="button"
+                onClick={() => setSubTabOverride('MAP')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: liveOpsSubTab === 'MAP' ? '1px solid rgba(229, 181, 79, 0.45)' : '1px solid transparent',
+                  background: liveOpsSubTab === 'MAP' ? 'rgba(229, 181, 79, 0.14)' : 'transparent',
+                  color: liveOpsSubTab === 'MAP' ? '#f4f1ea' : 'rgba(255, 255, 255, 0.55)',
+                  fontSize: '0.82rem',
+                  fontWeight: liveOpsSubTab === 'MAP' ? 800 : 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <MonitorPlay size={15} style={{ color: liveOpsSubTab === 'MAP' ? '#e5b54f' : 'inherit' }} />
+                <span>Sala en Vivo</span>
+              </button>
 
-      {/* Tab: FLOOR_OPS */}
-      {activeTab === 'FLOOR_OPS' && session && (
-        <FloorOpsView activeClub={activeClub} session={session} />
+              <button
+                type="button"
+                onClick={() => setSubTabOverride('CONCIERGE')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: liveOpsSubTab === 'CONCIERGE' ? '1px solid rgba(229, 181, 79, 0.45)' : '1px solid transparent',
+                  background: liveOpsSubTab === 'CONCIERGE' ? 'rgba(229, 181, 79, 0.14)' : 'transparent',
+                  color: liveOpsSubTab === 'CONCIERGE' ? '#f4f1ea' : 'rgba(255, 255, 255, 0.55)',
+                  fontSize: '0.82rem',
+                  fontWeight: liveOpsSubTab === 'CONCIERGE' ? 800 : 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <Compass size={15} style={{ color: liveOpsSubTab === 'CONCIERGE' ? '#e5b54f' : 'inherit' }} />
+                <span>Piso &amp; Concierge</span>
+              </button>
+            </div>
+          )}
+
+          {/* Contenido de la Sub-pestaña */}
+          {liveOpsSubTab === 'MAP' || !isDashboardTabAllowed('FLOOR_OPS', activeClub, activePlan) ? (
+            effectiveTables.length === 0 ? (
+              <ClubFloorPlanEmptyState
+                clubName={activeClub.name}
+                onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
+                onRequestCustomPlan={() => setIsCustomPlanModalOpen(true)}
+              />
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
+                <InteractiveFloorPlan
+                  tables={effectiveTables}
+                  eventPricings={effectiveEventPricings}
+                  selectedTableId={null}
+                  onSelectTable={() => {}}
+                />
+                <OperatingTablesList
+                  tables={effectiveTables}
+                  eventPricings={effectiveEventPricings}
+                  operationalTables={operationalTables}
+                  session={session}
+                  activeClubId={activeClub.id}
+                />
+              </div>
+            )
+          ) : (
+            session && <FloorOpsView activeClub={activeClub} session={session} />
+          )}
+        </div>
       )}
 
       {/* Tab: LAYOUT_BUILDER */}
