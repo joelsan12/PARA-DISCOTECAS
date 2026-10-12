@@ -262,16 +262,18 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
       {/* Tab: PRICING */}
       {activeTab === 'PRICING' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          <PricingManager
-            clubTables={effectiveTables}
-            eventPricings={effectiveEventPricings}
-            activeEvent={activeEvent}
-            onUpdatePricing={handleUpdatePricing}
-            onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
-          />
-          <ConsumptionCatalogManager activeClub={activeClub} session={session} />
-        </div>
+        <PricingManager
+          clubTables={effectiveTables}
+          eventPricings={effectiveEventPricings}
+          activeEvent={activeEvent}
+          onUpdatePricing={handleUpdatePricing}
+          onGoToDesigner={() => store.setDashboardTab('LAYOUT_BUILDER')}
+        />
+      )}
+
+      {/* Tab: CONSUMPTION (Catálogo de Consumo en Sala) */}
+      {activeTab === 'CONSUMPTION' && (
+        <ConsumptionCatalogManager activeClub={activeClub} session={session} />
       )}
 
       {/* Tab: TRANSACTIONS (Historial de Cobros & Reembolsos) */}

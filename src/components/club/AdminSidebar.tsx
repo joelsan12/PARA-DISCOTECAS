@@ -33,6 +33,7 @@ export type DashboardTabKey =
   | 'EVENTS'
   | 'RESERVATIONS'
   | 'PRICING'
+  | 'CONSUMPTION'
   | 'TRANSACTIONS'
   | 'PAYMENTS'
   | 'STAFF'
@@ -370,6 +371,21 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       <Coins size={15} />
                     </span>
                     <span>Tarifario &amp; Anticipos</span>
+                  </div>
+                </button>
+              )}
+
+              {isDashboardTabAllowed('CONSUMPTION', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'CONSUMPTION' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('CONSUMPTION')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <Wine size={15} />
+                    </span>
+                    <span>Catálogo de Consumo</span>
                   </div>
                 </button>
               )}

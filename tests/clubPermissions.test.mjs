@@ -76,6 +76,7 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', sensorialClub, enterprisePlan), true);
     assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', sensorialClub, enterprisePlan), true);
     assert.strictEqual(isDashboardTabAllowed('PRICING', sensorialClub, enterprisePlan), true);
+    assert.strictEqual(isDashboardTabAllowed('CONSUMPTION', sensorialClub, enterprisePlan), true);
     assert.strictEqual(isDashboardTabAllowed('PAYMENTS', sensorialClub, enterprisePlan), true);
     assert.strictEqual(isDashboardTabAllowed('LEGAL', sensorialClub, enterprisePlan), true);
     assert.strictEqual(isDashboardTabAllowed('AUDIT', sensorialClub, enterprisePlan), true);
@@ -88,6 +89,7 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', rumajClub, proPlan), true);
     assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', rumajClub, proPlan), true);
     assert.strictEqual(isDashboardTabAllowed('PRICING', rumajClub, proPlan), true);
+    assert.strictEqual(isDashboardTabAllowed('CONSUMPTION', rumajClub, proPlan), true);
     assert.strictEqual(isDashboardTabAllowed('PAYMENTS', rumajClub, proPlan), true);
     assert.strictEqual(isDashboardTabAllowed('LEGAL', rumajClub, proPlan), true);
     assert.strictEqual(isDashboardTabAllowed('AUDIT', rumajClub, proPlan), false); // Exclusivo Empresarial
@@ -100,6 +102,7 @@ test('Filtrado de menús por plan (AGENTS §2.1 y directrices de club)', async (
     assert.strictEqual(isDashboardTabAllowed('LAYOUT_BUILDER', velvetClub, basicPlan), false);
     assert.strictEqual(isDashboardTabAllowed('RESERVATIONS', velvetClub, basicPlan), true);
     assert.strictEqual(isDashboardTabAllowed('PRICING', velvetClub, basicPlan), false);
+    assert.strictEqual(isDashboardTabAllowed('CONSUMPTION', velvetClub, basicPlan), false);
     assert.strictEqual(isDashboardTabAllowed('PAYMENTS', velvetClub, basicPlan), false);
     assert.strictEqual(isDashboardTabAllowed('LEGAL', velvetClub, basicPlan), true);
     assert.strictEqual(isDashboardTabAllowed('AUDIT', velvetClub, basicPlan), false);

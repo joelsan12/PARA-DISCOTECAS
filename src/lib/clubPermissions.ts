@@ -132,6 +132,15 @@ export function isDashboardTabAllowed(
         ['dynamic_pricing', 'pricing', 'tarifario', 'anticipos']
       );
 
+    case 'CONSUMPTION':
+      // Catálogo de Consumo en Sala: Requiere Plan Pro o Empresarial (LIVE_FLOOR_OPS)
+      return canClubAccessFeature(
+        club,
+        plan,
+        'LIVE_FLOOR_OPS',
+        ['live_floor_ops', 'consumos', 'catalogo_consumo', 'carta', 'bebidas', 'menu']
+      );
+
     case 'PAYMENTS':
     case 'TRANSACTIONS':
       // Pasarelas & Cobros: Requiere Plan Pro o Empresarial (ONLINE_PAYMENT)
