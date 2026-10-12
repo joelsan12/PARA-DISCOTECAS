@@ -602,7 +602,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           <div
             style={{
               background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(229, 181, 79, 0.18)',
               borderRadius: '10px',
               padding: '16px',
               display: 'flex',
@@ -613,11 +613,11 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#34d399' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-gold)' }}>
                   COMPROBANTE SRI
                 </span>
-                <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '1px 6px', borderRadius: '3px', background: 'rgba(16, 185, 129, 0.1)', color: '#34d399' }}>
-                  PAGADA
+                <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: 'rgba(234, 179, 8, 0.15)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
+                  PRUEBA / BETA
                 </span>
               </div>
               <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
@@ -649,7 +649,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               }}
             >
               <FileText size={13} />
-              <span>Ver Factura Digital SRI</span>
+              <span>Ver Factura Digital (Modo Prueba)</span>
             </button>
           </div>
         </div>
@@ -696,7 +696,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '20px',
+                marginBottom: '16px',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                 paddingBottom: '14px',
               }}
@@ -704,11 +704,14 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Receipt size={22} color="var(--brand-gold)" />
                 <div>
-                  <h3 className="font-brand" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#fff' }}>
-                    Comprobante Electrónico SRI — Factura Oficial
+                  <h3 className="font-brand" style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span>Comprobante Electrónico SRI — Factura</span>
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', background: 'rgba(234, 179, 8, 0.15)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.35)' }}>
+                      FASE BETA • MODO PRUEBA
+                    </span>
                   </h3>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    Conforme a la normativa tributaria del Servicio de Rentas Internas de Ecuador
+                  <span style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 600 }}>
+                    DOCUMENTO DE SIMULACIÓN — DATOS NO VÁLIDOS TRIBUTARIAMENTE ANTE EL SRI
                   </span>
                 </div>
               </div>
@@ -749,6 +752,29 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 >
                   <X size={18} />
                 </button>
+              </div>
+            </div>
+
+            {/* Banner Destacado: Advertencia de Datos No Válidos / Modo Beta */}
+            <div
+              style={{
+                background: 'rgba(234, 179, 8, 0.08)',
+                border: '1px solid rgba(234, 179, 8, 0.35)',
+                borderRadius: '8px',
+                padding: '10px 14px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontSize: '0.74rem',
+              }}
+            >
+              <AlertTriangle size={18} color="#facc15" style={{ flexShrink: 0 }} />
+              <div>
+                <strong style={{ color: '#facc15' }}>COMPROBANTE DE PRUEBA (NO VÁLIDO PARA DECLARACIÓN FISCAL):</strong>{' '}
+                <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+                  Este comprobante es una maqueta de demostración visual en fase beta de desarrollo. No constituye una factura electrónica real emitida ni autorizada formalmente por el SRI del Ecuador.
+                </span>
               </div>
             </div>
 
@@ -809,7 +835,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     </div>
                   </div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    <strong>FECHA DE EMISIÓN:</strong> {formatEcuadorDate(invoiceIssueDate)} | <strong>AMBIENTE:</strong> PRODUCCIÓN
+                    <strong>FECHA DE EMISIÓN:</strong> {formatEcuadorDate(invoiceIssueDate)} | <strong>AMBIENTE:</strong> PRUEBAS (SIN VALIDEZ TRIBUTARIA)
                   </div>
                 </div>
               </div>
@@ -893,8 +919,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   <div><strong>Periodo cubierto:</strong> Hasta el {formatEcuadorDate(periodEndTimestamp)}</div>
                   <div><strong>Forma de pago:</strong> Otros con utilización del sistema financiero (20)</div>
                   <div><strong>Plazo:</strong> 0 días (Liquidado de contado)</div>
-                  <div style={{ marginTop: '6px', fontSize: '0.68rem', color: '#4ade80' }}>
-                    Comprobante autorizado automáticamente por el sistema de facturación electrónica.
+                  <div style={{ marginTop: '6px', fontSize: '0.68rem', color: '#facc15', fontWeight: 600 }}>
+                    Comprobante de simulación generado en ambiente de pruebas (Fase Beta). Datos no válidos ante el SRI.
                   </div>
                 </div>
 
