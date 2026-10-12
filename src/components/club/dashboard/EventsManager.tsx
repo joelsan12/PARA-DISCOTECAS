@@ -9,7 +9,6 @@ import {
   Clock,
   DollarSign,
   User,
-  Sparkles,
   Check,
   AlertCircle,
   X,
@@ -253,24 +252,6 @@ export const EventsManager = ({ activeClub }: Props) => {
             boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)'
           }}
         >
-          <div
-            style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '18px',
-              background: 'rgba(229, 181, 79, 0.12)',
-              border: '1px solid rgba(229, 181, 79, 0.35)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 20px',
-              color: 'var(--brand-gold)',
-              boxShadow: '0 0 25px rgba(229, 181, 79, 0.15)'
-            }}
-          >
-            <CalendarDays size={32} />
-          </div>
-
           <span
             style={{
               fontSize: '0.72rem',
@@ -328,7 +309,7 @@ export const EventsManager = ({ activeClub }: Props) => {
               boxShadow: '0 6px 20px rgba(229, 181, 79, 0.3)'
             }}
           >
-            <Sparkles size={18} /> Publicar Mi Primer Evento
+            <Plus size={18} /> Publicar Mi Primer Evento
           </button>
         </div>
       ) : (
