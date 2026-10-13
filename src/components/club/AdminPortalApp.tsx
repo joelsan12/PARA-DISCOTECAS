@@ -59,6 +59,17 @@ export function AdminPortalApp() {
     }
   }, [store]);
 
+  // Redirigir automáticamente la vista inicial según el rol operativo del colaborador
+  useEffect(() => {
+    if (session) {
+      if (session.role === 'DOOR_CHECKIN' && currentView !== 'DOOR') {
+        setCurrentView('DOOR');
+      } else if (session.role === 'WAITER' && currentView !== 'WAITER') {
+        setCurrentView('WAITER');
+      }
+    }
+  }, [session, currentView]);
+
   const activeClubId = store.activeClubId || undefined;
 
   useEffect(() => {
