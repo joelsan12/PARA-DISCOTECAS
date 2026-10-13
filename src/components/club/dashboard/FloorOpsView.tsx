@@ -567,6 +567,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                 setIsSettlingOpen(false);
               }}
               tableStateOverrides={tableStateOverrides}
+              layoutType={activeClub.layout_type}
             />
           </div>
 

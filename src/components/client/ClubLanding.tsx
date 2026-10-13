@@ -129,6 +129,7 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
           eventPricings={eventPricings}
           selectedTableId={selectedTable?.id || null}
           onSelectTable={handleSelectTable}
+          layoutType={activeClub.layout_type}
         />
       </main>
 

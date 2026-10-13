@@ -23,7 +23,10 @@ export default defineConfig(({ command, mode }) => {
     define: productionDefine,
     server: {
       port,
-      strictPort: false
+      strictPort: false,
+      watch: {
+        ignored: ['**/dist/**', '**/dist-*/**', '**/functions/**']
+      }
     },
     build: {
       outDir: isDev ? 'dist-dev' : (isAdmin ? 'dist-admin' : 'dist'),
