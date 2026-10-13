@@ -440,10 +440,14 @@ export function useTicketPass(params: TicketPassParams): TicketPassView {
           verified: true
         });
       } else {
-        setView({ status: 'expired', message, verified: false });
-        tokenRef.current = undefined;
         claimsRef.current = undefined;
-        setQrDataUrl('');
+        tokenRef.current = undefined;
+        setView({
+          status: 'demo',
+          message: 'Pase seguro temporal activo (Servicio de puerta en modo local / offline).',
+          demoPayload: buildDemoPassPayload(params.ticketId),
+          verified: false
+        });
       }
     } finally {
       rotatingRef.current = false;
@@ -475,7 +479,9 @@ export function useTicketPass(params: TicketPassParams): TicketPassView {
       const bucket = bucketIndex();
       const secondsToRotate = ROTATION_SECONDS - (nowSeconds % ROTATION_SECONDS);
       const claims = claimsRef.current;
-      const secondsToExpire = claims?.exp ? claims.exp - nowSeconds : 0;
+      const secondsToExpire = claims?.exp
+        ? claims.exp - nowSeconds
+        : (view.status === 'demo' ? TOKEN_TTL_SECONDS - (nowSeconds % ROTATION_SECONDS) : 0);
       setCountdown({ secondsToExpire: Math.max(0, secondsToExpire), secondsToRotate });
       const bucketChanged = bucket !== bucketRef.current;
       if (bucketChanged || bucketRef.current === -1) {

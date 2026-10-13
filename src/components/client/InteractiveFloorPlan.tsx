@@ -62,6 +62,16 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
     ? 'SUITES URBANAS · PLANO CENITAL'
     : 'PLANTA LIBRE · PLANO CENITAL';
 
+  const clientUser = store.clientUser;
+  const clientReservation = clientUser
+    ? store.reservations.find(r => (r.club_id === activeClub?.id || !r.club_id) && (
+        r.customer_name === clientUser.name ||
+        (clientUser.email && r.customer_email === clientUser.email) ||
+        (clientUser.phone && r.customer_phone === clientUser.phone) ||
+        r.id.includes(clientUser.id)
+      ))
+    : null;
+
   return (
     <div style={{
       position: 'relative',
@@ -219,9 +229,14 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
           const isSettled = status === 'SETTLED';
           const isAvailable = status === 'AVAILABLE';
 
+          const isMyTable = Boolean(
+            clientReservation &&
+            (table.table_code === clientReservation.table_code || table.id === clientReservation.table_id)
+          );
+
           const isClickable = override
             ? (override.clickable !== undefined ? override.clickable : true)
-            : (isAvailable || isSelected);
+            : (isAvailable || isSelected || isMyTable);
 
           const cx = (table.x / 100) * viewBoxWidth;
           const cy = (table.y / 100) * viewBoxHeight;
@@ -233,7 +248,11 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
           let strokeColor = '#ffffff';
           let strokeWidth = isSelected ? 2.5 : 1.5;
 
-          if (isInside) {
+          if (isMyTable) {
+            fillColor = '#b45309';
+            strokeColor = '#e5b54f';
+            strokeWidth = 3;
+          } else if (isInside) {
             fillColor = override?.backgroundColor || '#064e3b';
             strokeColor = override?.borderColor || '#34d399';
           } else if (isConfirmed) {
@@ -249,7 +268,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
 
           const badgeText = table.badge_number || table.table_code.replace(/^VIP-/, '').replace(/^[A-Z]+-/, '');
           const displayText = badgeText.length > 3 ? badgeText.slice(0, 3) : badgeText;
-          const textColor = (isInside || isConfirmed || isHeld || isSettled) ? '#ffffff' : '#08080c';
+          const textColor = (isInside || isConfirmed || isHeld || isSettled || isMyTable) ? '#ffffff' : '#08080c';
 
           return (
             <g
@@ -406,6 +425,44 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 >
                   {displayText}
                 </text>
+
+                {/* Distintivo de Mesa Propia (TU MESA) */}
+                {isMyTable && (
+                  <g pointerEvents="none">
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={radius + (isAmphi ? 8 : 12)}
+                      fill="none"
+                      stroke="#e5b54f"
+                      strokeWidth="2"
+                      strokeDasharray="4 2.5"
+                      opacity="0.95"
+                    />
+                    <rect
+                      x={cx - 24}
+                      y={cy - radius - (isAmphi ? 15 : 20)}
+                      width={48}
+                      height={12}
+                      rx={6}
+                      fill="#e5b54f"
+                      stroke="#080c14"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={cx}
+                      y={cy - radius - (isAmphi ? 8 : 13)}
+                      textAnchor="middle"
+                      fill="#0d0d16"
+                      fontSize="6.8"
+                      fontWeight="900"
+                      fontFamily="var(--font-brand), system-ui, sans-serif"
+                      letterSpacing="0.4"
+                    >
+                      TU MESA
+                    </text>
+                  </g>
+                )}
               </g>
             </g>
           );

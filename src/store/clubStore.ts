@@ -180,7 +180,6 @@ class ClubStore {
 
   setBusinessPortalSession(businessId: string, user: ClientUser) {
     this.clientUser = user;
-    this.clientSubTab = 'MAP';
     this.currentRole = 'CLIENT';
     const matchingClub = this.clubs.find(c => c.id === businessId || c.slug === businessId);
     const resolvedClubId = matchingClub ? matchingClub.id : businessId;
@@ -190,9 +189,19 @@ class ClubStore {
       if (evts.length > 0) this.activeEventId = evts[0].id;
       this.initFirebase();
     }
+    const hasActiveReservation = this.reservations.some(r =>
+      (r.club_id === resolvedClubId || !r.club_id) &&
+      (
+        r.customer_name === user.name ||
+        (user.email && r.customer_email === user.email) ||
+        (user.phone && r.customer_phone === user.phone) ||
+        r.id.includes(user.id)
+      )
+    );
+    this.clientSubTab = hasActiveReservation ? 'IDENTITY' : 'MAP';
     this.addAuditLog({
       club_id: resolvedClubId, actor: user.name, role: 'client', action: 'CLIENT_LOGIN',
-      details: `Portal de cliente activo en ${resolvedClubId}`
+      details: `Portal de cliente activo en ${resolvedClubId} (Pase activo: ${hasActiveReservation ? 'SÍ' : 'NO'})`
     });
     this.persistAndNotify();
   }

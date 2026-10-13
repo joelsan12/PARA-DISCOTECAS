@@ -1,6 +1,7 @@
-import type { ClubTable, EventTablePricing, ClubEvent } from '../../../types';
+import type { ClubTable, EventTablePricing, ClubEvent, Reservation } from '../../../types';
 import { formatUsd } from '../../../lib/formatUsd';
 import { esTableZone } from '../../../lib/esLabels';
+import { Crown, QrCode } from 'lucide-react';
 
 const genreLabels: Record<string, string> = {
   'Reggaetón Old School & Tech-Latin': 'Reggaetón clásico y Tech-Latin',
@@ -16,6 +17,8 @@ interface Props {
   activeEvent?: ClubEvent;
   whatsappUrl?: string;
   onProceedToHold: () => void;
+  clientReservation?: Reservation | null;
+  onOpenPass?: () => void;
 }
 
 export const TableReservationDrawer = ({
@@ -25,6 +28,8 @@ export const TableReservationDrawer = ({
   activeEvent,
   whatsappUrl,
   onProceedToHold,
+  clientReservation,
+  onOpenPass,
 }: Props) => {
   const isTableAvailable = selectedPricing?.status === 'AVAILABLE';
   const eventGenre = activeEvent?.genre
@@ -218,6 +223,80 @@ export const TableReservationDrawer = ({
             )}
           </div>
         </>
+      ) : clientReservation ? (
+        /* Estado VIP: cliente tiene mesa reservada activa */
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.15) 0%, rgba(26, 27, 38, 0.95) 100%)',
+          border: '1px solid rgba(229, 181, 79, 0.45)',
+          borderRadius: '16px',
+          padding: '12px 14px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(229, 181, 79, 0.15)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              background: 'rgba(229, 181, 79, 0.2)',
+              border: '1.5px solid #e5b54f',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <Crown size={20} color="#e5b54f" />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', color: '#ffb95f', fontWeight: 800, textTransform: 'uppercase' }}>
+                  Tu Mesa Reservada
+                </span>
+                <span style={{
+                  fontSize: '0.55rem',
+                  padding: '1px 5px',
+                  borderRadius: '9999px',
+                  background: clientReservation.status === 'CHECKED_IN' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(229, 181, 79, 0.25)',
+                  color: clientReservation.status === 'CHECKED_IN' ? '#34d399' : '#e5b54f',
+                  fontWeight: 800
+                }}>
+                  {clientReservation.status === 'CHECKED_IN' ? 'DENTRO' : 'CONFIRMADA'}
+                </span>
+              </div>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fff', margin: '2px 0 0' }}>
+                Mesa {clientReservation.table_code} • {clientReservation.guest_count} Personas
+              </h3>
+            </div>
+          </div>
+
+          {onOpenPass && (
+            <button
+              type="button"
+              onClick={onOpenPass}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'linear-gradient(135deg, #e5b54f 0%, #ca8100 100%)',
+                border: 'none',
+                color: '#0d0d16',
+                borderRadius: '10px',
+                padding: '8px 12px',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(229, 181, 79, 0.3)'
+              }}
+            >
+              <QrCode size={14} />
+              <span>Ver Pase VIP</span>
+            </button>
+          )}
+        </div>
       ) : (
         /* Empty state — no table selected */
         <div style={{

@@ -88,6 +88,16 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id);
   const showConcierge = canClubAccessFeature(activeClub, activePlan, 'LIVE_FLOOR_OPS');
 
+  const clientUser = store.clientUser;
+  const clientReservation = clientUser
+    ? store.reservations.find(r => (r.club_id === activeClub.id || !r.club_id) && (
+        r.customer_name === clientUser.name ||
+        (clientUser.email && r.customer_email === clientUser.email) ||
+        (clientUser.phone && r.customer_phone === clientUser.phone) ||
+        r.id.includes(clientUser.id)
+      ))
+    : null;
+
   return (
     <div style={{
       height: '100vh',
@@ -101,6 +111,7 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
       margin: '0 auto',
       position: 'relative',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      paddingBottom: '68px',
     }}>
       {/* ════════ TOP HEADER ════════ */}
       <ClientHeader
@@ -148,6 +159,8 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
         activeEvent={activeEvent}
         whatsappUrl={whatsappUrl}
         onProceedToHold={handleProceedToHold}
+        clientReservation={clientReservation}
+        onOpenPass={() => store.setClientSubTab('IDENTITY')}
       />
 
       {/* ════════ MODALS ════════ */}

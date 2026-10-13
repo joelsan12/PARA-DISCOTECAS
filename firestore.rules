@@ -147,15 +147,13 @@ service cloud.firestore {
       }
 
       match /layout/{documentId} {
-        allow get, list: if signedIn()
-          && (isActiveStaff(businessId) || isCustomerInBusiness(businessId) || isSuperAdmin());
+        allow get, list: if isActiveBusiness(businessId) || isActiveStaff(businessId) || isSuperAdmin();
         allow create, update: if isManager(businessId) || isSuperAdmin();
         allow delete: if false;
       }
 
       match /resources/{resourceId} {
-        allow get, list: if signedIn()
-          && (isActiveStaff(businessId) || isCustomerInBusiness(businessId) || isSuperAdmin());
+        allow get, list: if isActiveBusiness(businessId) || isActiveStaff(businessId) || isSuperAdmin();
         allow create, update, delete: if false;
       }
 

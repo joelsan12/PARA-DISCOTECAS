@@ -176,7 +176,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
       <div style={{
         flex: 1,
         overflowY: 'auto',
-        padding: '16px',
+        padding: '16px 16px 85px',
         display: 'flex',
         flexDirection: 'column',
         gap: '18px'
