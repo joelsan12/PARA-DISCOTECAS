@@ -59,9 +59,9 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
     return () => unsub();
   }, [activeClub?.id, activeEvent?.id]);
 
-  // Si la pestaña actual no está permitida por el plan del club, regresar a MONITOR
+  // Si la pestaña actual no está permitida por el plan del club, regresar a MONITOR (solo una vez que activeClub esté cargado)
   useEffect(() => {
-    if (!isDashboardTabAllowed(activeTab, activeClub, activePlan)) {
+    if (activeClub && !isDashboardTabAllowed(activeTab, activeClub, activePlan)) {
       store.setDashboardTab('MONITOR');
     }
   }, [activeTab, activeClub, activePlan, store]);
@@ -238,7 +238,7 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   return (
     <div style={{ width: '100%' }}>
       {/* Top Bar & 4 Executive KPI Cards (oculto en diseñador de plano, catálogo de consumo, personal y meseros, finanzas, pasarelas, gobernanza y suscripción) */}
-      {!['LAYOUT_BUILDER', 'CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes(activeTab) && (
+      {!['LAYOUT_BUILDER', 'CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes((activeTab || '').toUpperCase() as DashboardTabKey) && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}
@@ -316,8 +316,14 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
       )}
 
       {/* Tab: STAFF */}
-      {activeTab === 'STAFF' && session && (
-        <StaffManager key={activeClub.id} activeClub={activeClub} session={session} />
+      {(activeTab || '').toUpperCase() === 'STAFF' && (
+        session ? (
+          <StaffManager key={activeClub.id} activeClub={activeClub} session={session} />
+        ) : (
+          <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8', fontSize: '0.9rem' }}>
+            Cargando permisos de gestión de personal...
+          </div>
+        )
       )}
 
       {/* Tab: LEGAL */}
