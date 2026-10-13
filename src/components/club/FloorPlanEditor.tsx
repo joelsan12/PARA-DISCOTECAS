@@ -41,6 +41,9 @@ export const FloorPlanEditor: React.FC = () => {
   const [newTableMinSpend, setNewTableMinSpend] = useState<number>(800);
   const [newTableDeposit, setNewTableDeposit] = useState<number>(200);
 
+  const isAmphi = layoutType === 'u_amphitheater';
+  const coordinateScale = isAmphi ? { x: 510 / 600, y: 545 / 660 } : undefined;
+
   const {
     svgRef,
     isDragging,
@@ -51,6 +54,7 @@ export const FloorPlanEditor: React.FC = () => {
     handlePointerUp,
   } = useFloorPlanDrag({
     snapToGrid,
+    coordinateScale,
     onUpdateTablePosition: (id, x, y) => store.updateTable(id, { x, y }, undefined, true),
     onDragEnd: () => store.notify(),
   });
@@ -69,7 +73,7 @@ export const FloorPlanEditor: React.FC = () => {
     : null;
 
   const viewBoxWidth = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 600 : layoutType === 'downtown_suites' ? 600 : 800;
-  const viewBoxHeight = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 780 : layoutType === 'downtown_suites' ? 960 : 650;
+  const viewBoxHeight = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 660 : layoutType === 'downtown_suites' ? 960 : 650;
 
   const handleAddTableSubmit = (e: React.FormEvent) => {
     e.preventDefault();

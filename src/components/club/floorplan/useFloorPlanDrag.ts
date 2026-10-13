@@ -3,25 +3,28 @@ import type { ClubTable } from '../../../types';
 
 interface DragOptions {
   snapToGrid: boolean;
+  coordinateScale?: { x: number; y: number };
   onUpdateTablePosition: (id: string, x: number, y: number) => void;
   onDragEnd: () => void;
 }
 
-export function useFloorPlanDrag({ snapToGrid, onUpdateTablePosition, onDragEnd }: DragOptions) {
+export function useFloorPlanDrag({ snapToGrid, coordinateScale, onUpdateTablePosition, onDragEnd }: DragOptions) {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedTableId, setDraggedTableId] = useState<string | null>(null);
   const [dragCoords, setDragCoords] = useState<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const snapToGridRef = useRef(snapToGrid);
+  const coordinateScaleRef = useRef(coordinateScale);
   const onUpdateTablePositionRef = useRef(onUpdateTablePosition);
   const onDragEndRef = useRef(onDragEnd);
 
   useEffect(() => {
     snapToGridRef.current = snapToGrid;
+    coordinateScaleRef.current = coordinateScale;
     onUpdateTablePositionRef.current = onUpdateTablePosition;
     onDragEndRef.current = onDragEnd;
-  }, [snapToGrid, onUpdateTablePosition, onDragEnd]);
+  }, [snapToGrid, coordinateScale, onUpdateTablePosition, onDragEnd]);
 
   const dragStartRef = useRef<{
     pointerId: number;
@@ -71,8 +74,11 @@ export function useFloorPlanDrag({ snapToGrid, onUpdateTablePosition, onDragEnd 
       const deltaPixelX = e.clientX - startX;
       const deltaPixelY = e.clientY - startY;
 
-      const deltaPctX = (deltaPixelX / svgWidth) * 100;
-      const deltaPctY = (deltaPixelY / svgHeight) * 100;
+      const scaleX = coordinateScaleRef.current?.x ?? 1;
+      const scaleY = coordinateScaleRef.current?.y ?? 1;
+
+      const deltaPctX = (deltaPixelX / svgWidth) * 100 * scaleX;
+      const deltaPctY = (deltaPixelY / svgHeight) * 100 * scaleY;
 
       let targetX = tableStartX + deltaPctX;
       let targetY = tableStartY + deltaPctY;

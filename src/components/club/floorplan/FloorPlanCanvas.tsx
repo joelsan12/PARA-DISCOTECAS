@@ -42,6 +42,14 @@ export const FloorPlanCanvas: React.FC<Props> = ({
   viewBoxWidth,
   viewBoxHeight,
 }) => {
+  const isAmphi = layoutType === 'u_amphitheater';
+  const viewBoxX = isAmphi ? 45 : 0;
+  const viewBoxY = isAmphi ? 0 : 0;
+  const effectiveViewBoxWidth = isAmphi ? 510 : viewBoxWidth;
+  const effectiveViewBoxHeight = isAmphi ? 545 : viewBoxHeight;
+  const baseWidth = isAmphi ? 600 : viewBoxWidth;
+  const baseHeight = isAmphi ? 660 : viewBoxHeight;
+
   const activeDraggedX = isDragging && dragCoords ? dragCoords.x : draggedTable?.x ?? 0;
   const activeDraggedY = isDragging && dragCoords ? dragCoords.y : draggedTable?.y ?? 0;
 
@@ -156,11 +164,11 @@ export const FloorPlanCanvas: React.FC<Props> = ({
       <div style={{
         position: 'relative',
         width: '100%',
-        aspectRatio: layoutType === 'downtown_suites' ? '0.62/1' : layoutType === 'u_amphitheater' ? '0.77/1' : '1/1',
-        maxHeight: '620px',
+        aspectRatio: layoutType === 'downtown_suites' ? '0.62/1' : isAmphi ? '0.94/1' : '1/1',
+        maxHeight: '660px',
         margin: '0 auto',
-        background: layoutType === 'u_amphitheater' ? '#171c26' : '#080c14',
-        borderRadius: layoutType === 'u_amphitheater' ? '28px' : '14px',
+        background: isAmphi ? '#121622' : '#080c14',
+        borderRadius: isAmphi ? '24px' : '14px',
         border: '1.5px solid rgba(229, 181, 79, 0.25)',
         overflow: 'hidden',
         boxShadow: 'inset 0 0 60px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0,0,0,0.5)',
@@ -178,7 +186,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
 
         <svg
           ref={svgRef}
-          viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+          viewBox={`${viewBoxX} ${viewBoxY} ${effectiveViewBoxWidth} ${effectiveViewBoxHeight}`}
           style={{
             width: '100%',
             height: '100%',
@@ -214,18 +222,18 @@ export const FloorPlanCanvas: React.FC<Props> = ({
           </defs>
 
           {/* Background CAD Grid Layer */}
-          <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#cad-grid)" pointerEvents="none" />
+          <rect x={viewBoxX} y={viewBoxY} width={effectiveViewBoxWidth} height={effectiveViewBoxHeight} fill="url(#cad-grid)" pointerEvents="none" />
 
           {/* Corner CAD Alignment Markers */}
-          <g stroke="rgba(229, 181, 79, 0.3)" strokeWidth="1.5" fill="none" pointerEvents="none">
+          <g stroke="rgba(229, 181, 79, 0.35)" strokeWidth="1.5" fill="none" pointerEvents="none">
             {/* Top-Left */}
-            <path d="M 16 32 L 16 16 L 32 16" />
+            <path d={`M ${viewBoxX + 16} ${viewBoxY + 32} L ${viewBoxX + 16} ${viewBoxY + 16} L ${viewBoxX + 32} ${viewBoxY + 16}`} />
             {/* Top-Right */}
-            <path d={`M ${viewBoxWidth - 32} 16 L ${viewBoxWidth - 16} 16 L ${viewBoxWidth - 16} 32`} />
+            <path d={`M ${viewBoxX + effectiveViewBoxWidth - 32} ${viewBoxY + 16} L ${viewBoxX + effectiveViewBoxWidth - 16} ${viewBoxY + 16} L ${viewBoxX + effectiveViewBoxWidth - 16} ${viewBoxY + 32}`} />
             {/* Bottom-Left */}
-            <path d={`M 16 ${viewBoxHeight - 32} L 16 ${viewBoxHeight - 16} L 32 ${viewBoxHeight - 16}`} />
+            <path d={`M ${viewBoxX + 16} ${viewBoxY + effectiveViewBoxHeight - 32} L ${viewBoxX + 16} ${viewBoxY + effectiveViewBoxHeight - 16} L ${viewBoxX + 32} ${viewBoxY + effectiveViewBoxHeight - 16}`} />
             {/* Bottom-Right */}
-            <path d={`M ${viewBoxWidth - 32} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 32}`} />
+            <path d={`M ${viewBoxX + effectiveViewBoxWidth - 32} ${viewBoxY + effectiveViewBoxHeight - 16} L ${viewBoxX + effectiveViewBoxWidth - 16} ${viewBoxY + effectiveViewBoxHeight - 16} L ${viewBoxX + effectiveViewBoxWidth - 16} ${viewBoxY + effectiveViewBoxHeight - 32}`} />
           </g>
 
           {/* Layout-Specific Architectural Backdrop (Amphitheater / Horseshoe / Suites) */}
@@ -233,15 +241,15 @@ export const FloorPlanCanvas: React.FC<Props> = ({
 
           {/* Laser Alignment Crosshairs when Dragging */}
           {isDragging && draggedTable && (() => {
-            const cx = (activeDraggedX / 100) * viewBoxWidth;
-            const cy = (activeDraggedY / 100) * viewBoxHeight;
+            const cx = (activeDraggedX / 100) * baseWidth;
+            const cy = (activeDraggedY / 100) * baseHeight;
             return (
               <g pointerEvents="none" filter="url(#laser-glow)">
                 {/* Full Horizontal & Vertical Laser Lines */}
                 <line
-                  x1="0"
+                  x1={viewBoxX}
                   y1={cy}
-                  x2={viewBoxWidth}
+                  x2={viewBoxX + effectiveViewBoxWidth}
                   y2={cy}
                   stroke="var(--brand-gold)"
                   strokeWidth="1.2"
@@ -250,9 +258,9 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                 />
                 <line
                   x1={cx}
-                  y1="0"
+                  y1={viewBoxY}
                   x2={cx}
-                  y2={viewBoxHeight}
+                  y2={viewBoxY + effectiveViewBoxHeight}
                   stroke="var(--brand-gold)"
                   strokeWidth="1.2"
                   strokeDasharray="4 4"
@@ -302,13 +310,13 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             const currentX = isBeingDragged && isDragging ? activeDraggedX : table.x;
             const currentY = isBeingDragged && isDragging ? activeDraggedY : table.y;
 
-            const cx = (currentX / 100) * viewBoxWidth;
-            const cy = (currentY / 100) * viewBoxHeight;
-            const isAmphi = layoutType === 'u_amphitheater';
-            const radius = isAmphi ? 14 : 24;
+            const cx = (currentX / 100) * baseWidth;
+            const cy = (currentY / 100) * baseHeight;
+            const radius = isAmphi ? 25 : 24;
             const tokenColor = table.tier_color || '#eab308';
             const rot = table.rotation || 0;
             const capacity = Math.max(1, table.capacity || 4);
+            const displayText = table.badge_number || table.table_code;
 
             return (
               <g
@@ -339,7 +347,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   {/* VIP Seating Dots Surrounding Table Perimeter */}
                   {table.shape === 'circle' && (() => {
                     const seatCount = Math.min(12, capacity);
-                    const seatOrbit = radius + (isAmphi ? 6 : 9);
+                    const seatOrbit = radius + (isAmphi ? 7.5 : 9);
                     const seats = [];
                     for (let i = 0; i < seatCount; i++) {
                       const angle = (i * 2 * Math.PI) / seatCount - Math.PI / 2;
@@ -350,7 +358,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                           key={i}
                           cx={sx}
                           cy={sy}
-                          r={isAmphi ? 2.2 : 3.2}
+                          r={isAmphi ? 3.0 : 3.2}
                           fill={isSelected || isBeingDragged ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.4)'}
                           stroke="#080c14"
                           strokeWidth="0.8"
@@ -365,11 +373,11 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   {(isSelected || isBeingDragged) && (
                     table.shape === 'pill' ? (
                       <rect
-                        x={isAmphi ? cx - 18 : cx - 44}
-                        y={isAmphi ? cy - 27 : cy - 28}
-                        width={isAmphi ? 36 : 88}
-                        height={isAmphi ? 54 : 56}
-                        rx={isAmphi ? 18 : 22}
+                        x={isAmphi ? cx - 24 : cx - 44}
+                        y={isAmphi ? cy - 34 : cy - 28}
+                        width={isAmphi ? 48 : 88}
+                        height={isAmphi ? 68 : 56}
+                        rx={isAmphi ? 24 : 22}
                         fill="none"
                         stroke="var(--brand-gold)"
                         strokeWidth="2.5"
@@ -380,7 +388,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                       <circle
                         cx={cx}
                         cy={cy}
-                        r={radius + (isAmphi ? 6 : 10)}
+                        r={radius + (isAmphi ? 8 : 10)}
                         fill="none"
                         stroke="var(--brand-gold)"
                         strokeWidth="2.5"
@@ -394,22 +402,22 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   {table.shape === 'pill' ? (
                     <g>
                       <rect
-                        x={isAmphi ? cx - 13 : cx - 36}
-                        y={isAmphi ? cy - 22 : cy - 20}
-                        width={isAmphi ? 26 : 72}
-                        height={isAmphi ? 44 : 40}
-                        rx={isAmphi ? 13 : 16}
+                        x={isAmphi ? cx - 19 : cx - 36}
+                        y={isAmphi ? cy - 29 : cy - 20}
+                        width={isAmphi ? 38 : 72}
+                        height={isAmphi ? 58 : 40}
+                        rx={isAmphi ? 19 : 16}
                         fill={tokenColor}
                         stroke="#ffffff"
                         strokeWidth={isSelected || isBeingDragged ? 2.5 : 1.5}
                       />
                       {/* Subtle Inner Highlight Glass Sheen */}
                       <rect
-                        x={isAmphi ? cx - 10 : cx - 32}
-                        y={isAmphi ? cy - 19 : cy - 17}
-                        width={isAmphi ? 20 : 64}
-                        height={isAmphi ? 8 : 8}
-                        rx={4}
+                        x={isAmphi ? cx - 14 : cx - 32}
+                        y={isAmphi ? cy - 25 : cy - 17}
+                        width={isAmphi ? 28 : 64}
+                        height={isAmphi ? 11 : 8}
+                        rx={5}
                         fill="rgba(255, 255, 255, 0.35)"
                         pointerEvents="none"
                       />
@@ -417,22 +425,22 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                   ) : table.shape === 'square' || table.shape === 'rect' ? (
                     <g>
                       <rect
-                        x={cx - (isAmphi ? 15 : 22)}
-                        y={cy - (isAmphi ? 15 : 22)}
-                        width={isAmphi ? 30 : 44}
-                        height={isAmphi ? 30 : 44}
-                        rx="7"
+                        x={cx - (isAmphi ? 22 : 22)}
+                        y={cy - (isAmphi ? 22 : 22)}
+                        width={isAmphi ? 44 : 44}
+                        height={isAmphi ? 44 : 44}
+                        rx={isAmphi ? 9 : 7}
                         fill={tokenColor}
                         stroke="#ffffff"
                         strokeWidth={isSelected || isBeingDragged ? 2.5 : 1.5}
                       />
                       {/* Glass Sheen */}
                       <rect
-                        x={cx - (isAmphi ? 12 : 18)}
-                        y={cy - (isAmphi ? 12 : 18)}
-                        width={isAmphi ? 24 : 36}
-                        height="6"
-                        rx="3"
+                        x={cx - (isAmphi ? 18 : 18)}
+                        y={cy - (isAmphi ? 18 : 18)}
+                        width={isAmphi ? 36 : 36}
+                        height="9"
+                        rx="4"
                         fill="rgba(255, 255, 255, 0.35)"
                         pointerEvents="none"
                       />
@@ -450,9 +458,9 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                       {/* Radial Glass Sheen */}
                       <ellipse
                         cx={cx}
-                        cy={cy - radius * 0.35}
-                        rx={radius * 0.55}
-                        ry={radius * 0.25}
+                        cy={cy - (isAmphi ? 7 : radius * 0.35)}
+                        rx={radius * 0.65}
+                        ry={radius * 0.3}
                         fill="rgba(255, 255, 255, 0.4)"
                         pointerEvents="none"
                       />
@@ -464,18 +472,18 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                     x={cx}
                     y={cy + 0.5}
                     fill="#08080c"
-                    fontSize={isAmphi ? '10' : '12'}
+                    fontSize={displayText.length > 2 ? (isAmphi ? '11.5' : '10.5') : (isAmphi ? '13.5' : '12')}
                     fontWeight="900"
                     textAnchor="middle"
                     dominantBaseline="central"
                     style={{
-                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      fontFamily: 'var(--font-brand), system-ui, -apple-system, sans-serif',
                       pointerEvents: 'none',
                       userSelect: 'none',
                       letterSpacing: '-0.02em'
                     }}
                   >
-                    {table.badge_number || table.table_code}
+                    {displayText}
                   </text>
                 </g>
               </g>
@@ -486,18 +494,18 @@ export const FloorPlanCanvas: React.FC<Props> = ({
           {clubTables.length === 0 && (
             <g pointerEvents="none">
               <rect
-                x={viewBoxWidth * 0.18}
-                y={viewBoxHeight * 0.41}
-                width={viewBoxWidth * 0.64}
-                height={viewBoxHeight * 0.18}
+                x={viewBoxX + effectiveViewBoxWidth * 0.18}
+                y={viewBoxY + effectiveViewBoxHeight * 0.41}
+                width={effectiveViewBoxWidth * 0.64}
+                height={effectiveViewBoxHeight * 0.18}
                 rx="14"
                 fill="rgba(10, 11, 16, 0.94)"
                 stroke="rgba(229, 181, 79, 0.35)"
                 strokeWidth="1.5"
               />
               <text
-                x={viewBoxWidth / 2}
-                y={viewBoxHeight * 0.48}
+                x={viewBoxX + effectiveViewBoxWidth / 2}
+                y={viewBoxY + effectiveViewBoxHeight * 0.48}
                 fill="#ffffff"
                 fontSize="14"
                 fontWeight="800"
@@ -508,8 +516,8 @@ export const FloorPlanCanvas: React.FC<Props> = ({
                 DISTRIBUCIÓN DE SALA · SIN MESAS REGISTRADAS
               </text>
               <text
-                x={viewBoxWidth / 2}
-                y={viewBoxHeight * 0.54}
+                x={viewBoxX + effectiveViewBoxWidth / 2}
+                y={viewBoxY + effectiveViewBoxHeight * 0.54}
                 fill="#94a3b8"
                 fontSize="11"
                 fontWeight="500"
