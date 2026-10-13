@@ -2,6 +2,7 @@ import { isFirebaseConfigured } from '../lib/firebase';
 import {
   subscribeToClubLayout,
   saveClubLayoutToFirebase,
+  fetchClubLayoutFromFirebase,
   subscribeToBusinessEvents
 } from '../services/firebaseService';
 import type { ClubTable, ClubLayoutType, ClubEvent } from '../types';
@@ -38,6 +39,11 @@ export class FirebaseBridge {
   async syncClubLayout(clubId: string, tables: ClubTable[], layoutType?: ClubLayoutType) {
     if (!isFirebaseConfigured) return { success: true, inventorySynced: false, error: 'Firebase no configurado' };
     return await saveClubLayoutToFirebase(clubId, tables, layoutType);
+  }
+
+  async fetchClubLayout(clubId: string) {
+    if (!isFirebaseConfigured) return null;
+    return await fetchClubLayoutFromFirebase(clubId);
   }
 }
 

@@ -196,7 +196,7 @@ export const FloorPlanToolbar: React.FC<Props> = ({
           <button
             type="button"
             onClick={onResetDefaults}
-            title="Restaurar plano a valores limpios"
+            title="Restaurar al último diseño guardado"
             className="btn-ghost"
             style={{
               padding: '6px 9px',

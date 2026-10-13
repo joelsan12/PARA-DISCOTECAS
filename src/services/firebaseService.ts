@@ -37,6 +37,25 @@ export function subscribeToClubLayout(
   }
 }
 
+export async function fetchClubLayoutFromFirebase(
+  clubId: string
+): Promise<{ tables: ClubTable[]; layout_type: ClubLayoutType } | null> {
+  if (!isFirebaseConfigured || !db || !clubId) return null;
+  try {
+    const layoutRef = doc(db, 'businesses', clubId, 'layout', 'main');
+    const snapshot = await getDoc(layoutRef);
+    if (!snapshot.exists()) return null;
+    const data = snapshot.data();
+    return {
+      tables: (Array.isArray(data.tables) ? data.tables : []) as ClubTable[],
+      layout_type: (data.layout_type || 'custom_open') as ClubLayoutType
+    };
+  } catch (err) {
+    console.warn('[Firebase] Error al obtener plano guardado de Firestore:', err);
+    return null;
+  }
+}
+
 export interface SaveClubLayoutResult {
   success: boolean;
   inventorySynced?: boolean;

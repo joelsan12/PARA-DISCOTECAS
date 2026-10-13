@@ -50,6 +50,7 @@ class ClubStore {
   clientSubTab: 'MAP' | 'IDENTITY' | 'PASS' | 'CONCIERGE' | 'TIER' = 'MAP';
 
   private listeners: Array<() => void> = [];
+  private lastSavedLayouts: Record<string, { tables: ClubTable[]; layout_type: ClubLayoutType }> = {};
 
   constructor() {
     this.loadFromStorage();
@@ -67,6 +68,13 @@ class ClubStore {
         if (layoutType) {
           const club = this.clubs.find(c => c.id === this.activeClubId);
           if (club) club.layout_type = layoutType;
+        }
+        if (remoteTables.length > 0) {
+          this.lastSavedLayouts[this.activeClubId] = {
+            tables: JSON.parse(JSON.stringify(remoteTables)),
+            layout_type: layoutType || 'custom_open'
+          };
+          this.saveLastSavedLayoutsToStorage();
         }
         this.saveToStorage();
         this.notify();
@@ -127,7 +135,29 @@ class ClubStore {
     this.notify();
   }
 
-  loadFromStorage() { applyLoadedStorageData(this, loadStorageState()); }
+  private loadLastSavedLayoutsFromStorage() {
+    try {
+      const raw = localStorage.getItem('nightflow_last_saved_layouts');
+      if (raw) {
+        this.lastSavedLayouts = JSON.parse(raw);
+      }
+    } catch {
+      this.lastSavedLayouts = {};
+    }
+  }
+
+  private saveLastSavedLayoutsToStorage() {
+    try {
+      localStorage.setItem('nightflow_last_saved_layouts', JSON.stringify(this.lastSavedLayouts));
+    } catch {
+      // ignore
+    }
+  }
+
+  loadFromStorage() {
+    applyLoadedStorageData(this, loadStorageState());
+    this.loadLastSavedLayoutsFromStorage();
+  }
 
   saveToStorage() {
     saveStorageState({
@@ -185,19 +215,75 @@ class ClubStore {
   async syncLayoutAsync(): Promise<{ success: boolean; inventorySynced?: boolean; error?: string }> {
     const club = this.clubs.find(c => c.id === this.activeClubId);
     const clubTables = this.tables.filter(t => t.club_id === this.activeClubId);
+    const layoutType = club?.layout_type || 'custom_open';
     this.persistAndNotify();
-    return await firebaseBridge.syncClubLayout(this.activeClubId, clubTables, club?.layout_type || 'custom_open');
+    const result = await firebaseBridge.syncClubLayout(this.activeClubId, clubTables, layoutType);
+    if (result && result.success) {
+      this.lastSavedLayouts[this.activeClubId] = {
+        tables: JSON.parse(JSON.stringify(clubTables)),
+        layout_type: layoutType
+      };
+      this.saveLastSavedLayoutsToStorage();
+    }
+    return result;
+  }
+
+  async restoreSavedLayout(clubId?: string): Promise<{ success: boolean; tableCount?: number; message?: string }> {
+    const targetClubId = clubId || this.activeClubId;
+    if (!targetClubId) return { success: false, message: 'Negocio no especificado' };
+
+    // 1. Intentar consultar la versión guardada en Firestore
+    let saved = await firebaseBridge.fetchClubLayout(targetClubId);
+
+    // 2. Si no hay respuesta remota o Firestore no tiene mesas, recurrir al snapshot guardado en memoria / local
+    if (!saved || !saved.tables || saved.tables.length === 0) {
+      const memorySnapshot = this.lastSavedLayouts[targetClubId];
+      if (memorySnapshot && memorySnapshot.tables && memorySnapshot.tables.length > 0) {
+        saved = memorySnapshot;
+      }
+    }
+
+    if (!saved || !saved.tables || saved.tables.length === 0) {
+      return {
+        success: false,
+        message: 'No se encontró un plano guardado anteriormente para restaurar.'
+      };
+    }
+
+    // 3. Reemplazar las mesas del club por las mesas de la versión guardada
+    const others = this.tables.filter(t => t.club_id !== targetClubId);
+    this.tables = [...others, ...JSON.parse(JSON.stringify(saved.tables))];
+
+    // 4. Restaurar el arquetipo / tipo de layout si existe
+    const club = this.clubs.find(c => c.id === targetClubId);
+    if (club && saved.layout_type) {
+      club.layout_type = saved.layout_type;
+    }
+
+    // 5. Actualizar el snapshot y persistir en el estado local
+    this.lastSavedLayouts[targetClubId] = {
+      tables: JSON.parse(JSON.stringify(saved.tables)),
+      layout_type: saved.layout_type || club?.layout_type || 'custom_open'
+    };
+    this.saveLastSavedLayoutsToStorage();
+    this.persistAndNotify();
+
+    // 6. Asegurar que Firestore y el inventario operativo queden sincronizados con lo restaurado
+    void this.syncLayoutAsync();
+
+    return {
+      success: true,
+      tableCount: saved.tables.length
+    };
   }
 
   resetToDefaults(clubId?: string) {
     if (clubId) {
-      this.tables = [...this.tables.filter(t => t.club_id !== clubId), ...INITIAL_TABLES.filter(t => t.club_id === clubId)];
-      const ids = new Set(this.events.filter(e => e.club_id === clubId).map(e => e.id));
-      this.eventPricing = [...this.eventPricing.filter(p => !ids.has(p.event_id)), ...INITIAL_EVENT_PRICING.filter(p => ids.has(p.event_id))];
-    } else {
-      this.tables = [...INITIAL_TABLES]; this.eventPricing = [...INITIAL_EVENT_PRICING];
-      this.clubs = [...INITIAL_CLUBS]; this.reservations = import.meta.env.DEV ? [...INITIAL_RESERVATIONS] : [];
+      void this.restoreSavedLayout(clubId);
+      return;
     }
+    this.tables = [...INITIAL_TABLES]; this.eventPricing = [...INITIAL_EVENT_PRICING];
+    this.clubs = [...INITIAL_CLUBS]; this.reservations = import.meta.env.DEV ? [...INITIAL_RESERVATIONS] : [];
     this.persistAndNotify();
   }
 

@@ -187,12 +187,23 @@ export const FloorPlanEditor: React.FC = () => {
     setTimeout(() => setSaveToast(null), 4000);
   };
 
-  const handleResetDefaults = () => {
-    if (confirm(`¿Restaurar el plano de "${activeClub.name}" a los valores predeterminados de fábrica?`)) {
-      store.resetToDefaults(activeClub.id);
-      setSelectedTableId(null);
-      setSaveToast('Plano restaurado a los valores originales.');
-      setTimeout(() => setSaveToast(null), 3000);
+  const handleResetDefaults = async () => {
+    if (confirm(`¿Restaurar el plano al último diseño guardado en "${activeClub.name}"? Se descartarán los cambios no guardados.`)) {
+      setIsSaving(true);
+      try {
+        const result = await store.restoreSavedLayout(activeClub.id);
+        setIsSaving(false);
+        if (result.success) {
+          setSelectedTableId(null);
+          setSaveToast(`Plano restaurado con éxito (${result.tableCount} mesas recuperadas del guardado anterior).`);
+        } else {
+          setSaveToast(result.message || 'No se encontró un plano guardado anteriormente.');
+        }
+      } catch (err) {
+        setIsSaving(false);
+        setSaveToast(`Error al restaurar: ${err instanceof Error ? err.message : 'Error inesperado'}`);
+      }
+      setTimeout(() => setSaveToast(null), 4000);
     }
   };
 
