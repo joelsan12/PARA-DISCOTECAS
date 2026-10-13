@@ -227,7 +227,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
       {/* Right: Enlace externo al portal de clientes y sesión del usuario con rol verificado */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <a
-          href="http://localhost:5173"
+          href={import.meta.env.PROD ? 'https://nightflow-vip.web.app' : 'http://localhost:5173'}
           target="_blank"
           rel="noreferrer"
           style={{

@@ -223,7 +223,8 @@ export const FloorPlanEditor: React.FC = () => {
           store.persistNow();
           const activeClub = store.clubs.find(c => c.id === store.activeClubId);
           const slug = activeClub?.slug || '';
-          window.open(`http://localhost:5173/negocio/${slug}`, '_blank');
+          const clientBase = import.meta.env.PROD ? 'https://nightflow-vip.web.app' : 'http://localhost:5173';
+          window.open(`${clientBase}/negocio/${slug}`, '_blank');
         }}
         saveToast={saveToast}
       />

@@ -278,9 +278,17 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
     }
   };
 
+  const getPortalUrl = () => {
+    if (typeof window !== 'undefined' && window.location.origin) {
+      return window.location.origin;
+    }
+    return import.meta.env.PROD ? 'https://nightflow-admin.web.app' : 'http://localhost:5174';
+  };
+
   const copyCredentials = () => {
     if (!tempPasswordModal) return;
-    const text = `Credenciales de Acceso — NIGHTFLOW VIP\nEstablecimiento: ${activeClub.name}\nRol: ${tempPasswordModal.role}\nNombre: ${tempPasswordModal.name}\nUsuario (Correo): ${tempPasswordModal.email}\nContraseña: ${tempPasswordModal.password}\n\nIngresa al portal de acceso: http://localhost:5174/`;
+    const portalUrl = getPortalUrl();
+    const text = `Credenciales de Acceso — NIGHTFLOW VIP\nEstablecimiento: ${activeClub.name}\nRol: ${tempPasswordModal.role}\nNombre: ${tempPasswordModal.name}\nUsuario (Correo): ${tempPasswordModal.email}\nContraseña: ${tempPasswordModal.password}\n\nIngresa al portal de acceso: ${portalUrl}/`;
     navigator.clipboard.writeText(text);
     setCopiedPass(true);
     setTimeout(() => setCopiedPass(false), 3000);
@@ -1016,7 +1024,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
 
             <p style={{ margin: '0 0 16px 0', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: '1.4' }}>
               Se han configurado las credenciales para <strong>{tempPasswordModal.name}</strong> ({tempPasswordModal.role}).
-              Comparte estos datos para que inicie sesión en <strong>http://localhost:5174/</strong>:
+              Comparte estos datos para que inicie sesión en <strong>{getPortalUrl()}/</strong>:
             </p>
 
             <div style={{
