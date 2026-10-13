@@ -19,8 +19,13 @@ export function subscribeToClubLayout(
       if (snapshot.exists()) {
         const data = snapshot.data();
         onUpdate({
-          tables: data.tables as ClubTable[],
-          layout_type: data.layout_type as ClubLayoutType
+          tables: (Array.isArray(data.tables) ? data.tables : []) as ClubTable[],
+          layout_type: (data.layout_type || 'custom_open') as ClubLayoutType
+        });
+      } else {
+        onUpdate({
+          tables: [],
+          layout_type: 'custom_open'
         });
       }
     }, (err) => {

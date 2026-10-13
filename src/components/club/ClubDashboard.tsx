@@ -129,10 +129,11 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   );
   const eventReservations = store.reservations.filter(r => r.club_id === activeClub.id && r.event_id === activeEvent?.id);
 
-  // Sintetizar mesas si store.tables aún no se ha poblado visualmente
+  // Sintetizar mesas si store.tables aún no se ha poblado visualmente pero existen recursos activos
+  const activeOperational = (operationalTables || []).filter(t => t.isActive);
   const effectiveTables: ClubTable[] = clubTables.length > 0
     ? clubTables
-    : (operationalTables || []).map(t => ({
+    : activeOperational.map(t => ({
         id: t.resourceId,
         club_id: activeClub.id,
         table_code: t.tableCode,
@@ -145,8 +146,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
       }));
 
   // Combinar tarifas y estados en tiempo real desde Firestore
-  const effectiveEventPricings: EventTablePricing[] = (operationalTables && operationalTables.length > 0)
-    ? operationalTables.map(t => {
+  const effectiveEventPricings: EventTablePricing[] = (activeOperational.length > 0)
+    ? activeOperational.map(t => {
         const localPricing = eventPricings.find(p => p.table_id === t.resourceId);
         return {
           table_id: t.resourceId,
@@ -165,20 +166,20 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
     : eventReservations;
 
   const totalTables = effectiveTables.length;
-  const availableCount = (operationalTables && operationalTables.length > 0)
-    ? operationalTables.filter(t => t.state === 'AVAILABLE').length
+  const availableCount = (activeOperational.length > 0)
+    ? activeOperational.filter(t => t.state === 'AVAILABLE').length
     : eventPricings.filter(p => p.status === 'AVAILABLE').length;
 
-  const heldCount = (operationalTables && operationalTables.length > 0)
-    ? operationalTables.filter(t => t.state === 'HELD').length
+  const heldCount = (activeOperational.length > 0)
+    ? activeOperational.filter(t => t.state === 'HELD').length
     : eventPricings.filter(p => p.status === 'HELD').length;
 
-  const confirmedCount = (operationalTables && operationalTables.length > 0)
-    ? operationalTables.filter(t => t.state === 'CONFIRMED').length
+  const confirmedCount = (activeOperational.length > 0)
+    ? activeOperational.filter(t => t.state === 'CONFIRMED').length
     : eventPricings.filter(p => p.status === 'CONFIRMED').length;
 
-  const checkedInCount = (operationalTables && operationalTables.length > 0)
-    ? operationalTables.filter(t => t.state === 'INSIDE').length
+  const checkedInCount = (activeOperational.length > 0)
+    ? activeOperational.filter(t => t.state === 'INSIDE').length
     : eventPricings.filter(p => p.status === 'CHECKED_IN').length;
 
   const totalDeposits = effectiveReservations.reduce((acc, curr) => acc + (curr.deposit_amount || 0), 0);
@@ -191,8 +192,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards (oculto en catálogo de consumo, personal y meseros, finanzas, pasarelas, gobernanza y suscripción) */}
-      {!['CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes(activeTab) && (
+      {/* Top Bar & 4 Executive KPI Cards (oculto en diseñador de plano, catálogo de consumo, personal y meseros, finanzas, pasarelas, gobernanza y suscripción) */}
+      {!['LAYOUT_BUILDER', 'CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes(activeTab) && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}

@@ -18,7 +18,7 @@ export class FirebaseBridge {
     this.detach();
 
     const unsubClub = subscribeToClubLayout(clubId, (data) => {
-      if (data.tables && data.tables.length > 0) {
+      if (Array.isArray(data.tables)) {
         onTablesReceived(data.tables, data.layout_type);
       }
     });

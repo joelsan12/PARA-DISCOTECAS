@@ -151,7 +151,9 @@ export function subscribeOperations(options: OperationsSubscriptionOptions): Uns
         }
       }
 
-      const operationalTables: OperationalTableItem[] = resourcesData.map((resData) => {
+      const operationalTables: OperationalTableItem[] = resourcesData
+        .filter((r) => r.is_active !== false && r.active !== false)
+        .map((resData) => {
         const resourceId = (resData.resourceId || resData.id) as string;
         const matchingReservation = reservationsByResource.get(resourceId);
 
