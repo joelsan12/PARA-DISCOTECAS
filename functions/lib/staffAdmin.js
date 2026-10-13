@@ -43,7 +43,7 @@ export async function listBusinessStaffFor(request) {
 export async function upsertStaffMemberFor(request) {
     const callerUid = callableUid(request);
     const record = asRecord(request.data);
-    assertAllowedKeys(record, ["businessId", "uid", "email", "name", "whatsapp", "role", "assignedZones"]);
+    assertAllowedKeys(record, ["businessId", "uid", "email", "name", "whatsapp", "role", "assignedZones", "password"]);
     const businessId = requiredId(record, "businessId");
     const callerProfile = await requireStaff(callerUid, businessId, "manager");
     const rawRole = requiredString(record, "role", 3, 20).toLowerCase();
@@ -71,6 +71,10 @@ export async function upsertStaffMemberFor(request) {
     }
     const rawName = typeof record.name === "string" ? record.name.trim().slice(0, 100) : "";
     const rawWhatsapp = typeof record.whatsapp === "string" ? record.whatsapp.trim().slice(0, 30) : null;
+    const rawPassword = typeof record.password === "string" ? record.password.trim() : "";
+    if (rawPassword && rawPassword.length < 6) {
+        throw new AppError("invalid-argument", "La contraseña debe tener al menos 6 caracteres");
+    }
     let targetUid = typeof record.uid === "string" ? record.uid.trim() : "";
     let targetEmail = typeof record.email === "string" ? record.email.trim().toLowerCase() : "";
     let temporaryPassword = undefined;
@@ -84,20 +88,24 @@ export async function upsertStaffMemberFor(request) {
         try {
             const existingUser = await auth.getUserByEmail(targetEmail);
             targetUid = existingUser.uid;
+            if (rawPassword) {
+                await auth.updateUser(targetUid, { password: rawPassword });
+                temporaryPassword = rawPassword;
+            }
         }
         catch (err) {
             const isNotFound = err && typeof err === "object" && "code" in err && err.code === "auth/user-not-found";
             if (!isNotFound) {
                 if (process.env.FIRESTORE_EMULATOR_HOST && !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
                     targetUid = `mock_uid_${crypto.createHash("sha256").update(targetEmail).digest("hex").slice(0, 16)}`;
-                    temporaryPassword = `${crypto.randomBytes(6).toString("hex")}!Aa1`;
+                    temporaryPassword = rawPassword || `${crypto.randomBytes(6).toString("hex")}!Aa1`;
                 }
                 else {
                     throw new AppError("internal", "No se pudo consultar el servicio de identidad", 500);
                 }
             }
             else {
-                temporaryPassword = `${crypto.randomBytes(6).toString("hex")}!Aa1`;
+                temporaryPassword = rawPassword || `${crypto.randomBytes(6).toString("hex")}!Aa1`;
                 try {
                     const newUser = await auth.createUser({
                         email: targetEmail,
@@ -122,13 +130,29 @@ export async function upsertStaffMemberFor(request) {
             }
         }
     }
-    if (targetUid && !targetEmail) {
-        try {
-            const user = await auth.getUser(targetUid);
-            targetEmail = user.email ?? "";
+    if (targetUid) {
+        if (!targetEmail) {
+            try {
+                const user = await auth.getUser(targetUid);
+                targetEmail = user.email ?? "";
+            }
+            catch {
+                // Ignorar en entorno de pruebas
+            }
         }
-        catch {
-            // Ignorar en entorno de pruebas
+        if (rawPassword) {
+            try {
+                await auth.updateUser(targetUid, { password: rawPassword });
+                temporaryPassword = rawPassword;
+            }
+            catch (err) {
+                if (process.env.FIRESTORE_EMULATOR_HOST && !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+                    temporaryPassword = rawPassword;
+                }
+                else {
+                    console.warn("No se pudo actualizar la contraseña en Auth:", err);
+                }
+            }
         }
     }
     const staffRef = db.collection("businesses").doc(businessId).collection("staff").doc(targetUid);

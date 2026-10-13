@@ -11,9 +11,11 @@ import {
   Check,
   Edit2,
   Ban,
-  Sparkles,
   Layers,
-  RefreshCw
+  RefreshCw,
+  Key,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import type { Club } from '../../../types';
 import type { AdminStaffSession } from '../../../lib/adminAuth';
@@ -70,6 +72,8 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
   const [editingStaff, setEditingStaff] = useState<StaffItem | null>(null);
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
+  const [formPassword, setFormPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [formWhatsapp, setFormWhatsapp] = useState('');
   const [formRole, setFormRole] = useState<StaffItem['role']>('waiter');
   const [formZones, setFormZones] = useState<string[]>([]);
@@ -87,6 +91,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
 
   const staffNameId = useId();
   const staffEmailId = useId();
+  const staffPasswordId = useId();
   const staffWhatsappId = useId();
   const staffRoleId = useId();
 
@@ -147,6 +152,8 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
     setEditingStaff(null);
     setFormName('');
     setFormEmail('');
+    setFormPassword('');
+    setShowPassword(false);
     setFormWhatsapp('');
     setFormRole('waiter');
     setFormZones(['VIP Stage', 'Palco']);
@@ -158,11 +165,23 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
     setEditingStaff(item);
     setFormName(item.name);
     setFormEmail(item.email);
+    setFormPassword('');
+    setShowPassword(false);
     setFormWhatsapp(item.whatsapp || '');
     setFormRole(item.role);
     setFormZones(item.assignedZones || []);
     setFormError(null);
     setIsModalOpen(true);
+  };
+
+  const handleGenerateRandomPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let pwd = '';
+    for (let i = 0; i < 8; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormPassword(`${pwd}!26`);
+    setShowPassword(true);
   };
 
   const toggleZone = (zone: string) => {
@@ -186,6 +205,15 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
         role: formRole,
         assignedZones: formZones
       };
+
+      if (formPassword.trim()) {
+        if (formPassword.trim().length < 6) {
+          setFormError('La contraseña debe tener al menos 6 caracteres.');
+          setSubmitting(false);
+          return;
+        }
+        payload.password = formPassword.trim();
+      }
 
       if (editingStaff) {
         payload.uid = editingStaff.uid;
@@ -252,7 +280,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
 
   const copyCredentials = () => {
     if (!tempPasswordModal) return;
-    const text = `Credenciales de Acceso a NIGHTFLOW VIP\nEstablecimiento: ${activeClub.name}\nRol: ${tempPasswordModal.role}\nCorreo: ${tempPasswordModal.email}\nContraseña Temporal: ${tempPasswordModal.password}\n\nIngresa desde la app móvil del club.`;
+    const text = `Credenciales de Acceso — NIGHTFLOW VIP\nEstablecimiento: ${activeClub.name}\nRol: ${tempPasswordModal.role}\nNombre: ${tempPasswordModal.name}\nUsuario (Correo): ${tempPasswordModal.email}\nContraseña: ${tempPasswordModal.password}\n\nIngresa al portal de acceso: http://localhost:5174/`;
     navigator.clipboard.writeText(text);
     setCopiedPass(true);
     setTimeout(() => setCopiedPass(false), 3000);
@@ -571,6 +599,27 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       type="button"
                       onClick={() => handleOpenEdit(member)}
                       style={{
+                        background: 'rgba(229, 181, 79, 0.08)',
+                        border: '1px solid rgba(229, 181, 79, 0.25)',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        color: '#e5b54f',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                      title="Gestionar correo y contraseña de este colaborador"
+                    >
+                      <Key size={12} />
+                      <span>Credenciales</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(member)}
+                      style={{
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '6px',
@@ -729,11 +778,83 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                     boxSizing: 'border-box'
                   }}
                 />
-                {!editingStaff && (
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.7rem', color: '#64748b' }}>
-                    Si no tiene cuenta previa, se creará una credencial con contraseña temporal.
-                  </p>
-                )}
+              </div>
+
+              {/* Contraseña de Acceso (Credencial) */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label htmlFor={staffPasswordId} style={{ fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8' }}>
+                    {editingStaff ? 'ESTABLECER NUEVA CONTRASEÑA (OPCIONAL)' : 'CONTRASEÑA DE ACCESO'}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleGenerateRandomPassword}
+                    style={{
+                      background: 'rgba(229, 181, 79, 0.12)',
+                      border: '1px solid rgba(229, 181, 79, 0.35)',
+                      borderRadius: '6px',
+                      padding: '3px 8px',
+                      color: '#e5b54f',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <Key size={11} />
+                    <span>Generar Segura</span>
+                  </button>
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    id={staffPasswordId}
+                    type={showPassword ? 'text' : 'password'}
+                    value={formPassword}
+                    onChange={e => setFormPassword(e.target.value)}
+                    placeholder={editingStaff ? 'Dejar vacío para conservar contraseña actual' : 'Ej: Portero2026! (mín. 6 caracteres)'}
+                    style={{
+                      width: '100%',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      borderRadius: '8px',
+                      padding: '10px 42px 10px 14px',
+                      color: '#f4f1ea',
+                      fontSize: '0.86rem',
+                      fontFamily: showPassword ? 'monospace' : 'inherit',
+                      letterSpacing: showPassword ? '0.04em' : 'normal',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    title={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '4px'
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.7rem', color: '#64748b' }}>
+                  {editingStaff
+                    ? 'Escribe una nueva contraseña para actualizar las credenciales de este usuario.'
+                    : 'Ingresa la contraseña del colaborador o haz clic en «Generar Segura». Si la dejas vacía, se generará una automáticamente.'}
+                </p>
               </div>
 
               <div>
@@ -864,7 +985,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
         </div>
       )}
 
-      {/* 5. Modal de Contraseña Temporal (Un solo uso) */}
+      {/* 5. Modal de Credenciales Asignadas */}
       {tempPasswordModal && (
         <div style={{
           position: 'fixed',
@@ -879,7 +1000,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
         }}>
           <div style={{
             background: 'linear-gradient(145deg, #121824 0%, #080c14 100%)',
-            border: '1px solid rgba(56, 189, 248, 0.4)',
+            border: '1px solid rgba(229, 181, 79, 0.4)',
             borderRadius: '18px',
             width: '100%',
             maxWidth: '460px',
@@ -887,37 +1008,37 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
             boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-              <Sparkles size={22} style={{ color: '#38bdf8' }} />
+              <Key size={22} style={{ color: '#e5b54f' }} />
               <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f1ea' }}>
-                Colaborador Invitado con Éxito
+                Credenciales Asignadas con Éxito
               </h3>
             </div>
 
             <p style={{ margin: '0 0 16px 0', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: '1.4' }}>
-              Se ha generado una cuenta para <strong>{tempPasswordModal.name}</strong> ({tempPasswordModal.role}).
-              Comparte esta credencial temporal para su primer inicio de sesión:
+              Se han configurado las credenciales para <strong>{tempPasswordModal.name}</strong> ({tempPasswordModal.role}).
+              Comparte estos datos para que inicie sesión en <strong>http://localhost:5174/</strong>:
             </p>
 
             <div style={{
               background: 'rgba(0, 0, 0, 0.4)',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
+              border: '1px solid rgba(229, 181, 79, 0.3)',
               borderRadius: '12px',
               padding: '14px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px',
+              gap: '10px',
               marginBottom: '18px'
             }}>
               <div>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700 }}>USUARIO</span>
-                <div style={{ fontSize: '0.86rem', color: '#f4f1ea', fontWeight: 600 }}>{tempPasswordModal.email}</div>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700 }}>USUARIO (CORREO)</span>
+                <div style={{ fontSize: '0.9rem', color: '#f4f1ea', fontWeight: 600 }}>{tempPasswordModal.email}</div>
               </div>
               <div>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700 }}>CONTRASEÑA TEMPORAL</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700 }}>CONTRASEÑA DE ACCESO</span>
                 <div style={{
-                  fontSize: '1rem',
+                  fontSize: '1.05rem',
                   fontFamily: 'monospace',
-                  color: '#38bdf8',
+                  color: '#e5b54f',
                   fontWeight: 800,
                   letterSpacing: '0.08em'
                 }}>
@@ -932,10 +1053,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               gap: '8px',
               marginBottom: '20px',
               fontSize: '0.74rem',
-              color: '#f59e0b'
+              color: '#34d399'
             }}>
-              <AlertTriangle size={15} />
-              <span>Esta contraseña se muestra una sola vez y no se vuelve a generar.</span>
+              <Check size={15} />
+              <span>Credenciales sincronizadas en Firebase Authentication para este establecimiento.</span>
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
