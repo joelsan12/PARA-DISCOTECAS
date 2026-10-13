@@ -6,7 +6,8 @@ import type {
 } from '../types';
 import {
   INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES,
-  INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS
+  INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS,
+  INITIAL_EVENTS
 } from '../data';
 import { loadStorageState, saveStorageState, applyLoadedStorageData, clearAllStorage } from './storage';
 import {
@@ -28,14 +29,14 @@ import { formatUsd } from '../lib/formatUsd';
 import { esClubStatus, esLayout, esPlan } from '../lib/esLabels';
 import { normalizeCanonicalPlanId } from '../lib/clubPermissions';
 
-export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS };
+export { INITIAL_PLANS, INITIAL_CLUBS, INITIAL_TABLES, INITIAL_EVENT_PRICING, INITIAL_RESERVATIONS, INITIAL_AUDIT_LOGS, INITIAL_PROPOSALS, INITIAL_EVENTS };
 
 class ClubStore {
   clubs: Club[] = INITIAL_CLUBS;
-  events: ClubEvent[] = [];
+  events: ClubEvent[] = import.meta.env.DEV ? INITIAL_EVENTS : [];
   tables: ClubTable[] = INITIAL_TABLES;
   eventPricing: EventTablePricing[] = INITIAL_EVENT_PRICING;
-  reservations: Reservation[] = import.meta.env.DEV ? INITIAL_RESERVATIONS : [];
+  reservations: Reservation[] = INITIAL_RESERVATIONS;
   plans: Plan[] = INITIAL_PLANS;
   proposals: ClubProposal[] = INITIAL_PROPOSALS;
   private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
