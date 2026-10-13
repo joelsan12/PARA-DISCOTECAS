@@ -31,8 +31,18 @@ export function addTableOperation(
     if (tableData?.height !== undefined) table.height = tableData.height;
     if (tableData?.booking_mode) table.booking_mode = tableData.booking_mode;
     if (tableData?.is_active !== undefined) table.is_active = tableData.is_active;
+    const minSpend = tableData?.min_spend ?? customPricing?.min_spend ?? (table.capacity >= 10 ? 1000 : 500);
+    const depositRequired = tableData?.deposit_required ?? customPricing?.deposit_required ?? (table.capacity >= 10 ? 300 : 150);
+    table.min_spend = minSpend;
+    table.deposit_required = depositRequired;
   } else {
     table = { ...clubIdOrData, id: newId };
+    if (table.min_spend === undefined && customPricing?.min_spend !== undefined) {
+      table.min_spend = customPricing.min_spend;
+    }
+    if (table.deposit_required === undefined && customPricing?.deposit_required !== undefined) {
+      table.deposit_required = customPricing.deposit_required;
+    }
   }
   tables.push(table);
 
@@ -42,8 +52,8 @@ export function addTableOperation(
       event_id: evt.id,
       table_id: newId,
       status: 'AVAILABLE',
-      min_spend: customPricing?.min_spend ?? (table.capacity >= 10 ? 1000 : 500),
-      deposit_required: customPricing?.deposit_required ?? (table.capacity >= 10 ? 300 : 150),
+      min_spend: table.min_spend ?? customPricing?.min_spend ?? (table.capacity >= 10 ? 1000 : 500),
+      deposit_required: table.deposit_required ?? customPricing?.deposit_required ?? (table.capacity >= 10 ? 300 : 150),
       includes: customPricing?.includes ?? [`${table.capacity} Pases VIP`, '1 Botella']
     });
   });
@@ -151,6 +161,16 @@ export function updateTablePricingHelper(eventPricing: EventTablePricing[], tabl
         delete pricingRec[k];
       }
     }
+  } else if (eventId) {
+    eventPricing.push({
+      event_id: eventId,
+      table_id: tableId,
+      status: updates.status || 'AVAILABLE',
+      min_spend: updates.min_spend ?? 0,
+      deposit_required: updates.deposit_required ?? 0,
+      includes: updates.includes || [],
+      ...updates
+    });
   }
 }
 
@@ -173,18 +193,8 @@ export function updateTableHelper(
       }
     }
   }
-  if (pricingPartial) {
-    const pricing = eventPricing.find(p => p.table_id === tableId && p.event_id === activeEventId);
-    if (pricing) {
-      const pricingRec = pricing as unknown as Record<string, unknown>;
-      for (const [k, v] of Object.entries(pricingPartial)) {
-        if (v !== undefined) {
-          pricingRec[k] = v;
-        } else {
-          delete pricingRec[k];
-        }
-      }
-    }
+  if (pricingPartial && activeEventId) {
+    updateTablePricingHelper(eventPricing, tableId, activeEventId, pricingPartial);
   }
 }
 

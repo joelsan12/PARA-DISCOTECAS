@@ -58,7 +58,14 @@ export const FloorPlanEditor: React.FC = () => {
   const selectedTable = clubTables.find(t => t.id === selectedTableId) || null;
   const draggedTable = clubTables.find(t => t.id === draggedTableId) || null;
   const selectedPricing = selectedTable
-    ? eventPricings.find(p => p.table_id === selectedTable.id)
+    ? eventPricings.find(p => p.table_id === selectedTable.id) || {
+        table_id: selectedTable.id,
+        event_id: activeEvent?.id || '',
+        status: 'AVAILABLE' as const,
+        min_spend: selectedTable.min_spend || 0,
+        deposit_required: selectedTable.deposit_required || 0,
+        includes: []
+      }
     : null;
 
   const viewBoxWidth = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 600 : layoutType === 'downtown_suites' ? 600 : 800;
@@ -250,6 +257,8 @@ export const FloorPlanEditor: React.FC = () => {
           onUpdatePricing={(tableId, minSpend, deposit) => {
             if (activeEvent) {
               store.updateEventTablePricing(activeEvent.id, tableId, minSpend, deposit);
+            } else {
+              store.updateTable(tableId, { min_spend: minSpend, deposit_required: deposit });
             }
           }}
         />

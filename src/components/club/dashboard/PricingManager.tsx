@@ -8,7 +8,7 @@ interface Props {
   clubTables: ClubTable[];
   eventPricings: EventTablePricing[];
   activeEvent?: ClubEvent;
-  onUpdatePricing: (tableId: string, minSpend: number, deposit: number) => void;
+  onUpdatePricing: (tableId: string, minSpend: number, deposit: number) => void | Promise<void>;
   onGoToDesigner?: () => void;
 }
 
@@ -23,6 +23,7 @@ export const PricingManager = ({
   const [newMinSpend, setNewMinSpend] = useState<number>(0);
   const [newDeposit, setNewDeposit] = useState<number>(0);
   const [selectedZone, setSelectedZone] = useState<string>('ALL');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   if (clubTables.length === 0) {
     return (
@@ -80,9 +81,14 @@ export const PricingManager = ({
     setNewDeposit(currentDeposit);
   };
 
-  const handleSave = (tableId: string) => {
-    onUpdatePricing(tableId, newMinSpend, newDeposit);
-    setEditingTableId(null);
+  const handleSave = async (tableId: string) => {
+    setIsSaving(true);
+    try {
+      await onUpdatePricing(tableId, newMinSpend, newDeposit);
+      setEditingTableId(null);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const zones = Array.from(new Set(clubTables.map(t => t.zone)));
@@ -115,12 +121,12 @@ export const PricingManager = ({
             </h3>
           </div>
           <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Configuración de consumos mínimos y depósitos requeridos en pasarela para el evento actual.
+            Configuración de consumos mínimos y depósitos requeridos en pasarela {activeEvent ? 'para el evento actual' : '(tarifas base por defecto)'}.
           </p>
         </div>
 
-        {/* Active Event Badge */}
-        {activeEvent && (
+        {/* Active Event Badge vs Default Pricing */}
+        {activeEvent ? (
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -133,6 +139,21 @@ export const PricingManager = ({
             <Coins size={15} color="var(--brand-gold)" />
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff' }}>
               {activeEvent.day_label} — {activeEvent.title}
+            </span>
+          </div>
+        ) : (
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'rgba(229, 181, 79, 0.08)',
+            border: '1px solid rgba(229, 181, 79, 0.25)',
+            padding: '6px 14px',
+            borderRadius: 'var(--radius-sm)'
+          }}>
+            <Coins size={15} color="var(--brand-gold)" />
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--brand-gold)' }}>
+              Tarifas Base por Defecto
             </span>
           </div>
         )}
@@ -190,6 +211,8 @@ export const PricingManager = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '16px' }}>
         {filteredTables.map(t => {
           const pricing = eventPricings.find(p => p.table_id === t.id);
+          const currentMinSpend = pricing?.min_spend ?? t.min_spend ?? 0;
+          const currentDeposit = pricing?.deposit_required ?? t.deposit_required ?? 0;
           const isEditing = editingTableId === t.id;
           const tierColor = t.tier_color || 'var(--brand-gold)';
 
@@ -241,7 +264,7 @@ export const PricingManager = ({
                 {!isEditing && (
                   <button
                     type="button"
-                    onClick={() => handleStartEditPricing(t.id, pricing?.min_spend || 0, pricing?.deposit_required || 0)}
+                    onClick={() => handleStartEditPricing(t.id, currentMinSpend, currentDeposit)}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -282,8 +305,13 @@ export const PricingManager = ({
                     </label>
                     <input
                       type="number"
-                      value={newMinSpend}
-                      onChange={e => setNewMinSpend(Number(e.target.value))}
+                      min={0}
+                      value={newMinSpend === 0 ? '' : newMinSpend}
+                      placeholder="0"
+                      onChange={e => {
+                        const val = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
+                        setNewMinSpend(val);
+                      }}
                       style={{
                         width: '100%',
                         padding: '8px 12px',
@@ -336,8 +364,13 @@ export const PricingManager = ({
                     </label>
                     <input
                       type="number"
-                      value={newDeposit}
-                      onChange={e => setNewDeposit(Number(e.target.value))}
+                      min={0}
+                      value={newDeposit === 0 ? '' : newDeposit}
+                      placeholder="0"
+                      onChange={e => {
+                        const val = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
+                        setNewDeposit(val);
+                      }}
                       style={{
                         width: '100%',
                         padding: '8px 12px',
@@ -378,6 +411,7 @@ export const PricingManager = ({
                   <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                     <button
                       type="button"
+                      disabled={isSaving}
                       onClick={() => setEditingTableId(null)}
                       style={{
                         flex: 1,
@@ -388,7 +422,7 @@ export const PricingManager = ({
                         color: '#cbd5e1',
                         fontSize: '0.78rem',
                         fontWeight: 600,
-                        cursor: 'pointer',
+                        cursor: isSaving ? 'not-allowed' : 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -400,6 +434,7 @@ export const PricingManager = ({
                     </button>
                     <button
                       type="button"
+                      disabled={isSaving}
                       onClick={() => handleSave(t.id)}
                       style={{
                         flex: 1,
@@ -410,7 +445,8 @@ export const PricingManager = ({
                         color: '#08080c',
                         fontSize: '0.78rem',
                         fontWeight: 800,
-                        cursor: 'pointer',
+                        cursor: isSaving ? 'wait' : 'pointer',
+                        opacity: isSaving ? 0.75 : 1,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -419,7 +455,7 @@ export const PricingManager = ({
                       }}
                     >
                       <Check size={13} />
-                      Guardar
+                      {isSaving ? 'Guardando...' : 'Guardar'}
                     </button>
                   </div>
                 </div>
@@ -438,7 +474,7 @@ export const PricingManager = ({
                       Consumo Mín.
                     </div>
                     <div className="font-mono" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fde68a', marginTop: '2px' }}>
-                      {formatUsd(pricing?.min_spend ?? 0)}
+                      {formatUsd(currentMinSpend)}
                     </div>
                   </div>
                   <div>
@@ -446,7 +482,7 @@ export const PricingManager = ({
                       Anticipo
                     </div>
                     <div className="font-mono" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--brand-gold)', marginTop: '2px' }}>
-                      {formatUsd(pricing?.deposit_required ?? 0)}
+                      {formatUsd(currentDeposit)}
                     </div>
                   </div>
                 </div>

@@ -132,7 +132,14 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   // Sintetizar mesas si store.tables aún no se ha poblado visualmente pero existen recursos activos
   const activeOperational = (operationalTables || []).filter(t => t.isActive);
   const effectiveTables: ClubTable[] = clubTables.length > 0
-    ? clubTables
+    ? clubTables.map(t => {
+        const op = activeOperational.find(o => o.resourceId === t.id);
+        return {
+          ...t,
+          min_spend: t.min_spend ?? (op?.minSpend && op.minSpend > 0 ? op.minSpend : undefined) ?? 0,
+          deposit_required: t.deposit_required ?? (op?.depositRequired && op.depositRequired > 0 ? op.depositRequired : undefined) ?? 0
+        };
+      })
     : activeOperational.map(t => ({
         id: t.resourceId,
         club_id: activeClub.id,
@@ -142,24 +149,28 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
         x: 0,
         y: 0,
         shape: 'circle' as const,
-        is_active: t.isActive
+        is_active: t.isActive,
+        min_spend: t.minSpend ?? 0,
+        deposit_required: t.depositRequired ?? 0
       }));
 
   // Combinar tarifas y estados en tiempo real desde Firestore
-  const effectiveEventPricings: EventTablePricing[] = (activeOperational.length > 0)
-    ? activeOperational.map(t => {
-        const localPricing = eventPricings.find(p => p.table_id === t.resourceId);
-        return {
-          table_id: t.resourceId,
-          event_id: activeEvent?.id || '',
-          status: (t.state === 'INSIDE' ? 'CHECKED_IN' : t.state) as TableReservationStatus,
-          min_spend: t.minSpend || localPricing?.min_spend || 0,
-          deposit_required: t.depositRequired || localPricing?.deposit_required || 0,
-          includes: localPricing?.includes || [],
-          active_reservation_id: t.activeReservationId || localPricing?.active_reservation_id || undefined
-        };
-      })
-    : eventPricings;
+  const effectiveEventPricings: EventTablePricing[] = effectiveTables.map(t => {
+    const localPricing = eventPricings.find(p => p.table_id === t.id);
+    const op = activeOperational.find(o => o.resourceId === t.id);
+    const resolvedMin = localPricing?.min_spend ?? (t.min_spend && t.min_spend > 0 ? t.min_spend : undefined) ?? op?.minSpend ?? 0;
+    const resolvedDeposit = localPricing?.deposit_required ?? (t.deposit_required && t.deposit_required > 0 ? t.deposit_required : undefined) ?? op?.depositRequired ?? 0;
+
+    return {
+      table_id: t.id,
+      event_id: activeEvent?.id || '',
+      status: (op?.state === 'INSIDE' ? 'CHECKED_IN' : (op?.state as TableReservationStatus)) || localPricing?.status || 'AVAILABLE',
+      min_spend: resolvedMin,
+      deposit_required: resolvedDeposit,
+      includes: localPricing?.includes || [`${t.capacity} Pases VIP`],
+      active_reservation_id: op?.activeReservationId || localPricing?.active_reservation_id || undefined
+    };
+  });
 
   const effectiveReservations = (liveReservations && liveReservations.length > 0)
     ? liveReservations
@@ -184,9 +195,43 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   const totalDeposits = effectiveReservations.reduce((acc, curr) => acc + (curr.deposit_amount || 0), 0);
 
-  const handleUpdatePricing = (tableId: string, minSpend: number, deposit: number) => {
+  const handleUpdatePricing = async (tableId: string, minSpend: number, deposit: number) => {
+    // 1. Si no existe en store.tables aún, asegurar que esté registrada
+    const existingTable = store.tables.find(t => t.id === tableId);
+    if (!existingTable) {
+      const eff = effectiveTables.find(t => t.id === tableId);
+      if (eff) {
+        store.tables.push({ ...eff, min_spend: minSpend, deposit_required: deposit });
+      }
+    }
+
+    // 2. Si hay evento activo, actualizar tarifa del evento; siempre actualizar mesa base
     if (activeEvent) {
       store.updateEventTablePricing(activeEvent.id, tableId, minSpend, deposit);
+    } else {
+      store.updateTable(tableId, { min_spend: minSpend, deposit_required: deposit });
+    }
+
+    // 3. Optimistic update en la lista operacional en memoria local
+    setOperationalTables(prev => {
+      if (!prev) return prev;
+      return prev.map(t => {
+        if (t.resourceId === tableId) {
+          return {
+            ...t,
+            minSpend,
+            depositRequired: deposit
+          };
+        }
+        return t;
+      });
+    });
+
+    // 4. Persistir en Firestore (businesses/{clubId}/layout/main y sincronizar recursos operativos)
+    try {
+      await store.syncLayoutAsync();
+    } catch (err) {
+      console.warn('[PricingManager] Advertencia al persistir en Firestore:', err);
     }
   };
 

@@ -101,8 +101,8 @@ export const OperatingTablesList = ({
           const pricing = eventPricings.find(p => p.table_id === t.id);
           const op = operationalTables?.find(o => o.resourceId === t.id);
           const consumption = op?.consumptionTotal ?? 0;
-          const minSpend = pricing?.min_spend ?? op?.minSpend ?? 0;
-          const depositRequired = op?.depositRequired ?? pricing?.deposit_required ?? 0;
+          const minSpend = pricing?.min_spend ?? op?.minSpend ?? t.min_spend ?? 0;
+          const depositRequired = op?.depositRequired ?? pricing?.deposit_required ?? t.deposit_required ?? 0;
           const hasOpenTab = Boolean(op?.activeReservationId) && (op?.tabStatus === 'OPEN' || op?.tableTab?.status === 'OPEN');
           const isSettled = op?.tabStatus === 'SETTLED' || op?.tableTab?.status === 'SETTLED';
           const canSettleThisTable = canSettleAny && hasOpenTab && Boolean(op?.activeReservationId);

@@ -36,7 +36,14 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
   const eventPricings = store.eventPricing.filter(p => p.event_id === activeEvent?.id);
 
   const selectedPricing = selectedTable
-    ? eventPricings.find(p => p.table_id === selectedTable.id) || null
+    ? (eventPricings.find(p => p.table_id === selectedTable.id) || {
+        table_id: selectedTable.id,
+        event_id: activeEvent?.id || '',
+        status: 'AVAILABLE' as const,
+        min_spend: selectedTable.min_spend || 0,
+        deposit_required: selectedTable.deposit_required || 0,
+        includes: [`${selectedTable.capacity} Pases VIP`]
+      })
     : null;
 
   const handleSelectTable = (table: ClubTable) => {

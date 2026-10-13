@@ -118,6 +118,10 @@ export interface ClubTable {
   // Domain extensions
   booking_mode?: BookingMode;
   is_active?: boolean;
+  min_spend?: number;
+  deposit_required?: number;
+  minSpendDefault?: number;
+  depositRequired?: number;
 }
 
 export interface ClubEvent {

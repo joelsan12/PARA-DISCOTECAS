@@ -295,7 +295,19 @@ class ClubStore {
   }
 
   updateTablePricing(tableId: string, eventId: string, updates: Partial<EventTablePricing>) { updateTablePricingHelper(this.eventPricing, tableId, eventId, updates); this.persistAndNotify(); }
-  updateEventTablePricing(eventId: string, tableId: string, minSpend: number, deposit: number) { this.updateTablePricing(tableId, eventId, { min_spend: minSpend, deposit_required: deposit }); }
+  updateEventTablePricing(eventId: string, tableId: string, minSpend: number, deposit: number) {
+    if (eventId) {
+      this.updateTablePricing(tableId, eventId, { min_spend: minSpend, deposit_required: deposit });
+    }
+    const table = this.tables.find(t => t.id === tableId);
+    if (table) {
+      table.min_spend = minSpend;
+      table.deposit_required = deposit;
+      table.minSpendDefault = minSpend;
+      table.depositRequired = deposit;
+      this.persistAndNotify();
+    }
+  }
 
   addTable(
     clubIdOrData: string | Omit<ClubTable, 'id'>,
