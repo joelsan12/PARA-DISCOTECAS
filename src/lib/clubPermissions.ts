@@ -123,6 +123,11 @@ export function isDashboardTabAllowed(
       // Reservas Activas: Básico, Pro o Empresarial
       return canClubAccessFeature(club, plan, 'RESERVATIONS', ['reservas']);
 
+    case 'DOOR_LOG':
+      // Bitácora de Puerta / Accesos: Básico, Pro, Empresarial o Beta VIP
+      return canClubAccessFeature(club, plan, 'QR_CHECKIN', ['qr_checkin', 'door_log', 'puerta', 'bitacora_puerta'])
+        || canClubAccessFeature(club, plan, 'RESERVATIONS', ['reservas']);
+
     case 'PRICING':
       // Tarifario & Anticipos: Requiere Plan Pro o Empresarial (TABLE_SELECTION / dynamic pricing)
       return canClubAccessFeature(

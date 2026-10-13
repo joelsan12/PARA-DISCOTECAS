@@ -56,6 +56,8 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
         return { category: 'Operaciones', section: 'Diseñador de Plano' };
       case 'RESERVATIONS':
         return { category: 'Operaciones', section: 'Bitácora Oficial de Reservas' };
+      case 'DOOR_LOG':
+        return { category: 'Operaciones', section: 'Bitácora de Ingresos en Puerta' };
       case 'PRICING':
         return { category: 'Comercial', section: 'Tarifario & Anticipos' };
       case 'CONSUMPTION':

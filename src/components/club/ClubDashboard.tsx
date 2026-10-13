@@ -15,6 +15,7 @@ import { ClubPlanAndProposalsView } from './dashboard/ClubPlanAndProposalsView';
 import { ClubFloorPlanEmptyState } from './dashboard/ClubFloorPlanEmptyState';
 import { EventsManager } from './dashboard/EventsManager';
 import { FloorOpsView } from './dashboard/FloorOpsView';
+import { DoorAccessLogView } from './dashboard/DoorAccessLogView';
 import { CustomFloorPlanRequestModal } from './floorplan/CustomFloorPlanRequestModal';
 import { isDashboardTabAllowed, normalizeCanonicalPlanId } from '../../lib/clubPermissions';
 import { subscribeOperations, type OperationalTableItem } from '../../services/operationsService';
@@ -288,6 +289,11 @@ export const ClubDashboard = ({ session, activeTab: propActiveTab }: ClubDashboa
         <ReservationsTable
           reservations={effectiveReservations}
         />
+      )}
+
+      {/* Tab: DOOR_LOG (Bitácora de Ingresos en Puerta) */}
+      {activeTab === 'DOOR_LOG' && (
+        <DoorAccessLogView activeClub={activeClub} session={session} />
       )}
 
       {/* Tab: PRICING */}

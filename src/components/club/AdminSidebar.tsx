@@ -18,6 +18,7 @@ import {
   Wine,
   History,
   UserCog,
+  UserCheck,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -32,6 +33,7 @@ export type DashboardTabKey =
   | 'LAYOUT_BUILDER'
   | 'EVENTS'
   | 'RESERVATIONS'
+  | 'DOOR_LOG'
   | 'PRICING'
   | 'CONSUMPTION'
   | 'TRANSACTIONS'
@@ -83,6 +85,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const eventReservations = activeEvent
     ? store.reservations.filter(r => r.club_id === activeClub?.id && r.event_id === activeEvent.id)
     : [];
+  const checkedInCount = store.reservations.filter(
+    r => r.club_id === activeClub?.id && r.status === 'CHECKED_IN'
+  ).length;
 
   const roleLabel = session.role === 'WAITER' || session.staffRole === 'waiter'
     ? 'MESERO SALA'
@@ -315,6 +320,26 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   {eventReservations.length > 0 && (
                     <span className="admin-nav-item-tag">
                       {eventReservations.length}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              {isDashboardTabAllowed('DOOR_LOG', activeClub, activePlan) && (
+                <button
+                  type="button"
+                  className={`admin-nav-item ${currentView === 'DASHBOARD' && dashboardTab === 'DOOR_LOG' ? 'active' : ''}`}
+                  onClick={() => handleTabClick('DOOR_LOG')}
+                >
+                  <div className="admin-nav-item-left">
+                    <span className="admin-nav-item-icon">
+                      <UserCheck size={15} />
+                    </span>
+                    <span>Bitácora de Puerta</span>
+                  </div>
+                  {checkedInCount > 0 && (
+                    <span className="admin-nav-item-tag admin-nav-item-tag--live">
+                      {checkedInCount} IN
                     </span>
                   )}
                 </button>
