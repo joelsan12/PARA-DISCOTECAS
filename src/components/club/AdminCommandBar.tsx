@@ -82,7 +82,7 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
   return (
     <header className="admin-command-bar">
       {/* Left: Mobile hamburger + Breadcrumb + Live Clock */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div className="admin-command-bar-left">
         <button
           type="button"
           onClick={onOpenMobileMenu}
@@ -111,41 +111,15 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
       </div>
 
       {/* Right: User Profile Chip + Theme Toggle Switch + Direct Link to Client Portal */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="admin-command-bar-right">
         {session && onOpenProfile && (
           <button
             type="button"
             onClick={onOpenProfile}
-            title="Ver y editar mi perfil de usuario"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-              padding: '4px 10px 4px 4px',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(229, 181, 79, 0.25)',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              color: '#ffffff',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              transition: 'all 0.15s ease'
-            }}
+            title={`Perfil: ${session.displayName}`}
+            className="admin-profile-chip"
           >
-            <div style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.4) 0%, rgba(229, 181, 79, 0.1) 100%)',
-              border: '1px solid var(--brand-gold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.68rem',
-              fontWeight: 900,
-              color: 'var(--brand-gold)'
-            }}>
+            <div className="admin-profile-avatar">
               {session.photoURL ? (
                 <img
                   src={session.photoURL}
@@ -156,7 +130,7 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
                 session.displayName.charAt(0).toUpperCase()
               )}
             </div>
-            <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span className="admin-profile-name">
               {session.displayName}
             </span>
           </button>

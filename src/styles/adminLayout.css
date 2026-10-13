@@ -373,6 +373,66 @@
   border-color: rgba(229, 181, 79, 0.5);
 }
 
+.admin-command-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.admin-command-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.admin-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px 4px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(229, 181, 79, 0.25);
+  border-radius: 20px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.admin-profile-chip:hover {
+  background: rgba(229, 181, 79, 0.08);
+  border-color: rgba(229, 181, 79, 0.45);
+}
+
+.admin-profile-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(229, 181, 79, 0.4) 0%, rgba(229, 181, 79, 0.1) 100%);
+  border: 1px solid var(--brand-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: var(--brand-gold);
+  flex-shrink: 0;
+}
+
+.admin-profile-name {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 .admin-mobile-toggle {
   display: none;
   align-items: center;
@@ -567,14 +627,22 @@
 
 @media (max-width: 640px) {
   .admin-command-bar {
-    padding: 0 12px;
+    padding: 0 10px;
     gap: 8px;
-    min-height: 56px;
+    min-height: 52px;
   }
 
-  .admin-command-bar > div:first-child {
-    gap: 10px;
+  .admin-command-bar-left {
+    gap: 8px;
     min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .admin-breadcrumb {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
   }
 
   .admin-breadcrumb-path {
@@ -582,23 +650,37 @@
   }
 
   .admin-command-title {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
+    max-width: 170px;
   }
 
+  /* Ocultamos el chip de reloj en teléfonos para liberar 80px y evitar colisiones */
   .admin-clock-chip {
-    padding: 3px 7px;
-    font-size: 0.66rem;
+    display: none;
   }
 
-  .admin-clock-chip .tz {
+  .admin-command-bar-right {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* El chip de perfil se vuelve compacto: solo muestra el avatar circular elegante */
+  .admin-profile-chip {
+    padding: 3px;
+    border-radius: 50%;
+    gap: 0;
+  }
+
+  .admin-profile-name {
     display: none;
   }
 
   .admin-portal-link {
-    padding: 6px 9px;
+    padding: 6px 8px;
   }
 
   .admin-portal-link span {
@@ -611,6 +693,22 @@
 
   .admin-canvas.admin-canvas--door {
     padding: 8px 6px 48px;
+  }
+}
+
+@media (max-width: 440px) {
+  .admin-portal-link {
+    display: none;
+  }
+
+  .admin-command-bar {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .admin-command-title {
+    font-size: 0.82rem;
+    max-width: 140px;
   }
 }
 
