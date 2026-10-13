@@ -55,6 +55,7 @@ import {
   type ReentryProof
 } from '../../lib/reentryPasskey';
 import { EdgeGatewayClient, isEdgeGatewayConfigured, type EdgeConnectionState } from '../../lib/edgeGatewayClient';
+import { isQrCameraSupported } from '../../lib/doorQrScanner';
 import { QrCameraScanner } from './QrCameraScanner';
 
 const BUSINESS_STORAGE_KEY = 'nightflow.door.business.v1';
@@ -132,7 +133,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
   const [enrolled, setEnrolled] = useState(false);
   const enrolledRef = useRef(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(() => isQrCameraSupported());
   const [edgeState, setEdgeState] = useState<EdgeConnectionState>(isEdgeGatewayConfigured() ? 'connecting' : 'disabled');
   const [edgeDetail, setEdgeDetail] = useState('');
   const [localVerifyMs, setLocalVerifyMs] = useState<number | null>(null);
