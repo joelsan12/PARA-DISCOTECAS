@@ -7,6 +7,7 @@ export interface AdminStaffSession {
   uid: string;
   email: string;
   displayName: string;
+  photoURL?: string;
   role: ViewRole;
   isSuperAdmin: boolean;
   clubId?: string;
@@ -49,6 +50,7 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
         uid: user.uid,
         email: user.email || '',
         displayName: user.displayName || user.email?.split('@')[0] || 'SuperAdmin',
+        photoURL: user.photoURL || (userData?.photoUrl as string | undefined),
         role: 'SUPER_ADMIN',
         isSuperAdmin: true,
         clubId: (userData?.businessId as string | undefined) || currentClubId || ''
@@ -82,6 +84,7 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
               uid: user.uid,
               email: user.email || '',
               displayName: data.name || user.displayName || user.email?.split('@')[0] || 'Staff',
+              photoURL: user.photoURL || (data.photoUrl as string | undefined) || (data.avatarUrl as string | undefined) || (userData?.photoUrl as string | undefined),
               role,
               isSuperAdmin: false,
               clubId: targetClubId,
@@ -137,4 +140,46 @@ export function subscribeToAdminAuth(
   });
 
   return unsubscribe;
+}
+
+export async function updateAdminProfileInFirestore(params: {
+  uid: string;
+  clubId?: string;
+  displayName?: string;
+  photoURL?: string;
+  email?: string;
+}): Promise<void> {
+  if (!db) return;
+  const { uid, clubId, displayName, photoURL, email } = params;
+
+  // 1. users/{uid}
+  try {
+    const userRef = doc(db, 'users', uid);
+    const updates: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+    if (displayName) updates.displayName = displayName;
+    if (photoURL !== undefined) updates.photoUrl = photoURL;
+    if (email) updates.email = email;
+    const { setDoc } = await import('firebase/firestore');
+    await setDoc(userRef, updates, { merge: true });
+  } catch (err) {
+    console.warn('[AdminAuth] Error actualizando users/{uid}:', err);
+  }
+
+  // 2. businesses/{clubId}/staff/{uid}
+  if (clubId) {
+    try {
+      const staffRef = doc(db, 'businesses', clubId, 'staff', uid);
+      const staffUpdates: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+      if (displayName) staffUpdates.name = displayName;
+      if (photoURL !== undefined) {
+        staffUpdates.photoUrl = photoURL;
+        staffUpdates.avatarUrl = photoURL;
+      }
+      if (email) staffUpdates.email = email;
+      const { setDoc } = await import('firebase/firestore');
+      await setDoc(staffRef, staffUpdates, { merge: true });
+    } catch (err) {
+      console.warn(`[AdminAuth] Error actualizando staff en ${clubId}:`, err);
+    }
+  }
 }

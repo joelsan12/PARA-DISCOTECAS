@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useClubStore } from '../../store/clubStore';
@@ -8,7 +8,8 @@ import { WaiterPwaApp } from '../waiter/WaiterPwaApp';
 import { AdminSidebar, type DashboardTabKey } from './AdminSidebar';
 import { AdminCommandBar } from './AdminCommandBar';
 import { AdminLoginView } from './AdminLoginView';
-import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState } from '../../lib/adminAuth';
+import { UserProfileModal } from './UserProfileModal';
+import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState, type AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import '../../styles/adminLayout.css';
 
@@ -42,6 +43,14 @@ export function AdminPortalApp() {
   const [authState, setAuthState] = useState<AdminAuthState>({ status: 'loading' });
   const [currentView, setCurrentView] = useState<AdminView>('DASHBOARD');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [profileOverride, setProfileOverride] = useState<Partial<AdminStaffSession> | null>(null);
+
+  const rawSession = authState.status === 'authenticated' ? authState.session : null;
+  const session = useMemo(() => {
+    if (!rawSession) return null;
+    return profileOverride ? { ...rawSession, ...profileOverride } : rawSession;
+  }, [rawSession, profileOverride]);
 
   // Seleccionar automáticamente el primer club disponible si existe y no hay ninguno seleccionado
   useEffect(() => {
@@ -167,12 +176,16 @@ export function AdminPortalApp() {
     );
   }
 
-  const session = authState.session;
+  if (!session) {
+    return null;
+  }
+
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN';
   const canAccessWaiter = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'WAITER';
 
   const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
+  const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
 
   return (
     <div className="admin-layout-root">
@@ -186,6 +199,7 @@ export function AdminPortalApp() {
         onSignOut={signOutAdmin}
         isOpenMobile={isOpenMobile}
         onCloseMobile={() => setIsOpenMobile(false)}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
       />
 
       {/* 2. Área Principal de Trabajo */}
@@ -195,6 +209,8 @@ export function AdminPortalApp() {
           currentView={currentView}
           dashboardTab={activeTab}
           onOpenMobileMenu={() => setIsOpenMobile(true)}
+          session={session}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
         />
 
         {/* Lienzo Dinámico según sección activa */}
@@ -204,6 +220,19 @@ export function AdminPortalApp() {
           {currentView === 'WAITER' && canAccessWaiter && <WaiterPwaApp session={session} />}
         </main>
       </div>
+
+      {/* 3. Modal de Edición de Perfil de Administrador */}
+      {isProfileModalOpen && session && activeClub && (
+        <UserProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          session={session}
+          activeClub={activeClub}
+          onProfileUpdated={(updated) => {
+            setProfileOverride(updated);
+          }}
+        />
+      )}
     </div>
   );
 }

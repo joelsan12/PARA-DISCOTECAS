@@ -3,17 +3,22 @@ import { Menu, ExternalLink, Clock } from 'lucide-react';
 import type { DashboardTabKey } from './AdminSidebar';
 import { ThemeToggleSwitch } from '../common/ThemeToggleSwitch';
 
+import type { AdminStaffSession } from '../../lib/adminAuth';
+
 interface AdminCommandBarProps {
   currentView: 'DASHBOARD' | 'DOOR' | 'WAITER';
   dashboardTab: DashboardTabKey;
   onOpenMobileMenu: () => void;
+  session?: AdminStaffSession;
+  onOpenProfile?: () => void;
 }
-
 
 export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
   currentView,
   dashboardTab,
   onOpenMobileMenu,
+  session,
+  onOpenProfile,
 }) => {
   // Live Ecuador Clock (America/Guayaquil)
   const [localTime, setLocalTime] = useState<string>('');
@@ -105,8 +110,58 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
         )}
       </div>
 
-      {/* Right: Theme Toggle Switch + Direct Link to Client Portal */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Right: User Profile Chip + Theme Toggle Switch + Direct Link to Client Portal */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {session && onOpenProfile && (
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            title="Ver y editar mi perfil de usuario"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '4px 10px 4px 4px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(229, 181, 79, 0.25)',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              color: '#ffffff',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <div style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.4) 0%, rgba(229, 181, 79, 0.1) 100%)',
+              border: '1px solid var(--brand-gold)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.68rem',
+              fontWeight: 900,
+              color: 'var(--brand-gold)'
+            }}>
+              {session.photoURL ? (
+                <img
+                  src={session.photoURL}
+                  alt={session.displayName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                session.displayName.charAt(0).toUpperCase()
+              )}
+            </div>
+            <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {session.displayName}
+            </span>
+          </button>
+        )}
+
         <ThemeToggleSwitch variant="compact" />
 
         <a

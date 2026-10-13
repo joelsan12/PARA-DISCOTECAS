@@ -17,6 +17,7 @@ import {
   Users,
   Wine,
   History,
+  UserCog,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -49,6 +50,7 @@ interface AdminSidebarProps {
   onSignOut: () => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
+  onOpenProfile?: () => void;
 }
 
 function formatPlanSidebarTag(planId?: string): string {
@@ -70,6 +72,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   onSignOut,
   isOpenMobile,
   onCloseMobile,
+  onOpenProfile,
 }) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
@@ -529,10 +532,23 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="admin-sidebar-footer">
           <ThemeToggleSwitch variant="detailed" className="admin-sidebar-theme-toggle" />
 
-          <div className="admin-user-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-              <div className="admin-user-avatar">
-                {session.displayName.charAt(0).toUpperCase()}
+          <div
+            className="admin-user-card"
+            onClick={onOpenProfile}
+            style={{ cursor: onOpenProfile ? 'pointer' : 'default' }}
+            title="Haz clic para ver y editar tu perfil"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+              <div className="admin-user-avatar" style={{ overflow: 'hidden' }}>
+                {session.photoURL ? (
+                  <img
+                    src={session.photoURL}
+                    alt={session.displayName}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  session.displayName.charAt(0).toUpperCase()
+                )}
               </div>
               <div style={{ minWidth: 0 }}>
                 <span style={{
@@ -557,14 +573,33 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onSignOut}
-              title="Cerrar sesión corporativa"
-              className="admin-icon-btn"
-            >
-              <LogOut size={14} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {onOpenProfile && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenProfile();
+                  }}
+                  title="Editar mi perfil"
+                  className="admin-icon-btn"
+                >
+                  <UserCog size={14} />
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSignOut();
+                }}
+                title="Cerrar sesión corporativa"
+                className="admin-icon-btn"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
