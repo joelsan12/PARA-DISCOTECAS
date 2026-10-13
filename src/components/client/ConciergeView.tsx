@@ -159,17 +159,44 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
           </div>
         </div>
 
-        <span style={{
-          fontSize: '0.65rem',
-          fontWeight: 800,
-          padding: '3px 8px',
-          borderRadius: '9999px',
-          background: 'rgba(56, 189, 248, 0.12)',
-          color: '#38bdf8',
-          border: '1px solid rgba(56, 189, 248, 0.3)'
-        }}>
-          ATENCIÓN EN VIVO
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            id="concierge-header-beta-btn"
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-beta-feedback'))}
+            title="Feedback de la Beta VIP"
+            aria-label="Feedback de la Beta VIP"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '5px 8px',
+              borderRadius: '9999px',
+              background: 'rgba(229, 181, 79, 0.08)',
+              border: '1px solid rgba(229, 181, 79, 0.28)',
+              cursor: 'pointer',
+              color: '#e5b54f',
+              fontSize: '0.64rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <MessageSquare size={12} />
+            <span>Beta</span>
+          </button>
+
+          <span style={{
+            fontSize: '0.65rem',
+            fontWeight: 800,
+            padding: '3px 8px',
+            borderRadius: '9999px',
+            background: 'rgba(56, 189, 248, 0.12)',
+            color: '#38bdf8',
+            border: '1px solid rgba(56, 189, 248, 0.3)'
+          }}>
+            ATENCIÓN EN VIVO
+          </span>
+        </div>
       </div>
 
       {/* Main Scrollable Body */}
@@ -444,6 +471,61 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               })}
             </div>
           )}
+
+          {/* Card VIP de Feedback Beta */}
+          <div style={{
+            background: 'rgba(229, 181, 79, 0.05)',
+            border: '1px solid rgba(229, 181, 79, 0.2)',
+            borderRadius: '16px',
+            padding: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            marginTop: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                background: 'rgba(229, 181, 79, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <MessageSquare size={18} color="#e5b54f" />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: 800, color: '#fff' }}>
+                  Feedback de la Beta VIP
+                </h4>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>
+                  Envía tus sugerencias o reporta errores al equipo técnico
+                </p>
+              </div>
+            </div>
+            <button
+              id="concierge-feedback-card-btn"
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-beta-feedback'))}
+              style={{
+                background: 'rgba(229, 181, 79, 0.15)',
+                border: '1px solid rgba(229, 181, 79, 0.35)',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                color: '#e5b54f',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+            >
+              Comentar
+            </button>
+          </div>
         </div>
       </div>
     </div>

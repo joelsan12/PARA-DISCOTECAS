@@ -1,7 +1,7 @@
 import type { ClientUser, Reservation } from '../../../types';
 import { formatEcuadorPhone } from '../../../lib/formatEcuador';
 import { esVipTier } from '../../../lib/esLabels';
-import { CheckCircle2, ArrowRight, LogOut, QrCode, Crown } from 'lucide-react';
+import { CheckCircle2, ArrowRight, LogOut, QrCode, Crown, MessageSquare } from 'lucide-react';
 import { NightflowLogoMark } from '../../common/NightflowLogo';
 
 interface Props {
@@ -118,6 +118,33 @@ export const VipProfileCard = ({
       >
         <span>Ver Plano de Mesas y Reservar</span>
         <ArrowRight size={16} />
+      </button>
+
+      {/* Beta Feedback button */}
+      <button
+        id="vip-profile-feedback-btn"
+        type="button"
+        onClick={() => window.dispatchEvent(new CustomEvent('open-beta-feedback'))}
+        style={{
+          width: '100%',
+          padding: '10px',
+          borderRadius: '10px',
+          background: 'rgba(229, 181, 79, 0.08)',
+          border: '1px solid rgba(229, 181, 79, 0.28)',
+          color: '#e5b54f',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          cursor: 'pointer',
+          marginBottom: '8px',
+          transition: 'all 0.15s ease',
+        }}
+      >
+        <MessageSquare size={14} />
+        <span>Feedback de la Beta VIP</span>
       </button>
 
       {/* Logout button */}

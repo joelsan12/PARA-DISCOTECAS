@@ -3,7 +3,7 @@ import { useClubStore } from '../../store/clubStore';
 import { VipProfileCard } from './identity/VipProfileCard';
 import { BlackCardVipPass } from './identity/BlackCardVipPass';
 import { signOutBusinessCustomer } from '../../lib/businessAuth';
-import { ArrowLeft, Crown, ShieldCheck, MapPin, Sparkles, LogOut, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Crown, ShieldCheck, MapPin, Sparkles, LogOut, CheckCircle2, MessageSquare } from 'lucide-react';
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import { esVipTier } from '../../lib/esLabels';
 import type { ClubEvent } from '../../types';
@@ -247,6 +247,32 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               {esVipTier(clientUser.tier)}
             </span>
           </div>
+
+          {/* Feedback Beta VIP discreto en header */}
+          <button
+            id="identity-header-beta-btn"
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-beta-feedback'))}
+            title="Feedback de la Beta VIP"
+            aria-label="Feedback de la Beta VIP"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 9px',
+              borderRadius: '9999px',
+              background: 'rgba(229, 181, 79, 0.08)',
+              border: '1px solid rgba(229, 181, 79, 0.28)',
+              cursor: 'pointer',
+              color: '#e5b54f',
+              fontSize: '0.64rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <MessageSquare size={12} />
+            <span>Beta</span>
+          </button>
 
           <button
             type="button"

@@ -45,6 +45,13 @@ export function BetaFeedbackWidget() {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
+  // Escuchar evento personalizado para abrir el modal desde cualquier lugar (ej: navbar, concierge, perfil)
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-beta-feedback', handleOpen);
+    return () => window.removeEventListener('open-beta-feedback', handleOpen);
+  }, []);
+
   // Auto-cierre a los 2 segundos tras envío exitoso
   useEffect(() => {
     if (status === 'success') {
@@ -96,6 +103,17 @@ export function BetaFeedbackWidget() {
     location.pathname.startsWith('/pantallas') ||
     location.pathname.startsWith('/faq');
 
+  // En rutas operativas con barra inferior fija (ej. VIP dock en /app o /portal),
+  // el botón flotante inferior se oculta para no tapar la navegación de sala (Pase VIP / Plano / Concierge).
+  const isOperationalRoute =
+    location.pathname.endsWith('/app') ||
+    location.pathname.includes('/app') ||
+    location.pathname.startsWith('/portal') ||
+    location.pathname.startsWith('/puerta') ||
+    location.pathname.startsWith('/mesero') ||
+    location.pathname.startsWith('/barra') ||
+    location.pathname.startsWith('/seguridad');
+
   const portal: 'client' | 'saas' = isSaas ? 'saas' : 'client';
 
   const categoryLabel = CATEGORY_CONFIG[category].label;
@@ -142,188 +160,190 @@ export function BetaFeedbackWidget() {
         />
       )}
 
-      <aside className="beta-feedback-container" aria-label="Widget de feedback para la beta">
-        {/* Panel Desplegable */}
-        {isOpen && (
-          <div
-            ref={panelRef}
-            className="beta-feedback-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="beta-feedback-heading"
-          >
-            <div className="beta-feedback-header">
-              <div>
-                <span className="beta-feedback-badge">BETA VIP</span>
-                <h3 id="beta-feedback-heading" className="beta-feedback-title">Tu Experiencia VIP</h3>
-                <p className="beta-feedback-subtitle">
-                  Ayúdanos a perfeccionar Nightflow. Tu opinión va directa al equipo técnico.
-                </p>
+      {(!isOperationalRoute || isOpen) && (
+        <aside className="beta-feedback-container" aria-label="Widget de feedback para la beta">
+          {/* Panel Desplegable */}
+          {isOpen && (
+            <div
+              ref={panelRef}
+              className="beta-feedback-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="beta-feedback-heading"
+            >
+              <div className="beta-feedback-header">
+                <div>
+                  <span className="beta-feedback-badge">BETA VIP</span>
+                  <h3 id="beta-feedback-heading" className="beta-feedback-title">Tu Experiencia VIP</h3>
+                  <p className="beta-feedback-subtitle">
+                    Ayúdanos a perfeccionar Nightflow. Tu opinión va directa al equipo técnico.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="beta-feedback-close"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Cerrar panel de feedback"
+                >
+                  <X size={18} />
+                </button>
               </div>
-              <button
-                type="button"
-                className="beta-feedback-close"
-                onClick={() => setIsOpen(false)}
-                aria-label="Cerrar panel de feedback"
-              >
-                <X size={18} />
-              </button>
-            </div>
 
-            {status === 'success' ? (
-              <div className="beta-feedback-success">
-                <CheckCircle2 size={44} color="#34d399" style={{ margin: '0 auto 10px' }} />
-                <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 6px', fontWeight: 800 }}>
-                  ¡Feedback Recibido!
-                </h4>
-                <p style={{ color: 'var(--text-muted, #a1a1aa)', fontSize: '0.82rem', margin: 0 }}>
-                  Gracias por ayudarnos a elevar la experiencia nocturna. Cerrando ventana...
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                {status === 'error' && (
-                  <div className="beta-feedback-error-banner" role="alert">
-                    <AlertCircle size={16} style={{ flexShrink: 0 }} />
-                    <div>
-                      <span>{errorMessage || 'Ocurrió un error al enviar el feedback.'}</span>
+              {status === 'success' ? (
+                <div className="beta-feedback-success">
+                  <CheckCircle2 size={44} color="#34d399" style={{ margin: '0 auto 10px' }} />
+                  <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 6px', fontWeight: 800 }}>
+                    ¡Feedback Recibido!
+                  </h4>
+                  <p style={{ color: 'var(--text-muted, #a1a1aa)', fontSize: '0.82rem', margin: 0 }}>
+                    Gracias por ayudarnos a elevar la experiencia nocturna. Cerrando ventana...
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  {status === 'error' && (
+                    <div className="beta-feedback-error-banner" role="alert">
+                      <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                      <div>
+                        <span>{errorMessage || 'Ocurrió un error al enviar el feedback.'}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Puntuación con estrellas */}
+                  <div className="beta-feedback-section">
+                    <label className="beta-feedback-label">Calificación de la experiencia</label>
+                    <div className="beta-feedback-stars" role="radiogroup" aria-label="Calificación en estrellas">
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isActive = (hoverRating || rating) >= star;
+                        return (
+                          <button
+                            key={star}
+                            type="button"
+                            role="radio"
+                            aria-checked={rating === star}
+                            aria-label={`${star} estrella${star > 1 ? 's' : ''}`}
+                            className={`beta-feedback-star-btn ${isActive ? 'is-active' : ''}`}
+                            onClick={() => setRating(star)}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(0)}
+                          >
+                            <Star size={24} fill={isActive ? 'currentColor' : 'none'} strokeWidth={1.5} />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                )}
 
-                {/* Puntuación con estrellas */}
-                <div className="beta-feedback-section">
-                  <label className="beta-feedback-label">Calificación de la experiencia</label>
-                  <div className="beta-feedback-stars" role="radiogroup" aria-label="Calificación en estrellas">
-                    {[1, 2, 3, 4, 5].map((star) => {
-                      const isActive = (hoverRating || rating) >= star;
-                      return (
-                        <button
-                          key={star}
-                          type="button"
-                          role="radio"
-                          aria-checked={rating === star}
-                          aria-label={`${star} estrella${star > 1 ? 's' : ''}`}
-                          className={`beta-feedback-star-btn ${isActive ? 'is-active' : ''}`}
-                          onClick={() => setRating(star)}
-                          onMouseEnter={() => setHoverRating(star)}
-                          onMouseLeave={() => setHoverRating(0)}
-                        >
-                          <Star size={24} fill={isActive ? 'currentColor' : 'none'} strokeWidth={1.5} />
-                        </button>
-                      );
-                    })}
+                  {/* Categorías en Grid 2x2 con Iconos Lucide */}
+                  <div className="beta-feedback-section">
+                    <label className="beta-feedback-label">Tipo de comentario</label>
+                    <div className="beta-feedback-chips" role="radiogroup" aria-label="Categoría del feedback">
+                      {ALLOWED_FEEDBACK_CATEGORIES.map((catKey) => {
+                        const config = CATEGORY_CONFIG[catKey];
+                        const Icon = config.icon;
+                        const isSelected = category === catKey;
+                        return (
+                          <button
+                            key={catKey}
+                            type="button"
+                            role="radio"
+                            aria-checked={isSelected}
+                            className={`beta-feedback-chip ${isSelected ? 'is-active' : ''}`}
+                            onClick={() => setCategory(catKey)}
+                          >
+                            <Icon size={14} className="beta-feedback-chip-icon" />
+                            <span>{config.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
 
-                {/* Categorías en Grid 2x2 con Iconos Lucide */}
-                <div className="beta-feedback-section">
-                  <label className="beta-feedback-label">Tipo de comentario</label>
-                  <div className="beta-feedback-chips" role="radiogroup" aria-label="Categoría del feedback">
-                    {ALLOWED_FEEDBACK_CATEGORIES.map((catKey) => {
-                      const config = CATEGORY_CONFIG[catKey];
-                      const Icon = config.icon;
-                      const isSelected = category === catKey;
-                      return (
-                        <button
-                          key={catKey}
-                          type="button"
-                          role="radio"
-                          aria-checked={isSelected}
-                          className={`beta-feedback-chip ${isSelected ? 'is-active' : ''}`}
-                          onClick={() => setCategory(catKey)}
-                        >
-                          <Icon size={14} className="beta-feedback-chip-icon" />
-                          <span>{config.label}</span>
-                        </button>
-                      );
-                    })}
+                  {/* Mensaje */}
+                  <div className="beta-feedback-section">
+                    <label htmlFor="beta-feedback-message" className="beta-feedback-label">Detalles o sugerencia</label>
+                    <textarea
+                      id="beta-feedback-message"
+                      required
+                      rows={3}
+                      maxLength={1000}
+                      placeholder="¿Qué podemos mejorar? ¿Encontraste algún problema visual o de reserva?"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="beta-feedback-textarea"
+                      disabled={status === 'sending'}
+                    />
+                    <span className="beta-feedback-char-count">{message.length}/1000</span>
                   </div>
-                </div>
 
-                {/* Mensaje */}
-                <div className="beta-feedback-section">
-                  <label htmlFor="beta-feedback-message" className="beta-feedback-label">Detalles o sugerencia</label>
-                  <textarea
-                    id="beta-feedback-message"
-                    required
-                    rows={3}
-                    maxLength={1000}
-                    placeholder="¿Qué podemos mejorar? ¿Encontraste algún problema visual o de reserva?"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="beta-feedback-textarea"
-                    disabled={status === 'sending'}
-                  />
-                  <span className="beta-feedback-char-count">{message.length}/1000</span>
-                </div>
+                  {/* Contacto opcional */}
+                  <div className="beta-feedback-section">
+                    <label htmlFor="beta-feedback-contact" className="beta-feedback-label">Contacto (opcional)</label>
+                    <input
+                      id="beta-feedback-contact"
+                      type="text"
+                      maxLength={60}
+                      placeholder="Email o WhatsApp si deseas respuesta"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      className="beta-feedback-input"
+                      disabled={status === 'sending'}
+                    />
+                  </div>
 
-                {/* Contacto opcional */}
-                <div className="beta-feedback-section">
-                  <label htmlFor="beta-feedback-contact" className="beta-feedback-label">Contacto (opcional)</label>
-                  <input
-                    id="beta-feedback-contact"
-                    type="text"
-                    maxLength={60}
-                    placeholder="Email o WhatsApp si deseas respuesta"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    className="beta-feedback-input"
-                    disabled={status === 'sending'}
-                  />
-                </div>
+                  {/* Botones de acción */}
+                  <div className="beta-feedback-actions">
+                    <button
+                      type="submit"
+                      className="beta-feedback-btn-primary"
+                      disabled={status === 'sending' || !message.trim()}
+                    >
+                      {status === 'sending' ? (
+                        <>
+                          <RotateCw size={15} className="spin" />
+                          <span>Enviando feedback...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send size={15} />
+                          <span>Enviar a Soporte Beta</span>
+                        </>
+                      )}
+                    </button>
 
-                {/* Botones de acción */}
-                <div className="beta-feedback-actions">
-                  <button
-                    type="submit"
-                    className="beta-feedback-btn-primary"
-                    disabled={status === 'sending' || !message.trim()}
-                  >
-                    {status === 'sending' ? (
-                      <>
-                        <RotateCw size={15} className="spin" />
-                        <span>Enviando feedback...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={15} />
-                        <span>Enviar a Soporte Beta</span>
-                      </>
-                    )}
-                  </button>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="beta-feedback-btn-whatsapp"
+                    >
+                      <MessageCircle size={15} />
+                      <span>Soporte Directo por WhatsApp</span>
+                    </a>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
 
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="beta-feedback-btn-whatsapp"
-                  >
-                    <MessageCircle size={15} />
-                    <span>Soporte Directo por WhatsApp</span>
-                  </a>
-                </div>
-              </form>
-            )}
-          </div>
-        )}
-
-        {/* Botón Flotante (se oculta al abrir el modal para que no se solape por debajo) */}
-        {!isOpen && (
-          <button
-            ref={triggerRef}
-            type="button"
-            className="beta-feedback-trigger"
-            onClick={() => setIsOpen(true)}
-            aria-expanded={false}
-            aria-label="Abrir panel de feedback de la beta"
-          >
-            <MessageSquareText size={17} />
-            <span>Feedback Beta</span>
-            <span className="beta-feedback-trigger__badge">VIP</span>
-          </button>
-        )}
-      </aside>
+          {/* Botón Flotante (se oculta al abrir el modal y en rutas operativas con dock inferior) */}
+          {!isOpen && !isOperationalRoute && (
+            <button
+              ref={triggerRef}
+              type="button"
+              className="beta-feedback-trigger"
+              onClick={() => setIsOpen(true)}
+              aria-expanded={false}
+              aria-label="Abrir panel de feedback de la beta"
+            >
+              <MessageSquareText size={17} />
+              <span>Feedback Beta</span>
+              <span className="beta-feedback-trigger__badge">VIP</span>
+            </button>
+          )}
+        </aside>
+      )}
     </>
   );
 }

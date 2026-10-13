@@ -1,4 +1,4 @@
-import { LogOut, User, Bell } from 'lucide-react';
+import { LogOut, User, Bell, MessageSquare } from 'lucide-react';
 import type { Club, ClubEvent, ClientUser } from '../../../types';
 
 const formatEventDate = (date: string) => {
@@ -249,6 +249,32 @@ export const ClientHeader = ({
                 <span>Acceso VIP</span>
               </>
             )}
+          </button>
+
+          {/* Feedback Beta VIP discreto en header */}
+          <button
+            id="header-beta-feedback-btn"
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-beta-feedback'))}
+            title="Feedback de la Beta VIP"
+            aria-label="Feedback de la Beta VIP"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 9px',
+              borderRadius: '9999px',
+              background: 'rgba(229, 181, 79, 0.08)',
+              border: '1px solid rgba(229, 181, 79, 0.28)',
+              cursor: 'pointer',
+              color: '#e5b54f',
+              fontSize: '0.64rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <MessageSquare size={12} />
+            <span>Beta</span>
           </button>
 
           {onSignOut && (

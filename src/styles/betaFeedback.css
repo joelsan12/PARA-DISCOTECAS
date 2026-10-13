@@ -29,6 +29,7 @@
   right: 24px;
   z-index: 999;
   font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  pointer-events: none;
 }
 
 /* Floating Trigger Button */
@@ -399,11 +400,17 @@
   gap: 8px;
 }
 
+.beta-feedback-trigger,
+.beta-feedback-panel {
+  pointer-events: auto;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 640px) {
   .beta-feedback-container {
-    bottom: 84px;
+    bottom: 20px;
     right: 16px;
+    pointer-events: none;
   }
 
   .beta-feedback-panel {
