@@ -805,57 +805,14 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </div>
       )}
 
-      {/* Visor de cámara QR en vivo */}
-      <QrCameraScanner enabled={cameraEnabled && !busy && !emergency.blocked} onDetect={(text) => void handleScan(text)} />
-
-      {/* Recuadro de espera: solo visible si la cámara está apagada o la terminal está bloqueada */}
-      {(!cameraEnabled || emergency.blocked) && (
-        <div style={{
-          position: 'relative',
-          height: emergency.blocked ? '180px' : '150px',
-          background: 'radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.08) 0%, #08080c 100%)',
-          borderRadius: 'var(--radius-sm)',
-          border: `1.5px solid ${emergency.blocked ? 'rgba(244, 63, 94, 0.45)' : 'rgba(229, 181, 79, 0.25)'}`,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '14px',
-          overflow: 'hidden'
-        }}>
-          <div className="laser-line" />
-          <ScanLine size={38} color={emergency.blocked ? 'rgba(244, 63, 94, 0.7)' : 'rgba(229, 181, 79, 0.5)'} style={{ marginBottom: '8px' }} />
-          <div style={{ fontSize: '0.82rem', fontWeight: 800, color: emergency.blocked ? '#fda4af' : 'var(--accent)', letterSpacing: '0.04em' }}>
-            {emergency.blocked ? 'TERMINAL SUSPENDIDA (SOS ACTIVO)' : 'CÁMARA EN ESPERA'}
-          </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0 16px', marginTop: '4px' }}>
-            {emergency.blocked
-              ? 'La terminal se bloqueó por seguridad. Para reactivar el escaneo presiona «Reactivar terminal».'
-              : 'Activa la cámara o introduce el código JWS manualmente abajo'}
-          </div>
-          {emergency.blocked && (
-            <button
-              type="button"
-              onClick={handleClearEmergency}
-              className="btn-primary"
-              style={{
-                marginTop: '12px',
-                padding: '8px 18px',
-                fontSize: '0.8rem',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                borderColor: '#34d399',
-                color: '#ffffff',
-                fontWeight: 800,
-                boxShadow: '0 0 16px rgba(16, 185, 129, 0.35)',
-                cursor: 'pointer'
-              }}
-            >
-              Reactivar terminal
-            </button>
-          )}
-        </div>
-      )}
+      {/* Visor de cámara QR en vivo unificado e interactivo */}
+      <QrCameraScanner
+        enabled={cameraEnabled && !busy && !emergency.blocked}
+        onDetect={(text) => void handleScan(text)}
+        onToggleEnabled={() => setCameraEnabled(value => !value)}
+        isEmergencyBlocked={emergency.blocked}
+        onClearEmergency={handleClearEmergency}
+      />
 
       {/* Botones táctiles primarios de cámara y pánico */}
       <div className="door-touch-actions">

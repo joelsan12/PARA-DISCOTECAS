@@ -1,3 +1,5 @@
+import jsQR from 'jsqr';
+
 export type QrScannerStatus = 'idle' | 'starting' | 'scanning' | 'unsupported' | 'denied' | 'error';
 
 export interface QrScannerHandlers {
@@ -19,7 +21,7 @@ const getBarcodeDetectorCtor = (): BarcodeDetectorCtor | null => {
 
 export const isQrCameraSupported = (): boolean => {
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) return false;
-  return getBarcodeDetectorCtor() !== null;
+  return true;
 };
 
 export class DoorQrCameraScanner {
@@ -40,9 +42,8 @@ export class DoorQrCameraScanner {
   async start(video: HTMLVideoElement): Promise<void> {
     if (this.running) return;
     this.handlers.onStatus?.('starting');
-    const Ctor = getBarcodeDetectorCtor();
-    if (!Ctor || !navigator.mediaDevices?.getUserMedia) {
-      this.handlers.onStatus?.('unsupported', 'Este navegador no soporta escaneo QR con cámara (BarcodeDetector).');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.handlers.onStatus?.('unsupported', 'Este navegador no soporta captura de cámara (getUserMedia).');
       return;
     }
     try {
@@ -55,7 +56,7 @@ export class DoorQrCameraScanner {
         audio: false
       });
     } catch {
-      this.handlers.onStatus?.('denied', 'Permiso de cámara denegado. Usa el pegado manual del pase.');
+      this.handlers.onStatus?.('denied', 'Permiso de cámara denegado. Permite el acceso o usa el pegado manual del pase.');
       return;
     }
     this.video = video;
@@ -69,7 +70,14 @@ export class DoorQrCameraScanner {
       await this.stop();
       return;
     }
-    this.detector = new Ctor({ formats: ['qr_code'] });
+    const Ctor = getBarcodeDetectorCtor();
+    if (Ctor) {
+      try {
+        this.detector = new Ctor({ formats: ['qr_code'] });
+      } catch {
+        this.detector = null;
+      }
+    }
     this.canvas = document.createElement('canvas');
     this.running = true;
     this.handlers.onStatus?.('scanning');
@@ -95,8 +103,31 @@ export class DoorQrCameraScanner {
     this.handlers.onStatus?.('idle');
   }
 
+  private handleCode = (raw: string): void => {
+    if (!raw) return;
+    const now = Date.now();
+    if (raw === this.lastValue && now - this.lastDetectAt < 1500) return;
+    this.lastValue = raw;
+    this.lastDetectAt = now;
+    this.handlers.onDetect(raw);
+  };
+
+  private fallbackJsQr = (ctx: CanvasRenderingContext2D, width: number, height: number): void => {
+    try {
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
+      });
+      if (code && code.data) {
+        this.handleCode(code.data);
+      }
+    } catch {
+      // ignore frame error
+    }
+  };
+
   private tick = (): void => {
-    if (!this.running || !this.video || !this.detector || !this.canvas) return;
+    if (!this.running || !this.video || !this.canvas) return;
     const video = this.video;
     if (video.readyState >= 2 && video.videoWidth > 0) {
       const width = video.videoWidth;
@@ -106,17 +137,22 @@ export class DoorQrCameraScanner {
       const ctx = this.canvas.getContext('2d', { willReadFrequently: true });
       if (ctx) {
         ctx.drawImage(video, 0, 0, width, height);
-        void this.detector.detect(this.canvas)
-          .then((codes) => {
-            const raw = codes[0]?.rawValue;
-            if (!raw) return;
-            const now = Date.now();
-            if (raw === this.lastValue && now - this.lastDetectAt < 1500) return;
-            this.lastValue = raw;
-            this.lastDetectAt = now;
-            this.handlers.onDetect(raw);
-          })
-          .catch(() => undefined);
+        if (this.detector) {
+          void this.detector.detect(this.canvas)
+            .then((codes) => {
+              const raw = codes[0]?.rawValue;
+              if (raw) {
+                this.handleCode(raw);
+              } else {
+                this.fallbackJsQr(ctx, width, height);
+              }
+            })
+            .catch(() => {
+              this.fallbackJsQr(ctx, width, height);
+            });
+        } else {
+          this.fallbackJsQr(ctx, width, height);
+        }
       }
     }
     this.rafId = requestAnimationFrame(this.tick);
