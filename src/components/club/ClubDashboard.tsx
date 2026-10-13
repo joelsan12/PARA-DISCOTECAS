@@ -24,9 +24,10 @@ import type { ClubTable, EventTablePricing, Reservation, TableReservationStatus,
 
 interface ClubDashboardProps {
   session?: AdminStaffSession;
+  activeTab?: DashboardTabKey;
 }
 
-export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
+export const ClubDashboard = ({ session, activeTab: propActiveTab }: ClubDashboardProps = {}) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
   const activePlan = store.plans.find(p => p.id === activeClub?.plan_id)
@@ -34,7 +35,7 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
   const clubEvents = store.events.filter(e => e.club_id === activeClub?.id);
   const activeEvent = clubEvents.find(e => e.id === store.activeEventId) || clubEvents[0];
 
-  const activeTab = (store.dashboardTab as DashboardTabKey) || 'MONITOR';
+  const activeTab = (propActiveTab || (store.dashboardTab as DashboardTabKey)) || 'MONITOR';
   const [isCustomPlanModalOpen, setIsCustomPlanModalOpen] = useState(false);
 
   // Suscripción reactiva multiusuario a operaciones (resources + reservations + door sessions)
@@ -237,8 +238,8 @@ export const ClubDashboard = ({ session }: ClubDashboardProps = {}) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Bar & 4 Executive KPI Cards (oculto en diseñador de plano, catálogo de consumo, personal y meseros, finanzas, pasarelas, gobernanza y suscripción) */}
-      {!['LAYOUT_BUILDER', 'CONSUMPTION', 'STAFF', 'PAYMENTS', 'TRANSACTIONS', 'SUBSCRIPTION', 'LEGAL', 'AUDIT'].includes((activeTab || '').toUpperCase() as DashboardTabKey) && (
+      {/* Top Bar & 4 Executive KPI Cards: Exclusivo de Sala & Concierge en Vivo (oculto en Personal & Meseros y demás módulos operativos) */}
+      {(activeTab === 'MONITOR' || activeTab === 'FLOOR_OPS') && (
         <ClubMetricsHeader
           activeClub={activeClub}
           clubEvents={clubEvents}
