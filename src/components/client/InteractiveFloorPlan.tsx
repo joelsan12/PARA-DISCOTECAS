@@ -47,10 +47,12 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
     return pricing?.status || 'AVAILABLE';
   };
 
-  const viewBoxWidth = effectiveLayoutType === 'horseshoe_vip' ? 800 : effectiveLayoutType === 'u_amphitheater' ? 600 : effectiveLayoutType === 'downtown_suites' ? 600 : 800;
-  const viewBoxHeight = effectiveLayoutType === 'horseshoe_vip' ? 800 : effectiveLayoutType === 'u_amphitheater' ? 780 : effectiveLayoutType === 'downtown_suites' ? 960 : 650;
   const isAmphi = effectiveLayoutType === 'u_amphitheater';
-  const radius = isAmphi ? 14 : 24;
+  const viewBoxX = isAmphi ? 45 : 0;
+  const viewBoxY = isAmphi ? 0 : 0;
+  const viewBoxWidth = effectiveLayoutType === 'horseshoe_vip' ? 800 : isAmphi ? 510 : effectiveLayoutType === 'downtown_suites' ? 600 : 800;
+  const viewBoxHeight = effectiveLayoutType === 'horseshoe_vip' ? 800 : isAmphi ? 545 : effectiveLayoutType === 'downtown_suites' ? 960 : 650;
+  const radius = isAmphi ? 25 : 24;
 
   const hoveredTable = venueTables.find(t => t.id === hoveredTableId);
 
@@ -76,14 +78,14 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
     <div style={{
       position: 'relative',
       width: '100%',
-      aspectRatio: effectiveLayoutType === 'downtown_suites' ? '0.62/1' : effectiveLayoutType === 'u_amphitheater' ? '0.77/1' : '1/1',
-      maxHeight: '640px',
+      aspectRatio: effectiveLayoutType === 'downtown_suites' ? '0.62/1' : isAmphi ? '0.94/1' : '1/1',
+      maxHeight: 'calc(100vh - 170px)',
       margin: '0 auto',
-      background: effectiveLayoutType === 'u_amphitheater' ? '#171c26' : '#080c14',
-      borderRadius: effectiveLayoutType === 'u_amphitheater' ? '28px' : '16px',
-      border: '1.5px solid rgba(229, 181, 79, 0.25)',
+      background: isAmphi ? '#121622' : '#080c14',
+      borderRadius: isAmphi ? '24px' : '16px',
+      border: '1.5px solid rgba(229, 181, 79, 0.28)',
       overflow: 'hidden',
-      boxShadow: 'inset 0 0 60px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0,0,0,0.5)',
+      boxShadow: 'inset 0 0 50px rgba(0, 0, 0, 0.9), 0 12px 36px rgba(0,0,0,0.55)',
       userSelect: 'none'
     }}>
       {/* Blueprint Grid Texture */}
@@ -174,7 +176,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
       })()}
 
       <svg
-        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+        viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
         style={{
           width: '100%',
           height: '100%',
@@ -203,14 +205,14 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
         </defs>
 
         {/* CAD Grid Layer */}
-        <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#interactive-grid)" pointerEvents="none" />
+        <rect x={viewBoxX} y={viewBoxY} width={viewBoxWidth} height={viewBoxHeight} fill="url(#interactive-grid)" pointerEvents="none" />
 
         {/* CAD Alignment Markers */}
-        <g stroke="rgba(229, 181, 79, 0.3)" strokeWidth="1.5" fill="none" pointerEvents="none">
-          <path d="M 16 32 L 16 16 L 32 16" />
-          <path d={`M ${viewBoxWidth - 32} 16 L ${viewBoxWidth - 16} 16 L ${viewBoxWidth - 16} 32`} />
-          <path d={`M 16 ${viewBoxHeight - 32} L 16 ${viewBoxHeight - 16} L 32 ${viewBoxHeight - 16}`} />
-          <path d={`M ${viewBoxWidth - 32} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 16} L ${viewBoxWidth - 16} ${viewBoxHeight - 32}`} />
+        <g stroke="rgba(229, 181, 79, 0.35)" strokeWidth="1.5" fill="none" pointerEvents="none">
+          <path d={`M ${viewBoxX + 16} ${viewBoxY + 32} L ${viewBoxX + 16} ${viewBoxY + 16} L ${viewBoxX + 32} ${viewBoxY + 16}`} />
+          <path d={`M ${viewBoxX + viewBoxWidth - 32} ${viewBoxY + 16} L ${viewBoxX + viewBoxWidth - 16} ${viewBoxY + 16} L ${viewBoxX + viewBoxWidth - 16} ${viewBoxY + 32}`} />
+          <path d={`M ${viewBoxX + 16} ${viewBoxY + viewBoxHeight - 32} L ${viewBoxX + 16} ${viewBoxY + viewBoxHeight - 16} L ${viewBoxX + 32} ${viewBoxY + viewBoxHeight - 16}`} />
+          <path d={`M ${viewBoxX + viewBoxWidth - 32} ${viewBoxY + viewBoxHeight - 16} L ${viewBoxX + viewBoxWidth - 16} ${viewBoxY + viewBoxHeight - 16} L ${viewBoxX + viewBoxWidth - 16} ${viewBoxY + viewBoxHeight - 32}`} />
         </g>
 
         {/* Architectural Backdrop del Negocio */}
@@ -238,8 +240,10 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
             ? (override.clickable !== undefined ? override.clickable : true)
             : (isAvailable || isSelected || isMyTable);
 
-          const cx = (table.x / 100) * viewBoxWidth;
-          const cy = (table.y / 100) * viewBoxHeight;
+          const baseWidth = isAmphi ? 600 : viewBoxWidth;
+          const baseHeight = isAmphi ? 660 : viewBoxHeight;
+          const cx = (table.x / 100) * baseWidth;
+          const cy = (table.y / 100) * baseHeight;
           const rot = table.rotation || 0;
           const capacity = Math.max(1, table.capacity || 4);
 
@@ -298,7 +302,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 {/* Asientos VIP perimetrales */}
                 {table.shape === 'circle' && (() => {
                   const seatCount = Math.min(12, capacity);
-                  const seatOrbit = radius + (isAmphi ? 6 : 9);
+                  const seatOrbit = radius + (isAmphi ? 7.5 : 9);
                   const seats = [];
                   for (let i = 0; i < seatCount; i++) {
                     const angle = (i * 2 * Math.PI) / seatCount - Math.PI / 2;
@@ -309,7 +313,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                         key={i}
                         cx={sx}
                         cy={sy}
-                        r={isAmphi ? 2.2 : 3.2}
+                        r={isAmphi ? 3.0 : 3.2}
                         fill={isSelected ? 'var(--brand-gold)' : isInside ? '#34d399' : 'rgba(255, 255, 255, 0.4)'}
                         stroke="#080c14"
                         strokeWidth="0.8"
@@ -324,11 +328,11 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 {isSelected && (
                   table.shape === 'pill' ? (
                     <rect
-                      x={isAmphi ? cx - 18 : cx - 44}
-                      y={isAmphi ? cy - 27 : cy - 28}
-                      width={isAmphi ? 36 : 88}
-                      height={isAmphi ? 54 : 56}
-                      rx={isAmphi ? 18 : 22}
+                      x={isAmphi ? cx - 24 : cx - 44}
+                      y={isAmphi ? cy - 34 : cy - 28}
+                      width={isAmphi ? 48 : 88}
+                      height={isAmphi ? 68 : 56}
+                      rx={isAmphi ? 24 : 22}
                       fill="none"
                       stroke="var(--brand-gold)"
                       strokeWidth="2.5"
@@ -337,7 +341,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                     <circle
                       cx={cx}
                       cy={cy}
-                      r={radius + (isAmphi ? 6 : 10)}
+                      r={radius + (isAmphi ? 8 : 10)}
                       fill="none"
                       stroke="var(--brand-gold)"
                       strokeWidth="2.5"
@@ -349,21 +353,21 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 {table.shape === 'pill' ? (
                   <g>
                     <rect
-                      x={isAmphi ? cx - 13 : cx - 36}
-                      y={isAmphi ? cy - 22 : cy - 20}
-                      width={isAmphi ? 26 : 72}
-                      height={isAmphi ? 44 : 40}
-                      rx={isAmphi ? 13 : 16}
+                      x={isAmphi ? cx - 19 : cx - 36}
+                      y={isAmphi ? cy - 29 : cy - 20}
+                      width={isAmphi ? 38 : 72}
+                      height={isAmphi ? 58 : 40}
+                      rx={isAmphi ? 19 : 16}
                       fill={fillColor}
                       stroke={strokeColor}
                       strokeWidth={strokeWidth}
                     />
                     <rect
-                      x={isAmphi ? cx - 10 : cx - 32}
-                      y={isAmphi ? cy - 19 : cy - 17}
-                      width={isAmphi ? 20 : 64}
-                      height={isAmphi ? 8 : 8}
-                      rx={4}
+                      x={isAmphi ? cx - 14 : cx - 32}
+                      y={isAmphi ? cy - 25 : cy - 17}
+                      width={isAmphi ? 28 : 64}
+                      height={isAmphi ? 11 : 8}
+                      rx={5}
                       fill="rgba(255, 255, 255, 0.35)"
                       pointerEvents="none"
                     />
@@ -371,21 +375,21 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 ) : table.shape === 'square' || table.shape === 'rect' ? (
                   <g>
                     <rect
-                      x={cx - (isAmphi ? 15 : 22)}
-                      y={cy - (isAmphi ? 15 : 22)}
-                      width={isAmphi ? 30 : 44}
-                      height={isAmphi ? 30 : 44}
-                      rx="7"
+                      x={cx - (isAmphi ? 22 : 22)}
+                      y={cy - (isAmphi ? 22 : 22)}
+                      width={isAmphi ? 44 : 44}
+                      height={isAmphi ? 44 : 44}
+                      rx={isAmphi ? 9 : 7}
                       fill={fillColor}
                       stroke={strokeColor}
                       strokeWidth={strokeWidth}
                     />
                     <rect
-                      x={cx - (isAmphi ? 12 : 18)}
-                      y={cy - (isAmphi ? 12 : 18)}
-                      width={isAmphi ? 24 : 36}
-                      height="6"
-                      rx="3"
+                      x={cx - (isAmphi ? 18 : 18)}
+                      y={cy - (isAmphi ? 18 : 18)}
+                      width={isAmphi ? 36 : 36}
+                      height="9"
+                      rx="4"
                       fill="rgba(255, 255, 255, 0.35)"
                       pointerEvents="none"
                     />
@@ -402,7 +406,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                     />
                     <ellipse
                       cx={cx}
-                      cy={cy - (isAmphi ? 4.5 : 7.5)}
+                      cy={cy - (isAmphi ? 7 : 7.5)}
                       rx={radius * 0.65}
                       ry={radius * 0.3}
                       fill="rgba(255, 255, 255, 0.35)"
@@ -418,7 +422,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill={textColor}
-                  fontSize={isAmphi ? (displayText.length > 2 ? 8 : 9) : (displayText.length > 2 ? 11 : 13)}
+                  fontSize={displayText.length > 2 ? (isAmphi ? 11.5 : 10.5) : (isAmphi ? 13.5 : 12.5)}
                   fontWeight="900"
                   fontFamily="var(--font-brand), system-ui, sans-serif"
                   pointerEvents="none"
@@ -435,26 +439,26 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                       r={radius + (isAmphi ? 8 : 12)}
                       fill="none"
                       stroke="#e5b54f"
-                      strokeWidth="2"
+                      strokeWidth="2.5"
                       strokeDasharray="4 2.5"
                       opacity="0.95"
                     />
                     <rect
-                      x={cx - 24}
-                      y={cy - radius - (isAmphi ? 15 : 20)}
-                      width={48}
-                      height={12}
-                      rx={6}
+                      x={cx - 26}
+                      y={cy - radius - (isAmphi ? 17 : 20)}
+                      width={52}
+                      height={15}
+                      rx={7.5}
                       fill="#e5b54f"
                       stroke="#080c14"
-                      strokeWidth="1"
+                      strokeWidth="1.2"
                     />
                     <text
                       x={cx}
-                      y={cy - radius - (isAmphi ? 8 : 13)}
+                      y={cy - radius - (isAmphi ? 9.5 : 13)}
                       textAnchor="middle"
                       fill="#0d0d16"
-                      fontSize="6.8"
+                      fontSize={isAmphi ? "8" : "6.8"}
                       fontWeight="900"
                       fontFamily="var(--font-brand), system-ui, sans-serif"
                       letterSpacing="0.4"

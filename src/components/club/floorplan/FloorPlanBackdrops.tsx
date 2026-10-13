@@ -39,57 +39,68 @@ export const FloorPlanBackdrops: React.FC<{ layoutType: ClubLayoutType }> = ({ l
   if (layoutType === 'u_amphitheater') {
     return (
       <g>
+        {/* Gradas / Balcones exteriores del anfiteatro (arco exterior en U) */}
         <path
-          d="M 100,45 L 185,45 L 185,460 A 115,115 0 0,0 415,460 L 415,45 L 500,45 L 500,460 A 200,200 0 0,1 100,460 Z"
-          fill="#151b24"
+          d="M 80,35 L 165,35 L 165,340 A 135,95 0 0,0 435,340 L 435,35 L 520,35 L 520,340 A 220,185 0 0,1 80,340 Z"
+          fill="#131722"
+          stroke="rgba(229, 181, 79, 0.25)"
+          strokeWidth="1.5"
         />
-        <rect x="185" y="45" width="230" height="65" rx="14" fill="#252d3d" />
+
+        {/* Escenario Principal */}
+        <rect x="165" y="35" width="270" height="72" rx="14" fill="#222938" stroke="rgba(229, 181, 79, 0.45)" strokeWidth="1.5" />
+        <rect x="171" y="39" width="258" height="6" rx="3" fill="#e5b54f" opacity="0.8" />
         <text
           x="300"
-          y="85"
+          y="78"
           fill="#ffffff"
-          fontSize="19"
-          fontWeight="800"
+          fontSize="22"
+          fontWeight="900"
           textAnchor="middle"
-          letterSpacing="3"
-          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          letterSpacing="5"
+          style={{ fontFamily: 'var(--font-brand), system-ui, -apple-system, sans-serif' }}
         >
           ESCENARIO
         </text>
+
+        {/* Pista Central */}
         <g>
-          <rect x="185" y="115" width="230" height="215" fill="#1e2736" />
+          <rect x="165" y="110" width="270" height="200" fill="#18202d" />
           <text
             x="300"
-            y="230"
-            fill="#ffffff"
-            fontSize="22"
-            fontWeight="800"
+            y="215"
+            fill="rgba(255, 255, 255, 0.9)"
+            fontSize="26"
+            fontWeight="900"
             textAnchor="middle"
-            letterSpacing="4"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            letterSpacing="6"
+            style={{ fontFamily: 'var(--font-brand), system-ui, -apple-system, sans-serif' }}
           >
             PISTA
           </text>
-          <g stroke="#2b3648" strokeWidth="2">
-            <line x1="185" y1="336" x2="415" y2="336" />
-            <line x1="185" y1="342" x2="415" y2="342" />
-            <line x1="185" y1="348" x2="415" y2="348" />
-            <line x1="185" y1="354" x2="415" y2="354" />
-            <line x1="185" y1="360" x2="415" y2="360" />
+
+          {/* Gradas / Líneas de Nivel de Pista */}
+          <g stroke="#263143" strokeWidth="2.5">
+            <line x1="165" y1="315" x2="435" y2="315" />
+            <line x1="165" y1="323" x2="435" y2="323" />
+            <line x1="165" y1="331" x2="435" y2="331" />
+            <line x1="165" y1="339" x2="435" y2="339" />
           </g>
+
+          {/* Semicírculo de Pista Baja */}
           <path
-            d="M 185,368 L 415,368 L 415,460 A 115,115 0 0,1 185,460 Z"
-            fill="#1e2736"
+            d="M 165,340 L 435,340 A 135,95 0 0,1 165,340 Z"
+            fill="#18202d"
           />
           <text
             x="300"
-            y="485"
-            fill="#ffffff"
-            fontSize="22"
-            fontWeight="800"
+            y="385"
+            fill="rgba(255, 255, 255, 0.65)"
+            fontSize="20"
+            fontWeight="900"
             textAnchor="middle"
-            letterSpacing="4"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            letterSpacing="5"
+            style={{ fontFamily: 'var(--font-brand), system-ui, -apple-system, sans-serif' }}
           >
             PISTA
           </text>

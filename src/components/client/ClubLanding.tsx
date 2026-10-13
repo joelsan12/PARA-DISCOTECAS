@@ -138,7 +138,7 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '12px',
+        padding: '6px 8px',
         overflow: 'hidden',
         position: 'relative',
       }}>
