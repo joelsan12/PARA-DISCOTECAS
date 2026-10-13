@@ -35,35 +35,6 @@ export const DoorCheckIn = () => {
 
   return (
     <div className="door-terminal-root">
-      <div className="door-venue-banner">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#10b981',
-              boxShadow: '0 0 10px #10b981'
-            }} />
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399', letterSpacing: '0.08em' }}>
-              TERMINAL DE ACCESO · CONTROL DE PUERTA
-            </span>
-          </div>
-          <h2 className="font-brand door-venue-title">
-            {activeClub.name}
-          </h2>
-        </div>
-
-        <div className="door-count-pill">
-          <div className="door-count-number">
-            {checkedInList.length}
-          </div>
-          <div style={{ fontSize: '0.66rem', color: 'rgba(255, 255, 255, 0.55)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Ingresados hoy
-          </div>
-        </div>
-      </div>
-
       <DoorPwaApp
         demoReservations={pendingList.map(res => ({
           code: res.code,
