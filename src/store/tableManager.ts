@@ -21,14 +21,16 @@ export function addTableOperation(
       capacity: tableData?.capacity || 6,
       x: tableData?.x ?? 50,
       y: tableData?.y ?? 50,
-      shape: tableData?.shape || 'circle',
-      badge_number: tableData?.badge_number,
-      tier_color: tableData?.tier_color,
-      tier_name: tableData?.tier_name,
-      rotation: tableData?.rotation,
-      width: tableData?.width,
-      height: tableData?.height
+      shape: tableData?.shape || 'circle'
     };
+    if (tableData?.badge_number) table.badge_number = tableData.badge_number;
+    if (tableData?.tier_color) table.tier_color = tableData.tier_color;
+    if (tableData?.tier_name) table.tier_name = tableData.tier_name;
+    if (tableData?.rotation !== undefined) table.rotation = tableData.rotation;
+    if (tableData?.width !== undefined) table.width = tableData.width;
+    if (tableData?.height !== undefined) table.height = tableData.height;
+    if (tableData?.booking_mode) table.booking_mode = tableData.booking_mode;
+    if (tableData?.is_active !== undefined) table.is_active = tableData.is_active;
   } else {
     table = { ...clubIdOrData, id: newId };
   }
@@ -63,10 +65,20 @@ export function duplicateTableOperation(
     ...source,
     id: newId,
     table_code: `${source.table_code}-C`,
-    badge_number: source.badge_number ? `${source.badge_number}B` : undefined,
     x: Math.min(95, source.x + 3),
     y: Math.min(95, source.y + 3)
   };
+  if (source.badge_number) {
+    clonedTable.badge_number = `${source.badge_number}B`;
+  } else {
+    delete clonedTable.badge_number;
+  }
+  // Eliminar cualquier propiedad residual con valor undefined
+  for (const [k, v] of Object.entries(clonedTable)) {
+    if (v === undefined) {
+      delete (clonedTable as unknown as Record<string, unknown>)[k];
+    }
+  }
   tables.push(clonedTable);
 
   const clubEvents = events.filter(e => e.club_id === source.club_id);
@@ -116,12 +128,30 @@ export function batchUpdateTablePositionsHelper(tables: ClubTable[], updates: Ar
 
 export function updateTablePropertiesHelper(tables: ClubTable[], tableId: string, updates: Partial<ClubTable>) {
   const table = tables.find(t => t.id === tableId);
-  if (table) Object.assign(table, updates);
+  if (table) {
+    const tableRec = table as unknown as Record<string, unknown>;
+    for (const [k, v] of Object.entries(updates)) {
+      if (v !== undefined) {
+        tableRec[k] = v;
+      } else {
+        delete tableRec[k];
+      }
+    }
+  }
 }
 
 export function updateTablePricingHelper(eventPricing: EventTablePricing[], tableId: string, eventId: string, updates: Partial<EventTablePricing>) {
   const pricing = eventPricing.find(p => p.table_id === tableId && p.event_id === eventId);
-  if (pricing) Object.assign(pricing, updates);
+  if (pricing) {
+    const pricingRec = pricing as unknown as Record<string, unknown>;
+    for (const [k, v] of Object.entries(updates)) {
+      if (v !== undefined) {
+        pricingRec[k] = v;
+      } else {
+        delete pricingRec[k];
+      }
+    }
+  }
 }
 
 export function updateTableHelper(
@@ -133,10 +163,28 @@ export function updateTableHelper(
   pricingPartial?: Partial<EventTablePricing>
 ) {
   const table = tables.find(t => t.id === tableId);
-  if (table) Object.assign(table, partial);
+  if (table) {
+    const tableRec = table as unknown as Record<string, unknown>;
+    for (const [k, v] of Object.entries(partial)) {
+      if (v !== undefined) {
+        tableRec[k] = v;
+      } else {
+        delete tableRec[k];
+      }
+    }
+  }
   if (pricingPartial) {
     const pricing = eventPricing.find(p => p.table_id === tableId && p.event_id === activeEventId);
-    if (pricing) Object.assign(pricing, pricingPartial);
+    if (pricing) {
+      const pricingRec = pricing as unknown as Record<string, unknown>;
+      for (const [k, v] of Object.entries(pricingPartial)) {
+        if (v !== undefined) {
+          pricingRec[k] = v;
+        } else {
+          delete pricingRec[k];
+        }
+      }
+    }
   }
 }
 

@@ -43,6 +43,30 @@ export interface SaveClubLayoutResult {
   error?: string;
 }
 
+/**
+ * Elimina recursivamente cualquier clave con valor 'undefined'
+ * para evitar que Firestore rechace la operación con:
+ * "Function setDoc() called with invalid data. Unsupported field value: undefined"
+ */
+function removeUndefinedDeep<T>(value: T): T {
+  if (value === null || value === undefined) {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map(removeUndefinedDeep) as unknown as T;
+  }
+  if (typeof value === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+      if (val !== undefined) {
+        result[key] = removeUndefinedDeep(val);
+      }
+    }
+    return result as T;
+  }
+  return value;
+}
+
 export async function saveClubLayoutToFirebase(
   clubId: string,
   tables: ClubTable[],
@@ -54,12 +78,26 @@ export async function saveClubLayoutToFirebase(
 
   try {
     const layoutRef = doc(db, 'businesses', clubId, 'layout', 'main');
-    await setDoc(layoutRef, {
+
+    // Sanitización profunda: limpiar cualquier clave con valor undefined
+    const sanitizedTables = tables.map((t) => {
+      const clean: Record<string, unknown> = {};
+      for (const [key, val] of Object.entries(t)) {
+        if (val !== undefined) {
+          clean[key] = val;
+        }
+      }
+      return clean;
+    });
+
+    const payload = removeUndefinedDeep({
       businessId: clubId,
-      tables,
-      layout_type: layoutType,
+      tables: sanitizedTables,
+      layout_type: layoutType || 'custom_open',
       updated_at: new Date().toISOString()
-    }, { merge: true });
+    });
+
+    await setDoc(layoutRef, payload, { merge: true });
 
     // O.0.3: Sincronización one-way hacia inventario operativo (businesses/{id}/resources/{id})
     let inventorySynced = false;

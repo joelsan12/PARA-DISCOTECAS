@@ -177,7 +177,7 @@ class ClubStore {
   persistNow(): boolean {
     const club = this.clubs.find(c => c.id === this.activeClubId);
     const clubTables = this.tables.filter(t => t.club_id === this.activeClubId);
-    void firebaseBridge.syncClubLayout(this.activeClubId, clubTables, club?.layout_type);
+    void firebaseBridge.syncClubLayout(this.activeClubId, clubTables, club?.layout_type || 'custom_open');
     this.persistAndNotify();
     return true;
   }
@@ -186,7 +186,7 @@ class ClubStore {
     const club = this.clubs.find(c => c.id === this.activeClubId);
     const clubTables = this.tables.filter(t => t.club_id === this.activeClubId);
     this.persistAndNotify();
-    return await firebaseBridge.syncClubLayout(this.activeClubId, clubTables, club?.layout_type);
+    return await firebaseBridge.syncClubLayout(this.activeClubId, clubTables, club?.layout_type || 'custom_open');
   }
 
   resetToDefaults(clubId?: string) {
