@@ -57,6 +57,7 @@ import {
 import { EdgeGatewayClient, isEdgeGatewayConfigured, type EdgeConnectionState } from '../../lib/edgeGatewayClient';
 import { isQrCameraSupported } from '../../lib/doorQrScanner';
 import { QrCameraScanner } from './QrCameraScanner';
+import '../../styles/doorTerminal.css';
 
 const BUSINESS_STORAGE_KEY = 'nightflow.door.business.v1';
 
@@ -141,6 +142,21 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
   const [edgeBusinessId, setEdgeBusinessId] = useState<string | undefined>(() => lastBusinessId());
   const edgeClientRef = useRef<EdgeGatewayClient | null>(null);
   const panicConfirmRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!result) return;
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        if (result.tone === 'granted') {
+          navigator.vibrate([40, 50, 40]);
+        } else {
+          navigator.vibrate([160, 70, 160]);
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, [result]);
 
   const modeLabel = configured ? 'CLOUD RUN ACTIVO' : devMode ? 'DEMO LOCAL' : 'SERVICIO NO CONFIGURADO';
   const modeColor = configured ? '#34d399' : devMode ? '#fbbf24' : '#f43f5e';
@@ -682,19 +698,15 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
   const canManualReentry = Boolean(pending?.claims) && pending?.session.state === 'OUTSIDE_TEMPORARY';
 
   return (
-    <div className="glass-card" style={{
-      padding: '20px',
-      marginBottom: '20px',
-      position: 'relative',
-      overflow: 'hidden',
+    <div className="glass-card door-pwa-card" style={{
       border: `1px solid ${emergency.blocked ? 'rgba(244, 63, 94, 0.5)' : 'rgba(255, 255, 255, 0.12)'}`
     }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
-        <span className="badge" style={{ background: 'rgba(255,255,255,0.06)', color: modeColor, border: `1px solid ${modeColor}55` }}>
+      <div className="door-status-ribbon">
+        <span className="door-status-pill" style={{ background: 'rgba(255,255,255,0.06)', color: modeColor, border: `1px solid ${modeColor}55` }}>
           <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: modeColor, boxShadow: `0 0 8px ${modeColor}` }} />
           {modeLabel}
         </span>
-        <span className="badge" style={{
+        <span className="door-status-pill" style={{
           background: online ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)',
           color: online ? '#34d399' : '#fda4af',
           border: `1px solid ${online ? 'rgba(16,185,129,0.35)' : 'rgba(244,63,94,0.35)'}`
@@ -702,11 +714,11 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
           {online ? <Wifi size={12} /> : <WifiOff size={12} />}
           {online ? 'EN LÍNEA' : 'SIN RED'}
         </span>
-        <span className="badge" style={{ background: 'rgba(0, 240, 255, 0.08)', color: 'var(--accent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
+        <span className="door-status-pill" style={{ background: 'rgba(0, 240, 255, 0.08)', color: 'var(--accent)', border: '1px solid rgba(0, 240, 255, 0.3)' }}>
           <CloudOff size={12} />
-          COLA CIFRADA: {queueCount}
+          COLA: {queueCount}
         </span>
-        <span className="badge" style={{
+        <span className="door-status-pill" style={{
           background: emergency.blocked ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.1)',
           color: emergency.blocked ? '#fda4af' : '#34d399',
           border: `1px solid ${emergency.blocked ? 'rgba(244,63,94,0.4)' : 'rgba(16,185,129,0.3)'}`
@@ -714,26 +726,26 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
           {emergency.blocked ? <ShieldAlert size={12} /> : <ShieldCheck size={12} />}
           {emergency.label}
         </span>
-        <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-dim)', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <span className="door-status-pill" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-dim)', border: '1px solid rgba(255,255,255,0.1)' }}>
           <Smartphone size={12} />
-          {device ? `${device.deviceId.slice(0, 18)}…` : 'TERMINAL…'}
-          {configured && enrolled ? ' · ENROLADA' : ''}
+          {device ? `${device.deviceId.slice(0, 14)}…` : 'TERMINAL…'}
+          {configured && enrolled ? ' · OK' : ''}
         </span>
-        <span className="badge" style={{
+        <span className="door-status-pill" style={{
           background: edgeState === 'connected' ? 'rgba(16,185,129,0.12)' : edgeState === 'disabled' ? 'rgba(255,255,255,0.05)' : 'rgba(245,158,11,0.12)',
           color: edgeState === 'connected' ? '#34d399' : edgeState === 'disabled' ? 'var(--text-dim)' : '#fbbf24',
           border: `1px solid ${edgeState === 'connected' ? 'rgba(16,185,129,0.35)' : edgeState === 'disabled' ? 'rgba(255,255,255,0.1)' : 'rgba(245,158,11,0.35)'}`
         }}>
           EDGE {edgeState.toUpperCase()}
-          {edgeDetail ? ` · ${edgeDetail.slice(0, 28)}` : ''}
+          {edgeDetail ? ` · ${edgeDetail.slice(0, 18)}` : ''}
         </span>
         {typeof localVerifyMs === 'number' && (
-          <span className="badge" style={{
+          <span className="door-status-pill" style={{
             background: localVerifyMs < 50 ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
             color: localVerifyMs < 50 ? '#34d399' : '#fbbf24',
             border: `1px solid ${localVerifyMs < 50 ? 'rgba(16,185,129,0.35)' : 'rgba(245,158,11,0.35)'}`
           }}>
-            JWS LOCAL {localVerifyMs.toFixed(1)} ms
+            JWS {localVerifyMs.toFixed(1)} ms
           </span>
         )}
       </div>
@@ -757,110 +769,117 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </div>
       )}
 
+      {/* Visor de cámara QR en vivo */}
       <QrCameraScanner enabled={cameraEnabled && !busy && !emergency.blocked} onDetect={(text) => void handleScan(text)} />
 
-      <div style={{
-        position: 'relative',
-        height: '170px',
-        background: 'radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.08) 0%, #08080c 100%)',
-        borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '16px',
-        overflow: 'hidden'
-      }}>
-        <div className="laser-line" />
-        <div style={{ position: 'absolute', top: '10px', left: '10px', width: '16px', height: '16px', borderTop: '2px solid var(--accent)', borderLeft: '2px solid var(--accent)' }} />
-        <div style={{ position: 'absolute', top: '10px', right: '10px', width: '16px', height: '16px', borderTop: '2px solid var(--accent)', borderRight: '2px solid var(--accent)' }} />
-        <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '16px', height: '16px', borderBottom: '2px solid var(--accent)', borderLeft: '2px solid var(--accent)' }} />
-        <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '16px', height: '16px', borderBottom: '2px solid var(--accent)', borderRight: '2px solid var(--accent)' }} />
-        <ScanLine size={44} color="rgba(229, 181, 79, 0.5)" style={{ marginBottom: '8px' }} />
-        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.04em' }}>
-          VERIFICACIÓN LOCAL DE FIRMA JWS
+      {/* Recuadro de espera: solo visible si la cámara está apagada o la terminal está bloqueada */}
+      {(!cameraEnabled || emergency.blocked) && (
+        <div style={{
+          position: 'relative',
+          height: '150px',
+          background: 'radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.08) 0%, #08080c 100%)',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid rgba(229, 181, 79, 0.25)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '14px',
+          overflow: 'hidden'
+        }}>
+          <div className="laser-line" />
+          <ScanLine size={38} color="rgba(229, 181, 79, 0.5)" style={{ marginBottom: '8px' }} />
+          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.04em' }}>
+            {emergency.blocked ? 'TERMINAL SUSPENDIDA' : 'CÁMARA EN ESPERA'}
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0 16px', marginTop: '4px' }}>
+            {emergency.blocked ? 'Acceso temporalmente deshabilitado por seguridad' : 'Activa la cámara o introduce el código JWS manualmente abajo'}
+          </div>
         </div>
-        <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0 16px' }}>
-          Escanea con cámara o pega el pase rotativo · validación Ed25519 local &lt; 50 ms con claves precargadas
-        </div>
-      </div>
+      )}
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+      {/* Botones táctiles primarios de cámara y pánico */}
+      <div className="door-touch-actions">
         <button
           type="button"
-          className={cameraEnabled ? 'btn-primary' : 'btn-secondary'}
+          className={`door-btn-touch ${cameraEnabled ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setCameraEnabled(value => !value)}
           disabled={emergency.blocked}
-          style={{ padding: '8px 14px', fontSize: '0.78rem' }}
         >
-          <ScanLine size={14} />
-          {cameraEnabled ? 'Apagar cámara' : 'Activar cámara QR'}
+          <ScanLine size={16} />
+          <span>{cameraEnabled ? 'Pausar cámara' : 'Activar cámara'}</span>
         </button>
         <button
           type="button"
-          className={panicArmed ? 'btn-primary' : 'btn-secondary'}
+          className={`door-btn-touch ${panicArmed ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => void handlePanic()}
           disabled={busy}
           style={{
-            padding: '8px 14px',
-            fontSize: '0.78rem',
             borderColor: panicArmed ? '#f43f5e' : undefined,
             color: panicArmed ? '#fff' : undefined,
-            background: panicArmed ? 'rgba(244, 63, 94, 0.35)' : undefined
+            background: panicArmed ? 'rgba(244, 63, 94, 0.45)' : undefined
           }}
         >
-          <Siren size={14} />
-          {panicArmed ? 'Confirmar SOS' : 'Botón de pánico'}
+          <Siren size={16} />
+          <span>{panicArmed ? 'CONFIRMAR SOS' : 'Botón de pánico'}</span>
         </button>
       </div>
 
+      {/* Formulario de validación manual touch-friendly */}
       <form
         onSubmit={event => {
           event.preventDefault();
           void handleScan(scanInput);
         }}
-        style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}
+        className="door-manual-form"
       >
         <input
           type="text"
-          placeholder="CONTENIDO DEL PASE (JWS O PAYLOAD)"
+          placeholder="CÓDIGO O TOKEN JWS…"
           value={scanInput}
           onChange={event => setScanInput(event.target.value)}
-          style={{
-            flex: 1,
-            padding: '12px 16px',
-            borderRadius: 'var(--radius-sm)',
-            background: 'var(--bg-input)',
-            border: '1px solid var(--border)',
-            color: '#fff',
-            fontSize: '0.86rem',
-            fontWeight: 700,
-            fontFamily: 'var(--font-mono)',
-            letterSpacing: '0.03em'
-          }}
+          className="door-manual-input"
         />
-        <button type="submit" className="btn-primary" style={{ padding: '12px 20px', borderRadius: 'var(--radius-sm)' }} disabled={busy}>
+        <button type="submit" className="btn-primary door-manual-submit" disabled={busy}>
           <ScanLine size={16} />
           <span>{busy ? 'Validando…' : 'Validar'}</span>
         </button>
       </form>
 
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
-        <button type="button" className="btn-secondary" onClick={() => void handleFlush()} disabled={busy} style={{ padding: '8px 14px', fontSize: '0.78rem' }}>
+      {/* Botones secundarios de operaciones de puerta */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+        <button
+          type="button"
+          className="btn-secondary door-btn-touch"
+          onClick={() => void handleFlush()}
+          disabled={busy}
+          style={{ flex: '1 1 140px', minHeight: '40px', fontSize: '0.78rem' }}
+        >
           <RefreshCw size={14} />
-          Sincronizar cola
+          <span>Sincronizar cola ({queueCount})</span>
         </button>
         {canExit && (
-          <button type="button" className="btn-secondary" onClick={() => void handleExit()} disabled={busy} style={{ padding: '8px 14px', fontSize: '0.78rem' }}>
+          <button
+            type="button"
+            className="btn-secondary door-btn-touch"
+            onClick={() => void handleExit()}
+            disabled={busy}
+            style={{ flex: '1 1 140px', minHeight: '40px', fontSize: '0.78rem', borderColor: '#f59e0b' }}
+          >
             <LogOut size={14} />
-            Marcar salida temporal
+            <span>Salida temporal</span>
           </button>
         )}
         {canManualReentry && (
-          <button type="button" className="btn-gold" onClick={() => void handleManualReentry()} disabled={busy} style={{ padding: '8px 14px', fontSize: '0.78rem' }}>
+          <button
+            type="button"
+            className="btn-gold door-btn-touch"
+            onClick={() => void handleManualReentry()}
+            disabled={busy}
+            style={{ flex: '1 1 140px', minHeight: '40px', fontSize: '0.78rem' }}
+          >
             <KeyRound size={14} />
-            Reingreso manual (sin passkey)
+            <span>Reingreso manual</span>
           </button>
         )}
       </div>
@@ -873,38 +892,37 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </div>
       )}
 
+      {/* Tarjeta de resultado con feedback visual de alto impacto */}
       {result && (() => {
         const palette = result.tone === 'granted'
-          ? { border: '#10b981', glow: 'rgba(16, 185, 129, 0.3)', bg: 'linear-gradient(145deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 40, 24, 0.25) 100%)', title: '#34d399', icon: <UserCheck size={30} color="#10b981" /> }
+          ? { border: '#10b981', glow: 'rgba(16, 185, 129, 0.35)', bg: 'linear-gradient(145deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 40, 24, 0.35) 100%)', title: '#34d399', icon: <UserCheck size={32} color="#10b981" /> }
           : result.tone === 'demo'
-            ? { border: '#fbbf24', glow: 'rgba(251, 191, 36, 0.3)', bg: 'linear-gradient(145deg, rgba(251, 191, 36, 0.14) 0%, rgba(45, 30, 6, 0.3) 100%)', title: '#fbbf24', icon: <ScanLine size={30} color="#fbbf24" /> }
+            ? { border: '#fbbf24', glow: 'rgba(251, 191, 36, 0.35)', bg: 'linear-gradient(145deg, rgba(251, 191, 36, 0.18) 0%, rgba(45, 30, 6, 0.35) 100%)', title: '#fbbf24', icon: <ScanLine size={32} color="#fbbf24" /> }
             : result.tone === 'review'
-              ? { border: '#e5b54f', glow: 'rgba(229, 181, 79, 0.3)', bg: 'linear-gradient(145deg, rgba(229, 181, 79, 0.14) 0%, rgba(45, 34, 8, 0.3) 100%)', title: '#fde68a', icon: <ShieldAlert size={30} color="#e5b54f" /> }
-              : { border: '#f43f5e', glow: 'rgba(244, 63, 94, 0.3)', bg: 'linear-gradient(145deg, rgba(244, 63, 94, 0.15) 0%, rgba(45, 10, 18, 0.25) 100%)', title: '#fda4af', icon: <ShieldAlert size={30} color="#f43f5e" /> };
+              ? { border: '#e5b54f', glow: 'rgba(229, 181, 79, 0.35)', bg: 'linear-gradient(145deg, rgba(229, 181, 79, 0.18) 0%, rgba(45, 34, 8, 0.35) 100%)', title: '#fde68a', icon: <ShieldAlert size={32} color="#e5b54f" /> }
+              : { border: '#f43f5e', glow: 'rgba(244, 63, 94, 0.4)', bg: 'linear-gradient(145deg, rgba(244, 63, 94, 0.22) 0%, rgba(45, 10, 18, 0.35) 100%)', title: '#fda4af', icon: <ShieldAlert size={32} color="#f43f5e" /> };
         return (
-          <div className="glass-card" style={{
-            padding: '18px',
-            marginBottom: '20px',
-            border: `1.5px solid ${palette.border}`,
+          <div className="glass-card door-result-card" style={{
+            border: `2px solid ${palette.border}`,
             background: palette.bg,
-            boxShadow: `0 0 26px ${palette.glow}`
+            boxShadow: `0 0 32px ${palette.glow}`
           }}>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <div style={{ flexShrink: 0 }}>{palette.icon}</div>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, marginTop: '2px' }}>{palette.icon}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <h4 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: palette.title, letterSpacing: '0.02em' }}>
+                  <h4 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: palette.title, letterSpacing: '0.02em', margin: 0 }}>
                     {result.title}
                   </h4>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     {result.synced && <span className="badge badge-checkedin">SINCRONIZADO</span>}
                     {result.queued && <span className="badge badge-held">EN COLA OFFLINE</span>}
-                    {result.tone === 'demo' && <span className="badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>DEMOSTRACIÓN</span>}
+                    {result.tone === 'demo' && <span className="badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>DEMO</span>}
                   </div>
                 </div>
-                <p style={{ fontSize: '0.86rem', color: '#e2e8f0', margin: '6px 0 0' }}>{result.message}</p>
+                <p style={{ fontSize: '0.92rem', color: '#ffffff', margin: '6px 0 0', fontWeight: 600, lineHeight: 1.35 }}>{result.message}</p>
                 {result.detail && (
-                  <p style={{ fontSize: '0.76rem', color: 'var(--text-dim)', margin: '6px 0 0' }}>{result.detail}</p>
+                  <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.75)', margin: '6px 0 0', lineHeight: 1.3 }}>{result.detail}</p>
                 )}
               </div>
             </div>

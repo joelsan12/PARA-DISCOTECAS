@@ -2,6 +2,7 @@ import { useClubStore } from '../../store/clubStore';
 import { esTableStatus } from '../../lib/esLabels';
 import { UserCheck } from 'lucide-react';
 import { DoorPwaApp } from './DoorPwaApp';
+import '../../styles/doorTerminal.css';
 
 const timeFormatter = new Intl.DateTimeFormat('es-EC', {
   hour: '2-digit',
@@ -33,40 +34,32 @@ export const DoorCheckIn = () => {
   const pendingList = clubReservations.filter(r => r.status === 'CONFIRMED');
 
   return (
-    <div style={{ maxWidth: '620px', margin: '0 auto', padding: '24px 16px 80px' }}>
-      <div className="glass-card" style={{
-        padding: '20px',
-        marginBottom: '20px',
-        background: 'linear-gradient(180deg, rgba(16, 16, 24, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        boxShadow: '0 0 30px rgba(229, 181, 79, 0.12)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: '#10b981',
-                boxShadow: '0 0 10px #10b981'
-              }} />
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399', letterSpacing: '0.08em' }}>
-                TERMINAL DE ACCESO · CONTROL DE PUERTA
-              </span>
-            </div>
-            <h2 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fff', marginTop: '4px' }}>
-              {activeClub.name}
-            </h2>
+    <div className="door-terminal-root">
+      <div className="door-venue-banner">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#10b981',
+              boxShadow: '0 0 10px #10b981'
+            }} />
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399', letterSpacing: '0.08em' }}>
+              TERMINAL DE ACCESO · CONTROL DE PUERTA
+            </span>
           </div>
+          <h2 className="font-brand door-venue-title">
+            {activeClub.name}
+          </h2>
+        </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <div className="font-mono" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--accent)' }}>
-              {checkedInList.length}
-            </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Ingresados hoy
-            </div>
+        <div className="door-count-pill">
+          <div className="door-count-number">
+            {checkedInList.length}
+          </div>
+          <div style={{ fontSize: '0.66rem', color: 'rgba(255, 255, 255, 0.55)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Ingresados hoy
           </div>
         </div>
       </div>
@@ -79,47 +72,38 @@ export const DoorCheckIn = () => {
         }))}
       />
 
-      <div className="glass-card" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+      <div className="door-log-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <UserCheck size={16} color="var(--accent)" />
-            <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, color: '#fff' }}>
+            <h3 className="font-brand" style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff', margin: 0 }}>
               Bitácora de ingresos en puerta
             </h3>
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 600 }}>
             Turno nocturno activo
           </span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
           {checkedInList.map(res => (
             <div
               key={res.id}
-              style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '10px 14px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.82rem'
-              }}
+              className="door-log-item"
             >
               <div>
                 <span style={{ fontWeight: 700, color: '#fff' }}>{res.customer_name}</span>
                 <span style={{ color: '#fbbf24', marginLeft: '8px', fontWeight: 600 }}>Mesa {res.table_code}</span>
-                <span style={{ color: 'var(--text-dim)', marginLeft: '6px' }}>({res.guest_count} personas)</span>
+                <span style={{ color: 'rgba(255, 255, 255, 0.45)', marginLeft: '6px' }}>({res.guest_count} p.)</span>
               </div>
-              <span className="badge badge-checkedin font-mono" style={{ fontSize: '0.72rem' }}>
+              <span className="badge badge-checkedin font-mono" style={{ fontSize: '0.68rem', flexShrink: 0 }}>
                 {esTableStatus(res.status)} · {formatLocalTime(res.checked_in_at || '')}
               </span>
             </div>
           ))}
 
           {checkedInList.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-dim)', fontSize: '0.84rem' }}>
+            <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.82rem' }}>
               No hay ingresos registrados todavía para esta noche.
             </div>
           )}

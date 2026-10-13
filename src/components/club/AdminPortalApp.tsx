@@ -225,7 +225,7 @@ export function AdminPortalApp() {
         />
 
         {/* Lienzo Dinámico según sección activa */}
-        <main className="admin-canvas">
+        <main className={`admin-canvas ${currentView === 'DOOR' ? 'admin-canvas--door' : ''}`}>
           {currentView === 'DASHBOARD' && canAccessDashboard && <ClubDashboard session={session} activeTab={activeTab} />}
           {currentView === 'DOOR' && canAccessDoor && <DoorCheckIn />}
           {currentView === 'WAITER' && canAccessWaiter && <WaiterPwaApp session={session} />}

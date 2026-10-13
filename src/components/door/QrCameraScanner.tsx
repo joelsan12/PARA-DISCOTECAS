@@ -66,50 +66,67 @@ export const QrCameraScanner = ({ enabled, onDetect }: Props) => {
   }
 
   return (
-    <div style={{ marginBottom: '14px' }}>
-      <div style={{
-        position: 'relative',
-        height: '200px',
-        background: '#08080c',
-        borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        overflow: 'hidden'
-      }}>
+    <div className="door-camera-wrapper">
+      <div className="door-camera-viewport">
         <video
           ref={videoRef}
           playsInline
           muted
+          className="door-camera-video"
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
             display: status === 'scanning' ? 'block' : 'none'
           }}
         />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          pointerEvents: 'none',
-          background: status === 'scanning' ? 'transparent' : 'radial-gradient(circle at 50% 50%, rgba(229,181,79,0.08), #08080c)'
-        }}>
-          {status !== 'scanning' && <Camera size={28} color="rgba(229,181,79,0.6)" />}
-          <div style={{ fontSize: '0.74rem', color: 'var(--accent)', fontWeight: 700, textAlign: 'center', padding: '0 12px' }}>
-            {message || 'Iniciando cámara…'}
-          </div>
+
+        {/* Retículo de enfoque con esquinas de alta precisión */}
+        <div className="door-target-corner door-target-corner--tl" />
+        <div className="door-target-corner door-target-corner--tr" />
+        <div className="door-target-corner door-target-corner--bl" />
+        <div className="door-target-corner door-target-corner--br" />
+
+        {/* Línea láser animada continua */}
+        {status === 'scanning' && <div className="door-scan-laser" />}
+
+        {/* Guía central de encuadre para portero */}
+        <div className="door-aim-guide">
+          {status === 'scanning' ? (
+            <div className="door-aim-box">
+              <ScanLine size={32} color="rgba(229, 181, 79, 0.35)" />
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '0 16px'
+            }}>
+              <Camera size={34} color="rgba(229, 181, 79, 0.7)" />
+              <div style={{ fontSize: '0.8rem', color: '#e5b54f', fontWeight: 700, textAlign: 'center' }}>
+                {message || 'Iniciando cámara frontal/posterior…'}
+              </div>
+            </div>
+          )}
         </div>
-        <div style={{ position: 'absolute', top: '50%', left: '12%', right: '12%', height: '2px', background: 'rgba(229,181,79,0.85)', boxShadow: '0 0 12px rgba(229, 181, 79, 0.8)', opacity: status === 'scanning' ? 1 : 0.3 }} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-        <span className="badge" style={{ background: 'rgba(229,181,79,0.12)', color: 'var(--brand-gold)', border: '1px solid rgba(229,181,79,0.25)', fontSize: '0.68rem' }}>
-          <ScanLine size={11} />
-          {status === 'scanning' ? 'ESCÁNER ACTIVO' : status.toUpperCase()}
+
+      <div className="door-camera-footer">
+        <span className="badge" style={{
+          background: status === 'scanning' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(229, 181, 79, 0.12)',
+          color: status === 'scanning' ? '#34d399' : '#e5b54f',
+          border: `1px solid ${status === 'scanning' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(229, 181, 79, 0.35)'}`,
+          fontSize: '0.7rem',
+          fontWeight: 700
+        }}>
+          <ScanLine size={12} />
+          {status === 'scanning' ? 'ESCÁNER ACTIVO EN VIVO' : status.toUpperCase()}
         </span>
-        <button type="button" className="btn-secondary" style={{ padding: '4px 10px', fontSize: '0.72rem' }} onClick={() => void start()}>
+        <button
+          type="button"
+          className="btn-secondary"
+          style={{ padding: '6px 12px', fontSize: '0.74rem', minHeight: '34px', borderRadius: '8px' }}
+          onClick={() => void start()}
+        >
           Reintentar cámara
         </button>
       </div>
