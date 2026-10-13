@@ -626,6 +626,21 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
     }
   }, [device, edgeBusinessId, panicArmed, updateEmergency]);
 
+  const handleClearEmergency = useCallback(() => {
+    updateEmergency({
+      blocked: false,
+      label: 'OPERACIÓN NORMAL',
+      message: 'Sin alertas de emergencia activas.'
+    });
+    setCameraEnabled(true);
+    setResult({
+      tone: 'granted',
+      title: 'TERMINAL RESTABLECIDA',
+      message: 'Bloqueo de seguridad levantado. El escáner está listo para operar.',
+      detail: 'La cámara ha sido reactivada.'
+    });
+  }, [updateEmergency]);
+
   useEffect(() => {
     void preloadKnownDoorKeys();
   }, []);
@@ -752,20 +767,41 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
 
       {emergency.blocked && (
         <div style={{
-          background: 'linear-gradient(145deg, rgba(244, 63, 94, 0.18), rgba(45, 10, 18, 0.3))',
-          border: '1px solid rgba(244, 63, 94, 0.45)',
+          background: 'linear-gradient(145deg, rgba(244, 63, 94, 0.22), rgba(45, 10, 18, 0.4))',
+          border: '1.5px solid rgba(244, 63, 94, 0.6)',
           borderRadius: 'var(--radius-sm)',
-          padding: '10px 14px',
+          padding: '12px 14px',
           marginBottom: '14px',
           display: 'flex',
-          gap: '10px',
+          justifyContent: 'space-between',
           alignItems: 'center',
+          gap: '10px',
+          flexWrap: 'wrap',
           color: '#fda4af',
-          fontSize: '0.82rem',
+          fontSize: '0.84rem',
           fontWeight: 700
         }}>
-          <AlertTriangle size={16} />
-          <span>{emergency.message}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={18} />
+            <span>{emergency.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleClearEmergency}
+            className="btn-secondary"
+            style={{
+              padding: '6px 14px',
+              fontSize: '0.76rem',
+              color: '#34d399',
+              borderColor: 'rgba(52, 211, 153, 0.45)',
+              background: 'rgba(16, 185, 129, 0.18)',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 800
+            }}
+          >
+            Levantar bloqueo
+          </button>
         </div>
       )}
 
@@ -776,10 +812,10 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
       {(!cameraEnabled || emergency.blocked) && (
         <div style={{
           position: 'relative',
-          height: '150px',
+          height: emergency.blocked ? '180px' : '150px',
           background: 'radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.08) 0%, #08080c 100%)',
           borderRadius: 'var(--radius-sm)',
-          border: '1px solid rgba(229, 181, 79, 0.25)',
+          border: `1.5px solid ${emergency.blocked ? 'rgba(244, 63, 94, 0.45)' : 'rgba(229, 181, 79, 0.25)'}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -788,41 +824,86 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
           overflow: 'hidden'
         }}>
           <div className="laser-line" />
-          <ScanLine size={38} color="rgba(229, 181, 79, 0.5)" style={{ marginBottom: '8px' }} />
-          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.04em' }}>
-            {emergency.blocked ? 'TERMINAL SUSPENDIDA' : 'CÁMARA EN ESPERA'}
+          <ScanLine size={38} color={emergency.blocked ? 'rgba(244, 63, 94, 0.7)' : 'rgba(229, 181, 79, 0.5)'} style={{ marginBottom: '8px' }} />
+          <div style={{ fontSize: '0.82rem', fontWeight: 800, color: emergency.blocked ? '#fda4af' : 'var(--accent)', letterSpacing: '0.04em' }}>
+            {emergency.blocked ? 'TERMINAL SUSPENDIDA (SOS ACTIVO)' : 'CÁMARA EN ESPERA'}
           </div>
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0 16px', marginTop: '4px' }}>
-            {emergency.blocked ? 'Acceso temporalmente deshabilitado por seguridad' : 'Activa la cámara o introduce el código JWS manualmente abajo'}
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textAlign: 'center', padding: '0 16px', marginTop: '4px' }}>
+            {emergency.blocked
+              ? 'La terminal se bloqueó por seguridad. Para reactivar el escaneo presiona «Reactivar terminal».'
+              : 'Activa la cámara o introduce el código JWS manualmente abajo'}
           </div>
+          {emergency.blocked && (
+            <button
+              type="button"
+              onClick={handleClearEmergency}
+              className="btn-primary"
+              style={{
+                marginTop: '12px',
+                padding: '8px 18px',
+                fontSize: '0.8rem',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                borderColor: '#34d399',
+                color: '#ffffff',
+                fontWeight: 800,
+                boxShadow: '0 0 16px rgba(16, 185, 129, 0.35)',
+                cursor: 'pointer'
+              }}
+            >
+              Reactivar terminal
+            </button>
+          )}
         </div>
       )}
 
       {/* Botones táctiles primarios de cámara y pánico */}
       <div className="door-touch-actions">
-        <button
-          type="button"
-          className={`door-btn-touch ${cameraEnabled ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setCameraEnabled(value => !value)}
-          disabled={emergency.blocked}
-        >
-          <ScanLine size={16} />
-          <span>{cameraEnabled ? 'Pausar cámara' : 'Activar cámara'}</span>
-        </button>
-        <button
-          type="button"
-          className={`door-btn-touch ${panicArmed ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => void handlePanic()}
-          disabled={busy}
-          style={{
-            borderColor: panicArmed ? '#f43f5e' : undefined,
-            color: panicArmed ? '#fff' : undefined,
-            background: panicArmed ? 'rgba(244, 63, 94, 0.45)' : undefined
-          }}
-        >
-          <Siren size={16} />
-          <span>{panicArmed ? 'CONFIRMAR SOS' : 'Botón de pánico'}</span>
-        </button>
+        {emergency.blocked ? (
+          <button
+            type="button"
+            className="door-btn-touch btn-primary"
+            onClick={handleClearEmergency}
+            style={{
+              gridColumn: '1 / -1',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#ffffff',
+              border: '1px solid rgba(52, 211, 153, 0.6)',
+              boxShadow: '0 0 20px rgba(16, 185, 129, 0.35)',
+              fontSize: '0.86rem',
+              fontWeight: 800
+            }}
+          >
+            <ShieldCheck size={18} />
+            <span>Levantar bloqueo y reanudar escáner</span>
+          </button>
+        ) : (
+          <>
+            <button
+              type="button"
+              className={`door-btn-touch ${cameraEnabled ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setCameraEnabled(value => !value)}
+              disabled={emergency.blocked}
+            >
+              <ScanLine size={16} />
+              <span>{cameraEnabled ? 'Pausar cámara' : 'Activar cámara'}</span>
+            </button>
+            <button
+              type="button"
+              className={`door-btn-touch ${panicArmed ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => void handlePanic()}
+              disabled={busy}
+              style={{
+                borderColor: panicArmed ? '#f43f5e' : undefined,
+                color: panicArmed ? '#fff' : undefined,
+                background: panicArmed ? 'rgba(244, 63, 94, 0.45)' : undefined
+              }}
+            >
+              <Siren size={16} />
+              <span>{panicArmed ? 'CONFIRMAR SOS' : 'Botón de pánico'}</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Formulario de validación manual touch-friendly */}
