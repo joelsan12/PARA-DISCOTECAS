@@ -38,30 +38,33 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
   if (!db) return null;
 
   try {
-    // 1. Check if user is SuperAdmin in claims or users/{uid}
     const tokenResult = await user.getIdTokenResult().catch(() => null);
     const isClaimSuperAdmin = tokenResult?.claims?.platformRole === 'superadmin';
 
     const userDocRef = doc(db, 'users', user.uid);
     const userSnapshot = await getDoc(userDocRef).catch(() => null);
     const userData = userSnapshot?.exists() ? userSnapshot.data() : null;
-    if (isClaimSuperAdmin || userData?.superAdmin === true || user.email === 'superadmin@nightflow.vip') {
-      return {
-        uid: user.uid,
-        email: user.email || '',
-        displayName: user.displayName || user.email?.split('@')[0] || 'SuperAdmin',
-        photoURL: user.photoURL || (userData?.photoUrl as string | undefined),
-        role: 'SUPER_ADMIN',
-        isSuperAdmin: true,
-        clubId: (userData?.businessId as string | undefined) || currentClubId || ''
-      };
-    }
 
-    // 2. Check if user is staff in targetClubId (users/{uid}.businessId -> staff/{uid}.ACTIVE)
+    // 1. Verificar si el usuario está registrado como colaborador activo en este club o su negocio asignado
     const candidates = Array.from(new Set([
       userData?.businessId as string | undefined,
       currentClubId
     ].filter((id): id is string => Boolean(id && typeof id === 'string'))));
+
+    if (candidates.length === 0) {
+      try {
+        const { collectionGroup, query, where, getDocs, limit } = await import('firebase/firestore');
+        const staffGroupSnap = await getDocs(
+          query(collectionGroup(db, 'staff'), where('uid', '==', user.uid), where('status', '==', 'ACTIVE'), limit(1))
+        );
+        if (!staffGroupSnap.empty) {
+          const clubIdFromPath = staffGroupSnap.docs[0].ref.parent.parent?.id;
+          if (clubIdFromPath) candidates.push(clubIdFromPath);
+        }
+      } catch {
+        // Fallback silencioso si no hay índice
+      }
+    }
 
     for (const targetClubId of candidates) {
       try {
@@ -80,13 +83,18 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
             const assignedZones = Array.isArray(data.assignedZones)
               ? data.assignedZones.filter((z): z is string => typeof z === 'string')
               : [];
+
+            // Regla de aislamiento estricto: Si el rol asignado es operativo (puerta o mesero),
+            // se restringe ESTRICTAMENTE a su terminal operativa, sin privilegios administrativos.
+            const isOperationalOnly = rawRole === 'door' || rawRole === 'waiter';
+
             return {
               uid: user.uid,
               email: user.email || '',
               displayName: data.name || user.displayName || user.email?.split('@')[0] || 'Staff',
               photoURL: user.photoURL || (data.photoUrl as string | undefined) || (data.avatarUrl as string | undefined) || (userData?.photoUrl as string | undefined),
               role,
-              isSuperAdmin: false,
+              isSuperAdmin: !isOperationalOnly && (Boolean(isClaimSuperAdmin) || userData?.superAdmin === true),
               clubId: targetClubId,
               staffRole: rawRole as AdminStaffSession['staffRole'],
               assignedZones
@@ -96,6 +104,19 @@ export async function resolveAdminStaffSession(user: User, currentClubId?: strin
       } catch (staffErr) {
         console.warn(`No se pudo verificar staff en ${targetClubId}:`, staffErr);
       }
+    }
+
+    // 2. Si no es un colaborador operativo específico, comprobar si es SuperAdministrador de la plataforma
+    if (isClaimSuperAdmin || userData?.superAdmin === true || user.email === 'superadmin@nightflow.vip') {
+      return {
+        uid: user.uid,
+        email: user.email || '',
+        displayName: user.displayName || user.email?.split('@')[0] || 'SuperAdmin',
+        photoURL: user.photoURL || (userData?.photoUrl as string | undefined),
+        role: 'SUPER_ADMIN',
+        isSuperAdmin: true,
+        clubId: (userData?.businessId as string | undefined) || currentClubId || ''
+      };
     }
 
     return null;
