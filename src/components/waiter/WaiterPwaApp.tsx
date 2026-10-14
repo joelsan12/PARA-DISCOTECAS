@@ -441,20 +441,37 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
 
       {/* 3. Filtro de Zonas (Compartido) */}
       {uniqueZones.length > 1 && (
-        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+        <div
+          className="waiter-pill-scroll"
+          style={{
+            display: 'flex',
+            gap: '8px',
+            overflowX: 'auto',
+            padding: '4px 2px 10px 2px',
+            flexShrink: 0,
+            alignItems: 'center'
+          }}
+        >
           <button
             type="button"
             onClick={() => setSelectedZone('all')}
             style={{
-              padding: '6px 12px',
+              height: '34px',
+              padding: '0 14px',
               borderRadius: '8px',
-              fontSize: '0.76rem',
-              fontWeight: 700,
+              fontSize: '0.8rem',
+              fontWeight: 800,
               whiteSpace: 'nowrap',
               cursor: 'pointer',
-              background: selectedZone === 'all' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-              color: selectedZone === 'all' ? '#38bdf8' : '#94a3b8',
-              border: selectedZone === 'all' ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: selectedZone === 'all' ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.07)',
+              color: selectedZone === 'all' ? '#38bdf8' : '#e2e8f0',
+              border: selectedZone === 'all' ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.16)',
+              boxShadow: selectedZone === 'all' ? '0 0 12px rgba(56, 189, 248, 0.25)' : 'none',
+              transition: 'all 0.15s ease'
             }}
           >
             Todas mis zonas ({visibleTables.length})
@@ -465,15 +482,22 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
               type="button"
               onClick={() => setSelectedZone(z)}
               style={{
-                padding: '6px 12px',
+                height: '34px',
+                padding: '0 14px',
                 borderRadius: '8px',
-                fontSize: '0.76rem',
-                fontWeight: 700,
+                fontSize: '0.8rem',
+                fontWeight: 800,
                 whiteSpace: 'nowrap',
                 cursor: 'pointer',
-                background: selectedZone === z ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                color: selectedZone === z ? '#38bdf8' : '#94a3b8',
-                border: selectedZone === z ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+                flexShrink: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: selectedZone === z ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.07)',
+                color: selectedZone === z ? '#38bdf8' : '#e2e8f0',
+                border: selectedZone === z ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.16)',
+                boxShadow: selectedZone === z ? '0 0 12px rgba(56, 189, 248, 0.25)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
               {z}
@@ -651,7 +675,17 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
         /* Peticiones Concierge */
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {/* Subfiltros por estado */}
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+          <div
+            className="waiter-pill-scroll"
+            style={{
+              display: 'flex',
+              gap: '8px',
+              overflowX: 'auto',
+              padding: '4px 2px 10px 2px',
+              flexShrink: 0,
+              alignItems: 'center'
+            }}
+          >
             {[
               { id: 'ALL' as const, label: `Todas (${waiterRequests.length})` },
               { id: 'PENDING' as const, label: `Pendientes (${pendingRequestsCount})` },
@@ -663,15 +697,22 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 type="button"
                 onClick={() => setConciergeFilter(f.id)}
                 style={{
-                  padding: '5px 12px',
+                  height: '34px',
+                  padding: '0 14px',
                   borderRadius: '8px',
-                  fontSize: '0.74rem',
-                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
                   whiteSpace: 'nowrap',
                   cursor: 'pointer',
-                  background: conciergeFilter === f.id ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                  color: conciergeFilter === f.id ? '#fbbf24' : '#94a3b8',
-                  border: conciergeFilter === f.id ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+                  flexShrink: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: conciergeFilter === f.id ? 'rgba(245, 158, 11, 0.22)' : 'rgba(255, 255, 255, 0.07)',
+                  color: conciergeFilter === f.id ? '#fbbf24' : '#e2e8f0',
+                  border: conciergeFilter === f.id ? '1.5px solid #fbbf24' : '1px solid rgba(255, 255, 255, 0.16)',
+                  boxShadow: conciergeFilter === f.id ? '0 0 12px rgba(245, 158, 11, 0.25)' : 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {f.label}
@@ -913,6 +954,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             borderTopLeftRadius: '24px',
             borderTopRightRadius: '24px',
             maxHeight: '90vh',
+            width: '100%',
+            maxWidth: '1020px',
+            margin: '0 auto',
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '0 -16px 48px rgba(0, 0, 0, 0.8)'
@@ -988,20 +1032,37 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             {/* Scrollable Content (Catálogo & Comanda) */}
             <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {/* Category Pills */}
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+              <div
+                className="waiter-pill-scroll"
+                style={{
+                  display: 'flex',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  padding: '4px 2px 10px 2px',
+                  flexShrink: 0,
+                  alignItems: 'center'
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setSelectedCategory('all')}
                   style={{
-                    padding: '5px 12px',
-                    borderRadius: '6px',
-                    fontSize: '0.74rem',
-                    fontWeight: 700,
+                    height: '36px',
+                    padding: '0 16px',
+                    borderRadius: '8px',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
                     whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    background: selectedCategory === 'all' ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                    color: selectedCategory === 'all' ? '#e5b54f' : '#94a3b8',
-                    border: selectedCategory === 'all' ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+                    flexShrink: 0,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: selectedCategory === 'all' ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.07)',
+                    color: selectedCategory === 'all' ? '#e5b54f' : '#e2e8f0',
+                    border: selectedCategory === 'all' ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.16)',
+                    boxShadow: selectedCategory === 'all' ? '0 0 12px rgba(229, 181, 79, 0.25)' : 'none',
+                    transition: 'all 0.15s ease'
                   }}
                 >
                   Todo el Catálogo
@@ -1012,15 +1073,22 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
                     style={{
-                      padding: '5px 12px',
-                      borderRadius: '6px',
-                      fontSize: '0.74rem',
-                      fontWeight: 700,
+                      height: '36px',
+                      padding: '0 16px',
+                      borderRadius: '8px',
+                      fontSize: '0.82rem',
+                      fontWeight: 800,
                       whiteSpace: 'nowrap',
                       cursor: 'pointer',
-                      background: selectedCategory === cat ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                      color: selectedCategory === cat ? '#e5b54f' : '#94a3b8',
-                      border: selectedCategory === cat ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)'
+                      flexShrink: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: selectedCategory === cat ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.07)',
+                      color: selectedCategory === cat ? '#e5b54f' : '#e2e8f0',
+                      border: selectedCategory === cat ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.16)',
+                      boxShadow: selectedCategory === cat ? '0 0 12px rgba(229, 181, 79, 0.25)' : 'none',
+                      transition: 'all 0.15s ease'
                     }}
                   >
                     {cat}
@@ -1123,7 +1191,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
               gap: '12px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                <span style={{ fontSize: '0.84rem', color: '#cbd5e1', fontWeight: 600 }}>
                   Total Pedido a Cargar:
                 </span>
                 <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#38bdf8' }}>
@@ -1139,11 +1207,11 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                   width: '100%',
                   background: cartItemsCount > 0
                     ? 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'
-                    : 'rgba(255, 255, 255, 0.05)',
-                  border: 'none',
+                    : 'rgba(255, 255, 255, 0.07)',
+                  border: cartItemsCount > 0 ? 'none' : '1px solid rgba(255, 255, 255, 0.14)',
                   borderRadius: '12px',
                   padding: '12px',
-                  color: cartItemsCount > 0 ? '#0a0d14' : '#64748b',
+                  color: cartItemsCount > 0 ? '#0a0d14' : '#cbd5e1',
                   fontSize: '0.9rem',
                   fontWeight: 800,
                   cursor: cartItemsCount > 0 && !addingConsumption ? 'pointer' : 'not-allowed',
@@ -1151,7 +1219,8 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  boxShadow: cartItemsCount > 0 ? '0 4px 16px rgba(56, 189, 248, 0.3)' : 'none'
+                  boxShadow: cartItemsCount > 0 ? '0 4px 16px rgba(56, 189, 248, 0.3)' : 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {addingConsumption ? (
@@ -1162,12 +1231,14 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 ) : (
                   <>
                     <ReceiptText size={16} />
-                    <span>Confirmar Pedido a la Mesa</span>
+                    <span>
+                      {cartItemsCount > 0 ? 'Confirmar Pedido a la Mesa' : 'Confirmar Pedido a la Mesa (0 ítems)'}
+                    </span>
                   </>
                 )}
               </button>
 
-              <div style={{ fontSize: '0.68rem', color: '#64748b', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textAlign: 'center' }}>
                 El cierre definitivo y cobro se realiza exclusivamente por caja o gerencia.
               </div>
             </div>

@@ -390,3 +390,16 @@
   background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.6), transparent);
 }
 
+/* Horizontal scroll containers for pills without native scrollbar overlay */
+.waiter-pill-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.waiter-pill-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
