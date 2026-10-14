@@ -19,6 +19,7 @@ import {
   History,
   UserCog,
   UserCheck,
+  MessageSquareText,
 } from 'lucide-react';
 import type { AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
@@ -53,6 +54,7 @@ interface AdminSidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   onOpenProfile?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 function formatPlanSidebarTag(planId?: string): string {
@@ -75,6 +77,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
   onOpenProfile,
+  onOpenFeedback,
 }) => {
   const store = useClubStore();
   const activeClub = store.clubs.find(c => c.id === store.activeClubId) || store.clubs[0];
@@ -553,8 +556,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           )}
         </div>
 
-        {/* 3. Footer with Theme Switch & User Profile */}
+        {/* 3. Footer with Theme Switch, Feedback & User Profile */}
         <div className="admin-sidebar-footer">
+          {onOpenFeedback && (
+            <button
+              type="button"
+              onClick={onOpenFeedback}
+              className="admin-sidebar-feedback-btn"
+              title="Dar feedback o reportar error al equipo técnico"
+            >
+              <MessageSquareText size={14} color="var(--brand-gold)" />
+              <span>Dar Feedback</span>
+            </button>
+          )}
+
           <ThemeToggleSwitch variant="detailed" className="admin-sidebar-theme-toggle" />
 
           <div

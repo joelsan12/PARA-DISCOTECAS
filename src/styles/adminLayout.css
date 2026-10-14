@@ -373,6 +373,54 @@
   border-color: rgba(229, 181, 79, 0.5);
 }
 
+.admin-feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 6px;
+  background: rgba(229, 181, 79, 0.12);
+  border: 1px solid rgba(229, 181, 79, 0.35);
+  color: var(--brand-gold, #e5b54f);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.admin-feedback-btn:hover {
+  background: rgba(229, 181, 79, 0.22);
+  border-color: rgba(229, 181, 79, 0.65);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(229, 181, 79, 0.25);
+  transform: translateY(-1px);
+}
+
+.admin-sidebar-feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(229, 181, 79, 0.08);
+  border: 1px solid rgba(229, 181, 79, 0.22);
+  color: var(--brand-gold, #e5b54f);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 8px;
+}
+
+.admin-sidebar-feedback-btn:hover {
+  background: rgba(229, 181, 79, 0.18);
+  border-color: rgba(229, 181, 79, 0.5);
+  color: #ffffff;
+}
+
 .admin-command-bar-left {
   display: flex;
   align-items: center;
@@ -1038,6 +1086,31 @@
 [data-theme="light"] .admin-portal-link:hover {
   background: rgba(184, 134, 11, 0.09);
   border-color: rgba(184, 134, 11, 0.6);
+}
+
+[data-theme="light"] .admin-feedback-btn {
+  background: #ffffff;
+  border: 1px solid rgba(184, 134, 11, 0.35);
+  color: #8c6504;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .admin-feedback-btn:hover {
+  background: rgba(184, 134, 11, 0.1);
+  border-color: var(--brand-gold);
+  color: #0e1118;
+}
+
+[data-theme="light"] .admin-sidebar-feedback-btn {
+  background: #ffffff;
+  border: 1px solid rgba(184, 134, 11, 0.25);
+  color: #8c6504;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .admin-sidebar-feedback-btn:hover {
+  background: rgba(184, 134, 11, 0.1);
+  color: #0e1118;
 }
 
 [data-theme="light"] .admin-club-title {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, ExternalLink, Clock } from 'lucide-react';
+import { Menu, ExternalLink, Clock, MessageSquareText } from 'lucide-react';
 import type { DashboardTabKey } from './AdminSidebar';
 import { ThemeToggleSwitch } from '../common/ThemeToggleSwitch';
 
@@ -11,6 +11,7 @@ interface AdminCommandBarProps {
   onOpenMobileMenu: () => void;
   session?: AdminStaffSession;
   onOpenProfile?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
@@ -19,6 +20,7 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
   onOpenMobileMenu,
   session,
   onOpenProfile,
+  onOpenFeedback,
 }) => {
   // Live Ecuador Clock (America/Guayaquil)
   const [localTime, setLocalTime] = useState<string>('');
@@ -112,8 +114,20 @@ export const AdminCommandBar: React.FC<AdminCommandBarProps> = ({
         )}
       </div>
 
-      {/* Right: User Profile Chip + Theme Toggle Switch + Direct Link to Client Portal */}
+      {/* Right: Feedback Button + User Profile Chip + Theme Toggle Switch + Direct Link to Client Portal */}
       <div className="admin-command-bar-right">
+        {onOpenFeedback && (
+          <button
+            type="button"
+            onClick={onOpenFeedback}
+            className="admin-feedback-btn"
+            title="Dar feedback o reportar error al equipo técnico"
+          >
+            <MessageSquareText size={13} color="var(--brand-gold)" />
+            <span>Feedback</span>
+          </button>
+        )}
+
         {session && onOpenProfile && (
           <button
             type="button"

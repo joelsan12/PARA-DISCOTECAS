@@ -47,11 +47,19 @@ export function App() {
   }, []);
 
   if (portalType === 'dev') {
-    return <DevPortalApp />;
+    return (
+      <BrowserRouter>
+        <DevPortalApp />
+      </BrowserRouter>
+    );
   }
 
   if (portalType === 'admin') {
-    return <AdminPortalApp />;
+    return (
+      <BrowserRouter>
+        <AdminPortalApp />
+      </BrowserRouter>
+    );
   }
 
   return (

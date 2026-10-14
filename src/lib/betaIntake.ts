@@ -10,7 +10,7 @@ export interface BetaFeedbackContext {
   path: string;
   userAgent: string;
   screen: string;
-  portal: 'client' | 'saas';
+  portal: 'client' | 'saas' | 'admin';
 }
 
 export interface BetaFeedbackInput {
@@ -18,7 +18,7 @@ export interface BetaFeedbackInput {
   category: FeedbackCategory | string;
   message: string;
   contact?: string;
-  portal?: 'client' | 'saas';
+  portal?: 'client' | 'saas' | 'admin';
 }
 
 export interface SanitizedBetaFeedback {
@@ -47,7 +47,7 @@ export interface SanitizedBetaLead {
   clientVersion: string;
 }
 
-export function buildFeedbackContext(portal: 'client' | 'saas' = 'client'): BetaFeedbackContext {
+export function buildFeedbackContext(portal: 'client' | 'saas' | 'admin' = 'client'): BetaFeedbackContext {
   const path = typeof window !== 'undefined' && window.location?.pathname
     ? window.location.pathname.slice(0, 120)
     : '/';
@@ -62,7 +62,7 @@ export function buildFeedbackContext(portal: 'client' | 'saas' = 'client'): Beta
     path,
     userAgent,
     screen,
-    portal: portal === 'saas' ? 'saas' : 'client'
+    portal: portal === 'admin' ? 'admin' : portal === 'saas' ? 'saas' : 'client'
   };
 }
 

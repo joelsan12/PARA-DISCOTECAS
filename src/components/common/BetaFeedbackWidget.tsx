@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   MessageSquareText,
@@ -31,9 +31,31 @@ const CATEGORY_CONFIG: Record<
   design: { label: 'Diseño VIP', icon: Sparkles }
 };
 
-export function BetaFeedbackWidget() {
+export interface BetaFeedbackWidgetProps {
+  portal?: 'client' | 'saas' | 'admin';
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideFloatingTrigger?: boolean;
+}
+
+export function BetaFeedbackWidget({
+  portal: portalProp,
+  isOpen: controlledIsOpen,
+  onOpenChange,
+  hideFloatingTrigger = false
+}: BetaFeedbackWidgetProps = {}) {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen;
+
+  const setIsOpen = useCallback((next: boolean) => {
+    if (!isControlled) {
+      setUncontrolledIsOpen(next);
+    }
+    onOpenChange?.(next);
+  }, [isControlled, onOpenChange]);
+
   const [rating, setRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [category, setCategory] = useState<FeedbackCategory>('suggestion');
@@ -45,12 +67,12 @@ export function BetaFeedbackWidget() {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  // Escuchar evento personalizado para abrir el modal desde cualquier lugar (ej: navbar, concierge, perfil)
+  // Escuchar evento personalizado para abrir el modal desde cualquier lugar (ej: navbar, concierge, perfil, admin)
   useEffect(() => {
     const handleOpen = () => setIsOpen(true);
     window.addEventListener('open-beta-feedback', handleOpen);
     return () => window.removeEventListener('open-beta-feedback', handleOpen);
-  }, []);
+  }, [setIsOpen]);
 
   // Auto-cierre a los 2 segundos tras envío exitoso
   useEffect(() => {
@@ -64,7 +86,7 @@ export function BetaFeedbackWidget() {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [status]);
+  }, [status, setIsOpen]);
 
   // Cierre por click exterior o tecla Escape
   useEffect(() => {
@@ -91,7 +113,7 @@ export function BetaFeedbackWidget() {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   const isSaas =
     location.pathname.startsWith('/software') ||
@@ -114,11 +136,13 @@ export function BetaFeedbackWidget() {
     location.pathname.startsWith('/barra') ||
     location.pathname.startsWith('/seguridad');
 
-  const portal: 'client' | 'saas' = isSaas ? 'saas' : 'client';
+  const resolvedPortal: 'client' | 'saas' | 'admin' =
+    portalProp ?? (isSaas ? 'saas' : 'client');
 
   const categoryLabel = CATEGORY_CONFIG[category].label;
+  const roleContext = resolvedPortal === 'admin' ? '[Consola Admin] ' : '';
   const whatsappMessage = encodeURIComponent(
-    `Hola Nightflow VIP, tengo feedback sobre la beta:\n• Categoría: ${categoryLabel}\n• Valoración: ${rating}/5 estrellas\n• Ruta: ${location.pathname}${
+    `Hola Nightflow VIP, tengo feedback ${roleContext}sobre la beta:\n• Categoría: ${categoryLabel}\n• Valoración: ${rating}/5 estrellas\n• Portal: ${resolvedPortal}\n• Ruta: ${location.pathname}${
       message ? `\n• Mensaje: ${message}` : ''
     }${contact ? `\n• Contacto: ${contact}` : ''}`
   );
@@ -137,7 +161,7 @@ export function BetaFeedbackWidget() {
         category,
         message: message.trim(),
         contact: contact.trim(),
-        portal
+        portal: resolvedPortal
       });
       setStatus('success');
     } catch (err) {
@@ -160,7 +184,7 @@ export function BetaFeedbackWidget() {
         />
       )}
 
-      {(!isOperationalRoute || isOpen) && (
+      {((!hideFloatingTrigger && (!isOperationalRoute || isOpen)) || isOpen) && (
         <aside className="beta-feedback-container" aria-label="Widget de feedback para la beta">
           {/* Panel Desplegable */}
           {isOpen && (
@@ -173,10 +197,16 @@ export function BetaFeedbackWidget() {
             >
               <div className="beta-feedback-header">
                 <div>
-                  <span className="beta-feedback-badge">BETA VIP</span>
-                  <h3 id="beta-feedback-heading" className="beta-feedback-title">Tu Experiencia VIP</h3>
+                  <span className="beta-feedback-badge">
+                    {resolvedPortal === 'admin' ? 'BETA ADMIN' : 'BETA VIP'}
+                  </span>
+                  <h3 id="beta-feedback-heading" className="beta-feedback-title">
+                    {resolvedPortal === 'admin' ? 'Feedback del Administrador' : 'Tu Experiencia VIP'}
+                  </h3>
                   <p className="beta-feedback-subtitle">
-                    Ayúdanos a perfeccionar Nightflow. Tu opinión va directa al equipo técnico.
+                    {resolvedPortal === 'admin'
+                      ? '¿Detectaste un fallo o tienes sugerencias para optimizar la sala o tu consola? Envíanoslo directamente.'
+                      : 'Ayúdanos a perfeccionar Nightflow. Tu opinión va directa al equipo técnico.'}
                   </p>
                 </div>
                 <button
@@ -327,8 +357,8 @@ export function BetaFeedbackWidget() {
             </div>
           )}
 
-          {/* Botón Flotante (se oculta al abrir el modal y en rutas operativas con dock inferior) */}
-          {!isOpen && !isOperationalRoute && (
+          {/* Botón Flotante (se oculta al abrir el modal, con hideFloatingTrigger y en rutas operativas con dock inferior) */}
+          {!hideFloatingTrigger && !isOpen && !isOperationalRoute && (
             <button
               ref={triggerRef}
               type="button"

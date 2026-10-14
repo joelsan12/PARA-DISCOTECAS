@@ -427,3 +427,90 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES (Haute Alabaster Marble)
+   ═════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] .beta-feedback-backdrop {
+  background: rgba(14, 17, 24, 0.45);
+}
+
+[data-theme="light"] .beta-feedback-panel {
+  background: #ffffff;
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  border-top: 2px solid var(--brand-gold, #b8860b);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 25px rgba(184, 134, 11, 0.1);
+  color: #0e1118;
+}
+
+[data-theme="light"] .beta-feedback-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .beta-feedback-title {
+  color: #0e1118;
+}
+
+[data-theme="light"] .beta-feedback-desc {
+  color: #4a4f5d;
+}
+
+[data-theme="light"] .beta-feedback-label {
+  color: #0e1118;
+}
+
+[data-theme="light"] .beta-feedback-chip {
+  background: #fbfaf7;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #4a4f5d;
+}
+
+[data-theme="light"] .beta-feedback-chip:hover {
+  background: rgba(184, 134, 11, 0.08);
+  color: #0e1118;
+}
+
+[data-theme="light"] .beta-feedback-chip.is-active {
+  background: rgba(184, 134, 11, 0.15);
+  border-color: var(--brand-gold, #b8860b);
+  color: #8c6504;
+  box-shadow: 0 0 8px rgba(184, 134, 11, 0.2);
+}
+
+[data-theme="light"] .beta-feedback-textarea,
+[data-theme="light"] .beta-feedback-input {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.16);
+  color: #0e1118;
+}
+
+[data-theme="light"] .beta-feedback-textarea:focus,
+[data-theme="light"] .beta-feedback-input:focus {
+  border-color: var(--brand-gold, #b8860b);
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2);
+}
+
+[data-theme="light"] .beta-feedback-char-count {
+  color: #717786;
+}
+
+[data-theme="light"] .beta-feedback-btn-whatsapp {
+  background: rgba(37, 211, 102, 0.12);
+  color: #059669;
+  border-color: rgba(37, 211, 102, 0.35);
+}
+
+[data-theme="light"] .beta-feedback-btn-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.2);
+  color: #047857;
+}
+
+[data-theme="light"] .beta-feedback-close {
+  background: rgba(0, 0, 0, 0.04);
+  color: #555b6d;
+}
+
+[data-theme="light"] .beta-feedback-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #0e1118;
+}

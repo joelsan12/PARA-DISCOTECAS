@@ -9,6 +9,7 @@ import { AdminSidebar, type DashboardTabKey } from './AdminSidebar';
 import { AdminCommandBar } from './AdminCommandBar';
 import { AdminLoginView } from './AdminLoginView';
 import { UserProfileModal } from './UserProfileModal';
+import { BetaFeedbackWidget } from '../common/BetaFeedbackWidget';
 import { subscribeToAdminAuth, signOutAdmin, type AdminAuthState, type AdminStaffSession } from '../../lib/adminAuth';
 import { NightflowLogoMark } from '../common/NightflowLogo';
 import '../../styles/adminLayout.css';
@@ -44,6 +45,7 @@ export function AdminPortalApp() {
   const [currentView, setCurrentView] = useState<AdminView>('DASHBOARD');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
   const [profileOverride, setProfileOverride] = useState<Partial<AdminStaffSession> | null>(null);
 
   const rawSession = authState.status === 'authenticated' ? authState.session : null;
@@ -211,6 +213,7 @@ export function AdminPortalApp() {
         isOpenMobile={isOpenMobile}
         onCloseMobile={() => setIsOpenMobile(false)}
         onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenFeedback={() => setIsFeedbackOpen(true)}
       />
 
       {/* 2. Área Principal de Trabajo */}
@@ -222,6 +225,7 @@ export function AdminPortalApp() {
           onOpenMobileMenu={() => setIsOpenMobile(true)}
           session={session}
           onOpenProfile={() => setIsProfileModalOpen(true)}
+          onOpenFeedback={() => setIsFeedbackOpen(true)}
         />
 
         {/* Lienzo Dinámico según sección activa */}
@@ -244,6 +248,14 @@ export function AdminPortalApp() {
           }}
         />
       )}
+
+      {/* 4. Modal de Feedback y Reporte Técnico para el Administrador */}
+      <BetaFeedbackWidget
+        portal="admin"
+        isOpen={isFeedbackOpen}
+        onOpenChange={setIsFeedbackOpen}
+        hideFloatingTrigger
+      />
     </div>
   );
 }
