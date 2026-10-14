@@ -35,12 +35,14 @@ export function SaasLandingPage() {
         {/* 4. Comparativa Operativa Directa: Pantalla completa en scroll */}
         <SaasComparisonSection />
 
-        {/* 4. Cierre: Banner de Registro y Footer */}
+        {/* 5. Cierre: Banner de Registro */}
         <section className="saas-closing-screen">
           <SaasCtaBanner onOpenModal={openModal} />
-          <SaasFooterBar />
         </section>
       </main>
+
+      {/* 6. Footer Operativo y de Cumplimiento */}
+      <SaasFooterBar />
 
       <SaasLeadModal
         isOpen={isModalOpen}
