@@ -73,7 +73,7 @@ export const AddTableModal: React.FC<Props> = ({
             }}>
               <Plus size={16} color="#08080c" />
             </span>
-            <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
+            <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #fff)' }}>
               Nueva Mesa VIP
             </h3>
           </div>

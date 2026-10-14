@@ -66,7 +66,7 @@ export const AddTableFields: React.FC<Props> = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Código de Mesa *
           </label>
           <input
@@ -75,21 +75,12 @@ export const AddTableFields: React.FC<Props> = ({
             placeholder="Ej. VIP-10"
             value={newTableCode}
             onChange={e => setNewTableCode(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#fff',
-              fontSize: '0.85rem',
-              fontWeight: 700
-            }}
+            className="floorplan-input"
           />
         </div>
 
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Identificador corto en el plano
           </label>
           <input
@@ -97,38 +88,20 @@ export const AddTableFields: React.FC<Props> = ({
             placeholder="Ej. 10 o V10"
             value={newTableBadge}
             onChange={e => setNewTableBadge(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#fff',
-              fontSize: '0.85rem',
-              fontWeight: 700
-            }}
+            className="floorplan-input"
           />
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Zona del Club
           </label>
           <select
             value={newTableZone}
             onChange={e => setNewTableZone(e.target.value as TableZone)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: '#0d131f',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#fff',
-              fontSize: '0.82rem',
-              fontWeight: 600
-            }}
+            className="floorplan-input"
           >
             {ZONE_OPTIONS.map(z => (
               <option key={z} value={z}>{esTableZone(z)}</option>
@@ -137,7 +110,7 @@ export const AddTableFields: React.FC<Props> = ({
         </div>
 
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Capacidad (personas)
           </label>
           <input
@@ -146,23 +119,14 @@ export const AddTableFields: React.FC<Props> = ({
             max={50}
             value={newTableCapacity}
             onChange={e => setNewTableCapacity(Number(e.target.value))}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#fff',
-              fontSize: '0.85rem',
-              fontWeight: 700
-            }}
+            className="floorplan-input"
           />
         </div>
       </div>
 
       {/* Forma Geométrica */}
       <div>
-        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+        <label className="floorplan-label" style={{ marginBottom: '6px' }}>
           Forma Geométrica
         </label>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
@@ -171,20 +135,7 @@ export const AddTableFields: React.FC<Props> = ({
               key={shape}
               type="button"
               onClick={() => setNewTableShape(shape)}
-              style={{
-                padding: '8px 6px',
-                background: newTableShape === shape ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255, 255, 255, 0.04)',
-                border: newTableShape === shape ? '1px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: 'var(--radius-xs)',
-                color: newTableShape === shape ? 'var(--accent)' : '#94a3b8',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '3px'
-              }}
+              className={`floorplan-option-btn ${newTableShape === shape ? 'active' : ''}`}
             >
               <span style={{ fontSize: '0.95rem' }}>
                 {shape === 'circle' ? '⚪' : shape === 'pill' ? '💊' : shape === 'square' ? '⏹️' : '▭'}
@@ -197,7 +148,7 @@ export const AddTableFields: React.FC<Props> = ({
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Consumo mínimo (USD)
           </label>
           <input
@@ -205,21 +156,13 @@ export const AddTableFields: React.FC<Props> = ({
             step={50}
             value={newTableMinSpend}
             onChange={e => setNewTableMinSpend(Number(e.target.value))}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#22d3ee',
-              fontSize: '0.85rem',
-              fontWeight: 800
-            }}
+            className="floorplan-input"
+            style={{ color: 'var(--state-info, #22d3ee)' }}
           />
         </div>
 
         <div>
-          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+          <label className="floorplan-label">
             Anticipo (USD)
           </label>
           <input
@@ -227,23 +170,15 @@ export const AddTableFields: React.FC<Props> = ({
             step={25}
             value={newTableDeposit}
             onChange={e => setNewTableDeposit(Number(e.target.value))}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: 'var(--radius-xs)',
-              color: '#facc15',
-              fontSize: '0.85rem',
-              fontWeight: 800
-            }}
+            className="floorplan-input"
+            style={{ color: 'var(--brand-gold, #facc15)' }}
           />
         </div>
       </div>
 
       {/* Color Presets */}
       <div>
-        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+        <label className="floorplan-label" style={{ marginBottom: '6px' }}>
           Color de Categoría VIP
         </label>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -258,7 +193,7 @@ export const AddTableFields: React.FC<Props> = ({
                 height: '24px',
                 borderRadius: '50%',
                 background: t.color,
-                border: newTableColor === t.color ? '3px solid #fff' : '1px solid rgba(255, 255, 255, 0.2)',
+                border: newTableColor === t.color ? '3px solid var(--text-high, #fff)' : '1px solid var(--border-light, rgba(255, 255, 255, 0.2))',
                 cursor: 'pointer',
                 boxShadow: newTableColor === t.color ? `0 0 10px ${t.color}` : 'none'
               }}

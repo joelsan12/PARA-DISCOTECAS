@@ -98,7 +98,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <LayoutTemplate size={22} color="var(--brand-gold)" />
-              <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-high, #fff)', margin: 0 }}>
                 Plantillas de Arquetipos Arquitectónicos
               </h2>
             </div>
@@ -110,16 +110,14 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
+            className="btn-ghost"
             style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '50%',
               width: '32px',
               height: '32px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#fff',
               cursor: 'pointer'
             }}
           >
@@ -141,8 +139,8 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
               <div
                 key={arch.id}
                 style={{
-                  background: isCurrent ? 'rgba(229, 181, 79, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                  border: isCurrent ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: isCurrent ? 'var(--accent-subtle, rgba(229, 181, 79, 0.08))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.03))',
+                  border: isCurrent ? '1.5px solid var(--brand-gold, #e5b54f)' : '1px solid var(--border-light, rgba(255, 255, 255, 0.08))',
                   borderRadius: 'var(--radius-sm)',
                   padding: '16px',
                   display: 'flex',
@@ -177,14 +175,14 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                       fontWeight: 700,
                       padding: '2px 8px',
                       borderRadius: '10px',
-                      background: isCurrent ? 'rgba(229, 181, 79, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                      color: isCurrent ? '#e5b54f' : 'var(--text-muted)'
+                      background: isCurrent ? 'rgba(229, 181, 79, 0.25)' : 'var(--accent-subtle, rgba(255, 255, 255, 0.08))',
+                      color: isCurrent ? 'var(--brand-gold, #e5b54f)' : 'var(--text-muted)'
                     }}>
                       {arch.badge}
                     </span>
                   </div>
 
-                  <h3 className="font-brand" style={{ fontSize: '1.02rem', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
+                  <h3 className="font-brand" style={{ fontSize: '1.02rem', fontWeight: 800, color: 'var(--text-high, #fff)', marginBottom: '6px' }}>
                     {arch.title}
                   </h3>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4', marginBottom: '10px' }}>
@@ -194,7 +192,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '10px' }}>
                     {arch.features.map((feat, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--text-main)' }}>
-                        <Check size={12} color="#e5b54f" />
+                        <Check size={12} color="var(--brand-gold, #e5b54f)" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -215,9 +213,9 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     width: '100%',
                     padding: '8px 12px',
                     borderRadius: 'var(--radius-xs)',
-                    background: isCurrent ? 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 100%)' : 'rgba(255, 255, 255, 0.08)',
-                    color: isCurrent ? '#08080c' : '#fff',
-                    border: isCurrent ? 'none' : '1px solid rgba(255, 255, 255, 0.12)',
+                    background: isCurrent ? 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 100%)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.08))',
+                    color: isCurrent ? '#08080c' : 'var(--text-high, #fff)',
+                    border: isCurrent ? 'none' : '1px solid var(--border-light, rgba(255, 255, 255, 0.12))',
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',

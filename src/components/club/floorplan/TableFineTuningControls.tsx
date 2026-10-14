@@ -32,15 +32,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {/* Precision Position Card */}
-      <div style={{
-        padding: '14px',
-        borderRadius: 'var(--radius-sm)',
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px solid rgba(229, 181, 79, 0.16)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
-      }}>
+      <div className="floorplan-subcard">
         {/* Header with Step Selector */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{
@@ -61,16 +53,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setStepSize(1)}
-              style={{
-                padding: '2px 8px',
-                fontSize: '0.68rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 700,
-                background: stepSize === 1 ? 'rgba(229, 181, 79, 0.25)' : 'rgba(255,255,255,0.04)',
-                border: stepSize === 1 ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.08)',
-                color: stepSize === 1 ? 'var(--brand-gold)' : 'var(--text-muted)'
-              }}
+              className={`floorplan-preset-pill ${stepSize === 1 ? 'active' : ''}`}
               title="Mover de 1% en 1%"
             >
               1%
@@ -78,16 +61,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => setStepSize(5)}
-              style={{
-                padding: '2px 8px',
-                fontSize: '0.68rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 700,
-                background: stepSize === 5 ? 'rgba(229, 181, 79, 0.25)' : 'rgba(255,255,255,0.04)',
-                border: stepSize === 5 ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.08)',
-                color: stepSize === 5 ? 'var(--brand-gold)' : 'var(--text-muted)'
-              }}
+              className={`floorplan-preset-pill ${stepSize === 5 ? 'active' : ''}`}
               title="Mover de 5% en 5%"
             >
               5%
@@ -98,7 +72,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
         {/* Direct Numerical X / Y Inputs */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div>
-            <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+            <label className="floorplan-label">
               Coordenada X (Horizontal)
             </label>
             <div style={{ position: 'relative' }}>
@@ -114,16 +88,12 @@ export const TableFineTuningControls: React.FC<Props> = ({
                     onUpdateTable(selectedTable.id, { x: Math.max(2, Math.min(98, val)) });
                   }
                 }}
+                className="floorplan-input"
                 style={{
-                  width: '100%',
                   padding: '7px 24px 7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: 'var(--radius-xs)',
                   color: 'var(--brand-gold)',
                   fontFamily: 'monospace',
-                  fontSize: '0.85rem',
-                  fontWeight: 800
+                  fontSize: '0.85rem'
                 }}
               />
               <span style={{ position: 'absolute', right: '8px', top: '7px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -133,7 +103,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           </div>
 
           <div>
-            <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+            <label className="floorplan-label">
               Coordenada Y (Vertical)
             </label>
             <div style={{ position: 'relative' }}>
@@ -149,16 +119,12 @@ export const TableFineTuningControls: React.FC<Props> = ({
                     onUpdateTable(selectedTable.id, { y: Math.max(2, Math.min(98, val)) });
                   }
                 }}
+                className="floorplan-input"
                 style={{
-                  width: '100%',
                   padding: '7px 24px 7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: 'var(--radius-xs)',
                   color: 'var(--brand-gold)',
                   fontFamily: 'monospace',
-                  fontSize: '0.85rem',
-                  fontWeight: 800
+                  fontSize: '0.85rem'
                 }}
               />
               <span style={{ position: 'absolute', right: '8px', top: '7px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -181,17 +147,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => moveTable(0, -stepSize)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.12s ease'
-            }}
+            className="floorplan-dpad-btn"
             title={`Mover Arriba (-${stepSize}%)`}
           >
             <ArrowUp size={15} />
@@ -201,17 +157,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => moveTable(-stepSize, 0)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.12s ease'
-            }}
+            className="floorplan-dpad-btn"
             title={`Mover Izquierda (-${stepSize}%)`}
           >
             <ArrowLeft size={15} />
@@ -219,17 +165,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => moveTable(0, stepSize)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.12s ease'
-            }}
+            className="floorplan-dpad-btn"
             title={`Mover Abajo (+${stepSize}%)`}
           >
             <ArrowDown size={15} />
@@ -237,17 +173,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => moveTable(stepSize, 0)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '6px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
-              cursor: 'pointer',
-              transition: 'all 0.12s ease'
-            }}
+            className="floorplan-dpad-btn"
             title={`Mover Derecha (+${stepSize}%)`}
           >
             <ArrowRight size={15} />
@@ -256,15 +182,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
       </div>
 
       {/* Rotation Control Card */}
-      <div style={{
-        padding: '12px 14px',
-        borderRadius: 'var(--radius-sm)',
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px solid rgba(255, 255, 255, 0.07)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px'
-      }}>
+      <div className="floorplan-subcard">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{
             fontSize: '0.72rem',
@@ -277,7 +195,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
             <RotateCw size={12} color="var(--brand-gold)" />
             Orientación / Giro
           </span>
-          <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: '#ffffff', fontWeight: 800 }}>
+          <span style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--text-high, #ffffff)', fontWeight: 800 }}>
             {currentRotation}°
           </span>
         </div>
@@ -288,17 +206,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
               key={deg}
               type="button"
               onClick={() => setRotation(deg)}
-              style={{
-                padding: '5px',
-                borderRadius: '6px',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                background: currentRotation === deg ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.04)',
-                border: currentRotation === deg ? '1px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
-                color: currentRotation === deg ? 'var(--brand-gold)' : 'var(--text-muted)',
-                cursor: 'pointer',
-                transition: 'all 0.12s ease'
-              }}
+              className={`floorplan-preset-pill ${currentRotation === deg ? 'active' : ''}`}
             >
               {deg}°
             </button>
@@ -308,14 +216,9 @@ export const TableFineTuningControls: React.FC<Props> = ({
 
       {/* Event Pricing (if pricing exists) */}
       {selectedPricing && onUpdatePricing && (
-        <div style={{
-          padding: '14px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px'
+        <div className="floorplan-subcard" style={{
+          border: '1px solid rgba(16, 185, 129, 0.35)',
+          background: 'rgba(16, 185, 129, 0.05)'
         }}>
           <div style={{
             fontSize: '0.72rem',
@@ -332,7 +235,7 @@ export const TableFineTuningControls: React.FC<Props> = ({
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+              <label className="floorplan-label">
                 Consumo Mínimo (USD)
               </label>
               <input
@@ -340,21 +243,16 @@ export const TableFineTuningControls: React.FC<Props> = ({
                 min={0}
                 value={selectedPricing.min_spend}
                 onChange={e => onUpdatePricing(selectedTable.id, Number(e.target.value), selectedPricing.deposit_required)}
+                className="floorplan-input"
                 style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 800
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  fontSize: '0.85rem'
                 }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+              <label className="floorplan-label">
                 Anticipo Requerido (USD)
               </label>
               <input
@@ -362,15 +260,10 @@ export const TableFineTuningControls: React.FC<Props> = ({
                 min={0}
                 value={selectedPricing.deposit_required}
                 onChange={e => onUpdatePricing(selectedTable.id, selectedPricing.min_spend, Number(e.target.value))}
+                className="floorplan-input"
                 style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 800
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  fontSize: '0.85rem'
                 }}
               />
             </div>

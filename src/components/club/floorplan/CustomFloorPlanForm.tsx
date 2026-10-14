@@ -51,41 +51,33 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
     <form onSubmit={handleSubmit} noValidate>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
         <div>
-          <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+          <label className="floorplan-label" style={{ display: 'block', marginBottom: '4px' }}>
             Establecimiento
           </label>
           <input
             type="text"
             value={clubName}
             disabled
+            className="floorplan-input"
             style={{
               width: '100%',
-              padding: '8px 12px',
-              borderRadius: 'var(--radius-xs)',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff',
-              fontSize: '0.82rem'
+              opacity: 0.7,
+              cursor: 'not-allowed'
             }}
           />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div>
-            <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+            <label className="floorplan-label" style={{ display: 'block', marginBottom: '4px' }}>
               Tipo de Espacio
             </label>
             <select
               value={venueType}
               onChange={e => setVenueType(e.target.value)}
+              className="floorplan-input"
               style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 'var(--radius-xs)',
-                background: '#12141f',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#fff',
-                fontSize: '0.8rem'
+                width: '100%'
               }}
             >
               <option value="NIGHTCLUB">Discoteca</option>
@@ -97,20 +89,15 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
           </div>
 
           <div>
-            <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+            <label className="floorplan-label" style={{ display: 'block', marginBottom: '4px' }}>
               Mesas Estimadas
             </label>
             <select
               value={estimatedTables}
               onChange={e => setEstimatedTables(e.target.value)}
+              className="floorplan-input"
               style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 'var(--radius-xs)',
-                background: '#12141f',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#fff',
-                fontSize: '0.8rem'
+                width: '100%'
               }}
             >
               <option value="Hasta 15 mesas">Hasta 15 mesas</option>
@@ -122,7 +109,7 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
         </div>
 
         <div>
-          <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+          <label className="floorplan-label" style={{ display: 'block', marginBottom: '4px' }}>
             WhatsApp del Encargado / Propietario
           </label>
           <input
@@ -139,25 +126,21 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
             placeholder={ECUADOR_MOBILE_PLACEHOLDER}
             aria-invalid={Boolean(phoneError)}
             aria-describedby={phoneError ? 'custom-plan-phone-error' : undefined}
+            className="floorplan-input"
             style={{
               width: '100%',
-              padding: '8px 12px',
-              borderRadius: 'var(--radius-xs)',
-              background: '#12141f',
-              border: `1px solid ${phoneError ? '#ef4444' : 'rgba(255, 255, 255, 0.15)'}`,
-              color: '#fff',
-              fontSize: '0.82rem'
+              borderColor: phoneError ? '#ef4444' : undefined
             }}
           />
           {phoneError && (
-            <p id="custom-plan-phone-error" role="alert" style={{ margin: '5px 0 0', color: '#fca5a5', fontSize: '0.7rem' }}>
+            <p id="custom-plan-phone-error" role="alert" style={{ margin: '5px 0 0', color: '#ef4444', fontSize: '0.75rem', fontWeight: 600 }}>
               {phoneError}
             </p>
           )}
         </div>
 
         <div>
-          <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+          <label className="floorplan-label" style={{ display: 'block', marginBottom: '4px' }}>
             Instrucciones o Enlace a Plano / Fotos
           </label>
           <textarea
@@ -165,14 +148,9 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
             onChange={e => setNotes(e.target.value)}
             placeholder="Ejemplo: tenemos 3 zonas: palcos VIP a la izquierda, pista central y cabina del DJ..."
             rows={2}
+            className="floorplan-input"
             style={{
               width: '100%',
-              padding: '8px 12px',
-              borderRadius: 'var(--radius-xs)',
-              background: '#12141f',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: '#fff',
-              fontSize: '0.8rem',
               resize: 'none'
             }}
           />

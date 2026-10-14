@@ -50,13 +50,9 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
 }) => {
   if (!selectedTable) {
     return (
-      <div style={{
+      <div className="floorplan-panel-card" style={{
         padding: '36px 24px',
-        background: 'linear-gradient(180deg, #0b0e17 0%, #07090f 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.2)',
-        borderRadius: 'var(--radius-md)',
         textAlign: 'center',
-        color: 'var(--text-muted)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -66,8 +62,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
           width: '44px',
           height: '44px',
           borderRadius: '10px',
-          background: 'rgba(229, 181, 79, 0.08)',
-          border: '1px solid rgba(229, 181, 79, 0.2)',
+          background: 'var(--accent-subtle, rgba(229, 181, 79, 0.08))',
+          border: '1px solid var(--border-light, rgba(229, 181, 79, 0.2))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
@@ -75,10 +71,10 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
           <LayoutGrid size={22} color="var(--brand-gold)" />
         </div>
         <div>
-          <h4 style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 700, marginBottom: '4px' }}>
+          <h4 className="floorplan-panel-title" style={{ fontSize: '0.95rem', marginBottom: '4px' }}>
             Inspector de Mesas
           </h4>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', maxWidth: '280px', lineHeight: 1.5 }}>
+          <p className="floorplan-panel-subtitle" style={{ maxWidth: '280px', lineHeight: 1.5 }}>
             Selecciona cualquier mesa en el plano para editar su capacidad, forma, color y posición milimétrica.
           </p>
         </div>
@@ -90,15 +86,7 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
   const activeColorObj = TIER_COLORS.find(c => c.color.toLowerCase() === (selectedTable.tier_color || '#eab308').toLowerCase()) || TIER_COLORS[0];
 
   return (
-    <div style={{
-      padding: '20px',
-      background: 'linear-gradient(180deg, #0b0e17 0%, #07090f 100%)',
-      border: '1px solid rgba(229, 181, 79, 0.22)',
-      borderRadius: 'var(--radius-md)',
-      position: 'relative',
-      boxShadow: '0 18px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(229, 181, 79, 0.15)',
-      overflow: 'hidden'
-    }}>
+    <div className="floorplan-panel-card" style={{ padding: '20px' }}>
       {/* Top Gold Horizon Accent Line */}
       <div style={{
         position: 'absolute',
@@ -117,7 +105,7 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
         alignItems: 'center',
         marginBottom: '16px',
         paddingBottom: '14px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.08))'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* Live Preview Chip */}
@@ -139,10 +127,10 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
           </div>
 
           <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em', margin: 0 }}>
+            <h3 className="floorplan-panel-title" style={{ fontSize: '1.05rem', margin: 0 }}>
               Propiedades: <span style={{ color: 'var(--brand-gold)' }}>{selectedTable.table_code}</span>
             </h3>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <span className="floorplan-panel-subtitle">
               {esTableZone(selectedTable.zone)} · {selectedTable.capacity} Personas
             </span>
           </div>
@@ -166,16 +154,16 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
             title={isConfirmedForDelete ? "Haz clic de nuevo para confirmar eliminación" : "Eliminar Mesa"}
             style={{
               padding: '6px 12px',
-              background: isConfirmedForDelete ? '#dc2626' : 'rgba(239, 68, 68, 0.14)',
+              background: isConfirmedForDelete ? '#dc2626' : 'rgba(239, 68, 68, 0.12)',
               border: isConfirmedForDelete ? '1px solid #ef4444' : '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: 'var(--radius-xs)',
-              color: '#ffffff',
+              color: isConfirmedForDelete ? '#ffffff' : 'var(--state-danger-text, #f87171)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '5px',
               fontSize: '0.74rem',
-              fontWeight: isConfirmedForDelete ? 800 : 600,
+              fontWeight: isConfirmedForDelete ? 800 : 700,
               boxShadow: isConfirmedForDelete ? '0 0 14px rgba(239, 68, 68, 0.6)' : 'none',
               transition: 'all 0.15s ease'
             }}
@@ -189,12 +177,10 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
               type="button"
               onClick={onCancelDelete}
               title="Cancelar eliminación"
+              className="btn-ghost"
               style={{
                 padding: '6px 8px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: 'var(--radius-xs)',
-                color: '#94a3b8',
                 cursor: 'pointer',
                 fontSize: '0.72rem'
               }}
@@ -207,57 +193,31 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {/* Card Section 1: Identificación & Capacidad */}
-        <div style={{
-          padding: '12px 14px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px'
-        }}>
+        <div className="floorplan-subcard">
           {/* Row: Código + Etiqueta */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+              <label className="floorplan-label">
                 Código de Mesa
               </label>
               <input
                 type="text"
+                className="floorplan-input"
                 value={selectedTable.table_code}
                 onChange={e => onUpdateTable(selectedTable.id, { table_code: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(229, 181, 79, 0.25)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#fff',
-                  fontSize: '0.82rem',
-                  fontWeight: 800
-                }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+              <label className="floorplan-label">
                 Etiqueta en Plano (Corta)
               </label>
               <input
                 type="text"
+                className="floorplan-input"
                 value={selectedTable.badge_number || ''}
                 onChange={e => onUpdateTable(selectedTable.id, { badge_number: e.target.value })}
                 placeholder={selectedTable.table_code}
-                style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(229, 181, 79, 0.25)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#fff',
-                  fontSize: '0.82rem',
-                  fontWeight: 800
-                }}
               />
             </div>
           </div>
@@ -265,49 +225,31 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
           {/* Row: Zona + Capacidad */}
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+              <label className="floorplan-label">
                 Zona del Club
               </label>
               <select
+                className="floorplan-input"
                 value={selectedTable.zone}
                 onChange={e => onUpdateTable(selectedTable.id, { zone: e.target.value as TableZone, tier_name: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(229, 181, 79, 0.25)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#fff',
-                  fontSize: '0.8rem',
-                  fontWeight: 600
-                }}
               >
                 {ZONE_OPTIONS.map(z => (
-                  <option key={z} value={z} style={{ background: '#0e121a' }}>{esTableZone(z)}</option>
+                  <option key={z} value={z}>{esTableZone(z)}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+              <label className="floorplan-label">
                 Capacidad (Personas)
               </label>
               <input
                 type="number"
                 min={1}
                 max={50}
+                className="floorplan-input"
                 value={selectedTable.capacity}
                 onChange={e => onUpdateTable(selectedTable.id, { capacity: Number(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '7px 10px',
-                  background: 'rgba(8, 10, 16, 0.9)',
-                  border: '1px solid rgba(229, 181, 79, 0.25)',
-                  borderRadius: 'var(--radius-xs)',
-                  color: '#fff',
-                  fontSize: '0.82rem',
-                  fontWeight: 800
-                }}
               />
             </div>
           </div>
@@ -323,17 +265,7 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
                 key={cap}
                 type="button"
                 onClick={() => onUpdateTable(selectedTable.id, { capacity: cap })}
-                style={{
-                  padding: '2px 8px',
-                  fontSize: '0.68rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  background: selectedTable.capacity === cap ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.04)',
-                  border: selectedTable.capacity === cap ? '1px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
-                  color: selectedTable.capacity === cap ? 'var(--brand-gold)' : 'var(--text-muted)',
-                  transition: 'all 0.12s ease'
-                }}
+                className={`floorplan-preset-pill ${selectedTable.capacity === cap ? 'active' : ''}`}
               >
                 {cap}p
               </button>
@@ -342,16 +274,8 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
         </div>
 
         {/* Card Section 2: Morfología Geométrica */}
-        <div style={{
-          padding: '12px 14px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px'
-        }}>
-          <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+        <div className="floorplan-subcard">
+          <label className="floorplan-label">
             Forma Geométrica de la Mesa
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
@@ -367,36 +291,21 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
                   key={shape}
                   type="button"
                   onClick={() => onUpdateTable(selectedTable.id, { shape })}
-                  style={{
-                    padding: '8px 4px',
-                    borderRadius: 'var(--radius-xs)',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    background: isCurrent ? 'rgba(229, 181, 79, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                    color: isCurrent ? 'var(--brand-gold)' : 'var(--text-muted)',
-                    border: isCurrent ? '1.5px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.08)',
-                    cursor: 'pointer',
-                    boxShadow: isCurrent ? '0 0 10px rgba(229, 181, 79, 0.25)' : 'none',
-                    transition: 'all 0.15s ease'
-                  }}
+                  className={`floorplan-option-btn ${isCurrent ? 'active' : ''}`}
                 >
                   {/* SVG Shape Icon */}
                   <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
                     {shape === 'circle' && (
-                      <circle cx="11" cy="9" r="7" stroke={isCurrent ? 'var(--brand-gold)' : 'rgba(255,255,255,0.4)'} strokeWidth="1.8" />
+                      <circle cx="11" cy="9" r="7" stroke={isCurrent ? 'var(--brand-gold)' : 'currentColor'} strokeWidth="1.8" />
                     )}
                     {shape === 'pill' && (
-                      <rect x="2" y="4" width="18" height="10" rx="5" stroke={isCurrent ? 'var(--brand-gold)' : 'rgba(255,255,255,0.4)'} strokeWidth="1.8" />
+                      <rect x="2" y="4" width="18" height="10" rx="5" stroke={isCurrent ? 'var(--brand-gold)' : 'currentColor'} strokeWidth="1.8" />
                     )}
                     {shape === 'square' && (
-                      <rect x="5" y="3" width="12" height="12" rx="2" stroke={isCurrent ? 'var(--brand-gold)' : 'rgba(255,255,255,0.4)'} strokeWidth="1.8" />
+                      <rect x="5" y="3" width="12" height="12" rx="2" stroke={isCurrent ? 'var(--brand-gold)' : 'currentColor'} strokeWidth="1.8" />
                     )}
                     {shape === 'rect' && (
-                      <rect x="2" y="4" width="18" height="10" rx="2" stroke={isCurrent ? 'var(--brand-gold)' : 'rgba(255,255,255,0.4)'} strokeWidth="1.8" />
+                      <rect x="2" y="4" width="18" height="10" rx="2" stroke={isCurrent ? 'var(--brand-gold)' : 'currentColor'} strokeWidth="1.8" />
                     )}
                   </svg>
                   <span>{label}</span>
@@ -407,17 +316,9 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
         </div>
 
         {/* Card Section 3: Color de Nivel / Categoría VIP */}
-        <div style={{
-          padding: '12px 14px',
-          borderRadius: 'var(--radius-sm)',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.07)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px'
-        }}>
+        <div className="floorplan-subcard">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+            <label className="floorplan-label" style={{ margin: 0 }}>
               Color de Nivel / Categoría VIP
             </label>
             <span style={{ fontSize: '0.7rem', color: activeColorObj.color, fontWeight: 700 }}>
@@ -439,7 +340,7 @@ export const TablePropertiesSidebar: React.FC<Props> = ({
                     height: '28px',
                     borderRadius: '50%',
                     background: t.color,
-                    border: isSelected ? '3px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.2)',
+                    border: isSelected ? '3px solid var(--text-high, #ffffff)' : '1px solid var(--border-light, rgba(255, 255, 255, 0.2))',
                     cursor: 'pointer',
                     boxShadow: isSelected ? `0 0 12px ${t.color}` : 'none',
                     transform: isSelected ? 'scale(1.15)' : 'scale(1)',

@@ -144,7 +144,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   fontWeight: 800,
                   fontSize: '1.02rem',
                   letterSpacing: '0.1em',
-                  color: '#f4f1ea',
+                  color: 'var(--text-high, #f4f1ea)',
                 }}>
                   NIGHTFLOW
                 </span>
@@ -182,7 +182,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'var(--text-muted, rgba(255, 255, 255, 0.5))',
               cursor: 'pointer',
               padding: '4px',
             }}
@@ -212,7 +212,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     <Building size={14} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', display: 'block', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', display: 'block', lineHeight: 1.2 }}>
                       {activeClub.name}
                     </span>
                     <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>
@@ -229,7 +229,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 gap: '6px',
                 marginTop: '8px',
                 paddingTop: '6px',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                borderTop: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.05))',
                 fontSize: '0.64rem',
                 color: '#10b981'
               }}>
@@ -575,24 +575,30 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   session.displayName.charAt(0).toUpperCase()
                 )}
               </div>
-              <div style={{ minWidth: 0 }}>
-                <span style={{
-                  fontSize: '0.76rem',
-                  fontWeight: 700,
-                  color: '#ffffff',
-                  display: 'block',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <span
+                  className="admin-user-name"
+                  style={{
+                    fontSize: '0.76rem',
+                    fontWeight: 700,
+                    color: 'var(--text-high, #ffffff)',
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
                   {session.displayName}
                 </span>
-                <span style={{
-                  fontSize: '0.6rem',
-                  color: roleBadgeColor,
-                  fontWeight: 800,
-                  letterSpacing: '0.04em'
-                }}>
+                <span
+                  className="admin-user-role"
+                  style={{
+                    fontSize: '0.6rem',
+                    color: roleBadgeColor,
+                    fontWeight: 800,
+                    letterSpacing: '0.04em'
+                  }}
+                >
                   {roleLabel}
                 </span>
               </div>

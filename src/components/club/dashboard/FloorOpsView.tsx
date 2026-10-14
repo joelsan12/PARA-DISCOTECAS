@@ -320,16 +320,16 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
       )}
 
       {/* ── Cabecera Ejecutiva Unificada: Sala & Concierge ── */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(14, 20, 30, 0.95) 0%, rgba(8, 11, 18, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        borderRadius: '16px',
-        padding: '16px 20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
-      }}>
+      <div
+        className="floorplan-panel-card"
+        style={{
+          borderRadius: '16px',
+          padding: '16px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
+        }}
+      >
         {/* Fila Superior: Título + Selector de Modo Segmentado */}
         <div style={{
           display: 'flex',
@@ -343,19 +343,19 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               width: '40px',
               height: '40px',
               borderRadius: '11px',
-              background: 'rgba(229, 181, 79, 0.12)',
-              border: '1px solid rgba(229, 181, 79, 0.35)',
+              background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))',
+              border: '1px solid var(--border-light, rgba(229, 181, 79, 0.35))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#e5b54f',
+              color: 'var(--brand-gold, #e5b54f)',
               boxShadow: '0 0 16px rgba(229, 181, 79, 0.15)',
             }}>
               {opsMode === 'MAP' ? <MonitorPlay size={20} /> : <Compass size={20} />}
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#f4f1ea' }}>
+                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
                   {opsMode === 'MAP' ? 'Sala en Vivo · Plano & Mesas' : 'Piso & Concierge · Control de Operaciones'}
                 </h3>
                 <span style={{
@@ -364,14 +364,14 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                   letterSpacing: '0.06em',
                   padding: '2px 7px',
                   borderRadius: '999px',
-                  background: 'rgba(52, 211, 153, 0.12)',
-                  color: '#34d399',
-                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                  background: 'var(--state-success-subtle, rgba(52, 211, 153, 0.12))',
+                  color: 'var(--state-success, #34d399)',
+                  border: '1px solid var(--state-success-border, rgba(52, 211, 153, 0.3))',
                 }}>
                   LIVE
                 </span>
               </div>
-              <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+              <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>
                 {activeClub.name} · {clubTables.length} mesas configuradas · Sincronización en vivo
               </p>
             </div>
@@ -385,8 +385,8 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               gap: '4px',
               padding: '4px',
               borderRadius: '10px',
-              background: 'rgba(0, 0, 0, 0.5)',
-              border: '1px solid rgba(229, 181, 79, 0.22)',
+              background: 'var(--bg-elevated, rgba(0, 0, 0, 0.5))',
+              border: '1px solid var(--border-light, rgba(229, 181, 79, 0.22))',
             }}>
               <button
                 type="button"

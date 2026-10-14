@@ -54,15 +54,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
   const activeDraggedY = isDragging && dragCoords ? dragCoords.y : draggedTable?.y ?? 0;
 
   return (
-    <div style={{
-      padding: '20px',
-      background: 'linear-gradient(180deg, #0b0e17 0%, #07090f 100%)',
-      border: '1px solid rgba(229, 181, 79, 0.22)',
-      borderRadius: 'var(--radius-md)',
-      position: 'relative',
-      boxShadow: '0 18px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(229, 181, 79, 0.15)',
-      overflow: 'hidden'
-    }}>
+    <div className="floorplan-panel-card" style={{ padding: '20px' }}>
       {/* Top Gold Horizon Accent Line */}
       <div style={{
         position: 'absolute',
@@ -88,8 +80,8 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             width: '26px',
             height: '26px',
             borderRadius: '6px',
-            background: 'rgba(229, 181, 79, 0.12)',
-            border: '1px solid rgba(229, 181, 79, 0.3)',
+            background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))',
+            border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -97,13 +89,13 @@ export const FloorPlanCanvas: React.FC<Props> = ({
             <Compass size={14} color="var(--brand-gold)" />
           </div>
           <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.02em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="floorplan-panel-title" style={{ fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span>Plano Operativo de Sala</span>
-              <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))', color: 'var(--brand-gold)', fontWeight: 700 }}>
                 {clubTables.length} {clubTables.length === 1 ? 'mesa' : 'mesas'}
               </span>
             </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <div className="floorplan-panel-subtitle">
               Haz clic y arrastra cualquier mesa · Guías láser activas en tiempo real
             </div>
           </div>
@@ -112,21 +104,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {/* Active Dragging Real-Time Coordinates Badge */}
           {isDragging && draggedTable && (
-            <div style={{
-              fontSize: '0.74rem',
-              color: '#ffffff',
-              background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.3) 0%, rgba(16, 185, 129, 0.2) 100%)',
-              border: '1px solid var(--accent)',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: 'monospace',
-              boxShadow: '0 0 16px rgba(229, 181, 79, 0.45)',
-              animation: 'pulse 1.5s infinite'
-            }}>
+            <div className="floorplan-drag-coords-badge">
               <Crosshair size={13} color="var(--brand-gold)" />
               <span>{draggedTable.table_code}</span>
               <span style={{ color: 'var(--brand-gold)' }}>X: {activeDraggedX}% · Y: {activeDraggedY}%</span>
@@ -137,21 +115,7 @@ export const FloorPlanCanvas: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => setSnapToGrid(!snapToGrid)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '5px 12px',
-              fontSize: '0.74rem',
-              borderRadius: '16px',
-              cursor: 'pointer',
-              background: snapToGrid ? 'rgba(229, 181, 79, 0.16)' : 'rgba(255, 255, 255, 0.04)',
-              border: snapToGrid ? '1px solid rgba(229, 181, 79, 0.55)' : '1px solid rgba(255, 255, 255, 0.1)',
-              color: snapToGrid ? 'var(--brand-gold)' : 'var(--text-muted)',
-              fontWeight: 700,
-              boxShadow: snapToGrid ? '0 0 10px rgba(229, 181, 79, 0.2)' : 'none',
-              transition: 'all 0.15s ease'
-            }}
+            className={`floorplan-magnet-btn ${snapToGrid ? 'floorplan-magnet-btn--active' : 'floorplan-magnet-btn--inactive'}`}
             title="Ajustar mesas a saltos de rejilla limpia (1%) o movimiento milimétrico libre"
           >
             <Grid size={13} color={snapToGrid ? 'var(--brand-gold)' : 'currentColor'} />
@@ -161,19 +125,14 @@ export const FloorPlanCanvas: React.FC<Props> = ({
       </div>
 
       {/* Architectural SVG Canvas Container */}
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: layoutType === 'downtown_suites' ? '0.62/1' : isAmphi ? '0.94/1' : '1/1',
-        maxHeight: '660px',
-        margin: '0 auto',
-        background: isAmphi ? '#121622' : '#080c14',
-        borderRadius: isAmphi ? '24px' : '14px',
-        border: '1.5px solid rgba(229, 181, 79, 0.25)',
-        overflow: 'hidden',
-        boxShadow: 'inset 0 0 60px rgba(0, 0, 0, 0.85), 0 10px 30px rgba(0,0,0,0.5)',
-        userSelect: 'none'
-      }}>
+      <div
+        className="floorplan-canvas-viewport"
+        style={{
+          aspectRatio: layoutType === 'downtown_suites' ? '0.62/1' : isAmphi ? '0.94/1' : '1/1',
+          background: isAmphi ? '#121622' : '#080c14',
+          borderRadius: isAmphi ? '24px' : '14px',
+        }}
+      >
         {/* Subtle Ambient Blueprint Grid Texture via CSS background */}
         <div style={{
           position: 'absolute',

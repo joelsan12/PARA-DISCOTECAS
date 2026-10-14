@@ -302,11 +302,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           width: '100%',
           maxWidth: '560px',
           maxHeight: '90vh',
-          background: 'linear-gradient(180deg, #0e121a 0%, #07090e 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.3)',
+          background: 'var(--bg-surface, #ffffff)',
+          border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
           borderRadius: '20px',
           padding: '24px',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(229, 181, 79, 0.2)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(229, 181, 79, 0.2)',
           display: 'flex',
           flexDirection: 'column',
           gap: '18px',
@@ -320,8 +320,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               width: '40px',
               height: '40px',
               borderRadius: '12px',
-              background: 'rgba(229, 181, 79, 0.12)',
-              border: '1px solid rgba(229, 181, 79, 0.35)',
+              background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))',
+              border: '1px solid var(--border-light, rgba(229, 181, 79, 0.35))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -329,7 +329,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <ShieldCheck size={20} color="var(--brand-gold)" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 Perfil de Administrador
               </h3>
               <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
@@ -342,7 +342,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             type="button"
             onClick={onClose}
             className="btn-ghost"
-            style={{ padding: '6px', color: '#94a3b8' }}
+            style={{ padding: '6px' }}
             title="Cerrar modal"
           >
             <X size={18} />
@@ -353,10 +353,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         <div style={{
           display: 'flex',
           gap: '8px',
-          background: 'rgba(255, 255, 255, 0.03)',
+          background: 'var(--bg-elevated, rgba(255, 255, 255, 0.03))',
           padding: '4px',
           borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.06)'
+          border: '1px solid var(--border-light, rgba(255, 255, 255, 0.06))'
         }}>
           <button
             type="button"
@@ -369,9 +369,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               fontWeight: 700,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'GENERAL' ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.25) 0%, rgba(229, 181, 79, 0.12) 100%)' : 'transparent',
-              color: activeTab === 'GENERAL' ? 'var(--brand-gold)' : '#94a3b8',
-              boxShadow: activeTab === 'GENERAL' ? 'inset 0 0 0 1px rgba(229, 181, 79, 0.4)' : 'none',
+              background: activeTab === 'GENERAL' ? 'var(--accent-subtle, rgba(229, 181, 79, 0.25))' : 'transparent',
+              color: activeTab === 'GENERAL' ? 'var(--brand-gold)' : 'var(--text-muted)',
+              boxShadow: activeTab === 'GENERAL' ? 'inset 0 0 0 1px var(--border-light, rgba(229, 181, 79, 0.4))' : 'none',
               transition: 'all 0.15s ease'
             }}
           >
@@ -389,9 +389,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               fontWeight: 700,
               cursor: 'pointer',
               border: 'none',
-              background: activeTab === 'SECURITY' ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.25) 0%, rgba(229, 181, 79, 0.12) 100%)' : 'transparent',
-              color: activeTab === 'SECURITY' ? 'var(--brand-gold)' : '#94a3b8',
-              boxShadow: activeTab === 'SECURITY' ? 'inset 0 0 0 1px rgba(229, 181, 79, 0.4)' : 'none',
+              background: activeTab === 'SECURITY' ? 'var(--accent-subtle, rgba(229, 181, 79, 0.25))' : 'transparent',
+              color: activeTab === 'SECURITY' ? 'var(--brand-gold)' : 'var(--text-muted)',
+              boxShadow: activeTab === 'SECURITY' ? 'inset 0 0 0 1px var(--border-light, rgba(229, 181, 79, 0.4))' : 'none',
               transition: 'all 0.15s ease'
             }}
           >
@@ -545,15 +545,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Tu nombre o apodo operativo"
+                  className="floorplan-input"
                   style={{
-                    width: '100%',
                     padding: '9px 12px 9px 36px',
-                    background: 'rgba(8, 10, 16, 0.85)',
-                    border: '1px solid rgba(229, 181, 79, 0.3)',
                     borderRadius: '10px',
-                    color: '#ffffff',
-                    fontSize: '0.84rem',
-                    fontWeight: 600
+                    fontSize: '0.84rem'
                   }}
                 />
                 <User size={15} color="var(--brand-gold)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -566,7 +562,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             {/* Field: Nombre del Negocio (ESTRICTAMENTE BLOQUEADO / NO MODIFICABLE) */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
                   Nombre del Establecimiento / Negocio
                 </label>
                 <span style={{
@@ -594,18 +590,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   style={{
                     width: '100%',
                     padding: '9px 12px 9px 36px',
-                    background: 'rgba(15, 20, 28, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    background: 'var(--bg-elevated, rgba(15, 20, 28, 0.6))',
+                    border: '1px solid var(--border-light, rgba(255, 255, 255, 0.1))',
                     borderRadius: '10px',
-                    color: '#94a3b8',
+                    color: 'var(--text-muted)',
                     fontSize: '0.84rem',
                     fontWeight: 700,
                     cursor: 'not-allowed'
                   }}
                 />
-                <Building2 size={15} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <Building2 size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               </div>
-              <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block', marginTop: '4px', lineHeight: 1.4 }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block', marginTop: '4px', lineHeight: 1.4 }}>
                 🔒 El nombre del negocio define la identidad pública y fiscal del club. No puede alterarse desde el perfil de usuario. Para cambios de razón social, contacta al soporte técnico.
               </span>
             </div>
@@ -621,15 +617,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@tuclub.com"
+                  className="floorplan-input"
                   style={{
-                    width: '100%',
                     padding: '9px 12px 9px 36px',
-                    background: 'rgba(8, 10, 16, 0.85)',
-                    border: '1px solid rgba(229, 181, 79, 0.3)',
                     borderRadius: '10px',
-                    color: '#ffffff',
-                    fontSize: '0.84rem',
-                    fontWeight: 600
+                    fontSize: '0.84rem'
                   }}
                 />
                 <Mail size={15} color="var(--brand-gold)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -658,13 +650,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={currentPasswordForEmail}
                   onChange={(e) => setCurrentPasswordForEmail(e.target.value)}
                   placeholder="Tu contraseña actual"
+                  className="floorplan-input"
                   style={{
-                    width: '100%',
                     padding: '8px 12px',
-                    background: 'rgba(8, 10, 16, 0.9)',
-                    border: '1px solid rgba(245, 158, 11, 0.4)',
                     borderRadius: '8px',
-                    color: '#ffffff',
                     fontSize: '0.82rem'
                   }}
                 />
@@ -707,13 +696,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••"
+                  className="floorplan-input"
                   style={{
-                    width: '100%',
                     padding: '9px 36px 9px 36px',
-                    background: 'rgba(8, 10, 16, 0.85)',
-                    border: '1px solid rgba(229, 181, 79, 0.3)',
                     borderRadius: '10px',
-                    color: '#ffffff',
                     fontSize: '0.84rem'
                   }}
                 />
@@ -728,7 +714,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     transform: 'translateY(-50%)',
                     background: 'none',
                     border: 'none',
-                    color: '#94a3b8',
+                    color: 'var(--text-muted)',
                     cursor: 'pointer'
                   }}
                 >
@@ -748,13 +734,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
+                  className="floorplan-input"
                   style={{
-                    width: '100%',
                     padding: '9px 36px 9px 36px',
-                    background: 'rgba(8, 10, 16, 0.85)',
-                    border: '1px solid rgba(229, 181, 79, 0.3)',
                     borderRadius: '10px',
-                    color: '#ffffff',
                     fontSize: '0.84rem'
                   }}
                 />
@@ -769,7 +752,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     transform: 'translateY(-50%)',
                     background: 'none',
                     border: 'none',
-                    color: '#94a3b8',
+                    color: 'var(--text-muted)',
                     cursor: 'pointer'
                   }}
                 >

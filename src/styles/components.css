@@ -373,3 +373,20 @@
   border-color: rgba(0, 0, 0, 0.15);
 }
 
+[data-theme="light"] .modal-overlay {
+  background: rgba(14, 17, 24, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="light"] .modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(184, 134, 11, 0.25);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1);
+  color: #0e1118;
+}
+
+[data-theme="light"] .modal-content::before {
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.6), transparent);
+}
+

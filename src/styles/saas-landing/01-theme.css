@@ -49,16 +49,16 @@
   --saas-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] h1,
-[data-theme="light"] h2,
-[data-theme="light"] h3,
-[data-theme="light"] h4,
-[data-theme="light"] h5,
-[data-theme="light"] h6,
+[data-theme="light"] .saas-page h1,
+[data-theme="light"] .saas-page h2,
+[data-theme="light"] .saas-page h3,
+[data-theme="light"] .saas-page h4,
+[data-theme="light"] .saas-page h5,
+[data-theme="light"] .saas-page h6,
 [data-theme="light"] .saas-section-title-left {
-  color: #0e1118 !important;
+  color: #0e1118;
 }
 
 [data-theme="light"] .saas-section-desc-left {
-  color: #4a4f5d !important;
+  color: #4a4f5d;
 }
