@@ -70,15 +70,10 @@ export const OperatingTablesList = ({
 
   return (
     <div
-      className="glass-card"
-      style={{
-        padding: '24px',
-        background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.2)',
-      }}
+      className="operating-tables-card"
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 className="font-brand" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+        <h3 className="font-brand" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-high, #fff)', margin: 0 }}>
           Estado Operativo de Mesas
         </h3>
         <span
@@ -110,18 +105,7 @@ export const OperatingTablesList = ({
           return (
             <div
               key={t.id}
-              style={{
-                background: 'rgba(255, 255, 255, 0.025)',
-                padding: '12px 16px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '12px',
-                transition: 'all 0.15s ease',
-              }}
+              className="operating-table-item"
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -135,7 +119,7 @@ export const OperatingTablesList = ({
                       flexShrink: 0,
                     }}
                   />
-                  <span className="font-brand" style={{ fontWeight: 800, color: '#fff', fontSize: '0.92rem' }}>
+                  <span className="font-brand" style={{ fontWeight: 800, color: 'var(--text-high, #fff)', fontSize: '0.92rem' }}>
                     Mesa {t.table_code}
                   </span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>({esTableZone(t.zone)})</span>
@@ -155,8 +139,8 @@ export const OperatingTablesList = ({
                       padding: '3px 8px',
                       borderRadius: '6px',
                       background: 'rgba(56, 189, 248, 0.12)',
-                      color: '#38bdf8',
-                      border: '1px solid rgba(56, 189, 248, 0.28)',
+                      color: 'var(--state-info, #0284c7)',
+                      border: '1px solid var(--state-info-border, rgba(56, 189, 248, 0.28))',
                       fontFamily: 'monospace',
                     }}
                   >
@@ -166,7 +150,7 @@ export const OperatingTablesList = ({
 
                 {/* Si no hay consumo activo, mostrar mínimo regular */}
                 {consumption === 0 && !hasOpenTab && (
-                  <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fde68a' }}>
+                  <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brand-gold, #e5b54f)' }}>
                     Mínimo {formatUsd(minSpend)}
                   </span>
                 )}
@@ -179,9 +163,9 @@ export const OperatingTablesList = ({
                       fontWeight: 800,
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      background: 'rgba(52, 211, 153, 0.15)',
-                      color: '#34d399',
-                      border: '1px solid rgba(52, 211, 153, 0.3)',
+                      background: 'var(--state-success-subtle, rgba(52, 211, 153, 0.15))',
+                      color: 'var(--state-success, #059669)',
+                      border: '1px solid var(--state-success-border, rgba(52, 211, 153, 0.3))',
                     }}
                   >
                     CUENTA CERRADA

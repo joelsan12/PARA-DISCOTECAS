@@ -198,14 +198,14 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Personas Ingresadas
             </span>
-            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontSize: '0.68rem', fontWeight: 800 }}>
+            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: '#059669', fontSize: '0.68rem', fontWeight: 800 }}>
               AFORO REAL
             </span>
           </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#34d399', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
+          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--state-success, #059669)', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
             {totalGuestsEntered}
           </div>
-          <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.55)', marginTop: '8px' }}>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '8px' }}>
             {checkedInList.length} grupos / reservas validadas
           </div>
         </div>
@@ -216,14 +216,14 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Grupos en Sala
             </span>
-            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(229, 181, 79, 0.15)', color: '#e5b54f', fontSize: '0.68rem', fontWeight: 800 }}>
+            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(229, 181, 79, 0.15)', color: 'var(--brand-gold)', fontSize: '0.68rem', fontWeight: 800 }}>
               CHECKED-IN
             </span>
           </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#e5b54f', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
+          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--brand-gold)', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
             {checkedInList.length} <span style={{ fontSize: '1rem', color: 'var(--text-dim)' }}>/ {clubReservations.length}</span>
           </div>
-          <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.55)', marginTop: '8px' }}>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '8px' }}>
             {clubReservations.length > 0
               ? `${Math.round((checkedInList.length / clubReservations.length) * 100)}% de reservas confirmadas arribaron`
               : 'Sin reservas en el turno'}
@@ -231,19 +231,19 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
         </div>
 
         {/* Pendientes de Arribo */}
-        <div className="glass-card" style={{ padding: '18px 20px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div className="glass-card" style={{ padding: '18px 20px', borderRadius: '14px', border: '1px solid var(--border-light, rgba(255, 255, 255, 0.1))' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Pendientes en Puerta
             </span>
-            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(255, 255, 255, 0.08)', color: '#94a3b8', fontSize: '0.68rem', fontWeight: 800 }}>
+            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'var(--bg-elevated, rgba(255, 255, 255, 0.08))', color: 'var(--text-muted, #94a3b8)', fontSize: '0.68rem', fontWeight: 800 }}>
               POR LLEGAR
             </span>
           </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
+          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)', marginTop: '8px', lineHeight: 1 }}>
             {pendingArrivals.length}
           </div>
-          <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.55)', marginTop: '8px' }}>
+          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '8px' }}>
             Mesas reservadas con hold confirmado
           </div>
         </div>
@@ -256,10 +256,10 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
             </span>
             <Clock size={16} color="var(--brand-gold)" />
           </div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', marginTop: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginTop: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {lastEntry ? lastEntry.customer_name : 'Sin registros aún'}
           </div>
-          <div style={{ fontSize: '0.74rem', color: '#fbbf24', marginTop: '6px', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.74rem', color: 'var(--brand-gold)', marginTop: '6px', fontWeight: 600 }}>
             {lastEntry ? `Mesa ${lastEntry.table_code} · ${formatEntryTime(lastEntry.checked_in_at)}` : 'A la espera del primer ingreso'}
           </div>
         </div>
@@ -277,7 +277,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
       }}>
         {/* Input de búsqueda */}
         <div style={{ position: 'relative', flex: '1 1 260px', maxWidth: '420px' }}>
-          <Search size={16} color="rgba(255, 255, 255, 0.4)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={16} color="var(--text-dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
             placeholder="Buscar por cliente, mesa (#VIP-01) o código…"
@@ -287,9 +287,9 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
               width: '100%',
               padding: '10px 14px 10px 38px',
               borderRadius: '10px',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#ffffff',
+              background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+              border: '1px solid var(--border-light, rgba(255, 255, 255, 0.12))',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.84rem',
               outline: 'none',
               boxSizing: 'border-box'
@@ -335,12 +335,12 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
         padding: '0',
         borderRadius: '16px',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.09)'
+        border: '1px solid var(--border-light, rgba(255, 255, 255, 0.09))'
       }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '780px' }}>
             <thead>
-              <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <tr style={{ background: 'var(--bg-elevated, rgba(255, 255, 255, 0.03))', borderBottom: '1px solid var(--border-light, rgba(255, 255, 255, 0.08))' }}>
                 <th style={{ padding: '14px 18px', fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-dim)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                   Cliente / Titular VIP
                 </th>
@@ -371,8 +371,8 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                   <tr
                     key={res.id}
                     style={{
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                      background: isChecked ? 'rgba(16, 185, 129, 0.02)' : 'transparent',
+                      borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.05))',
+                      background: isChecked ? 'rgba(16, 185, 129, 0.04)' : 'transparent',
                       transition: 'background 0.15s ease'
                     }}
                   >
@@ -383,12 +383,12 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                           width: '32px',
                           height: '32px',
                           borderRadius: '8px',
-                          background: isChecked ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                          border: `1px solid ${isChecked ? 'rgba(16, 185, 129, 0.35)' : 'rgba(255, 255, 255, 0.1)'}`,
+                          background: isChecked ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
+                          border: `1px solid ${isChecked ? 'rgba(16, 185, 129, 0.35)' : 'var(--border-light, rgba(255, 255, 255, 0.1))'}`,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: isChecked ? '#34d399' : '#fff',
+                          color: isChecked ? '#059669' : 'var(--text-high, #fff)',
                           fontWeight: 800,
                           fontSize: '0.78rem',
                           flexShrink: 0
@@ -396,7 +396,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                           {res.customer_name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.88rem' }}>
+                          <div style={{ fontWeight: 700, color: 'var(--text-high, #ffffff)', fontSize: '0.88rem' }}>
                             {res.customer_name}
                           </div>
                           {res.customer_phone && (
@@ -410,10 +410,10 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
 
                     {/* Mesa & Zona */}
                     <td style={{ padding: '14px 18px' }}>
-                      <div style={{ fontWeight: 800, color: '#fbbf24', fontSize: '0.88rem', fontFamily: 'var(--font-mono)' }}>
+                      <div style={{ fontWeight: 800, color: 'var(--brand-gold)', fontSize: '0.88rem', fontFamily: 'var(--font-mono)' }}>
                         Mesa {res.table_code}
                       </div>
-                      <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.55)', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                         {esTableZone(res.zone || '')}
                       </div>
                     </td>
@@ -428,11 +428,11 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '6px',
-                          background: 'rgba(255, 255, 255, 0.04)',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          background: 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
+                          border: '1px solid var(--border-light, rgba(255, 255, 255, 0.12))',
                           padding: '4px 8px',
                           borderRadius: '6px',
-                          color: '#ffffff',
+                          color: 'var(--text-high, #ffffff)',
                           fontFamily: 'var(--font-mono)',
                           fontSize: '0.78rem',
                           fontWeight: 700,
@@ -440,7 +440,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                         }}
                       >
                         <span>#{res.code}</span>
-                        {copiedCode === res.code ? <Check size={12} color="#34d399" /> : <Copy size={12} color="rgba(255, 255, 255, 0.4)" />}
+                        {copiedCode === res.code ? <Check size={12} color="#059669" /> : <Copy size={12} color="var(--text-dim)" />}
                       </button>
                     </td>
 
@@ -452,10 +452,10 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                         gap: '5px',
                         padding: '3px 8px',
                         borderRadius: '6px',
-                        background: 'rgba(255, 255, 255, 0.05)',
+                        background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
                         fontSize: '0.76rem',
                         fontWeight: 700,
-                        color: '#ffffff'
+                        color: 'var(--text-high, #ffffff)'
                       }}>
                         <Users size={12} color="var(--brand-gold)" />
                         {res.guest_count || 1} pers.
@@ -466,8 +466,8 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                     <td style={{ padding: '14px 18px' }}>
                       {isChecked ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={13} color="#34d399" />
-                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: '#34d399', fontWeight: 700 }}>
+                          <Clock size={13} color="#059669" />
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--state-success, #059669)', fontWeight: 700 }}>
                             {formatEntryTime(res.checked_in_at)}
                           </span>
                         </div>
@@ -493,7 +493,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
 
                     {/* Monto */}
                     <td style={{ padding: '14px 18px' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.86rem', fontWeight: 800, color: '#ffffff' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
                         {formatUsd(res.deposit_amount || res.min_spend || 0)}
                       </span>
                     </td>
@@ -505,8 +505,8 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                 <tr>
                   <td colSpan={7} style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-dim)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      <UserCheck size={36} color="rgba(255, 255, 255, 0.2)" />
-                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>
+                      <UserCheck size={36} color="var(--text-dim)" />
+                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                         No se encontraron registros de ingreso
                       </div>
                       <div style={{ fontSize: '0.8rem', maxWidth: '380px' }}>
