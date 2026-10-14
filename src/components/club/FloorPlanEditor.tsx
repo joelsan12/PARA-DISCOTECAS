@@ -72,8 +72,21 @@ export const FloorPlanEditor: React.FC = () => {
       }
     : null;
 
-  const viewBoxWidth = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 600 : layoutType === 'downtown_suites' ? 600 : 800;
-  const viewBoxHeight = layoutType === 'horseshoe_vip' ? 800 : layoutType === 'u_amphitheater' ? 660 : layoutType === 'downtown_suites' ? 960 : 650;
+  const viewBoxWidth =
+    layoutType === 'horseshoe_vip' ? 800 :
+    layoutType === 'u_amphitheater' ? 600 :
+    layoutType === 'downtown_suites' ? 600 :
+    layoutType === 'macro_blueprint' ? 1000 :
+    layoutType === 'arena_vip_3d' ? 960 :
+    800;
+
+  const viewBoxHeight =
+    layoutType === 'horseshoe_vip' ? 800 :
+    layoutType === 'u_amphitheater' ? 660 :
+    layoutType === 'downtown_suites' ? 960 :
+    layoutType === 'macro_blueprint' ? 620 :
+    layoutType === 'arena_vip_3d' ? 600 :
+    650;
 
   const handleAddTableSubmit = (e: React.FormEvent) => {
     e.preventDefault();

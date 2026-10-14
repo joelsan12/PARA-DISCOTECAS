@@ -50,19 +50,37 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
   const isAmphi = effectiveLayoutType === 'u_amphitheater';
   const viewBoxX = isAmphi ? 45 : 0;
   const viewBoxY = isAmphi ? 0 : 0;
-  const viewBoxWidth = effectiveLayoutType === 'horseshoe_vip' ? 800 : isAmphi ? 510 : effectiveLayoutType === 'downtown_suites' ? 600 : 800;
-  const viewBoxHeight = effectiveLayoutType === 'horseshoe_vip' ? 800 : isAmphi ? 545 : effectiveLayoutType === 'downtown_suites' ? 960 : 650;
+  const viewBoxWidth =
+    effectiveLayoutType === 'horseshoe_vip' ? 800 :
+    isAmphi ? 510 :
+    effectiveLayoutType === 'downtown_suites' ? 600 :
+    effectiveLayoutType === 'macro_blueprint' ? 1000 :
+    effectiveLayoutType === 'arena_vip_3d' ? 960 :
+    800;
+
+  const viewBoxHeight =
+    effectiveLayoutType === 'horseshoe_vip' ? 800 :
+    isAmphi ? 545 :
+    effectiveLayoutType === 'downtown_suites' ? 960 :
+    effectiveLayoutType === 'macro_blueprint' ? 620 :
+    effectiveLayoutType === 'arena_vip_3d' ? 600 :
+    650;
   const radius = isAmphi ? 25 : 24;
 
   const hoveredTable = venueTables.find(t => t.id === hoveredTableId);
 
-  const watermarkTitle = effectiveLayoutType === 'horseshoe_vip'
-    ? 'HERRADURA VIP · PLANO CENITAL'
-    : effectiveLayoutType === 'u_amphitheater'
-    ? 'ANFITEATRO CURVO · PLANO CENITAL'
-    : effectiveLayoutType === 'downtown_suites'
-    ? 'SUITES URBANAS · PLANO CENITAL'
-    : 'PLANTA LIBRE · PLANO CENITAL';
+  const watermarkTitle =
+    effectiveLayoutType === 'horseshoe_vip'
+      ? 'HERRADURA VIP · PLANO CENITAL'
+      : effectiveLayoutType === 'u_amphitheater'
+      ? 'ANFITEATRO CURVO · PLANO CENITAL'
+      : effectiveLayoutType === 'downtown_suites'
+      ? 'SUITES URBANAS · PLANO CENITAL'
+      : effectiveLayoutType === 'macro_blueprint'
+      ? 'PLANO ARQUITECTÓNICO CENITAL · BLUEPRINT CAD'
+      : effectiveLayoutType === 'arena_vip_3d'
+      ? 'ARENA 3D HAUTE NOCTURNE · SUITES & PALCOS'
+      : 'PLANTA LIBRE · PLANO CENITAL';
 
   const clientUser = store.clientUser;
   const clientReservation = clientUser
@@ -78,10 +96,26 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
     <div style={{
       position: 'relative',
       width: '100%',
-      aspectRatio: effectiveLayoutType === 'downtown_suites' ? '0.62/1' : isAmphi ? '0.94/1' : '1/1',
+      aspectRatio:
+        effectiveLayoutType === 'macro_blueprint'
+          ? '1.61/1'
+          : effectiveLayoutType === 'arena_vip_3d'
+          ? '1.6/1'
+          : effectiveLayoutType === 'downtown_suites'
+          ? '0.62/1'
+          : isAmphi
+          ? '0.94/1'
+          : '1/1',
       maxHeight: 'calc(100vh - 170px)',
       margin: '0 auto',
-      background: isAmphi ? '#121622' : '#080c14',
+      background:
+        effectiveLayoutType === 'macro_blueprint'
+          ? '#090d16'
+          : effectiveLayoutType === 'arena_vip_3d'
+          ? '#0d0f15'
+          : isAmphi
+          ? '#121622'
+          : '#080c14',
       borderRadius: isAmphi ? '24px' : '16px',
       border: '1.5px solid rgba(229, 181, 79, 0.28)',
       overflow: 'hidden',

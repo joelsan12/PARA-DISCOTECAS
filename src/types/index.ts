@@ -61,7 +61,13 @@ export type SubscriptionPlan = Plan;
 
 export type ClubStatus = 'active' | 'suspended' | 'trial';
 
-export type ClubLayoutType = 'horseshoe_vip' | 'u_amphitheater' | 'downtown_suites' | 'custom_open';
+export type ClubLayoutType =
+  | 'horseshoe_vip'
+  | 'u_amphitheater'
+  | 'downtown_suites'
+  | 'macro_blueprint'
+  | 'arena_vip_3d'
+  | 'custom_open';
 
 export interface Club {
   id: string;

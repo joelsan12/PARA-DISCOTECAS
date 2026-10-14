@@ -35,6 +35,8 @@ const auditDetailReplacements: Array<[RegExp, string]> = [
   [/\bhorseshoe_vip\b/g, esLayout('horseshoe_vip')],
   [/\bu_amphitheater\b/g, esLayout('u_amphitheater')],
   [/\bdowntown_suites\b/g, esLayout('downtown_suites')],
+  [/\bmacro_blueprint\b/g, esLayout('macro_blueprint')],
+  [/\barena_vip_3d\b/g, esLayout('arena_vip_3d')],
   [/\bcustom_open\b/g, esLayout('custom_open')],
   [/\bVIP Stage\b/g, esTableZone('VIP Stage')],
   [/\bDance Floor\b/g, esTableZone('Dance Floor')],

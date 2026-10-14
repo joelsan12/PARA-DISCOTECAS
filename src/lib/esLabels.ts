@@ -115,6 +115,8 @@ const layoutLabels: Record<string, string> = {
   horseshoe_vip: 'Herradura VIP',
   u_amphitheater: 'Anfiteatro en U',
   downtown_suites: 'Suites Urbanas',
+  macro_blueprint: 'Plano Arquitectónico Cenital',
+  arena_vip_3d: 'Arena 3D Haute Nocturne',
   custom_open: 'Plano personalizado',
 };
 

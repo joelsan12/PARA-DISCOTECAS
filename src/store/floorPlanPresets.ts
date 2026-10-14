@@ -49,6 +49,75 @@ export function generateArchetypeTables(
       { id: 'd-8', club_id: clubId, table_code: 'ROOF-02', badge_number: '8', zone: 'Terraza Rooftop', capacity: 6, x: 50, y: 82, shape: 'circle', tier_color: '#34d399', tier_name: 'Open Air Lounge' },
       { id: 'd-9', club_id: clubId, table_code: 'ROOF-03', badge_number: '9', zone: 'Terraza Rooftop', capacity: 6, x: 75, y: 78, shape: 'circle', tier_color: '#34d399', tier_name: 'Open Air Lounge' }
     ];
+  } else if (presetType === 'macro_blueprint') {
+    // ── Plano Arquitectónico Cenital Blueprint 2D (Recreación exacta Imagen 1) ──
+    templateTables = [
+      // Fila Superior (Norte)
+      { id: 'mb-1', club_id: clubId, table_code: 'VIP-01', badge_number: '1', zone: 'Balcón VIP Norte', capacity: 8, x: 29.5, y: 15.5, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-2', club_id: clubId, table_code: 'VIP-02', badge_number: '2', zone: 'Balcón VIP Norte', capacity: 8, x: 37.0, y: 14.5, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-3', club_id: clubId, table_code: 'VIP-03', badge_number: '3', zone: 'Balcón VIP Norte', capacity: 8, x: 44.5, y: 14.5, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-4', club_id: clubId, table_code: 'VIP-04', badge_number: '4', zone: 'Balcón VIP Norte', capacity: 8, x: 51.5, y: 14.5, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-5', club_id: clubId, table_code: 'VIP-05', badge_number: '5', zone: 'Balcón VIP Norte', capacity: 8, x: 59.0, y: 14.5, shape: 'rect', tier_color: '#f59e0b', tier_name: 'VIP Oro' },
+      { id: 'mb-6', club_id: clubId, table_code: 'VIP-06', badge_number: '6', zone: 'Balcón VIP Norte', capacity: 8, x: 66.0, y: 14.5, shape: 'rect', tier_color: '#a855f7', tier_name: 'VIP Púrpura' },
+      { id: 'mb-7', club_id: clubId, table_code: 'VIP-07', badge_number: '7', zone: 'Balcón VIP Norte', capacity: 8, x: 73.5, y: 14.5, shape: 'rect', tier_color: '#38bdf8', tier_name: 'VIP Platino' },
+      // Pared Oeste (Izquierda)
+      { id: 'mb-8', club_id: clubId, table_code: 'VIP-08', badge_number: '8', zone: 'Lateral Oeste', capacity: 8, x: 26.5, y: 29.0, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-9', club_id: clubId, table_code: 'VIP-09', badge_number: '9', zone: 'Lateral Oeste', capacity: 8, x: 26.5, y: 44.0, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      { id: 'mb-10', club_id: clubId, table_code: 'VIP-10', badge_number: '10', zone: 'Lateral Oeste', capacity: 8, x: 26.5, y: 58.0, shape: 'rect', tier_color: '#10b981', tier_name: 'VIP Esmeralda' },
+      // Arena Central Octagonal
+      { id: 'mb-11', club_id: clubId, table_code: 'ARENA-01', badge_number: '11', zone: 'Arena Central', capacity: 6, x: 35.5, y: 39.0, shape: 'rect', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'mb-12', club_id: clubId, table_code: 'ARENA-02', badge_number: '12', zone: 'Arena Central', capacity: 6, x: 35.5, y: 51.0, shape: 'rect', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'mb-13', club_id: clubId, table_code: 'ARENA-03', badge_number: '13', zone: 'Arena Central', capacity: 6, x: 44.5, y: 31.0, shape: 'rect', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'mb-14', club_id: clubId, table_code: 'ARENA-04', badge_number: '14', zone: 'Arena Central', capacity: 6, x: 52.5, y: 31.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      { id: 'mb-15', club_id: clubId, table_code: 'ARENA-05', badge_number: '15', zone: 'Arena Central', capacity: 6, x: 60.5, y: 31.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      { id: 'mb-16', club_id: clubId, table_code: 'ARENA-06', badge_number: '16', zone: 'Arena Central', capacity: 6, x: 44.5, y: 61.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      { id: 'mb-17', club_id: clubId, table_code: 'ARENA-07', badge_number: '17', zone: 'Arena Central', capacity: 6, x: 52.5, y: 61.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      { id: 'mb-18', club_id: clubId, table_code: 'ARENA-08', badge_number: '18', zone: 'Arena Central', capacity: 6, x: 60.5, y: 61.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'Arena VIP' },
+      { id: 'mb-19', club_id: clubId, table_code: 'ARENA-09', badge_number: '19', zone: 'Arena Central', capacity: 6, x: 70.5, y: 40.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'Arena VIP' },
+      { id: 'mb-20', club_id: clubId, table_code: 'ARENA-10', badge_number: '20', zone: 'Arena Central', capacity: 6, x: 70.5, y: 52.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'Arena VIP' },
+      // Fila Inferior (Sur)
+      { id: 'mb-21', club_id: clubId, table_code: 'VIP-11', badge_number: '21', zone: 'Lounge Sur', capacity: 8, x: 44.5, y: 80.0, shape: 'rect', tier_color: '#a855f7', tier_name: 'VIP Púrpura' },
+      { id: 'mb-22', club_id: clubId, table_code: 'VIP-12', badge_number: '22', zone: 'Lounge Sur', capacity: 8, x: 50.5, y: 80.0, shape: 'rect', tier_color: '#a855f7', tier_name: 'VIP Púrpura' },
+      { id: 'mb-23', club_id: clubId, table_code: 'VIP-13', badge_number: '23', zone: 'Lounge Sur', capacity: 8, x: 56.5, y: 80.0, shape: 'rect', tier_color: '#a855f7', tier_name: 'VIP Púrpura' },
+      { id: 'mb-24', club_id: clubId, table_code: 'VIP-14', badge_number: '24', zone: 'Lounge Sur', capacity: 8, x: 62.5, y: 80.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'VIP Platino' },
+      { id: 'mb-25', club_id: clubId, table_code: 'VIP-15', badge_number: '25', zone: 'Lounge Sur', capacity: 8, x: 70.5, y: 80.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'VIP Platino' },
+      { id: 'mb-26', club_id: clubId, table_code: 'VIP-16', badge_number: '26', zone: 'Lounge Sur', capacity: 8, x: 77.5, y: 80.0, shape: 'rect', tier_color: '#38bdf8', tier_name: 'VIP Platino' },
+      // Estaciones de Acceso / Host Derecha
+      { id: 'mb-27', club_id: clubId, table_code: 'HOST-01', badge_number: '27', zone: 'Recepción & Acceso', capacity: 4, x: 84.5, y: 27.0, shape: 'square', tier_color: '#38bdf8', tier_name: 'Host VIP' },
+      { id: 'mb-28', club_id: clubId, table_code: 'HOST-02', badge_number: '28', zone: 'Recepción & Acceso', capacity: 4, x: 84.5, y: 65.0, shape: 'square', tier_color: '#38bdf8', tier_name: 'Host VIP' },
+    ];
+  } else if (presetType === 'arena_vip_3d') {
+    // ── Arena 3D Haute Nocturne con Suites & Palcos (Recreación exacta Imagen 2) ──
+    templateTables = [
+      // Suites VIP Privadas Superiores
+      { id: 'ar-1', club_id: clubId, table_code: 'SUI-01', badge_number: '1', zone: 'Suites VIP', capacity: 12, x: 24.5, y: 28.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Master Suite 1' },
+      { id: 'ar-2', club_id: clubId, table_code: 'SUI-02', badge_number: '2', zone: 'Suites VIP', capacity: 12, x: 35.5, y: 28.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Master Suite 2' },
+      // Boxes VIP Oeste en Fila
+      { id: 'ar-3', club_id: clubId, table_code: 'BOX-01', badge_number: '3', zone: 'Boxes VIP Oeste', capacity: 8, x: 19.0, y: 39.0, shape: 'rect', tier_color: '#e5b54f', tier_name: 'VIP Oro' },
+      { id: 'ar-4', club_id: clubId, table_code: 'BOX-02', badge_number: '4', zone: 'Boxes VIP Oeste', capacity: 8, x: 19.0, y: 51.0, shape: 'rect', tier_color: '#e5b54f', tier_name: 'VIP Oro' },
+      { id: 'ar-5', club_id: clubId, table_code: 'BOX-03', badge_number: '5', zone: 'Boxes VIP Oeste', capacity: 8, x: 19.0, y: 63.0, shape: 'rect', tier_color: '#e5b54f', tier_name: 'VIP Oro' },
+      { id: 'ar-6', club_id: clubId, table_code: 'BOX-04', badge_number: '6', zone: 'Boxes VIP Oeste', capacity: 8, x: 19.0, y: 75.0, shape: 'rect', tier_color: '#e5b54f', tier_name: 'VIP Oro' },
+      { id: 'ar-7', club_id: clubId, table_code: 'BOX-05', badge_number: '7', zone: 'Boxes VIP Oeste', capacity: 8, x: 19.0, y: 87.0, shape: 'rect', tier_color: '#e5b54f', tier_name: 'VIP Oro' },
+      // Cabina DJ VIP Frontal
+      { id: 'ar-8', club_id: clubId, table_code: 'DJ-01', badge_number: '8', zone: 'Cabina DJ VIP', capacity: 10, x: 51.0, y: 44.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Ultra Stage VIP' },
+      // Arena Central Pit (Sofás envolventes)
+      { id: 'ar-9', club_id: clubId, table_code: 'ARENA-01', badge_number: '9', zone: 'Arena Central', capacity: 8, x: 33.5, y: 50.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'ar-10', club_id: clubId, table_code: 'ARENA-02', badge_number: '10', zone: 'Arena Central', capacity: 8, x: 33.5, y: 60.5, shape: 'pill', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      { id: 'ar-11', club_id: clubId, table_code: 'ARENA-03', badge_number: '11', zone: 'Arena Central', capacity: 6, x: 34.0, y: 69.5, shape: 'circle', tier_color: '#e5b54f', tier_name: 'Arena VIP' },
+      { id: 'ar-12', club_id: clubId, table_code: 'ARENA-04', badge_number: '12', zone: 'Arena Central', capacity: 10, x: 47.5, y: 72.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'ar-13', club_id: clubId, table_code: 'ARENA-05', badge_number: '13', zone: 'Arena Central', capacity: 10, x: 53.5, y: 72.0, shape: 'pill', tier_color: '#10b981', tier_name: 'Arena VIP' },
+      { id: 'ar-14', club_id: clubId, table_code: 'ARENA-06', badge_number: '14', zone: 'Arena Central', capacity: 8, x: 61.5, y: 66.5, shape: 'pill', tier_color: '#f59e0b', tier_name: 'Arena VIP' },
+      // Palcos Este (Graderías en ángulo)
+      { id: 'ar-15', club_id: clubId, table_code: 'PALCO-01', badge_number: '15', zone: 'Palcos VIP Este', capacity: 12, x: 70.0, y: 35.0, shape: 'pill', tier_color: '#e5b54f', tier_name: 'Palco Presidencial' },
+      { id: 'ar-16', club_id: clubId, table_code: 'PALCO-02', badge_number: '16', zone: 'Palcos VIP Este', capacity: 10, x: 76.5, y: 47.0, shape: 'pill', tier_color: '#e5b54f', tier_name: 'Palco VIP 2' },
+      { id: 'ar-17', club_id: clubId, table_code: 'PALCO-03', badge_number: '17', zone: 'Palcos VIP Este', capacity: 8, x: 80.5, y: 58.0, shape: 'pill', tier_color: '#e5b54f', tier_name: 'Palco VIP 3' },
+      { id: 'ar-18', club_id: clubId, table_code: 'PALCO-04', badge_number: '18', zone: 'Palcos VIP Este', capacity: 8, x: 71.0, y: 75.0, shape: 'pill', tier_color: '#e5b54f', tier_name: 'Palco Terraza' },
+      // Lounges Sur en Fila
+      { id: 'ar-19', club_id: clubId, table_code: 'SUR-01', badge_number: '19', zone: 'Lounge Sur', capacity: 6, x: 32.5, y: 88.0, shape: 'rect', tier_color: '#10b981', tier_name: 'Lounge Esmeralda' },
+      { id: 'ar-20', club_id: clubId, table_code: 'SUR-02', badge_number: '20', zone: 'Lounge Sur', capacity: 6, x: 41.5, y: 88.0, shape: 'rect', tier_color: '#10b981', tier_name: 'Lounge Esmeralda' },
+      { id: 'ar-21', club_id: clubId, table_code: 'SUR-03', badge_number: '21', zone: 'Lounge Sur', capacity: 6, x: 50.5, y: 88.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Lounge Oro' },
+      { id: 'ar-22', club_id: clubId, table_code: 'SUR-04', badge_number: '22', zone: 'Lounge Sur', capacity: 6, x: 59.5, y: 88.0, shape: 'rect', tier_color: '#f59e0b', tier_name: 'Lounge Oro' },
+    ];
   } else {
     // custom_open o cualquier otro
     templateTables = [

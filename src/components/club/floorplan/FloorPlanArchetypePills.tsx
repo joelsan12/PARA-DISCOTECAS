@@ -7,10 +7,12 @@ interface Props {
 }
 
 const ARCHETYPE_OPTIONS: { id: ClubLayoutType; label: string }[] = [
+  { id: 'macro_blueprint', label: 'Blueprint 2D' },
+  { id: 'arena_vip_3d', label: 'Arena 3D Nocturne' },
   { id: 'horseshoe_vip', label: 'Herradura VIP' },
   { id: 'u_amphitheater', label: 'Anfiteatro en U' },
   { id: 'downtown_suites', label: 'Suites Urbanas' },
-  { id: 'custom_open', label: 'Personalizado' },
+  { id: 'custom_open', label: 'Lienzo Libre' },
 ];
 
 export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetChange }) => {

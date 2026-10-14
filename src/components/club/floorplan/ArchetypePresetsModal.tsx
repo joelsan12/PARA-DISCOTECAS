@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ClubLayoutType } from '../../../types';
-import { X, Sparkles, Check, Building2, LayoutTemplate, Grid, Wine, Layers } from 'lucide-react';
+import { X, Sparkles, Check, Building2, LayoutTemplate, Grid, Wine, Layers, Compass, Box } from 'lucide-react';
 import { formatUsd } from '../../../lib/formatUsd';
 import { esLayout, esPlan } from '../../../lib/esLabels';
 import { ArchetypeBlueprintPreview } from './ArchetypeBlueprintPreview';
@@ -24,6 +24,24 @@ interface ArchetypeCard {
 }
 
 const ARCHETYPES: ArchetypeCard[] = [
+  {
+    id: 'macro_blueprint',
+    title: `${esLayout('macro_blueprint')} (CAD Cenital)`,
+    badge: '28 mesas · 4 Niveles de Estado',
+    icon: Compass,
+    description: 'Plano técnico arquitectónico en vista cenital con doble muro perimetral, balustrada octagonal, escalera de evacuación y leyenda de estados en tiempo real.',
+    features: ['Doble muro CAD y puertas con arco de giro', 'Arena central octagonal con 10 mesas VIP', 'Filas simétricas norte/sur y lateral oeste', 'Leyenda de estados: En Sala, Hold, Cerrada, Slate Blue'],
+    recommendedFor: 'Grandes macro-discotecas, recintos con control técnico de aforo y planos arquitectónicos oficiales.'
+  },
+  {
+    id: 'arena_vip_3d',
+    title: `${esLayout('arena_vip_3d')} (Suites & Palcos)`,
+    badge: '22 mesas · Extrusión 3D LED',
+    icon: Box,
+    description: 'Diseño haute nocturne con extrusión isométrica 3D, contornos de neón dorado ámbar, Suites privadas superiores, Palcos en gradería y foso central con sofá media luna.',
+    features: ['Muros 3D extruidos con halo de neón ámbar', 'Suites privadas superiores con mamparas', 'Palcos aterrazados en ángulo y boxes oeste', 'Foso central hundido con cabina del DJ frontal'],
+    recommendedFor: 'Superclubes exclusivos, lounges VIP de alta gama y discotecas de lujo con palcos privados.'
+  },
   {
     id: 'horseshoe_vip',
     title: `${esLayout('horseshoe_vip')} y sala principal`,
