@@ -5,3 +5,5 @@ export { SaasComparisonSection } from './SaasComparisonSection';
 export { SaasPricingPreviewSection } from './SaasPricingPreviewSection';
 export { SaasCtaBanner } from './SaasCtaBanner';
 export { SaasBetaPlaygroundSection } from './SaasBetaPlaygroundSection';
+export { SaasBetaWelcomeModal } from './SaasBetaWelcomeModal';
+export { SaasBetaTeaserBanner } from './SaasBetaTeaserBanner';

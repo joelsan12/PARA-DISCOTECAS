@@ -5,15 +5,16 @@ import { useSaasTheme } from './useSaasTheme';
 
 interface SaasNavbarProps {
   onOpenModal?: (plan?: string) => void;
+  onOpenBetaModal?: () => void;
 }
 
-export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
+export function SaasNavbar({ onOpenModal, onOpenBetaModal }: SaasNavbarProps) {
   const location = useLocation();
   const { theme, toggleTheme } = useSaasTheme();
 
   const navLinks = [
     { to: '/software', label: 'Inicio' },
-    { to: '/software#beta-playground', label: 'Probar Beta', isBeta: true },
+    { to: '/software#beta', label: 'Probar Beta', isBeta: true },
     { to: '/software/simulador', label: 'Simulador' },
     { to: '/software/pantallas', label: 'Pantallas' },
     { to: '/software/arquitectura', label: 'Arquitectura' },
@@ -27,9 +28,11 @@ export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
   };
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
-    if (to.includes('#beta-playground')) {
-      if (location.pathname === '/software' || location.pathname === '/beta') {
-        e.preventDefault();
+    if (to.includes('#beta')) {
+      e.preventDefault();
+      if (onOpenBetaModal) {
+        onOpenBetaModal();
+      } else {
         const el = document.getElementById('beta-playground');
         if (el) {
           el.scrollIntoView({ behavior: 'smooth' });
