@@ -13,15 +13,28 @@ export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
 
   const navLinks = [
     { to: '/software', label: 'Inicio' },
+    { to: '/software#beta-playground', label: 'Probar Beta', isBeta: true },
     { to: '/software/simulador', label: 'Simulador' },
-    { to: '/software/arquitectura', label: 'Arquitectura' },
     { to: '/software/pantallas', label: 'Pantallas' },
+    { to: '/software/arquitectura', label: 'Arquitectura' },
     { to: '/software/faq', label: 'Preguntas' },
   ];
 
   const handleCta = () => {
     if (onOpenModal) {
       onOpenModal('Beta Privada');
+    }
+  };
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
+    if (to.includes('#beta-playground')) {
+      if (location.pathname === '/software' || location.pathname === '/beta') {
+        e.preventDefault();
+        const el = document.getElementById('beta-playground');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     }
   };
 
@@ -40,7 +53,8 @@ export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`saas-nav__link ${isActive ? 'active' : ''}`}
+                onClick={(e) => handleLinkClick(e, link.to)}
+                className={`saas-nav__link ${isActive ? 'active' : ''} ${link.isBeta ? 'saas-nav__link--beta' : ''}`}
               >
                 {link.label}
               </Link>

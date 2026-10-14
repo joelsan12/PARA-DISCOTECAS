@@ -4,6 +4,7 @@ import { SaasFooterBar } from './SaasFooterBar';
 import { SaasLeadModal } from './SaasLeadModal';
 import {
   SaasHeroSection,
+  SaasBetaPlaygroundSection,
   SaasExperiencesSection,
   SaasComparisonSection,
   SaasCtaBanner,
@@ -25,10 +26,13 @@ export function SaasLandingPage() {
         {/* 1. Hero Asimétrico: Pantalla completa inicial */}
         <SaasHeroSection onOpenModal={openModal} />
 
-        {/* 2. Experiencias de Sala en Producción: Pantalla completa en scroll */}
+        {/* 2. Zona Interactiva de Prueba Beta y Feedback */}
+        <SaasBetaPlaygroundSection onOpenModal={openModal} />
+
+        {/* 3. Experiencias de Sala en Producción: Pantalla completa en scroll */}
         <SaasExperiencesSection />
 
-        {/* 3. Comparativa Operativa Directa: Pantalla completa en scroll */}
+        {/* 4. Comparativa Operativa Directa: Pantalla completa en scroll */}
         <SaasComparisonSection />
 
         {/* 4. Cierre: Banner de Registro y Footer */}
