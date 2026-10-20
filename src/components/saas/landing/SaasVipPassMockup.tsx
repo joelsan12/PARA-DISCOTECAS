@@ -10,6 +10,7 @@ import {
   Users,
   ShieldCheck,
 } from 'lucide-react';
+import { NightflowLogoMark } from '../../common/NightflowLogo';
 
 interface MockTable {
   id: string;
@@ -201,7 +202,7 @@ export function SaasVipPassMockup() {
             {/* Cabecera de la tarjeta: Enclave & Monograma */}
             <div className="saas-vip-card__top">
               <div className="saas-vip-card__emblem">
-                <span className="saas-vip-card__chip" aria-hidden="true" />
+                <NightflowLogoMark size={28} theme="gold" className="saas-vip-card__logo" />
                 <div>
                   <strong className="saas-vip-card__brand">NIGHTFLOW VIP</strong>
                   <span className="saas-vip-card__sub">ENCLAVE SHA-256 · Nº 8842-v{tokenVersion}</span>

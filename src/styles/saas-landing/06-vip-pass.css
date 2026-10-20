@@ -142,25 +142,16 @@
   gap: 12px;
 }
 
-.saas-vip-card__chip {
-  width: 32px;
-  height: 22px;
-  background: linear-gradient(135deg, var(--saas-gold-hover, #f3d483) 0%, var(--saas-gold, #e5b54f) 60%, var(--saas-border-gold, #b8860b) 100%);
-  border-radius: 5px;
-  display: inline-block;
-  box-shadow:
-    0 2px 8px rgba(184, 134, 11, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  position: relative;
+.saas-vip-card__logo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
 }
 
-.saas-vip-card__chip::before {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 2px;
+.saas-vip-card--3d:hover .saas-vip-card__logo {
+  transform: scale(1.08);
 }
 
 .saas-vip-card__brand {
