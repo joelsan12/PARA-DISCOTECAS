@@ -28,9 +28,9 @@ const inputStyle = {
   width: '100%',
   padding: '10px 12px',
   borderRadius: 'var(--radius-sm)',
-  background: 'rgba(8, 8, 12, 0.85)',
-  border: '1px solid rgba(229, 181, 79, 0.2)',
-  color: '#fff',
+  background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+  border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.2))',
+  color: 'var(--text-main, #ffffff)',
   fontSize: '0.88rem',
   fontWeight: 600,
   fontFamily: 'inherit',
@@ -42,12 +42,12 @@ const errorStyle = {
   display: 'block',
   marginTop: '5px',
   fontSize: '0.7rem',
-  color: '#f87171'
+  color: 'var(--state-danger, #f87171)'
 } as const;
 
 const inputWithBorder = (hasError: boolean) => ({
   ...inputStyle,
-  border: hasError ? '1px solid #f87171' : inputStyle.border
+  border: hasError ? '1px solid var(--state-danger, #f87171)' : inputStyle.border
 });
 
 export const LegalProfileForm = ({ activeClub }: Props) => {
@@ -93,9 +93,9 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
   };
 
   return (
-    <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)', border: '1px solid rgba(229, 181, 79, 0.2)' }}>
+    <div className="glass-card" style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
           Identidad Legal & Fiscal del Club
         </h3>
         <span
@@ -105,9 +105,9 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
             letterSpacing: '0.05em',
             padding: '3px 8px',
             borderRadius: '4px',
-            background: 'rgba(229, 181, 79, 0.12)',
+            background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))',
             color: 'var(--brand-gold)',
-            border: '1px solid rgba(229, 181, 79, 0.28)',
+            border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.28))',
           }}
         >
           CUMPLIMIENTO TRIBUTARIO SRI
@@ -233,7 +233,7 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
               borderRadius: 'var(--radius-sm)',
               background: 'rgba(34, 197, 94, 0.12)',
               border: '1px solid rgba(34, 197, 94, 0.35)',
-              color: '#86efac',
+              color: 'var(--state-success, #86efac)',
               fontSize: '0.78rem',
               fontWeight: 600
             }}
@@ -255,7 +255,7 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
               borderRadius: 'var(--radius-sm)',
               background: 'rgba(251, 191, 36, 0.12)',
               border: '1px solid rgba(251, 191, 36, 0.35)',
-              color: '#fde68a',
+              color: 'var(--state-hold, #fde68a)',
               fontSize: '0.78rem',
               fontWeight: 600
             }}
@@ -280,8 +280,8 @@ export const LegalProfileForm = ({ activeClub }: Props) => {
               gap: '8px',
               padding: '10px 24px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
-              color: '#08080c',
+              background: 'var(--grad-gold)',
+              color: 'var(--bg-void, #08080c)',
               border: 'none',
               fontWeight: 800,
               fontSize: '0.84rem',

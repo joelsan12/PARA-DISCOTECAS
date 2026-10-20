@@ -71,7 +71,7 @@ export const TableReservationDrawer = ({
                 <h2 style={{
                   fontSize: '0.88rem',
                   fontWeight: 600,
-                  color: '#fff',
+                  color: 'var(--text-high)',
                   margin: 0,
                   fontFamily: 'var(--font-display)',
                 }}>
@@ -105,7 +105,7 @@ export const TableReservationDrawer = ({
               <span style={{
                 fontSize: '1.2rem',
                 fontWeight: 700,
-                color: '#fff',
+                color: 'var(--text-high)',
                 letterSpacing: '-0.02em',
                 lineHeight: 1.2,
                 fontFamily: 'var(--font-display)',
@@ -159,12 +159,12 @@ export const TableReservationDrawer = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#25D366',
+                  color: 'var(--brand-whatsapp, #25D366)',
                   textDecoration: 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <svg width="20" height="20" fill="#25D366" viewBox="0 0 24 24">
+                <svg width="20" height="20" fill="var(--brand-whatsapp, #25D366)" viewBox="0 0 24 24">
                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.699c.97.53 1.77.781 2.796.781 3.182 0 5.768-2.587 5.768-5.766 0-3.18-2.586-5.767-5.768-5.767zm9.969 5.766c0 5.519-4.481 10-10 10-1.748 0-3.385-.45-4.819-1.238l-5.181 1.359 1.385-5.056c-.886-1.488-1.385-3.228-1.385-5.065 0-5.519 4.481-10 10-10s10 4.481 10 10z" />
                 </svg>
               </a>
@@ -178,8 +178,8 @@ export const TableReservationDrawer = ({
                   flex: 1,
                   height: '44px',
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%)',
-                  color: '#08080c',
+                  background: 'linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 55%, var(--brand-gold-dark) 100%)',
+                  color: 'var(--bg-void)',
                   fontWeight: 700,
                   fontSize: '0.75rem',
                   letterSpacing: '0.06em',
@@ -242,17 +242,17 @@ export const TableReservationDrawer = ({
               height: '38px',
               borderRadius: '50%',
               background: 'rgba(229, 181, 79, 0.2)',
-              border: '1.5px solid #e5b54f',
+              border: '1.5px solid var(--gold)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0
             }}>
-              <Crown size={20} color="#e5b54f" />
+              <Crown size={20} color="var(--gold)" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', color: '#ffb95f', fontWeight: 800, textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', color: 'var(--gold)', fontWeight: 800, textTransform: 'uppercase' }}>
                   Tu Mesa Reservada
                 </span>
                 <span style={{
@@ -260,13 +260,13 @@ export const TableReservationDrawer = ({
                   padding: '1px 5px',
                   borderRadius: '9999px',
                   background: clientReservation.status === 'CHECKED_IN' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(229, 181, 79, 0.25)',
-                  color: clientReservation.status === 'CHECKED_IN' ? '#34d399' : '#e5b54f',
+                  color: clientReservation.status === 'CHECKED_IN' ? 'var(--state-success)' : 'var(--gold)',
                   fontWeight: 800
                 }}>
                   {clientReservation.status === 'CHECKED_IN' ? 'DENTRO' : 'CONFIRMADA'}
                 </span>
               </div>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fff', margin: '2px 0 0' }}>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-high)', margin: '2px 0 0' }}>
                 Mesa {clientReservation.table_code} • {clientReservation.guest_count} Personas
               </h3>
             </div>
@@ -280,9 +280,9 @@ export const TableReservationDrawer = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: 'linear-gradient(135deg, #e5b54f 0%, #ca8100 100%)',
+                background: 'linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 100%)',
                 border: 'none',
-                color: '#0d0d16',
+                color: 'var(--bg-void)',
                 borderRadius: '10px',
                 padding: '8px 12px',
                 fontSize: '0.75rem',

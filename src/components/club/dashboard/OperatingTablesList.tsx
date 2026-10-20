@@ -150,7 +150,7 @@ export const OperatingTablesList = ({
 
                 {/* Si no hay consumo activo, mostrar mínimo regular */}
                 {consumption === 0 && !hasOpenTab && (
-                  <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brand-gold, #e5b54f)' }}>
+                  <span className="font-mono" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--brand-gold, var(--gold, #e5b54f))' }}>
                     Mínimo {formatUsd(minSpend)}
                   </span>
                 )}
@@ -249,14 +249,14 @@ export const OperatingTablesList = ({
           onClick={() => !isSubmitting && setSettlingModal(null)}
         >
           <div
+            className="modal-content glass-card"
             style={{
-              background: 'linear-gradient(180deg, #121622 0%, #0a0d14 100%)',
-              border: '1px solid rgba(229, 181, 79, 0.4)',
+              border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
               borderRadius: '16px',
               maxWidth: '460px',
               width: '100%',
               padding: '24px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
               display: 'flex',
               flexDirection: 'column',
               gap: '18px'
@@ -280,10 +280,10 @@ export const OperatingTablesList = ({
                   <ReceiptText size={18} />
                 </div>
                 <div>
-                  <h4 style={{ margin: 0, color: '#fff', fontSize: '1.05rem', fontWeight: 800 }}>
+                  <h4 style={{ margin: 0, color: 'var(--text-high, #ffffff)', fontSize: '1.05rem', fontWeight: 800 }}>
                     Cierre de Mesa {settlingModal.tableCode}
                   </h4>
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>
                     Reserva #{settlingModal.reservationId.slice(-8)}
                   </span>
                 </div>
@@ -296,7 +296,7 @@ export const OperatingTablesList = ({
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#94a3b8',
+                  color: 'var(--text-muted, #94a3b8)',
                   cursor: 'pointer',
                   padding: '4px'
                 }}
@@ -316,15 +316,15 @@ export const OperatingTablesList = ({
               gap: '8px',
               fontSize: '0.84rem'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted, #94a3b8)' }}>
                 <span>Consumo Total Registrado:</span>
-                <span style={{ color: '#fff', fontWeight: 700, fontFamily: 'monospace' }}>
+                <span style={{ color: 'var(--text-high, #ffffff)', fontWeight: 700, fontFamily: 'monospace' }}>
                   {formatUsd(settlingModal.consumptionTotal)}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted, #94a3b8)' }}>
                 <span>Anticipo de Reserva Aplicado:</span>
-                <span style={{ color: '#34d399', fontWeight: 700, fontFamily: 'monospace' }}>
+                <span style={{ color: 'var(--state-success, #34d399)', fontWeight: 700, fontFamily: 'monospace' }}>
                   -{formatUsd(settlingModal.depositAmount)}
                 </span>
               </div>
@@ -333,7 +333,7 @@ export const OperatingTablesList = ({
                 justifyContent: 'space-between',
                 paddingTop: '8px',
                 borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontWeight: 800
               }}>
                 <span>Saldo por Cobrar en Caja:</span>
@@ -345,7 +345,7 @@ export const OperatingTablesList = ({
 
             {/* Settlement Method Selector */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '8px' }}>
                 MÉTODO DE PAGO FINAL
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
@@ -367,7 +367,7 @@ export const OperatingTablesList = ({
                         border: `1px solid ${isSelected ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.08)'}`,
                         borderRadius: '8px',
                         padding: '10px 12px',
-                        color: isSelected ? 'var(--brand-gold)' : '#cbd5e1',
+                        color: isSelected ? 'var(--brand-gold)' : 'var(--text-dim, #cbd5e1)',
                         fontSize: '0.78rem',
                         fontWeight: 700,
                         display: 'flex',
@@ -386,7 +386,7 @@ export const OperatingTablesList = ({
 
             {/* Optional Notes */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '6px' }}>
                 NOTAS O REFERENCIA (OPCIONAL)
               </label>
               <input
@@ -400,7 +400,7 @@ export const OperatingTablesList = ({
                   border: '1px solid rgba(255, 255, 255, 0.12)',
                   borderRadius: '8px',
                   padding: '9px 12px',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   outline: 'none',
                   boxSizing: 'border-box'
@@ -415,7 +415,7 @@ export const OperatingTablesList = ({
                 borderRadius: '8px',
                 background: feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                 border: `1px solid ${feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
-                color: feedback.kind === 'success' ? '#34d399' : '#f87171',
+                color: feedback.kind === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
                 fontSize: '0.8rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -437,7 +437,7 @@ export const OperatingTablesList = ({
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   borderRadius: '8px',
                   padding: '9px 16px',
-                  color: '#94a3b8',
+                  color: 'var(--text-muted, #94a3b8)',
                   fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: isSubmitting ? 'not-allowed' : 'pointer'
@@ -451,11 +451,11 @@ export const OperatingTablesList = ({
                 onClick={handleConfirmSettlement}
                 disabled={isSubmitting}
                 style={{
-                  background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
+                  background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c49535) 100%)',
                   border: 'none',
                   borderRadius: '8px',
                   padding: '9px 18px',
-                  color: '#0a0d14',
+                  color: 'var(--bg-void, #08080c)',
                   fontSize: '0.84rem',
                   fontWeight: 800,
                   cursor: isSubmitting ? 'wait' : 'pointer',

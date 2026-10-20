@@ -38,7 +38,7 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
 
   // Si no está listo aún el auth en /app, pantalla de carga mínima
   if (!businessScoped && !authReady) {
-    return <div style={{ minHeight: '100vh', background: '#090A0F' }} />;
+    return <div style={{ minHeight: '100vh', background: 'var(--bg-void)' }} />;
   }
 
   const handleGlobalSignOut = () => {
@@ -72,7 +72,7 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: '#090A0F', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-void)', overflow: 'hidden', position: 'relative' }}>
       {showIdentity ? (
         <ClientIdentityHub onGoToMap={() => store.setClientSubTab('MAP')} onSignOut={handleGlobalSignOut} />
       ) : showConcierge ? (
@@ -97,7 +97,7 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
             width: 'calc(100% - 28px)',
             maxWidth: '430px',
             zIndex: 90,
-            background: 'rgba(12, 14, 22, 0.94)',
+            background: 'var(--bg-glass-strong)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             border: '1px solid rgba(229, 181, 79, 0.35)',
@@ -125,14 +125,14 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
               borderRadius: '16px',
               background: showIdentity ? 'rgba(229, 181, 79, 0.16)' : 'transparent',
               border: showIdentity ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid transparent',
-              color: showIdentity ? '#ffb95f' : 'rgba(255, 255, 255, 0.55)',
+              color: showIdentity ? 'var(--gold)' : 'rgba(255, 255, 255, 0.55)',
               cursor: 'pointer',
               position: 'relative',
-              transition: 'all 0.15s ease',
+              transition: 'background var(--dur-fast) var(--ease-operational), color var(--dur-fast) var(--ease-operational)',
             }}
           >
             <div style={{ position: 'relative' }}>
-              <QrCode size={19} color={showIdentity ? '#ffb95f' : 'rgba(255, 255, 255, 0.65)'} />
+              <QrCode size={19} color={showIdentity ? 'var(--gold)' : 'rgba(255, 255, 255, 0.65)'} />
               {hasReservation && (
                 <span
                   style={{
@@ -142,8 +142,8 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
                     width: '7px',
                     height: '7px',
                     borderRadius: '50%',
-                    background: '#10b981',
-                    boxShadow: '0 0 6px #10b981',
+                    background: 'var(--state-success)',
+                    boxShadow: '0 0 6px var(--state-success)',
                   }}
                 />
               )}
@@ -169,12 +169,12 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
               borderRadius: '16px',
               background: !showIdentity && !showConcierge ? 'rgba(229, 181, 79, 0.16)' : 'transparent',
               border: !showIdentity && !showConcierge ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid transparent',
-              color: !showIdentity && !showConcierge ? '#ffb95f' : 'rgba(255, 255, 255, 0.55)',
+              color: !showIdentity && !showConcierge ? 'var(--gold)' : 'rgba(255, 255, 255, 0.55)',
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
+              transition: 'background var(--dur-fast) var(--ease-operational), color var(--dur-fast) var(--ease-operational)',
             }}
           >
-            <LayoutGrid size={19} color={!showIdentity && !showConcierge ? '#ffb95f' : 'rgba(255, 255, 255, 0.65)'} />
+            <LayoutGrid size={19} color={!showIdentity && !showConcierge ? 'var(--gold)' : 'rgba(255, 255, 255, 0.65)'} />
             <span style={{ fontSize: '0.64rem', fontWeight: !showIdentity && !showConcierge ? 800 : 600, letterSpacing: '0.02em' }}>
               Plano de Sala
             </span>
@@ -196,12 +196,12 @@ export function ClientPortalApp({ businessScoped = false, businessSlug, onSignOu
               borderRadius: '16px',
               background: showConcierge ? 'rgba(56, 189, 248, 0.16)' : 'transparent',
               border: showConcierge ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
-              color: showConcierge ? '#38bdf8' : 'rgba(255, 255, 255, 0.55)',
+              color: showConcierge ? 'var(--state-info)' : 'rgba(255, 255, 255, 0.55)',
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
+              transition: 'background var(--dur-fast) var(--ease-operational), color var(--dur-fast) var(--ease-operational)',
             }}
           >
-            <Sparkles size={19} color={showConcierge ? '#38bdf8' : 'rgba(255, 255, 255, 0.65)'} />
+            <Sparkles size={19} color={showConcierge ? 'var(--state-info)' : 'rgba(255, 255, 255, 0.65)'} />
             <span style={{ fontSize: '0.64rem', fontWeight: showConcierge ? 800 : 600, letterSpacing: '0.02em' }}>
               Concierge
             </span>

@@ -110,12 +110,12 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
       margin: '0 auto',
       background:
         effectiveLayoutType === 'macro_blueprint'
-          ? '#090d16'
+          ? 'var(--bg-void, #08080c)'
           : effectiveLayoutType === 'arena_vip_3d'
-          ? '#0d0f15'
+          ? 'var(--bg-base, #0b0b10)'
           : isAmphi
-          ? '#121622'
-          : '#080c14',
+          ? 'var(--bg-card, #12121b)'
+          : 'var(--bg-void, #08080c)',
       borderRadius: isAmphi ? '24px' : '16px',
       border: '1.5px solid rgba(229, 181, 79, 0.28)',
       overflow: 'hidden',
@@ -172,7 +172,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
             border: '1px solid rgba(229, 181, 79, 0.45)',
             borderRadius: '8px',
             padding: '5px 12px',
-            color: '#fff',
+            color: 'var(--text-high, #ffffff)',
             fontSize: '0.74rem',
             backdropFilter: 'blur(8px)',
             boxShadow: '0 8px 24px rgba(0,0,0,0.65)',
@@ -198,9 +198,9 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                 ? 'rgba(245, 158, 11, 0.2)'
                 : 'rgba(229, 181, 79, 0.15)',
               color: hOverride?.state === 'INSIDE'
-                ? '#34d399'
+                ? 'var(--state-success, #34d399)'
                 : hOverride?.state === 'HELD'
-                ? '#f59e0b'
+                ? 'var(--state-hold, #f59e0b)'
                 : 'var(--brand-gold)'
             }}>
               {hStatus}
@@ -282,31 +282,31 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
           const capacity = Math.max(1, table.capacity || 4);
 
           // Colores de estado operativo y estético
-          let fillColor = table.tier_color || '#eab308';
-          let strokeColor = '#ffffff';
+          let fillColor = table.tier_color || 'var(--gold, #e5b54f)';
+          let strokeColor = 'var(--text-high, #ffffff)';
           let strokeWidth = isSelected ? 2.5 : 1.5;
 
           if (isMyTable) {
-            fillColor = '#b45309';
-            strokeColor = '#e5b54f';
+            fillColor = 'var(--occ-hold-bg, #7c2d12)';
+            strokeColor = 'var(--gold, #e5b54f)';
             strokeWidth = 3;
           } else if (isInside) {
-            fillColor = override?.backgroundColor || '#064e3b';
-            strokeColor = override?.borderColor || '#34d399';
+            fillColor = override?.backgroundColor || 'var(--occ-occupied-bg, #064e3b)';
+            strokeColor = override?.borderColor || 'var(--occ-occupied-border, #34d399)';
           } else if (isConfirmed) {
-            fillColor = override?.backgroundColor || '#78350f';
-            strokeColor = override?.borderColor || '#e5b54f';
+            fillColor = override?.backgroundColor || 'var(--occ-reserved-bg, #78350f)';
+            strokeColor = override?.borderColor || 'var(--occ-reserved-border, #e5b54f)';
           } else if (isHeld) {
-            fillColor = override?.backgroundColor || '#7c2d12';
-            strokeColor = override?.borderColor || '#f59e0b';
+            fillColor = override?.backgroundColor || 'var(--occ-hold-bg, #7c2d12)';
+            strokeColor = override?.borderColor || 'var(--occ-hold-border, #f59e0b)';
           } else if (isSettled) {
-            fillColor = override?.backgroundColor || '#3b0764';
-            strokeColor = override?.borderColor || '#a855f7';
+            fillColor = override?.backgroundColor || 'var(--occ-vip-bg, #3b0764)';
+            strokeColor = override?.borderColor || 'var(--occ-vip-border, #a855f7)';
           }
 
           const badgeText = table.badge_number || table.table_code.replace(/^VIP-/, '').replace(/^[A-Z]+-/, '');
           const displayText = badgeText.length > 3 ? badgeText.slice(0, 3) : badgeText;
-          const textColor = (isInside || isConfirmed || isHeld || isSettled || isMyTable) ? '#ffffff' : '#08080c';
+          const textColor = (isInside || isConfirmed || isHeld || isSettled || isMyTable) ? 'var(--text-high, #ffffff)' : 'var(--bg-void, #08080c)';
 
           return (
             <g
@@ -348,8 +348,8 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                         cx={sx}
                         cy={sy}
                         r={isAmphi ? 3.0 : 3.2}
-                        fill={isSelected ? 'var(--brand-gold)' : isInside ? '#34d399' : 'rgba(255, 255, 255, 0.4)'}
-                        stroke="#080c14"
+                        fill={isSelected ? 'var(--brand-gold)' : isInside ? 'var(--state-success, #34d399)' : 'rgba(255, 255, 255, 0.4)'}
+                        stroke="var(--bg-void, #08080c)"
                         strokeWidth="0.8"
                         opacity={isSelected || isInside ? 0.95 : 0.65}
                       />
@@ -472,7 +472,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                       cy={cy}
                       r={radius + (isAmphi ? 8 : 12)}
                       fill="none"
-                      stroke="#e5b54f"
+                      stroke="var(--gold, #e5b54f)"
                       strokeWidth="2.5"
                       strokeDasharray="4 2.5"
                       opacity="0.95"
@@ -483,15 +483,15 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
                       width={52}
                       height={15}
                       rx={7.5}
-                      fill="#e5b54f"
-                      stroke="#080c14"
+                      fill="var(--gold, #e5b54f)"
+                      stroke="var(--bg-void, #08080c)"
                       strokeWidth="1.2"
                     />
                     <text
                       x={cx}
                       y={cy - radius - (isAmphi ? 9.5 : 13)}
                       textAnchor="middle"
-                      fill="#0d0d16"
+                      fill="var(--bg-surface, #0d0d16)"
                       fontSize={isAmphi ? "8" : "6.8"}
                       fontWeight="900"
                       fontFamily="var(--font-brand), system-ui, sans-serif"
@@ -523,7 +523,7 @@ export const InteractiveFloorPlan: React.FC<Props> = ({
           backdropFilter: 'blur(8px)',
           maxWidth: '300px',
         }}>
-          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fff', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
             Plano en Configuración
           </span>
           <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', margin: '4px 0 0', lineHeight: 1.4 }}>

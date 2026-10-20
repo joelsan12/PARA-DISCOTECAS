@@ -62,8 +62,8 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
       <div style={{
         minHeight: '100vh',
         width: '100%',
-        background: 'radial-gradient(ellipse at top, #181528 0%, #090a0f 80%)',
-        color: '#e4e1ed',
+        background: 'radial-gradient(ellipse at top, var(--bg-surface) 0%, var(--bg-void) 80%)',
+        color: 'var(--text-main)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -91,14 +91,14 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <ShieldCheck size={28} color="#e5b54f" />
+            <ShieldCheck size={28} color="var(--gold)" />
           </div>
 
           <span style={{
             fontSize: '0.7rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: '#ffb95f',
+            color: 'var(--gold)',
             fontWeight: 800,
             display: 'block',
             marginBottom: '8px',
@@ -106,11 +106,11 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             Acceso verificado
           </span>
 
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '0 0 10px' }}>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-high)', margin: '0 0 10px' }}>
             Inicia sesión en {activeClub.name}
           </h1>
 
-          <p style={{ fontSize: '0.88rem', color: '#a59eaf', margin: '0 0 24px', lineHeight: 1.55 }}>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: '0 0 24px', lineHeight: 1.55 }}>
             La identidad se valida con Firebase Authentication (código OTP o correo).
           </p>
 
@@ -124,8 +124,8 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               width: '100%',
               padding: '13px 18px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #e5b54f, #ca8100)',
-              color: '#120c02',
+              background: 'linear-gradient(135deg, var(--gold-hover), var(--gold))',
+              color: 'var(--bg-void)',
               fontWeight: 800,
               fontSize: '0.9rem',
               textDecoration: 'none',
@@ -143,7 +143,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              color: '#a59eaf',
+              color: 'var(--text-muted)',
               fontSize: '0.8rem',
               textDecoration: 'none',
             }}
@@ -162,8 +162,8 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
     <div style={{
       minHeight: '100vh',
       width: '100%',
-      background: 'radial-gradient(ellipse at top, #161a29 0%, #080b12 70%, #05060a 100%)',
-      color: '#e4e1ed',
+      background: 'radial-gradient(ellipse at top, var(--bg-surface) 0%, var(--bg-void) 70%, var(--bg-void) 100%)',
+      color: 'var(--text-main)',
       position: 'relative',
       display: 'flex',
       flexDirection: 'column',
@@ -193,7 +193,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             gap: '6px',
             background: 'rgba(255, 255, 255, 0.05)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: '#ffb95f',
+            color: 'var(--gold)',
             borderRadius: '10px',
             padding: '7px 12px',
             fontSize: '0.78rem',
@@ -212,7 +212,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             fontSize: '0.98rem',
             fontWeight: 800,
             letterSpacing: '0.06em',
-            color: '#fff',
+            color: 'var(--text-high)',
             textTransform: 'uppercase',
           }}>
             {activeClub.name}
@@ -233,8 +233,8 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #e5b54f, #ca8100)',
-              color: '#0f0b04',
+              background: 'linear-gradient(135deg, var(--gold-hover), var(--gold))',
+              color: 'var(--bg-void)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -243,7 +243,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             }}>
               {clientUser.name.charAt(0).toUpperCase()}
             </div>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e5b54f' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--gold)' }}>
               {esVipTier(clientUser.tier)}
             </span>
           </div>
@@ -264,7 +264,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               background: 'rgba(229, 181, 79, 0.08)',
               border: '1px solid rgba(229, 181, 79, 0.28)',
               cursor: 'pointer',
-              color: '#e5b54f',
+              color: 'var(--gold)',
               fontSize: '0.64rem',
               fontWeight: 700,
               transition: 'all 0.15s ease',
@@ -327,13 +327,13 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                 height: '36px',
                 borderRadius: '50%',
                 background: isCheckedIn ? 'rgba(16, 185, 129, 0.2)' : 'rgba(229, 181, 79, 0.2)',
-                border: isCheckedIn ? '1.5px solid #10b981' : '1.5px solid #e5b54f',
+                border: isCheckedIn ? '1.5px solid var(--state-success)' : '1.5px solid var(--gold)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                {isCheckedIn ? <CheckCircle2 size={18} color="#10b981" /> : <Crown size={18} color="#e5b54f" />}
+                {isCheckedIn ? <CheckCircle2 size={18} color="var(--state-success)" /> : <Crown size={18} color="var(--gold)" />}
               </div>
               <div>
                 <span style={{
@@ -341,12 +341,12 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                   letterSpacing: '0.12em',
                   fontWeight: 800,
                   textTransform: 'uppercase',
-                  color: isCheckedIn ? '#34d399' : '#ffb95f',
+                  color: isCheckedIn ? 'var(--state-success)' : 'var(--gold)',
                   display: 'block',
                 }}>
                   {isCheckedIn ? 'Ingreso Confirmado en Puerta' : 'Reserva VIP Confirmada'}
                 </span>
-                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#fff' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-high)' }}>
                   Mesa {latestReservation.table_code} • {latestReservation.guest_count} Personas
                 </span>
               </div>
@@ -355,7 +355,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
             <span style={{
               fontSize: '0.62rem',
               fontWeight: 800,
-              color: isCheckedIn ? '#10b981' : '#e5b54f',
+              color: isCheckedIn ? 'var(--state-success)' : 'var(--gold)',
               background: isCheckedIn ? 'rgba(16, 185, 129, 0.2)' : 'rgba(229, 181, 79, 0.2)',
               padding: '4px 8px',
               borderRadius: '9999px',
@@ -380,7 +380,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                 fontSize: '0.68rem',
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
-                color: '#ffb95f',
+                color: 'var(--gold)',
                 fontWeight: 800,
               }}>
                 Pase de Acceso Criptográfico
@@ -411,7 +411,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                   borderRadius: '12px',
                   background: 'rgba(229, 181, 79, 0.12)',
                   border: '1px solid rgba(229, 181, 79, 0.35)',
-                  color: '#ffb95f',
+                  color: 'var(--gold)',
                   fontSize: '0.78rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -434,7 +434,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                   borderRadius: '12px',
                   background: 'rgba(56, 189, 248, 0.12)',
                   border: '1px solid rgba(56, 189, 248, 0.35)',
-                  color: '#38bdf8',
+                  color: 'var(--state-info)',
                   fontSize: '0.78rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -449,7 +449,7 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
         ) : (
           /* Estado sin reserva */
           <div style={{
-            background: 'linear-gradient(145deg, #131926 0%, #080b12 100%)',
+            background: 'linear-gradient(145deg, var(--bg-surface) 0%, var(--bg-void) 100%)',
             border: '1px solid rgba(229, 181, 79, 0.35)',
             borderRadius: '20px',
             padding: '24px 20px',
@@ -468,14 +468,14 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               justifyContent: 'center',
               boxShadow: '0 0 25px rgba(229, 181, 79, 0.25)',
             }}>
-              <Crown size={28} color="#e5b54f" />
+              <Crown size={28} color="var(--gold)" />
             </div>
 
             <span style={{
               fontSize: '0.68rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: '#ffb95f',
+              color: 'var(--gold)',
               fontWeight: 800,
               display: 'block',
               marginBottom: '6px',
@@ -483,11 +483,11 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
               Socio VIP {esVipTier(clientUser.tier)}
             </span>
 
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', margin: '0 0 8px' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-high)', margin: '0 0 8px' }}>
               Hola, {clientUser.name}
             </h2>
 
-            <p style={{ fontSize: '0.82rem', color: '#a59eaf', margin: '0 auto 18px', maxWidth: '300px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '0 auto 18px', maxWidth: '300px', lineHeight: 1.5 }}>
               No tienes reservas activas registradas para hoy. Selecciona una mesa VIP en el plano interactivo.
             </p>
 
@@ -498,8 +498,8 @@ export const ClientIdentityHub = ({ onGoToMap, onSignOut }: Props) => {
                 width: '100%',
                 padding: '13px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #e5b54f, #ca8100)',
-                color: '#120c02',
+                background: 'linear-gradient(135deg, var(--gold-hover), var(--gold))',
+                color: 'var(--bg-void)',
                 fontWeight: 800,
                 fontSize: '0.85rem',
                 letterSpacing: '0.04em',

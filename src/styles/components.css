@@ -35,8 +35,8 @@
 
 /* Luxury Action Button */
 .btn-luxury-action {
-  background: linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%);
-  color: #08080c !important;
+  background: var(--grad-gold);
+  color: var(--bg-void, #08080c) !important;
   font-weight: 800;
   border-radius: var(--radius-sm);
   display: inline-flex;
@@ -54,7 +54,7 @@
 .btn-luxury-action:hover {
   filter: brightness(1.06);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  color: #08080c !important;
+  color: var(--bg-void, #08080c) !important;
 }
 
 .btn-luxury-action:active {
@@ -63,8 +63,8 @@
 
 /* Champagne Gold Primary Button */
 .btn-primary {
-  background: linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%);
-  color: #08080c;
+  background: var(--grad-gold);
+  color: var(--bg-void, #08080c);
   font-weight: 700;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -84,7 +84,7 @@
 .btn-primary:hover {
   filter: brightness(1.06);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  color: #08080c;
+  color: var(--bg-void, #08080c);
 }
 
 .btn-primary:active {
@@ -92,8 +92,8 @@
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%);
-  color: #08080c;
+  background: var(--grad-gold);
+  color: var(--bg-void, #08080c);
   font-weight: 700;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -129,7 +129,7 @@
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
 }
 
 .btn-ghost {
@@ -145,7 +145,7 @@
 }
 
 .btn-ghost:hover {
-  color: #fff;
+  color: var(--text-high, #ffffff);
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -201,7 +201,7 @@
 
 .badge-vip {
   background: rgba(229, 181, 79, 0.14);
-  color: #fde68a;
+  color: var(--brand-gold-light, #fde68a);
   border: 1px solid rgba(229, 181, 79, 0.4);
 }
 
@@ -260,7 +260,7 @@
 }
 
 .modal-content {
-  background: #101018;
+  background: var(--bg-surface, #101018);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--radius-lg);
   max-width: 500px;
@@ -315,14 +315,14 @@
 }
 
 .role-pill:hover {
-  color: #fff;
+  color: var(--text-high, #ffffff);
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
 }
 
 .role-pill.active {
-  color: #08080c;
-  background: linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%);
+  color: var(--bg-void, #08080c);
+  background: var(--grad-gold);
   border-color: transparent;
   font-weight: 700;
 }
@@ -336,7 +336,7 @@
 
 [data-theme="light"] .card-hover:hover {
   border-color: rgba(184, 134, 11, 0.35);
-  background: #ffffff;
+  background: var(--text-high, #ffffff);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
 }
 
@@ -349,7 +349,7 @@
 [data-theme="light"] .btn-secondary:hover {
   background: rgba(0, 0, 0, 0.08);
   border-color: rgba(0, 0, 0, 0.22);
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .btn-ghost {
@@ -357,7 +357,7 @@
 }
 
 [data-theme="light"] .btn-ghost:hover {
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -368,7 +368,7 @@
 }
 
 [data-theme="light"] .role-pill:hover {
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
   background: rgba(0, 0, 0, 0.06);
   border-color: rgba(0, 0, 0, 0.15);
 }
@@ -380,10 +380,10 @@
 }
 
 [data-theme="light"] .modal-content {
-  background: #ffffff;
-  border: 1px solid rgba(184, 134, 11, 0.25);
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1);
-  color: #0e1118;
+  background: var(--bg-surface, #ffffff) !important;
+  border: 1px solid rgba(184, 134, 11, 0.25) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  color: var(--text-main, #0e1118) !important;
 }
 
 [data-theme="light"] .modal-content::before {
@@ -402,4 +402,119 @@
   width: 0;
   height: 0;
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   NIGHTFLOW CORE PRIMITIVES (Vanilla CSS — Aceternity/Magic UI Essence)
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Spotlight Card */
+.spotlight-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--dur-base) var(--ease-operational),
+              box-shadow var(--dur-base) var(--ease-operational);
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(229, 181, 79, 0.12),
+    transparent 80%
+  );
+  opacity: var(--spotlight-opacity, 0);
+  transition: opacity var(--dur-fast) ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spotlight-card:hover {
+  border-color: rgba(229, 181, 79, 0.32);
+}
+
+/* 2. Border Beam */
+.border-beam-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  padding: 1px;
+}
+
+.border-beam-line {
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 300deg,
+    rgba(229, 181, 79, 0.8) 330deg,
+    var(--text-high, #ffffff) 350deg,
+    rgba(229, 181, 79, 0.8) 360deg
+  );
+  animation: rotate-conic 4s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.border-beam-content {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-surface);
+  border-radius: calc(var(--radius-md) - 1px);
+  width: 100%;
+  height: 100%;
+}
+
+/* 3. Telemetry HUD Badge */
+.telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.telemetry-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.telemetry-led-gold {
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
+  animation: pulse-gold 2s infinite ease-in-out;
+}
+
+.telemetry-led-success {
+  background: var(--state-success);
+  box-shadow: 0 0 6px var(--state-success);
+  animation: pulse-gold 2s infinite ease-in-out;
+}
+
+.telemetry-led-danger {
+  background: var(--state-danger);
+  box-shadow: 0 0 6px var(--state-danger);
+}
+
+.telemetry-led-hold {
+  background: var(--state-hold);
+  box-shadow: 0 0 6px var(--state-hold);
+  animation: pulse-gold 1.5s infinite ease-in-out;
+}
+
 

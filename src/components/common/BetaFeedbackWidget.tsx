@@ -221,8 +221,8 @@ export function BetaFeedbackWidget({
 
               {status === 'success' ? (
                 <div className="beta-feedback-success">
-                  <CheckCircle2 size={44} color="#34d399" style={{ margin: '0 auto 10px' }} />
-                  <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 6px', fontWeight: 800 }}>
+                  <CheckCircle2 size={44} color="var(--state-success, #34d399)" style={{ margin: '0 auto 10px' }} />
+                  <h4 style={{ color: 'var(--text-high, #ffffff)', fontSize: '1.1rem', margin: '0 0 6px', fontWeight: 800 }}>
                     ¡Feedback Recibido!
                   </h4>
                   <p style={{ color: 'var(--text-muted, #a1a1aa)', fontSize: '0.82rem', margin: 0 }}>

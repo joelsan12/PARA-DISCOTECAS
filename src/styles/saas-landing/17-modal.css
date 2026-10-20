@@ -93,7 +93,7 @@
 }
 
 .saas-form-select option {
-  background: #0d0f17;
-  color: #ffffff;
+  background: var(--saas-card-bg);
+  color: var(--saas-text-primary);
   padding: 10px;
 }

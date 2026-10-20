@@ -73,16 +73,16 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               margin: 0,
               fontSize: '1.25rem',
               fontWeight: 800,
-              color: '#fff',
+              color: 'var(--text-high, #ffffff)',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
             }}
           >
-            <Sparkles size={22} color="#e5b54f" />
+            <Sparkles size={22} color="var(--gold, #e5b54f)" />
             Propuestas &amp; Solicitudes de Planes de Clientes
           </h2>
-          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Revisa contrataciones de planes, evalúa propuestas de los clubes e implementa módulos exclusivos por cliente.
           </p>
         </div>
@@ -93,13 +93,13 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'var(--bg-elevated)',
             padding: '4px',
             borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border)',
           }}
         >
-          <Filter size={13} color="rgba(255, 255, 255, 0.4)" style={{ marginLeft: '6px' }} />
+          <Filter size={13} color="var(--text-dim)" style={{ marginLeft: '6px' }} />
           <button
             type="button"
             onClick={() => setFilter('ALL')}
@@ -107,8 +107,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               padding: '6px 12px',
               borderRadius: '6px',
               border: 'none',
-              background: filter === 'ALL' ? '#e5b54f' : 'transparent',
-              color: filter === 'ALL' ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
+              background: filter === 'ALL' ? 'var(--gold, #e5b54f)' : 'transparent',
+              color: filter === 'ALL' ? 'var(--bg-void, #08080c)' : 'var(--text-muted)',
               fontSize: '0.74rem',
               fontWeight: filter === 'ALL' ? 700 : 500,
               cursor: 'pointer',
@@ -126,7 +126,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               borderRadius: '6px',
               border: 'none',
               background: filter === 'PENDING' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
-              color: filter === 'PENDING' ? '#fbbf24' : 'rgba(255, 255, 255, 0.7)',
+              color: filter === 'PENDING' ? 'var(--state-hold, #fbbf24)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.74rem',
               fontWeight: filter === 'PENDING' ? 700 : 500,
               cursor: 'pointer',
@@ -135,7 +135,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               gap: '6px',
             }}
           >
-            Pendientes {pendingCount > 0 && <span style={{ padding: '1px 5px', borderRadius: '4px', background: '#f59e0b', color: '#000', fontSize: '0.65rem', fontWeight: 800 }}>{pendingCount}</span>}
+            Pendientes {pendingCount > 0 && <span style={{ padding: '1px 5px', borderRadius: '4px', background: 'var(--state-hold, #f59e0b)', color: 'var(--bg-void, #08080c)', fontSize: '0.65rem', fontWeight: 800 }}>{pendingCount}</span>}
           </button>
 
           <button
@@ -146,7 +146,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               borderRadius: '6px',
               border: 'none',
               background: filter === 'IN_REVIEW' ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-              color: filter === 'IN_REVIEW' ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)',
+              color: filter === 'IN_REVIEW' ? 'var(--state-info, #60a5fa)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.74rem',
               fontWeight: filter === 'IN_REVIEW' ? 700 : 500,
               cursor: 'pointer',
@@ -163,7 +163,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               borderRadius: '6px',
               border: 'none',
               background: filter === 'IMPLEMENTED' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
-              color: filter === 'IMPLEMENTED' ? '#34d399' : 'rgba(255, 255, 255, 0.7)',
+              color: filter === 'IMPLEMENTED' ? 'var(--state-success, #34d399)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.74rem',
               fontWeight: filter === 'IMPLEMENTED' ? 700 : 500,
               cursor: 'pointer',
@@ -180,7 +180,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
               borderRadius: '6px',
               border: 'none',
               background: filter === 'REJECTED' ? 'rgba(244, 63, 94, 0.2)' : 'transparent',
-              color: filter === 'REJECTED' ? '#fda4af' : 'rgba(255, 255, 255, 0.7)',
+              color: filter === 'REJECTED' ? 'var(--state-danger, #fda4af)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.74rem',
               fontWeight: filter === 'REJECTED' ? 700 : 500,
               cursor: 'pointer',
@@ -203,10 +203,10 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
           }}
         >
           <Sparkles size={32} color="rgba(255, 255, 255, 0.2)" style={{ margin: '0 auto 12px' }} />
-          <h4 style={{ margin: '0 0 6px', color: '#fff', fontSize: '0.95rem' }}>
+          <h4 style={{ margin: '0 0 6px', color: 'var(--text-high, #ffffff)', fontSize: '0.95rem' }}>
             No hay solicitudes en este filtro
           </h4>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Cuando una discoteca solicite contratar un plan o envíe una propuesta, aparecerá aquí inmediatamente.
           </p>
         </div>
@@ -221,15 +221,15 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
             return (
               <div
                 key={prop.id}
+                className="glass-card"
                 style={{
-                  background: 'linear-gradient(180deg, #101118 0%, #0a0b10 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  border: '1px solid var(--border)',
                   borderRadius: '14px',
                   padding: '20px 24px',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '16px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
                 }}
               >
                 {/* Top Strip: Club info + Status Badge */}
@@ -240,7 +240,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '12px',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderBottom: '1px solid var(--border)',
                     paddingBottom: '14px',
                   }}
                 >
@@ -255,23 +255,23 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#e5b54f',
+                        color: 'var(--gold, #e5b54f)',
                       }}
                     >
                       <Building size={16} />
                     </div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#fff' }}>
+                        <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                           {prop.club_name}
                         </span>
                         {club && (
-                          <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.45)' }}>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                             ({club.city})
                           </span>
                         )}
                       </div>
-                      <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
                         Enviada el {new Date(prop.created_at).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -319,21 +319,21 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div>
-                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.45)', display: 'block' }}>
+                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-dim)', display: 'block' }}>
                           Plan Actual del Club
                         </span>
-                        <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#fff' }}>
+                        <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                           {esPlan(club.plan_id)} ({formatUsd(currentPlan?.monthly_price || 0)}/m)
                         </span>
                       </div>
 
-                      <ArrowRight size={16} color="#e5b54f" />
+                      <ArrowRight size={16} color="var(--gold, #e5b54f)" />
 
                       <div>
-                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#e5b54f', fontWeight: 700, display: 'block' }}>
+                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--gold, #e5b54f)', fontWeight: 700, display: 'block' }}>
                           Plan que Desea Contratar
                         </span>
-                        <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#e5b54f' }}>
+                        <span style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--gold, #e5b54f)' }}>
                           {esPlan(prop.requested_plan_id)} ({formatUsd(requestedPlan?.monthly_price || 0)}/m)
                         </span>
                       </div>
@@ -347,8 +347,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           padding: '7px 14px',
                           borderRadius: '8px',
                           border: '1px solid rgba(229, 181, 79, 0.6)',
-                          background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
-                          color: '#08080c',
+                          background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
+                          color: 'var(--bg-void, #08080c)',
                           fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -366,10 +366,10 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
 
                 {/* Proposal Title & Description */}
                 <div>
-                  <h3 style={{ margin: '0 0 6px', fontSize: '0.98rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 style={{ margin: '0 0 6px', fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                     {prop.title}
                   </h3>
-                  <p style={{ margin: 0, fontSize: '0.82rem', lineHeight: 1.5, color: 'rgba(255, 255, 255, 0.75)' }}>
+                  <p style={{ margin: 0, fontSize: '0.82rem', lineHeight: 1.5, color: 'var(--text-main)' }}>
                     {prop.description}
                   </p>
                 </div>
@@ -380,8 +380,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                     style={{
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      borderLeft: '3px solid #e5b54f',
+                      background: 'var(--bg-elevated)',
+                      borderLeft: '3px solid var(--gold, #e5b54f)',
                     }}
                   >
                     <span
@@ -390,14 +390,14 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '0.06em',
-                        color: '#e5b54f',
+                        color: 'var(--gold, #e5b54f)',
                         display: 'block',
                         marginBottom: '3px',
                       }}
                     >
                       Beneficio esperado para el club:
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.85)' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-main)' }}>
                       {prop.proposed_benefit}
                     </span>
                   </div>
@@ -419,13 +419,13 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <CheckCircle2 size={18} color="#10b981" />
+                      <CheckCircle2 size={18} color="var(--state-success, #10b981)" />
                       <div>
-                        <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff', display: 'block' }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', display: 'block' }}>
                           Módulo Activo Exclusivo: {prop.activated_feature.name}
                         </span>
-                        <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                          Flag: <code style={{ color: '#34d399' }}>{prop.activated_feature.key}</code> · {prop.activated_feature.description}
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                          Flag: <code style={{ color: 'var(--state-success, #34d399)' }}>{prop.activated_feature.key}</code> · {prop.activated_feature.description}
                         </span>
                       </div>
                     </div>
@@ -436,7 +436,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         padding: '3px 8px',
                         borderRadius: '4px',
                         background: 'rgba(16, 185, 129, 0.2)',
-                        color: '#34d399',
+                        color: 'var(--state-success, #34d399)',
                       }}
                     >
                       ACTIVADO SOLO PARA ESTE CLUB
@@ -446,7 +446,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
 
                 {/* Dev Response Notes */}
                 {prop.dev_response && (
-                  <div style={{ fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.6)', fontStyle: 'italic' }}>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                     <strong>Nota del desarrollador:</strong> {prop.dev_response}
                   </div>
                 )}
@@ -473,7 +473,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           borderRadius: '8px',
                           border: '1px solid rgba(229, 181, 79, 0.5)',
                           background: 'rgba(229, 181, 79, 0.12)',
-                          color: '#e5b54f',
+                          color: 'var(--gold, #e5b54f)',
                           fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -496,7 +496,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           borderRadius: '8px',
                           border: '1px solid rgba(59, 130, 246, 0.4)',
                           background: 'rgba(59, 130, 246, 0.08)',
-                          color: '#60a5fa',
+                          color: 'var(--state-info, #60a5fa)',
                           fontSize: '0.76rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -518,7 +518,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           borderRadius: '8px',
                           border: '1px solid rgba(244, 63, 94, 0.3)',
                           background: 'rgba(244, 63, 94, 0.06)',
-                          color: '#fda4af',
+                          color: 'var(--state-danger, #fda4af)',
                           fontSize: '0.76rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -547,7 +547,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           borderRadius: '6px',
                           background: 'rgba(255, 255, 255, 0.06)',
                           border: '1px solid rgba(255, 255, 255, 0.15)',
-                          color: '#fff',
+                          color: 'var(--text-high, #ffffff)',
                           fontSize: '0.76rem',
                           outline: 'none',
                         }}
@@ -558,8 +558,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         style={{
                           padding: '6px 10px',
                           borderRadius: '6px',
-                          background: '#e5b54f',
-                          color: '#08080c',
+                          background: 'var(--gold, #e5b54f)',
+                          color: 'var(--bg-void, #08080c)',
                           border: 'none',
                           fontSize: '0.74rem',
                           fontWeight: 700,
@@ -575,7 +575,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                           padding: '6px 10px',
                           borderRadius: '6px',
                           background: 'transparent',
-                          color: 'rgba(255, 255, 255, 0.5)',
+                          color: 'var(--text-muted)',
                           border: 'none',
                           fontSize: '0.74rem',
                           cursor: 'pointer',
@@ -595,8 +595,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         padding: '6px 10px',
                         borderRadius: '6px',
                         background: 'transparent',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        color: 'rgba(255, 255, 255, 0.6)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-muted)',
                         fontSize: '0.74rem',
                         cursor: 'pointer',
                         display: 'flex',
@@ -625,7 +625,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                       flexWrap: 'wrap',
                     }}
                   >
-                    <span style={{ fontSize: '0.76rem', color: '#fda4af', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.76rem', color: 'var(--state-danger, #fda4af)', fontWeight: 600 }}>
                       ¿Confirmar rechazo de la propuesta?
                     </span>
                     <input
@@ -638,9 +638,9 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         minWidth: '220px',
                         padding: '6px 10px',
                         borderRadius: '6px',
-                        background: 'rgba(10, 11, 16, 0.85)',
+                        background: 'var(--bg-input)',
                         border: '1px solid rgba(244, 63, 94, 0.3)',
-                        color: '#fff',
+                        color: 'var(--text-high, #ffffff)',
                         fontSize: '0.76rem',
                         outline: 'none',
                       }}
@@ -649,7 +649,7 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                       type="button"
                       onClick={() => {
                         onUpdateStatus(
-                          prop.id,
+                           prop.id,
                           'REJECTED',
                           rejectReason.trim() || 'Propuesta no viable técnicamente o fuera de alcance actual.'
                         );
@@ -660,8 +660,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         padding: '6px 12px',
                         borderRadius: '6px',
                         border: 'none',
-                        background: '#f43f5e',
-                        color: '#fff',
+                        background: 'var(--state-danger, #f43f5e)',
+                        color: 'var(--text-high, #ffffff)',
                         fontSize: '0.74rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -679,8 +679,8 @@ export const DevProposalsManager: React.FC<DevProposalsManagerProps> = ({
                         padding: '6px 10px',
                         borderRadius: '6px',
                         background: 'transparent',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: 'rgba(255, 255, 255, 0.6)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-muted)',
                         fontSize: '0.74rem',
                         cursor: 'pointer',
                       }}

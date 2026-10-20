@@ -222,14 +222,14 @@ export const TableFineTuningControls: React.FC<Props> = ({
         }}>
           <div style={{
             fontSize: '0.72rem',
-            color: '#10b981',
+            color: 'var(--state-success, #10b981)',
             textTransform: 'uppercase',
             fontWeight: 800,
             display: 'flex',
             alignItems: 'center',
             gap: '6px'
           }}>
-            <DollarSign size={13} color="#10b981" />
+            <DollarSign size={13} color="var(--state-success, #10b981)" />
             Tarifario para Evento Activo
           </div>
 

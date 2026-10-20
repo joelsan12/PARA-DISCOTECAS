@@ -43,7 +43,7 @@ export const PaymentMethodSelector = ({
                 background: isSel ? 'rgba(229, 181, 79, 0.14)' : 'rgba(255, 255, 255, 0.03)',
                 border: '1px solid',
                 borderColor: isSel ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)',
-                color: isSel ? '#fff' : 'var(--text-muted)',
+                color: isSel ? 'var(--text-high)' : 'var(--text-muted)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

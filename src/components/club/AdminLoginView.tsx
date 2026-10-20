@@ -56,7 +56,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#090A0F',
+        background: 'var(--bg-base, #090A0F)',
         padding: '24px'
       }}>
         <div className="glass-card" style={{
@@ -78,16 +78,16 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 20px',
-            color: '#f43f5e'
+            color: 'var(--state-danger, #f43f5e)'
           }}>
             <AlertTriangle size={28} />
           </div>
 
-          <h2 className="font-brand" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
+          <h2 className="font-brand" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginBottom: '8px' }}>
             Acceso Corporativo Restringido
           </h2>
 
-          <p style={{ fontSize: '0.86rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '24px' }}>
+          <p style={{ fontSize: '0.86rem', color: 'var(--state-neutral, #cbd5e1)', lineHeight: 1.5, marginBottom: '24px' }}>
             {unauthorizedReason}
           </p>
 
@@ -104,7 +104,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                 padding: '12px',
                 background: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 cursor: 'pointer',
                 borderRadius: '8px',
                 fontWeight: 700
@@ -205,7 +205,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
             borderRadius: '8px',
             background: 'rgba(244, 63, 94, 0.15)',
             border: '1px solid rgba(244, 63, 94, 0.3)',
-            color: '#fda4af',
+            color: 'var(--state-danger-text, #fda4af)',
             fontSize: '0.8rem',
             marginBottom: '18px',
             display: 'flex',
@@ -280,9 +280,9 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
               marginTop: '6px',
               padding: '12px 18px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
+              background: 'var(--grad-gold)',
               border: 'none',
-              color: '#08080c',
+              color: 'var(--bg-void, #08080c)',
               fontSize: '0.88rem',
               fontWeight: 800,
               cursor: loading ? 'not-allowed' : 'pointer',
@@ -330,7 +330,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                   borderRadius: '6px',
                   background: 'rgba(234, 179, 8, 0.15)',
                   border: '1px solid rgba(234, 179, 8, 0.35)',
-                  color: '#facc15',
+                  color: 'var(--state-hold, #facc15)',
                   fontWeight: 700,
                   cursor: 'pointer'
                 }}
@@ -362,7 +362,7 @@ export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Pro
                   borderRadius: '6px',
                   background: 'rgba(255, 255, 255, 0.06)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#cbd5e1',
+                  color: 'var(--state-neutral, #cbd5e1)',
                   fontWeight: 600,
                   cursor: 'pointer'
                 }}

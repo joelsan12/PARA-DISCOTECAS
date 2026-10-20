@@ -44,13 +44,13 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
       onClick={onCancel}
     >
       <div
+        className="modal-content glass-card"
         style={{
           width: '100%',
           maxWidth: '540px',
-          background: 'linear-gradient(180deg, #111119 0%, #090a0f 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.35)',
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.35))',
           borderRadius: '16px',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(229, 181, 79, 0.1)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(229, 181, 79, 0.1)',
           overflow: 'hidden',
           animation: 'fadeInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
@@ -60,7 +60,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
         <div
           style={{
             padding: '22px 24px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -78,7 +78,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
               }}
             >
               <ShieldAlert size={20} />
@@ -89,7 +89,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                   margin: 0,
                   fontSize: '1.05rem',
                   fontWeight: 700,
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
@@ -97,7 +97,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               >
                 Confirmar Cambio de Plan SaaS
               </h3>
-              <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Autorización de desarrollador para actualización de tenancy
               </span>
             </div>
@@ -109,7 +109,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'rgba(255, 255, 255, 0.4)',
+              color: 'var(--text-muted)',
               cursor: 'pointer',
               padding: '6px',
               borderRadius: '6px',
@@ -129,8 +129,8 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               gap: '12px',
               padding: '12px 16px',
               borderRadius: '10px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.07)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
               marginBottom: '20px',
             }}
           >
@@ -139,21 +139,21 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.06)',
+                background: 'var(--bg-elevated)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'rgba(255, 255, 255, 0.7)',
+                color: 'var(--text-muted)',
               }}
             >
               <Building size={16} />
             </div>
             <div style={{ flex: 1 }}>
-              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff', display: 'block' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', display: 'block' }}>
                 {club.name}
               </span>
-              <span style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.5)' }}>
-                {club.city} · ID: <code style={{ color: '#e5b54f' }}>{club.id}</code>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                {club.city} · ID: <code style={{ color: 'var(--gold, #e5b54f)' }}>{club.id}</code>
               </span>
             </div>
           </div>
@@ -173,8 +173,8 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               style={{
                 padding: '16px',
                 borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
                 textAlign: 'center',
               }}
             >
@@ -183,22 +183,22 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                   fontSize: '0.68rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  color: 'rgba(255, 255, 255, 0.45)',
+                  color: 'var(--text-dim)',
                   display: 'block',
                   marginBottom: '6px',
                 }}
               >
                 Plan Actual
               </span>
-              <div style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginBottom: '4px' }}>
                 {esPlan(club.plan_id)}
               </div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
                 {formatUsd(currentPlan?.monthly_price || 0)}/mes
               </div>
             </div>
 
-            <div style={{ color: '#e5b54f', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ color: 'var(--gold, #e5b54f)', display: 'flex', justifyContent: 'center' }}>
               <ArrowRight size={20} />
             </div>
 
@@ -217,7 +217,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                   fontSize: '0.68rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  color: isUpgrade ? '#e5b54f' : '#60a5fa',
+                  color: isUpgrade ? 'var(--gold, #e5b54f)' : 'var(--state-info, #60a5fa)',
                   display: 'block',
                   marginBottom: '6px',
                   fontWeight: 700,
@@ -225,10 +225,10 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               >
                 Nuevo Plan
               </span>
-              <div style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginBottom: '4px' }}>
                 {esPlan(newPlanId)}
               </div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isUpgrade ? '#e5b54f' : '#60a5fa' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isUpgrade ? 'var(--gold, #e5b54f)' : 'var(--state-info, #60a5fa)' }}>
                 {formatUsd(targetPlan?.monthly_price || 0)}/mes
               </div>
             </div>
@@ -249,7 +249,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                 style={{
                   fontSize: '0.72rem',
                   fontWeight: 700,
-                  color: '#e5b54f',
+                  color: 'var(--gold, #e5b54f)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
@@ -264,7 +264,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
                   margin: 0,
                   paddingLeft: '16px',
                   fontSize: '0.78rem',
-                  color: 'rgba(255, 255, 255, 0.8)',
+                  color: 'var(--text-main)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '4px',
@@ -283,7 +283,7 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               margin: 0,
               fontSize: '0.76rem',
               lineHeight: 1.45,
-              color: 'rgba(255, 255, 255, 0.6)',
+              color: 'var(--text-muted)',
               padding: '10px 14px',
               background: 'rgba(239, 68, 68, 0.06)',
               border: '1px solid rgba(239, 68, 68, 0.2)',
@@ -298,8 +298,8 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
         <div
           style={{
             padding: '16px 24px',
-            background: 'rgba(0, 0, 0, 0.4)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'var(--bg-elevated)',
+            borderTop: '1px solid var(--border)',
             display: 'flex',
             justifyContent: 'flex-end',
             gap: '12px',
@@ -311,9 +311,9 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
             style={{
               padding: '9px 18px',
               borderRadius: '8px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-elevated)',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.82rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -330,8 +330,8 @@ export const ConfirmPlanChangeModal: React.FC<ConfirmPlanChangeModalProps> = ({
               padding: '9px 20px',
               borderRadius: '8px',
               border: '1px solid rgba(229, 181, 79, 0.6)',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
-              color: '#08080c',
+              background: 'var(--grad-gold)',
+              color: 'var(--bg-void, #08080c)',
               fontSize: '0.82rem',
               fontWeight: 700,
               cursor: 'pointer',

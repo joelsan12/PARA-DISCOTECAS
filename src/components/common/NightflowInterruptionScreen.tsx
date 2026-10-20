@@ -230,7 +230,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
       body: 'Algo falló en esta pantalla. Tu sesión y tus datos siguen intactos: el diagnóstico quedó guardado en este dispositivo con la referencia de auditoría.',
       tag: `REF ${refCode}`,
       primaryActionLabel: 'Reintentar',
-      badgeColor: '#e5b54f',
+      badgeColor: 'var(--gold, #e5b54f)',
     },
     DEPLOYMENT: {
       eyebrow: 'NIGHTFLOW · NUEVA IMPLEMENTACIÓN',
@@ -238,7 +238,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
       body: 'Estamos desplegando una nueva implementación en tiempo real. Los sistemas de puerta, check-in criptográfico y reservas VIP se están actualizando sin pérdida de datos.',
       tag: 'DESPLIEGUE EN VIVO · v2.6.4 PROD',
       primaryActionLabel: 'Reconectar Ahora',
-      badgeColor: '#38bdf8',
+      badgeColor: 'var(--state-info, #38bdf8)',
     },
     MAINTENANCE: {
       eyebrow: 'NIGHTFLOW · PAUSA OPERATIVA',
@@ -246,7 +246,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
       body: 'La plataforma se encuentra en mantenimiento preventivo programado para garantizar latencia ultra-baja y máxima seguridad en el acceso de esta noche.',
       tag: 'VENTANA OPERATIVA · 15 MIN',
       primaryActionLabel: 'Comprobar Estado',
-      badgeColor: '#a78bfa',
+      badgeColor: 'var(--violet, #a78bfa)',
     },
   }[activeMode];
 
@@ -286,7 +286,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
             boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)',
           }}
         >
-          <span style={{ fontSize: '0.66rem', fontWeight: 800, color: '#e5b54f', paddingLeft: '8px', letterSpacing: '0.1em' }}>
+          <span style={{ fontSize: '0.66rem', fontWeight: 800, color: 'var(--gold, #e5b54f)', paddingLeft: '8px', letterSpacing: '0.1em' }}>
             SIMULADOR:
           </span>
 
@@ -297,8 +297,8 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
               padding: '5px 12px',
               borderRadius: '999px',
               border: 'none',
-              background: activeMode === 'ERROR' ? '#e5b54f' : 'transparent',
-              color: activeMode === 'ERROR' ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
+              background: activeMode === 'ERROR' ? 'var(--gold, #e5b54f)' : 'transparent',
+              color: activeMode === 'ERROR' ? 'var(--bg-void, #08080c)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.72rem',
               fontWeight: activeMode === 'ERROR' ? 800 : 500,
               cursor: 'pointer',
@@ -318,8 +318,8 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
               padding: '5px 12px',
               borderRadius: '999px',
               border: 'none',
-              background: activeMode === 'DEPLOYMENT' ? '#38bdf8' : 'transparent',
-              color: activeMode === 'DEPLOYMENT' ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
+              background: activeMode === 'DEPLOYMENT' ? 'var(--state-info, #38bdf8)' : 'transparent',
+              color: activeMode === 'DEPLOYMENT' ? 'var(--bg-void, #08080c)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.72rem',
               fontWeight: activeMode === 'DEPLOYMENT' ? 800 : 500,
               cursor: 'pointer',
@@ -339,8 +339,8 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
               padding: '5px 12px',
               borderRadius: '999px',
               border: 'none',
-              background: activeMode === 'MAINTENANCE' ? '#a78bfa' : 'transparent',
-              color: activeMode === 'MAINTENANCE' ? '#08080c' : 'rgba(255, 255, 255, 0.7)',
+              background: activeMode === 'MAINTENANCE' ? 'var(--violet, #a78bfa)' : 'transparent',
+              color: activeMode === 'MAINTENANCE' ? 'var(--bg-void, #08080c)' : 'rgba(255, 255, 255, 0.7)',
               fontSize: '0.72rem',
               fontWeight: activeMode === 'MAINTENANCE' ? 800 : 500,
               cursor: 'pointer',
@@ -360,7 +360,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
             style={{
               background: 'transparent',
               border: 'none',
-              color: soundEnabled ? '#e5b54f' : 'rgba(255, 255, 255, 0.4)',
+              color: soundEnabled ? 'var(--gold, #e5b54f)' : 'rgba(255, 255, 255, 0.4)',
               cursor: 'pointer',
               padding: '4px 8px',
               display: 'flex',
@@ -463,16 +463,16 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
                 style={{
                   height: '100%',
                   width: '92%',
-                  background: 'linear-gradient(90deg, #38bdf8, #e5b54f)',
+                  background: 'linear-gradient(90deg, var(--state-info, #38bdf8), var(--gold, #e5b54f))',
                   borderRadius: '999px',
                   boxShadow: '0 0 12px rgba(56, 189, 248, 0.6)',
                   animation: 'pulseDeployBar 2s infinite ease-in-out',
                 }}
               />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: '6px', fontFamily: 'var(--font-mono, monospace)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '6px', fontFamily: 'var(--font-mono, monospace)' }}>
               <span>Compilación &amp; Sincronización Edge</span>
-              <span style={{ color: '#38bdf8', fontWeight: 700 }}>92% Completado</span>
+              <span style={{ color: 'var(--state-info, #38bdf8)', fontWeight: 700 }}>92% Completado</span>
             </div>
           </div>
         )}
@@ -522,7 +522,7 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
           >
             {copied ? (
               <>
-                <Check size={14} style={{ marginRight: '6px', verticalAlign: 'middle', color: '#10b981' }} />
+                <Check size={14} style={{ marginRight: '6px', verticalAlign: 'middle', color: 'var(--state-success, #10b981)' }} />
                 Copiado ✓
               </>
             ) : (
@@ -548,15 +548,15 @@ export const NightflowInterruptionScreen: React.FC<NightflowInterruptionScreenPr
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <Check size={15} color="#10b981" />
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34d399' }}>
+              <Check size={15} color="var(--state-success, #10b981)" />
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--state-success, #34d399)' }}>
                 Diagnóstico de Integridad Completado
               </span>
-              <span style={{ fontSize: '0.7rem', color: '#e5b54f', marginLeft: 'auto', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--gold, #e5b54f)', marginLeft: 'auto', fontFamily: 'var(--font-mono)' }}>
                 Latencia: {scanResults.ping}ms
               </span>
             </div>
-            <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.8)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.74rem', color: 'var(--text-main)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <li>{scanResults.storage}</li>
               <li>{scanResults.crypto}</li>
               <li>{scanResults.session}</li>

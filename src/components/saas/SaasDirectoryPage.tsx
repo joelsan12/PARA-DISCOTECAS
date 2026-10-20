@@ -7,10 +7,11 @@ import { getCities, searchBusinesses, VENUE_TYPE_OPTIONS } from '../../lib/busin
 import { useBusinessDirectory } from '../../lib/useBusinessDirectory';
 import { FavoriteButton, SaasAmbient, SaasFooter, SaasHeader, SaasSectionKicker, VenueTypeBadge } from './saas-ui';
 import { useFavorites } from './useFavorites';
+import { SpotlightCard } from '../common/ui/SpotlightCard';
 
 function DirectoryCard({ business }: { business: BusinessDirectoryEntry }) {
   return (
-    <article className="saas-directory-card">
+    <SpotlightCard className="saas-directory-card" style={{ padding: 0 }}>
       <div className="saas-directory-card__media">
         <Link to={`/negocio/${business.slug}`} aria-label={`Ver ${business.name}`}>
           <img src={business.banner} alt={`Ambiente de ${business.name}`} loading="lazy" />
@@ -37,7 +38,7 @@ function DirectoryCard({ business }: { business: BusinessDirectoryEntry }) {
           </Link>
         </div>
       </div>
-    </article>
+    </SpotlightCard>
   );
 }
 
@@ -74,7 +75,7 @@ export function SaasDirectoryPage() {
           padding: '10px 20px',
           textAlign: 'center',
           fontSize: '0.82rem',
-          color: '#fff',
+          color: 'var(--text-high)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -84,6 +85,7 @@ export function SaasDirectoryPage() {
           zIndex: 10,
         }}
       >
+
         <span
           style={{
             fontSize: '0.68rem',

@@ -13,25 +13,25 @@ export const SaasBetaTeaserBanner: React.FC<SaasBetaTeaserBannerProps> = ({ onOp
           <div className="saas-beta-teaser-left">
             <div className="saas-beta-badge-row" style={{ marginBottom: '10px' }}>
               <span className="saas-beta-pulse-dot" />
-              <span className="saas-beta-badge-text">FASE BETA ABIERTA 2026</span>
+              <span className="saas-beta-badge-text">KERNEL v2.6.4 // COCKPIT OPERATIVO EN VIVO</span>
             </div>
 
             <h3 className="saas-beta-teaser-title">
-              Prueba los 5 Módulos Operativos en Vivo
+              Consola de Mando VIP & Simulador de Alta Concurrencia
             </h3>
 
             <p className="saas-beta-teaser-desc">
-              Consola interactiva de sala, escáner criptográfico offline en 0.04s, reservas 3D, comandas PWA de meseros y diseñador de planos.
+              Explora en tiempo real la suite completa: plano cenital reactivo, escáner óptico con verificación KMS Ed25519 en 0.04s, tokenización Black Card y despacho a barra.
             </p>
 
             <div className="saas-beta-teaser-chips">
               <span className="saas-beta-teaser-chip">
-                <Zap size={13} color="#e5b54f" />
-                5 Módulos Listos
+                <Zap size={13} color="var(--brand-gold, #e5b54f)" />
+                5 Terminales de Mando
               </span>
               <span className="saas-beta-teaser-chip">
-                <ShieldCheck size={13} color="#34d399" />
-                100% en Navegador
+                <ShieldCheck size={13} color="var(--state-success, #34d399)" />
+                0.04s Latencia de Puerta
               </span>
             </div>
           </div>
@@ -43,11 +43,11 @@ export const SaasBetaTeaserBanner: React.FC<SaasBetaTeaserBannerProps> = ({ onOp
               className="btn-gold saas-beta-teaser-btn"
             >
               <Sparkles size={16} />
-              <span>Abrir Entorno de Pruebas</span>
+              <span>Abrir Cockpit de Mando</span>
               <ArrowRight size={15} />
             </button>
             <span className="saas-beta-teaser-note">
-              Acceso libre sin registro forzado
+              Acceso libre interactivo sin instalación
             </span>
           </div>
         </div>

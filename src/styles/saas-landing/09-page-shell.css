@@ -1,7 +1,7 @@
 /* ── 4. Resumen de Precios ───────────────────────────────────────────────── */
 .saas-pricing-summary {
-  padding: 72px 0;
-  border-top: 1px solid var(--saas-border);
+  padding: 80px 0;
+  position: relative;
 }
 
 /* ── 5. Páginas Dedicadas (Encabezado & Layout) ───────────────────────────── */

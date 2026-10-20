@@ -95,7 +95,7 @@ export const ClubDashboard = ({ session, activeTab: propActiveTab }: ClubDashboa
         }}>
           <Building size={32} />
         </div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '0.75rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '0.75rem' }}>
           No hay negocios registrados
         </h2>
         <p style={{ color: 'var(--text-dim)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '480px', marginBottom: '1.75rem' }}>
@@ -110,8 +110,8 @@ export const ClubDashboard = ({ session, activeTab: propActiveTab }: ClubDashboa
             gap: '8px',
             padding: '12px 24px',
             borderRadius: '10px',
-            background: 'linear-gradient(135deg, #e5b54f 0%, #c49632 100%)',
-            color: '#0a0a0f',
+            background: 'var(--grad-gold)',
+            color: 'var(--bg-void, #0a0a0f)',
             fontWeight: 700,
             fontSize: '0.9rem',
             textDecoration: 'none',
@@ -327,7 +327,7 @@ export const ClubDashboard = ({ session, activeTab: propActiveTab }: ClubDashboa
         session ? (
           <StaffManager key={activeClub.id} activeClub={activeClub} session={session} />
         ) : (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8', fontSize: '0.9rem' }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
             Cargando permisos de gestión de personal...
           </div>
         )

@@ -121,18 +121,20 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
       {/* ─── ENCABEZADO OFICIAL DE LA BITÁCORA ─────────────────────────── */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        flexWrap: 'wrap',
-        gap: '14px',
-        padding: '24px 28px',
-        background: 'linear-gradient(135deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 16, 0.98) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.28)',
-        borderRadius: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 24px rgba(229, 181, 79, 0.05)'
-      }}>
+      <div
+        className="glass-card"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '14px',
+          padding: '24px 28px',
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.28))',
+          borderRadius: '16px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
             width: '52px',
@@ -150,12 +152,12 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#34d399', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--state-success, #10b981)', boxShadow: '0 0 10px var(--state-success, #10b981)' }} />
+              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--state-success, #34d399)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 Control de Accesos en Vivo · Turno Nocturno
               </span>
             </div>
-            <h1 className="font-brand" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '0.02em' }}>
+            <h1 className="font-brand" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0, letterSpacing: '0.02em' }}>
               Bitácora de Ingresos en Puerta
             </h1>
             <p style={{ fontSize: '0.84rem', color: 'var(--text-dim)', margin: '4px 0 0' }}>
@@ -198,7 +200,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Personas Ingresadas
             </span>
-            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: '#059669', fontSize: '0.68rem', fontWeight: 800 }}>
+            <span style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--state-success, #059669)', fontSize: '0.68rem', fontWeight: 800 }}>
               AFORO REAL
             </span>
           </div>
@@ -388,7 +390,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: isChecked ? '#059669' : 'var(--text-high, #fff)',
+                          color: isChecked ? 'var(--state-success, #059669)' : 'var(--text-high, #ffffff)',
                           fontWeight: 800,
                           fontSize: '0.78rem',
                           flexShrink: 0
@@ -440,7 +442,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                         }}
                       >
                         <span>#{res.code}</span>
-                        {copiedCode === res.code ? <Check size={12} color="#059669" /> : <Copy size={12} color="var(--text-dim)" />}
+                        {copiedCode === res.code ? <Check size={12} color="var(--state-success, #059669)" /> : <Copy size={12} color="var(--text-dim)" />}
                       </button>
                     </td>
 
@@ -466,7 +468,7 @@ export const DoorAccessLogView: React.FC<DoorAccessLogViewProps> = ({ activeClub
                     <td style={{ padding: '14px 18px' }}>
                       {isChecked ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={13} color="#059669" />
+                          <Clock size={13} color="var(--state-success, #059669)" />
                           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--state-success, #059669)', fontWeight: 700 }}>
                             {formatEntryTime(res.checked_in_at)}
                           </span>

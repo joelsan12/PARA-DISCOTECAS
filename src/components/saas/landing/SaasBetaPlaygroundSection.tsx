@@ -1,11 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  MonitorPlay,
-  ScanLine,
-  Crown,
-  Wine,
-  LayoutGrid,
   Star,
   Send,
   MessageCircle,
@@ -13,12 +7,13 @@ import {
   Sparkles,
   Bug,
   CheckCircle2,
-  Check,
-  ArrowRight,
+  Crown,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
 import { submitBetaFeedback, type FeedbackCategory } from '../../../lib/betaIntake';
+import { BETA_MODULES } from './betaModules.data';
+import { BetaModuleCard } from './SaasBetaModuleCard';
 
 interface SaasBetaPlaygroundSectionProps {
   onOpenModal?: (plan?: string) => void;
@@ -33,6 +28,36 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
   const [contact, setContact] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Revelado escalonado del bento: se arma el estado oculto y el observer de
+  // viewport añade .is-visible al entrar en pantalla (una sola vez).
+  const modulesGridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const grid = modulesGridRef.current;
+    if (!grid) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reducedMotion.matches || typeof IntersectionObserver === 'undefined') {
+      grid.dataset.reveal = 'off';
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            grid.classList.add('is-visible');
+            observer.disconnect();
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, []);
 
   // Calificación textual dinámica
   const getRatingText = (val: number) => {
@@ -89,165 +114,63 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
     }
   };
 
-  const modules = [
-    {
-      id: 'floor-ops',
-      name: 'Consola de Sala en Vivo',
-      roleTag: 'MANAGER & BARRA',
-      icon: MonitorPlay,
-      desc: 'Controla el mapa interactivo de mesas, aforo en sala sincronizado y conciliación de cuentas al instante.',
-      features: [
-        'Mapa cenital en vivo con códigos de color por ocupación',
-        'Conciliación de consumos y cobros de barra',
-        'Alertas de servicio y llamadas de concierge VIP'
-      ],
-      primaryLink: '/software/pantallas',
-      primaryLabel: 'Explorar Consola en Pantallas',
-      badge: 'PROBAR DEMO'
-    },
-    {
-      id: 'door-scanner',
-      name: 'Escáner de Puerta Offline',
-      roleTag: 'PUERTA & SEGURIDAD',
-      icon: ScanLine,
-      desc: 'Lectura de pases con cámara en 0.04s. Detección criptográfica infalible de capturas de pantalla reenviadas.',
-      features: [
-        'Validación instantánea con firmas Ed25519',
-        'Rechazo automático de fotos o capturas de WhatsApp',
-        'Opera sin internet guardando encriptado en el teléfono'
-      ],
-      primaryLink: '/software/simulador',
-      primaryLabel: 'Probar Simulador de Escáner',
-      badge: 'INTERACTIVO'
-    },
-    {
-      id: 'vip-client',
-      name: 'Portal del Invitado & Black Card',
-      roleTag: 'EXPERIENCIA CLIENTE',
-      icon: Crown,
-      desc: 'El cliente toca su mesa favorita en el mapa cenital, abona su anticipo y recibe un pase digital rotativo.',
-      features: [
-        'Reserva visual en plano arquitectónico 3D',
-        'Hold automático de 12 minutos anti-sobreventas',
-        'Pase Black Card con QR dinámico cada 30 segundos'
-      ],
-      primaryLink: '/negocios',
-      primaryLabel: 'Probar Reserva como Cliente',
-      badge: 'VIP ACCESS'
-    },
-    {
-      id: 'waiter-terminal',
-      name: 'Terminal PWA de Meseros',
-      roleTag: 'SERVICIO DE PISO',
-      icon: Wine,
-      desc: 'Comandas digitales directas a barra, asignación de botellas a la mesa y estado de gasto mínimo.',
-      features: [
-        'Menú digital rápido de licores y botellas VIP',
-        'Cero tickets impresos o pedidos perdidos',
-        'Cierre de cuenta asistido para cajero o capitán'
-      ],
-      primaryLink: '/software/pantallas',
-      primaryLabel: 'Ver Flujo de Meseros',
-      badge: 'PWA SPEED'
-    },
-    {
-      id: 'blueprint-editor',
-      name: 'Diseñador de Planos de Discoteca',
-      roleTag: 'ARQUITECTURA DEL LOCAL',
-      icon: LayoutGrid,
-      desc: 'Personaliza la distribución exacta de tu discoteca: suites, palcos, cabina DJ, barras y terrazas.',
-      features: [
-        'Diseño cenital adaptado a las medidas de tu local',
-        'Calibración de anticipos y consumos mínimos por mesa',
-        'Aislamiento multi-tenant 100% privado'
-      ],
-      primaryLink: '/software/arquitectura',
-      primaryLabel: 'Ver Arquitectura del Plano',
-      badge: 'CAD BLUEPRINT'
-    }
-  ];
-
   return (
     <section id="beta-playground" className="saas-beta-playground-section saas-fullscreen-section">
       <div className="saas-wide-shell">
-        {/* Encabezado Principal de la Beta */}
+        {/* Encabezado Principal de la Beta — franja limpia sin cajas */}
         <div className="saas-beta-header">
           <div className="saas-beta-badge-row">
             <span className="saas-beta-pulse-dot" />
-            <span className="saas-beta-badge-text">FASE BETA ABIERTA 2026 · PRUEBA TODOS LOS MÓDULOS</span>
+            <span className="saas-beta-badge-text">KERNEL v2.6.4 // SUITE OPERATIVA NIGHTFLOW VIP · CONSOLA EN VIVO</span>
           </div>
 
           <h2 className="saas-beta-title">
-            Prueba Cada Módulo en Vivo y <span>Ayúdanos a Mejorar</span>
+            Cockpit de Mando VIP <span>& Control de Alta Concurrencia</span>
           </h2>
 
           <p className="saas-beta-lead">
-            Queremos que vivas la velocidad de <strong>NIGHTFLOW VIP</strong> antes de implementarlo en tu local. 
-            Prueba libremente la consola de sala, el escáner de puerta y las reservas móviles. Tu feedback moldea directamente las próximas actualizaciones.
+            Experimenta la velocidad de respuesta, precisión criptográfica y diseño de alta concurrencia de <strong>NIGHTFLOW VIP</strong> antes de activarlo en tu establecimiento. Los 5 motores operativos están listos para interactuar directamente desde tu navegador.
           </p>
 
-          <div className="saas-beta-stats-bar">
-            <div className="saas-beta-stat-chip">
-              <Zap size={14} />
-              <span>5 Módulos Operativos Activos</span>
+          {/* Telemetría sin caja: estados a la izquierda, métricas a la derecha */}
+          <div className="saas-beta-telemetry">
+            <div className="saas-beta-telemetry-states">
+              <span className="saas-beta-tel-item">
+                <span className="saas-beta-tel-dot saas-beta-tel-dot--live" />
+                <span>5 Terminales de Mando en Vivo</span>
+              </span>
+              <span className="saas-beta-tel-item">
+                <span className="saas-beta-tel-dot saas-beta-tel-dot--gold" />
+                <span>Firma Asimétrica Ed25519</span>
+              </span>
+              <span className="saas-beta-tel-item">
+                <span className="saas-beta-tel-dot" />
+                <span>Multi-Tenant Aislado</span>
+              </span>
             </div>
-            <div className="saas-beta-stat-chip">
-              <ShieldCheck size={14} />
-              <span>100% en Navegador sin Descargas</span>
-            </div>
-            <div className="saas-beta-stat-chip">
-              <Sparkles size={14} />
-              <span>Tu Sugerencia se Implementa Rápido</span>
+
+            <div className="saas-beta-telemetry-metrics">
+              <span className="saas-beta-tel-metric">
+                <Zap size={12} />
+                LATENCIA &lt; 50ms
+              </span>
+              <span className="saas-beta-tel-metric">
+                <ShieldCheck size={12} />
+                ENCLAVE Ed25519
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Grid de los 5 Módulos Listos para Probar */}
-        <div className="saas-beta-modules-grid">
-          {modules.map((mod) => {
-            const IconComp = mod.icon;
-            return (
-              <div key={mod.id} className="saas-beta-module-card">
-                <div>
-                  <div className="saas-beta-module-top">
-                    <div className="saas-beta-module-icon-wrap">
-                      <IconComp size={22} />
-                    </div>
-                    <span className="saas-beta-module-tag">{mod.roleTag}</span>
-                  </div>
-
-                  <h3 className="saas-beta-module-title">{mod.name}</h3>
-                  <p className="saas-beta-module-desc">{mod.desc}</p>
-
-                  <div className="saas-beta-module-features">
-                    {mod.features.map((feat, idx) => (
-                      <div key={idx} className="saas-beta-module-feature-item">
-                        <Check size={14} />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="saas-beta-module-actions">
-                  <Link to={mod.primaryLink} className="saas-beta-btn-action saas-beta-btn-action--primary">
-                    <span>{mod.primaryLabel}</span>
-                    <ArrowRight size={13} />
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSelectModuleFeedback(mod.name)}
-                    className="saas-beta-btn-action saas-beta-btn-action--ghost"
-                    title={`Dejar sugerencia sobre ${mod.name}`}
-                  >
-                    <Lightbulb size={13} />
-                    <span>Sugerir</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+        {/* Bento de Consola: los 5 módulos listos para probar */}
+        <div ref={modulesGridRef} data-reveal="armed" className="saas-beta-modules-grid">
+          {BETA_MODULES.map((mod) => (
+            <BetaModuleCard
+              key={mod.id}
+              mod={mod}
+              onSuggest={handleSelectModuleFeedback}
+            />
+          ))}
         </div>
 
         {/* Caja de Feedback Integrada y Atractiva */}
@@ -278,7 +201,7 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
             <div className="saas-beta-feedback-form-wrap">
               {status === 'success' ? (
                 <div className="saas-beta-success-message">
-                  <CheckCircle2 size={44} color="#34d399" />
+                  <CheckCircle2 size={44} color="var(--state-success, #34d399)" />
                   <h4>¡Muchas gracias por tu sugerencia!</h4>
                   <p>
                     Tu aporte ha sido registrado en nuestro sistema. El equipo de ingeniería lo revisará en la próxima ronda de optimización.
@@ -326,7 +249,7 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
 
                   {/* Selector de Categorías de Feedback */}
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255, 255, 255, 0.65)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Tipo de Aporte:
                     </label>
                     <div className="saas-beta-categories">
@@ -364,7 +287,7 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
                       rows={3}
                       required
                     />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: '0.68rem', color: 'var(--text-dim)', marginTop: '4px' }}>
                       {message.length} / 1000 caracteres
                     </div>
                   </div>
@@ -382,7 +305,7 @@ export const SaasBetaPlaygroundSection: React.FC<SaasBetaPlaygroundSectionProps>
                   </div>
 
                   {errorMessage && (
-                    <div style={{ fontSize: '0.75rem', color: '#f87171', fontWeight: 600 }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--state-danger, #f87171)', fontWeight: 600 }}>
                       {errorMessage}
                     </div>
                   )}

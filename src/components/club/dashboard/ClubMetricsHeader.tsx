@@ -97,7 +97,7 @@ export const ClubMetricsHeader = ({
                 borderRadius: '4px',
                 background: 'rgba(255, 255, 255, 0.04)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                color: '#e2e8f0',
+                color: 'var(--text-main, #e2e8f0)',
                 fontWeight: 600,
               }}
             >
@@ -139,12 +139,12 @@ export const ClubMetricsHeader = ({
               style={{ minWidth: '220px' }}
             >
               {clubEvents.length === 0 ? (
-                <option value="" style={{ background: '#0e121a', color: '#94a3b8' }}>
+                <option value="" style={{ background: 'var(--bg-surface, #0e121a)', color: 'var(--text-muted, #94a3b8)' }}>
                   Sin eventos en cartelera
                 </option>
               ) : (
                 clubEvents.map((e) => (
-                  <option key={e.id} value={e.id} style={{ background: '#0e121a', color: '#fff' }}>
+                  <option key={e.id} value={e.id} style={{ background: 'var(--bg-surface, #0e121a)', color: 'var(--text-high, #ffffff)' }}>
                     {e.day_label} — {e.title}
                   </option>
                 ))

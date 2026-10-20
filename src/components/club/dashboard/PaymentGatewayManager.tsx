@@ -26,6 +26,7 @@ import {
 import { callFunctions } from '../../../lib/functionsClient';
 import type { Club } from '../../../types';
 import type { AdminStaffSession } from '../../../lib/adminAuth';
+import { TelemetryBadge } from '../../common';
 
 interface Props {
   activeClub: Club;
@@ -213,14 +214,14 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
       : 'Kushki';
 
   const statusBadge = isDoor
-    ? { label: 'COBRO EN PUERTA ACTIVO (SIN PASARELA ONLINE)', color: '#4ade80' as const }
+    ? { label: 'COBRO EN PUERTA ACTIVO (SIN PASARELA ONLINE)', status: 'success' as const }
     : isAssisted
-    ? { label: 'ASISTENCIA TÉCNICA NIGHTFLOW', color: 'var(--brand-gold)' as const }
+    ? { label: 'ASISTENCIA TÉCNICA NIGHTFLOW', status: 'gold' as const }
     : remoteStatus === 'configured'
-    ? { label: `CONECTADO A ${providerLabel.toUpperCase()}`, color: '#4ade80' as const }
+    ? { label: `CONECTADO A ${providerLabel.toUpperCase()}`, status: 'success' as const }
     : remoteStatus === 'loading'
-    ? { label: 'CONSULTANDO SERVIDOR…', color: 'var(--brand-gold)' as const }
-    : { label: 'PENDIENTE DE CONFIGURAR', color: '#f59e0b' as const };
+    ? { label: 'CONSULTANDO SERVIDOR…', status: 'gold' as const }
+    : { label: 'PENDIENTE DE CONFIGURAR', status: 'hold' as const };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -237,9 +238,6 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
           gap: '20px',
           padding: '24px 28px',
           borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.1) 0%, rgba(14, 14, 21, 0.96) 60%, rgba(8, 8, 12, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.3)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(229, 181, 79, 0.2)',
         }}
       >
         <div
@@ -273,40 +271,15 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               <CreditCard size={20} color="var(--brand-gold)" />
             </div>
 
-            <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: '#fff', letterSpacing: '0.02em' }}>
+            <h2 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)', letterSpacing: '0.02em' }}>
               Cobro de Reservas &amp; Pasarelas de Pago
             </h2>
 
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.72rem',
-                fontWeight: 800,
-                letterSpacing: '0.05em',
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                background: `${statusBadge.color}1f`,
-                color: statusBadge.color,
-                border: `1px solid ${statusBadge.color}4d`,
-              }}
-            >
-              <span
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: statusBadge.color,
-                  boxShadow: `0 0 8px ${statusBadge.color}`,
-                }}
-              />
-              {statusBadge.label}
-            </span>
+            <TelemetryBadge status={statusBadge.status} label={statusBadge.label} />
           </div>
 
           <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.55' }}>
-            Tus ingresos por reservas y mesas VIP van <strong style={{ color: '#fff' }}>100% directos a la cuenta bancaria</strong> de <strong style={{ color: 'var(--brand-gold)' }}>{activeClub.name}</strong>.
+            Tus ingresos por reservas y mesas VIP van <strong style={{ color: 'var(--text-high, #ffffff)' }}>100% directos a la cuenta bancaria</strong> de <strong style={{ color: 'var(--brand-gold)' }}>{activeClub.name}</strong>.
             NIGHTFLOW VIP no interviene como captador de fondos ni retiene comisiones sobre tus ventas.
           </p>
         </div>
@@ -347,8 +320,8 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               gap: '7px',
               padding: '10px 22px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)',
-              color: '#08080c',
+              background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #cfa038) 100%)',
+              color: 'var(--bg-void, #08080c)',
               border: 'none',
               fontWeight: 800,
               fontSize: '0.84rem',
@@ -370,9 +343,8 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
         style={{
           padding: '22px 24px',
           borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.75) 100%)',
-          border: '1px solid rgba(148, 163, 184, 0.2)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+          border: '1px solid var(--border, rgba(148, 163, 184, 0.2))',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
@@ -392,7 +364,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               <Info size={17} color="var(--brand-gold)" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #f8fafc)' }}>
                 Información para el Dueño del Negocio: Modalidades de Cobro
               </h3>
               <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
@@ -428,11 +400,11 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <CreditCard size={15} color="#4ade80" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Cobro con Datáfonos Datafast o POS Físico</strong>
+              <CreditCard size={15} color="var(--state-success, #4ade80)" />
+              <strong style={{ fontSize: '0.84rem', color: 'var(--text-high, #ffffff)' }}>Cobro con Datáfonos Datafast o POS Físico</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
-              Si cobras en caja con máquina de Datafast o Medianet: activa la opción <strong style={{ color: '#4ade80' }}>Cobro en Puerta</strong> abajo. Tus clientes reservan su mesa online y cancelan de forma presencial con tu datáfono habitual al ingresar al club. Cero trámites ni comisiones web.
+              Si cobras en caja con máquina de Datafast o Medianet: activa la opción <strong style={{ color: 'var(--state-success, #4ade80)' }}>Cobro en Puerta</strong> abajo. Tus clientes reservan su mesa online y cancelan de forma presencial con tu datáfono habitual al ingresar al club. Cero trámites ni comisiones web.
             </p>
           </div>
 
@@ -447,7 +419,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <Landmark size={15} color="var(--brand-gold)" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Cobro por Transferencia Directa o DeUna</strong>
+              <strong style={{ fontSize: '0.84rem', color: 'var(--text-high, #ffffff)' }}>Cobro por Transferencia Directa o DeUna</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
               Si prefieres transferencias a tu cuenta de Banco Pichincha, Guayaquil o Produbanco: el cliente aparta su mesa online y envía el comprobante por WhatsApp o lo presenta en taquilla. Tu personal valida su pase QR en puerta en segundos.
@@ -464,11 +436,11 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <Headphones size={15} color="#38bdf8" />
-              <strong style={{ fontSize: '0.84rem', color: '#fff' }}>Pasarelas Online o Contratos Existentes</strong>
+              <Headphones size={15} color="var(--state-info, #38bdf8)" />
+              <strong style={{ fontSize: '0.84rem', color: 'var(--text-high, #ffffff)' }}>Pasarelas Online o Contratos Existentes</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.77rem', color: 'var(--text-muted)', lineHeight: '1.45' }}>
-              Si deseas cobro web automático (Kushki, PayPhone, DeUna) o ya tienes un contrato con otra pasarela bancaria (PlacetoPay, Nuvei, Stripe): conecta tus llaves abajo o solicita <strong style={{ color: '#38bdf8' }}>Asistencia NIGHTFLOW</strong> para enlazar tu cuenta sin costo adicional.
+              Si deseas cobro web automático (Kushki, PayPhone, DeUna) o ya tienes un contrato con otra pasarela bancaria (PlacetoPay, Nuvei, Stripe): conecta tus llaves abajo o solicita <strong style={{ color: 'var(--state-info, #38bdf8)' }}>Asistencia NIGHTFLOW</strong> para enlazar tu cuenta sin costo adicional.
             </p>
           </div>
         </div>
@@ -482,7 +454,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             alignItems: 'center',
             gap: '10px',
             fontSize: '0.78rem',
-            color: '#f87171',
+            color: 'var(--state-danger, #f87171)',
             background: 'rgba(239, 68, 68, 0.1)',
             border: '1px solid rgba(239, 68, 68, 0.3)',
             padding: '12px 14px',
@@ -500,7 +472,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             alignItems: 'center',
             gap: '10px',
             fontSize: '0.78rem',
-            color: '#f87171',
+            color: 'var(--state-danger, #f87171)',
             background: 'rgba(239, 68, 68, 0.1)',
             border: '1px solid rgba(239, 68, 68, 0.3)',
             padding: '12px 14px',
@@ -522,9 +494,6 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             style={{
               padding: '24px',
               borderRadius: 'var(--radius-md)',
-              background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-              border: '1px solid rgba(229, 181, 79, 0.2)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
@@ -541,7 +510,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               >
                 PASO 01
               </span>
-              <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+              <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                 ¿Cómo deseas cobrar las reservas de {activeClub.name}?
               </h3>
             </div>
@@ -551,10 +520,10 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 {
                   id: 'PAY_AT_DOOR',
                   badge: 'MÁS SENCILLO & 0% COMISIÓN',
-                  badgeColor: '#4ade80',
+                  badgeColor: 'var(--state-success, #4ade80)',
                   title: 'Cobro en Puerta / Datafast / Transferencia Bancaria',
                   desc: 'El cliente reserva en la web y el cupo se aparta por 12 min. El cobro del anticipo o mesa se efectúa presencialmente con tu datáfono Datafast, transferencia o efectivo.',
-                  icon: <Landmark size={18} color="#4ade80" />,
+                  icon: <Landmark size={18} color="var(--state-success, #4ade80)" />,
                 },
                 {
                   id: 'CLIENT_GATEWAY',
@@ -567,10 +536,10 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 {
                   id: 'ASSISTED_GATEWAY',
                   badge: 'SOPORTE TÉCNICO',
-                  badgeColor: '#38bdf8',
+                  badgeColor: 'var(--state-info, #38bdf8)',
                   title: 'Asistencia Técnica & Conexión NIGHTFLOW',
                   desc: 'NIGHTFLOW VIP apoya técnicamente a tu club para conectar tu pasarela actual o crear tu cuenta oficial manteniendo la recaudación directa a tu banco.',
-                  icon: <ShieldCheck size={18} color="#38bdf8" />,
+                  icon: <ShieldCheck size={18} color="var(--state-info, #38bdf8)" />,
                 },
               ] as const).map(mode => {
                 const isSelected = config.paymentMode === mode.id;
@@ -582,10 +551,10 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                       padding: '16px 18px',
                       borderRadius: '10px',
                       background: isSelected
-                        ? 'linear-gradient(135deg, rgba(229, 181, 79, 0.12) 0%, rgba(14, 14, 21, 0.95) 100%)'
-                        : 'rgba(255, 255, 255, 0.02)',
+                        ? 'var(--accent-subtle, rgba(229, 181, 79, 0.12))'
+                        : 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
                       border: '1px solid',
-                      borderColor: isSelected ? 'rgba(229, 181, 79, 0.45)' : 'rgba(255, 255, 255, 0.07)',
+                      borderColor: isSelected ? 'var(--border-focus, rgba(229, 181, 79, 0.45))' : 'var(--border, rgba(255, 255, 255, 0.07))',
                       boxShadow: isSelected ? '0 0 18px rgba(229, 181, 79, 0.15)' : 'none',
                       cursor: 'pointer',
                       display: 'flex',
@@ -617,7 +586,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                           style={{
                             fontSize: '0.88rem',
                             fontWeight: 700,
-                            color: isSelected ? '#fff' : '#cbd5e1',
+                            color: isSelected ? 'var(--text-high, #ffffff)' : 'var(--text-muted)',
                           }}
                         >
                           {mode.title}
@@ -656,33 +625,30 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               style={{
                 padding: '24px',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(14, 14, 21, 0.95) 100%)',
-                border: '1px solid rgba(74, 222, 128, 0.3)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <CheckCircle2 size={20} color="#4ade80" />
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                <CheckCircle2 size={20} color="var(--state-success, #4ade80)" />
+                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                   Modo de Cobro en Puerta y Local Activo
                 </h4>
               </div>
 
-              <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: '1.55', margin: '0 0 14px 0' }}>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-dim, #cbd5e1)', lineHeight: '1.55', margin: '0 0 14px 0' }}>
                 Tu establecimiento está listo para operar sin necesidad de pasarelas online ni cuentas bancarias conectadas por API.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#4ade80" />
+                  <Check size={14} color="var(--state-success, #4ade80)" />
                   <span><strong>Mesas protegidas:</strong> El stock se reserva por 12 minutos mientras el cliente llega o confirma.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#4ade80" />
+                  <Check size={14} color="var(--state-success, #4ade80)" />
                   <span><strong>Pase VIP QR:</strong> El cliente recibe su pase digital rotativo para presentarlo en la entrada.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#4ade80" />
+                  <Check size={14} color="var(--state-success, #4ade80)" />
                   <span><strong>Cobro presencial:</strong> Cobras el anticipo o consumo en tu datáfono físico (Datafast/Medianet), transferencia o efectivo.</span>
                 </div>
               </div>
@@ -698,9 +664,6 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 style={{
                   padding: '24px',
                   borderRadius: 'var(--radius-md)',
-                  background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-                  border: '1px solid rgba(229, 181, 79, 0.2)',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
@@ -717,7 +680,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                   >
                     PASO 02
                   </span>
-                  <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                  <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                     Selecciona tu Pasarela de Pago Online
                   </h3>
                 </div>
@@ -754,9 +717,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                         style={{
                           padding: '14px',
                           borderRadius: '8px',
-                          background: isSelected ? 'rgba(229, 181, 79, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                          background: isSelected ? 'var(--accent-subtle, rgba(229, 181, 79, 0.12))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
                           border: '1px solid',
-                          borderColor: isSelected ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.08)',
+                          borderColor: isSelected ? 'var(--brand-gold)' : 'var(--border, rgba(255, 255, 255, 0.08))',
                           cursor: 'pointer',
                           display: 'flex',
                           flexDirection: 'column',
@@ -774,7 +737,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                               fontWeight: 800,
                               padding: '1px 6px',
                               borderRadius: '3px',
-                              background: isSelected ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                              background: isSelected ? 'rgba(229, 181, 79, 0.2)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
                               color: isSelected ? 'var(--brand-gold)' : 'var(--text-dim)',
                             }}
                           >
@@ -782,7 +745,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                           </span>
                         </div>
                         <div>
-                          <strong style={{ fontSize: '0.84rem', color: isSelected ? '#fff' : '#cbd5e1', display: 'block', marginBottom: '2px' }}>
+                          <strong style={{ fontSize: '0.84rem', color: isSelected ? 'var(--text-high, #ffffff)' : 'var(--text-main, #cbd5e1)', display: 'block', marginBottom: '2px' }}>
                             {prov.name}
                           </strong>
                           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: '1.35', display: 'block' }}>
@@ -801,9 +764,6 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 style={{
                   padding: '24px',
                   borderRadius: 'var(--radius-md)',
-                  background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-                  border: '1px solid rgba(229, 181, 79, 0.2)',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
@@ -821,7 +781,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                     >
                       PASO 03
                     </span>
-                    <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                    <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                       Credenciales de tu Comercio en {providerLabel}
                     </h3>
                   </div>
@@ -864,8 +824,8 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                         fontSize: '0.72rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        background: config.environment === 'production' ? 'linear-gradient(135deg, #e5b54f 0%, #cfa038 100%)' : 'transparent',
-                        color: config.environment === 'production' ? '#08080c' : 'var(--text-muted)',
+                        background: config.environment === 'production' ? 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #cfa038) 100%)' : 'transparent',
+                        color: config.environment === 'production' ? 'var(--bg-void, #08080c)' : 'var(--text-muted)',
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -877,7 +837,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {/* Campo Merchant ID */}
                   <div>
-                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#e2e8f0', marginBottom: '6px' }}>
+                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main, #e2e8f0)', marginBottom: '6px' }}>
                       <span>
                         {config.provider === 'payphone' ? 'Store ID / Merchant ID de PayPhone' : 'Merchant ID (Identificador de Comercio)'}
                       </span>
@@ -894,9 +854,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                           width: '100%',
                           padding: '10px 12px 10px 38px',
                           borderRadius: '8px',
-                          background: 'rgba(8, 8, 12, 0.85)',
-                          border: '1px solid rgba(229, 181, 79, 0.22)',
-                          color: '#fff',
+                          background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.22))',
+                          color: 'var(--text-main, #ffffff)',
                           fontSize: '0.85rem',
                           fontWeight: 600,
                           fontFamily: 'var(--font-mono, monospace)',
@@ -912,7 +872,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
 
                   {/* Campo Public API Key */}
                   <div>
-                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#e2e8f0', marginBottom: '6px' }}>
+                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main, #e2e8f0)', marginBottom: '6px' }}>
                       <span>
                         {config.provider === 'payphone' ? 'Token Público de PayPhone' : `Public API Key (${providerLabel} Frontend)`}
                       </span>
@@ -927,9 +887,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                         width: '100%',
                         padding: '10px 12px',
                         borderRadius: '8px',
-                        background: 'rgba(8, 8, 12, 0.85)',
-                        border: '1px solid rgba(229, 181, 79, 0.22)',
-                        color: '#fff',
+                        background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                        border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.22))',
+                        color: 'var(--text-main, #ffffff)',
                         fontSize: '0.85rem',
                         fontWeight: 600,
                         fontFamily: 'var(--font-mono, monospace)',
@@ -941,9 +901,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
 
                   {/* Campo Referencia Secreta */}
                   <div>
-                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#e2e8f0', marginBottom: '6px' }}>
+                    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main, #e2e8f0)', marginBottom: '6px' }}>
                       <span>Referencia Secreta (Almacenamiento Cifrado en Servidor)</span>
-                      <span style={{ fontSize: '0.68rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--state-success, #4ade80)', display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <Shield size={11} /> Cifrado en Servidor
                       </span>
                     </label>
@@ -958,9 +918,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                           width: '100%',
                           padding: '10px 12px 10px 38px',
                           borderRadius: '8px',
-                          background: 'rgba(8, 8, 12, 0.85)',
-                          border: '1px solid rgba(229, 181, 79, 0.22)',
-                          color: '#fff',
+                          background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.22))',
+                          color: 'var(--text-main, #ffffff)',
                           fontSize: '0.85rem',
                           fontWeight: 600,
                           fontFamily: 'var(--font-mono, monospace)',
@@ -985,33 +945,32 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               style={{
                 padding: '24px',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(14, 14, 21, 0.95) 100%)',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                border: '1px solid var(--state-info-border, rgba(56, 189, 248, 0.3))',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <Headphones size={20} color="#38bdf8" />
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                <Headphones size={20} color="var(--state-info, #38bdf8)" />
+                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                   Acompañamiento VIP de Configuración
                 </h4>
               </div>
 
-              <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: '1.55', margin: '0 0 14px 0' }}>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-dim, #cbd5e1)', lineHeight: '1.55', margin: '0 0 14px 0' }}>
                 Si tu discoteca ya trabaja con otra pasarela bancaria (Datafast, PlacetoPay, Nuvei, Stripe) o necesitas ayuda para tramitar tus credenciales comerciales con Kushki o PayPhone:
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#38bdf8" />
+                  <Check size={14} color="var(--state-info, #38bdf8)" />
                   <span>Un especialista de NIGHTFLOW se conecta contigo para validar el contrato bancario.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#38bdf8" />
+                  <Check size={14} color="var(--state-info, #38bdf8)" />
                   <span>Configuramos las llaves encriptadas y webhooks sin que tengas que programar nada.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Check size={14} color="#38bdf8" />
+                  <Check size={14} color="var(--state-info, #38bdf8)" />
                   <span>Hacemos pruebas de cobro reales de $1.00 para verificar que el dinero entra a tu cuenta bancaria.</span>
                 </div>
               </div>
@@ -1028,15 +987,14 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               style={{
                 padding: '24px',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(180deg, rgba(229, 181, 79, 0.08) 0%, rgba(14, 14, 21, 0.95) 100%)',
-                border: '1px solid rgba(229, 181, 79, 0.28)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+                border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.28))',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Globe size={18} color="var(--brand-gold)" />
-                  <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                  <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                     Sincronización Automática de Pagos
                   </h3>
                 </div>
@@ -1091,7 +1049,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 <code
                   style={{
                     fontSize: '0.77rem',
-                    color: '#f5d38a',
+                    color: 'var(--brand-gold-light, #f5d38a)',
                     wordBreak: 'break-all',
                     flex: 1,
                     fontFamily: 'var(--font-mono, monospace)',
@@ -1107,9 +1065,9 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                     padding: '6px 12px',
                     borderRadius: '6px',
                     background: copiedWebhook ? 'rgba(34, 197, 94, 0.2)' : 'rgba(229, 181, 79, 0.12)',
-                    color: copiedWebhook ? '#4ade80' : 'var(--brand-gold)',
+                    color: copiedWebhook ? 'var(--state-success, #4ade80)' : 'var(--brand-gold)',
                     border: '1px solid',
-                    borderColor: copiedWebhook ? '#4ade80' : 'rgba(229, 181, 79, 0.3)',
+                    borderColor: copiedWebhook ? 'var(--state-success, #4ade80)' : 'rgba(229, 181, 79, 0.3)',
                     fontSize: '0.74rem',
                     fontWeight: 800,
                     cursor: 'pointer',
@@ -1158,16 +1116,16 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                     border: '1px solid rgba(255, 255, 255, 0.06)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: '#e2e8f0' }}>
-                    <CheckCircle2 size={13} color="#4ade80" style={{ flexShrink: 0 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: 'var(--text-main, #e2e8f0)' }}>
+                    <CheckCircle2 size={13} color="var(--state-success, #4ade80)" style={{ flexShrink: 0 }} />
                     <span><strong>Firma Criptográfica:</strong> HMAC-SHA256 estricto sobre cuerpo crudo</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: '#e2e8f0' }}>
-                    <CheckCircle2 size={13} color="#4ade80" style={{ flexShrink: 0 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: 'var(--text-main, #e2e8f0)' }}>
+                    <CheckCircle2 size={13} color="var(--state-success, #4ade80)" style={{ flexShrink: 0 }} />
                     <span><strong>Anti-Replay:</strong> Ventana de timestamp estricta de 300 segundos</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: '#e2e8f0' }}>
-                    <CheckCircle2 size={13} color="#4ade80" style={{ flexShrink: 0 }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.74rem', color: 'var(--text-main, #e2e8f0)' }}>
+                    <CheckCircle2 size={13} color="var(--state-success, #4ade80)" style={{ flexShrink: 0 }} />
                     <span><strong>Idempotencia:</strong> Clave única para evitar duplicidades de cobro</span>
                   </div>
                 </div>
@@ -1179,14 +1137,11 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
               style={{
                 padding: '24px',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-                border: '1px solid rgba(74, 222, 128, 0.25)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <Landmark size={18} color="#4ade80" />
-                <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                <Landmark size={18} color="var(--state-success, #4ade80)" />
+                <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                   Flujo de Cobro Presencial
                 </h3>
               </div>
@@ -1194,20 +1149,20 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                 En esta modalidad tus clientes reservan desde su móvil y el cobro se realiza directamente en tu negocio al ingresar.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: '#cbd5e1' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', fontWeight: 800, fontSize: '0.7rem' }}>1</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: 'var(--text-dim, #cbd5e1)' }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--state-success, #4ade80)', fontWeight: 800, fontSize: '0.7rem' }}>1</div>
                   <span>Cliente elige mesa VIP y número de acompañantes.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: '#cbd5e1' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', fontWeight: 800, fontSize: '0.7rem' }}>2</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: 'var(--text-dim, #cbd5e1)' }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--state-success, #4ade80)', fontWeight: 800, fontSize: '0.7rem' }}>2</div>
                   <span>Mesa queda bloqueada por 12 min en el plano de la sala.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: '#cbd5e1' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', fontWeight: 800, fontSize: '0.7rem' }}>3</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: 'var(--text-dim, #cbd5e1)' }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--state-success, #4ade80)', fontWeight: 800, fontSize: '0.7rem' }}>3</div>
                   <span>Cliente recibe Pase VIP QR Black Card en su teléfono.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: '#cbd5e1' }}>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', fontWeight: 800, fontSize: '0.7rem' }}>4</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.78rem', color: 'var(--text-dim, #cbd5e1)' }}>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(74, 222, 128, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--state-success, #4ade80)', fontWeight: 800, fontSize: '0.7rem' }}>4</div>
                   <span>Portero o cajero valida el QR y cobra en tu datáfono habitual.</span>
                 </div>
               </div>
@@ -1220,14 +1175,11 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
             style={{
               padding: '24px',
               borderRadius: 'var(--radius-md)',
-              background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-              border: '1px solid rgba(229, 181, 79, 0.2)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <ArrowRight size={16} color="var(--brand-gold)" />
-              <h4 className="font-brand" style={{ fontSize: '0.96rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+              <h4 className="font-brand" style={{ fontSize: '0.96rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                 Ciclo de Seguridad &amp; Confirmación VIP
               </h4>
             </div>
@@ -1276,7 +1228,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>{item.title}</span>
                       {idx < arr.length - 1 && <ArrowRight size={11} color="rgba(229, 181, 79, 0.4)" />}
                     </div>

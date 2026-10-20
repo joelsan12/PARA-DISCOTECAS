@@ -32,16 +32,16 @@ export const VipProfileCard = ({
             fontSize: '0.62rem',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
-            color: '#e5b54f',
+            color: 'var(--gold)',
             fontWeight: 800,
             display: 'flex',
             alignItems: 'center',
             gap: '5px',
           }}>
-            <CheckCircle2 size={13} color="#10b981" />
+            <CheckCircle2 size={13} color="var(--state-success)" />
             MEMBRESÍA ACTIVA
           </span>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: '4px 0 0' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high)', margin: '4px 0 0' }}>
             {clientUser.name}
           </h3>
           <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.6)' }}>
@@ -56,7 +56,7 @@ export const VipProfileCard = ({
             borderRadius: '9999px',
             background: 'rgba(229, 181, 79, 0.2)',
             border: '1px solid rgba(229, 181, 79, 0.4)',
-            color: '#e5b54f',
+            color: 'var(--gold)',
             fontSize: '0.7rem',
             fontWeight: 800,
             letterSpacing: '0.05em',
@@ -83,12 +83,12 @@ export const VipProfileCard = ({
           justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <QrCode size={16} color="#e5b54f" />
-            <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 600 }}>
+            <QrCode size={16} color="var(--gold)" />
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-high)', fontWeight: 600 }}>
               Pase Digital: {latestReservation.code}
             </span>
           </div>
-          <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 700 }}>ACTIVO</span>
+          <span style={{ fontSize: '0.65rem', color: 'var(--state-success)', fontWeight: 700 }}>ACTIVO</span>
         </div>
       )}
 
@@ -100,9 +100,9 @@ export const VipProfileCard = ({
           width: '100%',
           padding: '14px',
           borderRadius: '12px',
-          background: 'linear-gradient(135deg, #e5b54f 0%, #b89745 100%)',
+          background: 'linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 100%)',
           border: 'none',
-          color: '#0d0d16',
+          color: 'var(--bg-void)',
           fontWeight: 800,
           fontSize: '0.85rem',
           letterSpacing: '0.06em',
@@ -131,7 +131,7 @@ export const VipProfileCard = ({
           borderRadius: '10px',
           background: 'rgba(229, 181, 79, 0.08)',
           border: '1px solid rgba(229, 181, 79, 0.28)',
-          color: '#e5b54f',
+          color: 'var(--gold)',
           fontSize: '0.78rem',
           fontWeight: 700,
           display: 'flex',

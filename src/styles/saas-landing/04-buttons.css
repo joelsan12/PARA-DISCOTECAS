@@ -5,7 +5,7 @@
   justify-content: center;
   gap: 8px;
   background: var(--saas-gold);
-  color: #07080c;
+  color: var(--saas-text-primary);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -51,8 +51,8 @@
 }
 
 [data-theme="light"] .saas-page .btn-secondary {
-  background: #ffffff;
-  color: #0e1118 !important;
+  background: var(--saas-card-bg);
+  color: var(--saas-text-primary) !important;
   border: 1px solid rgba(0, 0, 0, 0.16);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }

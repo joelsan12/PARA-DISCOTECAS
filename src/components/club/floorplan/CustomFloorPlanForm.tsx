@@ -129,11 +129,11 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
             className="floorplan-input"
             style={{
               width: '100%',
-              borderColor: phoneError ? '#ef4444' : undefined
+              borderColor: phoneError ? 'var(--state-danger, #ef4444)' : undefined
             }}
           />
           {phoneError && (
-            <p id="custom-plan-phone-error" role="alert" style={{ margin: '5px 0 0', color: '#ef4444', fontSize: '0.75rem', fontWeight: 600 }}>
+            <p id="custom-plan-phone-error" role="alert" style={{ margin: '5px 0 0', color: 'var(--state-danger, #ef4444)', fontSize: '0.75rem', fontWeight: 600 }}>
               {phoneError}
             </p>
           )}
@@ -163,8 +163,8 @@ export const CustomFloorPlanForm: React.FC<Props> = ({
           width: '100%',
           padding: '11px 18px',
           borderRadius: 'var(--radius-sm)',
-          background: 'linear-gradient(135deg, #25d366 0%, #128c7e 100%)',
-          color: '#ffffff',
+          background: 'linear-gradient(135deg, var(--brand-whatsapp, #25d366) 0%, var(--state-success, #128c7e) 100%)',
+          color: 'var(--text-high, #ffffff)',
           border: 'none',
           fontSize: '0.84rem',
           fontWeight: 800,

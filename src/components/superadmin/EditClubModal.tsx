@@ -83,9 +83,6 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
           width: '94%',
           maxHeight: '90vh',
           overflowY: 'auto',
-          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.98) 0%, rgba(10, 11, 16, 0.99) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.3)',
-          boxShadow: '0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 181, 79, 0.1)',
           padding: '28px'
         }}
       >
@@ -106,7 +103,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
               <Building2 size={18} />
             </div>
             <div>
-              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 Modificar Discoteca / Tenant
               </h3>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
@@ -136,7 +133,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
             borderRadius: 'var(--radius-sm)',
             background: 'rgba(239, 68, 68, 0.15)',
             border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#fca5a5',
+            color: 'var(--state-danger-text, #fca5a5)',
             fontSize: '0.8rem'
           }}>
             <AlertCircle size={15} style={{ flexShrink: 0 }} />
@@ -160,7 +157,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                 borderRadius: '6px',
                 background: 'rgba(8, 8, 12, 0.85)',
                 border: '1px solid rgba(229, 181, 79, 0.25)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.88rem',
                 fontWeight: 600
               }}
@@ -181,7 +178,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   fontWeight: 600,
                   cursor: 'pointer'
@@ -208,7 +205,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.86rem',
                   fontWeight: 600
                 }}
@@ -231,7 +228,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                 borderRadius: '6px',
                 background: 'rgba(8, 8, 12, 0.85)',
                 border: '1px solid rgba(229, 181, 79, 0.25)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.84rem'
               }}
             />
@@ -253,7 +250,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                 borderRadius: '6px',
                 background: 'rgba(8, 8, 12, 0.85)',
                 border: '1px solid rgba(229, 181, 79, 0.25)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.86rem',
                 fontFamily: 'var(--font-mono)'
               }}
@@ -275,7 +272,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                 borderRadius: '6px',
                 background: 'rgba(8, 8, 12, 0.85)',
                 border: '1px solid rgba(229, 181, 79, 0.25)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.84rem'
               }}
             />
@@ -304,7 +301,7 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.95)',
                   border: '1px solid rgba(229, 181, 79, 0.4)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer'
@@ -331,15 +328,15 @@ export const EditClubModal = ({ club, plans, isOpen, onClose, onSave, onUpdatePl
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.95)',
                   border: '1px solid rgba(229, 181, 79, 0.4)',
-                  color: status === 'active' ? '#34d399' : '#f87171',
+                  color: status === 'active' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
                   fontSize: '0.82rem',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >
-                <option value="active" style={{ color: '#34d399' }}>● {esClubStatus('active')}</option>
-                <option value="suspended" style={{ color: '#f87171' }}>● {esClubStatus('suspended')}</option>
-                <option value="trial" style={{ color: '#fbbf24' }}>● En Prueba / Trial</option>
+                <option value="active" style={{ color: 'var(--state-success, #34d399)' }}>● {esClubStatus('active')}</option>
+                <option value="suspended" style={{ color: 'var(--state-danger, #f87171)' }}>● {esClubStatus('suspended')}</option>
+                <option value="trial" style={{ color: 'var(--state-hold, #fbbf24)' }}>● En Prueba / Trial</option>
               </select>
             </div>
           </div>

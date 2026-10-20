@@ -23,7 +23,7 @@
 }
 
 .saas-screen-tab.active {
-  color: #07080c;
+  color: var(--saas-text-primary);
   background: var(--saas-gold);
   border-color: var(--saas-gold);
   font-weight: 700;

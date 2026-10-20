@@ -48,11 +48,40 @@ export function AdminPortalApp() {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
   const [profileOverride, setProfileOverride] = useState<Partial<AdminStaffSession> | null>(null);
 
-  const rawSession = authState.status === 'authenticated' ? authState.session : null;
+  const isDemoMode = Boolean(
+    import.meta.env.DEV &&
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('demo') === '1'
+  );
+
+  const demoSession: AdminStaffSession | null = useMemo(() => {
+    if (!isDemoMode) return null;
+    return {
+      uid: 'demo-admin-uid',
+      email: 'gerencia@sensorial.club',
+      displayName: 'Gerencia General · Sensorial VIP',
+      role: 'CLUB_ADMIN',
+      isSuperAdmin: true,
+      clubId: store.activeClubId || store.clubs[0]?.id || 'club_sensorial',
+      staffRole: 'manager'
+    };
+  }, [isDemoMode, store.activeClubId, store.clubs]);
+
+  const rawSession = authState.status === 'authenticated' ? authState.session : demoSession;
   const session = useMemo(() => {
     if (!rawSession) return null;
     return profileOverride ? { ...rawSession, ...profileOverride } : rawSession;
   }, [rawSession, profileOverride]);
+
+  // Si estamos en demo, permitir preseleccionar pestaña mediante query param (?tab=MONITOR, ?tab=FLOOR_PLAN, etc.)
+  useEffect(() => {
+    if (isDemoMode && typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get('tab');
+      if (tabParam) {
+        store.setDashboardTab(tabParam);
+      }
+    }
+  }, [isDemoMode, store]);
 
   // Seleccionar automáticamente el primer club disponible si existe y no hay ninguno seleccionado
   useEffect(() => {
@@ -65,9 +94,9 @@ export function AdminPortalApp() {
   useEffect(() => {
     if (session) {
       if (session.role === 'DOOR_CHECKIN' && currentView !== 'DOOR') {
-        setCurrentView('DOOR');
+        queueMicrotask(() => setCurrentView('DOOR'));
       } else if (session.role === 'WAITER' && currentView !== 'WAITER') {
-        setCurrentView('WAITER');
+        queueMicrotask(() => setCurrentView('WAITER'));
       }
     }
   }, [session, currentView]);
@@ -146,8 +175,8 @@ export function AdminPortalApp() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#08080c',
-        color: '#fff',
+        background: 'var(--bg-void, #08080c)',
+        color: 'var(--text-high, #ffffff)',
         gap: '16px'
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
@@ -176,11 +205,11 @@ export function AdminPortalApp() {
     );
   }
 
-  if (authState.status === 'unauthenticated') {
+  if (authState.status === 'unauthenticated' && !isDemoMode) {
     return <AdminLoginView />;
   }
 
-  if (authState.status === 'unauthorized') {
+  if (authState.status === 'unauthorized' && !isDemoMode) {
     return (
       <AdminLoginView
         unauthorizedReason={authState.reason}

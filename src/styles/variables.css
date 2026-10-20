@@ -111,7 +111,32 @@
   --brand-card: #12121b;
   --brand-border: rgba(255, 255, 255, 0.08);
   --brand-muted: #a1a1aa;
-  --glow-brand-gold: 0 0 20px rgba(229, 181, 79, 0.4);
+  /* Operational Functional Gradients */
+  --grad-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --grad-hold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --grad-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --grad-gold: linear-gradient(135deg, #e5b54f 0%, #cfa038 100%);
+
+  /* Waiter Service Category Accents */
+  --cat-waiter: #38bdf8;
+  --cat-bottle: #a855f7;
+  --cat-hookah: #f97316;
+  --cat-service: #34d399;
+  --cat-other: #e5b54f;
+
+  /* Floorplan Occupancy & Table State Tokens (AGENTS.md §1.1) */
+  --occ-available: #34d399;
+  --occ-occupied-bg: #064e3b;
+  --occ-occupied-border: #34d399;
+  --occ-reserved-bg: #78350f;
+  --occ-reserved-border: #e5b54f;
+  --occ-hold-bg: #7c2d12;
+  --occ-hold-border: #f59e0b;
+  --occ-vip-bg: #3b0764;
+  --occ-vip-border: #a855f7;
+
+  /* External Brand Integration */
+  --brand-whatsapp: #25d366;
 }
 
 [data-theme="light"] {
@@ -192,5 +217,39 @@
   --brand-border: rgba(184, 134, 11, 0.24);
   --brand-muted: #525866;
   --glow-brand-gold: 0 0 16px rgba(184, 134, 11, 0.25);
+  
+  /* Floorplan Occupancy & Table State Tokens (Light Theme Haute Nocturne) */
+  --occ-available: #059669;
+  --occ-occupied-bg: #d1fae5;
+  --occ-occupied-border: #059669;
+  --occ-reserved-bg: #fef3c7;
+  --occ-reserved-border: #d97706;
+  --occ-hold-bg: #ffedd5;
+  --occ-hold-border: #ea580c;
+  --occ-vip-bg: #f3e8ff;
+  --occ-vip-border: #7c3aed;
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   DOOR TERMINAL ISOLATED DARK SCOPE (Anti-Theming / High-Contrast Hardware)
+   ═════════════════════════════════════════════════════════════════════════ */
+.door-terminal-root,
+[data-theme="light"] .door-terminal-root {
+  color-scheme: dark;
+  --bg-void: #08080c;
+  --bg-base: #0b0b10;
+  --bg-surface: #0e0e15;
+  --bg-card: #12121b;
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+  --text-high: #ffffff;
+  --gold: #e5b54f;
+  --brand-gold: #e5b54f;
+  --state-success: #34d399;
+  --state-hold: #fbbf24;
+  --state-danger: #f43f5e;
+  --state-info: #38bdf8;
+}
+
 

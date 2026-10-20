@@ -108,13 +108,13 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
       onClick={onClose}
     >
       <div
+        className="modal-content glass-card"
         style={{
           width: '100%',
           maxWidth: '580px',
-          background: 'linear-gradient(180deg, #11111a 0%, #09090e 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.4)',
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
           borderRadius: '16px',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(229, 181, 79, 0.12)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(229, 181, 79, 0.12)',
           overflow: 'hidden',
           animation: 'fadeInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
@@ -124,7 +124,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
         <div
           style={{
             padding: '20px 24px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            borderBottom: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -142,16 +142,16 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
               }}
             >
               <Sparkles size={20} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                 Implementar Beneficio Exclusivo
               </h3>
-              <span style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                 Se activará única y exclusivamente para <strong>{club.name}</strong>
               </span>
             </div>
@@ -163,7 +163,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'rgba(255, 255, 255, 0.4)',
+              color: 'var(--text-muted)',
               cursor: 'pointer',
               padding: '6px',
               borderRadius: '6px',
@@ -192,17 +192,17 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   textTransform: 'uppercase',
                   fontWeight: 700,
                   letterSpacing: '0.08em',
-                  color: '#e5b54f',
+                  color: 'var(--gold, #e5b54f)',
                   display: 'block',
                   marginBottom: '4px',
                 }}
               >
                 Propuesta Enviada por el Cliente
               </span>
-              <p style={{ margin: '0 0 4px', fontSize: '0.84rem', fontWeight: 600, color: '#fff' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-high, #ffffff)' }}>
                 {proposal.title}
               </p>
-              <p style={{ margin: 0, fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+              <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--text-muted)' }}>
                 {proposal.description}
               </p>
             </div>
@@ -215,7 +215,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                 background: 'rgba(239, 68, 68, 0.1)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
                 borderRadius: '8px',
-                color: '#f87171',
+                color: 'var(--state-danger, #f87171)',
                 fontSize: '0.78rem',
                 marginBottom: '16px',
               }}
@@ -232,7 +232,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   display: 'block',
                   fontSize: '0.78rem',
                   fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.75)',
+                  color: 'var(--text-main)',
                   marginBottom: '6px',
                 }}
               >
@@ -247,9 +247,9 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#fff',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.85rem',
                   outline: 'none',
                 }}
@@ -264,7 +264,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   display: 'block',
                   fontSize: '0.78rem',
                   fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.75)',
+                  color: 'var(--text-main)',
                   marginBottom: '6px',
                 }}
               >
@@ -280,9 +280,9 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                     width: '100%',
                     padding: '10px 14px 10px 36px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#e5b54f',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--gold, #e5b54f)',
                     fontFamily: 'monospace',
                     fontSize: '0.85rem',
                     outline: 'none',
@@ -291,11 +291,11 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                 />
                 <Code
                   size={15}
-                  color="#e5b54f"
+                  color="var(--gold, #e5b54f)"
                   style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
                 />
               </div>
-              <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px', display: 'block' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
                 Solo afectará al documento de esta discoteca. Las demás no tendrán acceso.
               </span>
             </div>
@@ -307,7 +307,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   display: 'block',
                   fontSize: '0.78rem',
                   fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.75)',
+                  color: 'var(--text-main)',
                   marginBottom: '6px',
                 }}
               >
@@ -322,9 +322,9 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#fff',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   outline: 'none',
                   resize: 'vertical',
@@ -339,7 +339,7 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   display: 'block',
                   fontSize: '0.78rem',
                   fontWeight: 600,
-                  color: 'rgba(255, 255, 255, 0.75)',
+                  color: 'var(--text-main)',
                   marginBottom: '6px',
                 }}
               >
@@ -354,9 +354,9 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#fff',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   outline: 'none',
                 }}
@@ -377,8 +377,8 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
               gap: '10px',
             }}
           >
-            <ShieldCheck size={16} color="#10b981" />
-            <span style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+            <ShieldCheck size={16} color="var(--state-success, #10b981)" />
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-main)' }}>
               <strong>Aislamiento estricto:</strong> Ningún otro negocio podrá ver ni usar este módulo.
             </span>
           </div>
@@ -398,9 +398,9 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
               style={{
                 padding: '9px 18px',
                 borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                background: 'rgba(255, 255, 255, 0.05)',
-                color: 'rgba(255, 255, 255, 0.8)',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-elevated)',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.82rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -415,8 +415,8 @@ const ImplementCustomFeatureDialog: React.FC<DialogProps> = ({
                 padding: '9px 20px',
                 borderRadius: '8px',
                 border: '1px solid rgba(229, 181, 79, 0.6)',
-                background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
-                color: '#08080c',
+                background: 'var(--grad-gold)',
+                color: 'var(--bg-void, #08080c)',
                 fontSize: '0.82rem',
                 fontWeight: 700,
                 cursor: 'pointer',

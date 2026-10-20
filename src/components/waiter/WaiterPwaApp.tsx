@@ -142,9 +142,12 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
   const selectedTableId = selectedTable?.resourceId;
   useEffect(() => {
     if (selectedTableId) {
-      void loadCatalog();
-      setCart({});
-      setOrderFeedback(null);
+      const timer = setTimeout(() => {
+        void loadCatalog();
+        setCart({});
+        setOrderFeedback(null);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [selectedTableId, loadCatalog]);
 
@@ -188,15 +191,15 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
   const getConciergeTypeMeta = (type: string) => {
     switch (type) {
       case 'WAITER':
-        return { label: 'Llamar Mesero', color: '#38bdf8', icon: Bell };
+        return { label: 'Llamar Mesero', color: 'var(--cat-waiter, var(--state-info, #38bdf8))', icon: Bell };
       case 'BOTTLE':
-        return { label: 'Botella VIP', color: '#a855f7', icon: Wine };
+        return { label: 'Botella VIP', color: 'var(--cat-bottle, var(--violet, #a855f7))', icon: Wine };
       case 'HOOKAH':
-        return { label: 'Hookah / Narguile', color: '#f97316', icon: Flame };
+        return { label: 'Hookah / Narguile', color: 'var(--cat-hookah, #f97316)', icon: Flame };
       case 'SERVICE':
-        return { label: 'Servicio / Hielo', color: '#34d399', icon: Sparkles };
+        return { label: 'Servicio / Hielo', color: 'var(--cat-service, var(--state-success, #34d399))', icon: Sparkles };
       default:
-        return { label: 'Otro Pedido', color: '#e5b54f', icon: AlertCircle };
+        return { label: 'Otro Pedido', color: 'var(--cat-other, var(--gold, #e5b54f))', icon: AlertCircle };
     }
   };
 
@@ -277,14 +280,14 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
     }}>
       {/* 1. Header Mesero VIP */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(14, 20, 30, 0.95) 0%, rgba(8, 11, 18, 0.98) 100%)',
-        border: '1px solid rgba(56, 189, 248, 0.3)',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '16px',
         padding: '18px 20px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
@@ -296,13 +299,13 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#38bdf8'
+            color: 'var(--state-info, #38bdf8)'
           }}>
             <Wine size={22} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.98rem', fontWeight: 800, color: '#f4f1ea' }}>
+              <span style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-high)' }}>
                 {session.displayName}
               </span>
               <span style={{
@@ -311,14 +314,14 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 padding: '2px 6px',
                 borderRadius: '4px',
                 background: 'rgba(56, 189, 248, 0.15)',
-                color: '#38bdf8',
+                color: 'var(--state-info, #38bdf8)',
                 border: '1px solid rgba(56, 189, 248, 0.3)',
                 letterSpacing: '0.04em'
               }}>
                 MESERO EN SALA
               </span>
             </div>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#94a3b8' }}>
+            <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
               {activeClub?.name} · {visibleTables.length} mesas activas
             </p>
           </div>
@@ -330,13 +333,13 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
           gap: '6px',
           fontSize: '0.7rem',
           fontWeight: 700,
-          color: '#34d399',
+          color: 'var(--state-success, #34d399)',
           background: 'rgba(52, 211, 153, 0.1)',
           padding: '4px 10px',
           borderRadius: '999px',
           border: '1px solid rgba(52, 211, 153, 0.25)'
         }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--state-success, #34d399)' }} />
           <span>EN VIVO</span>
         </div>
       </div>
@@ -346,10 +349,10 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: '8px',
-        background: 'rgba(15, 23, 42, 0.7)',
+        background: 'var(--bg-elevated)',
         padding: '5px',
         borderRadius: '14px',
-        border: '1px solid rgba(255, 255, 255, 0.08)'
+        border: '1px solid var(--border)'
       }}>
         <button
           type="button"
@@ -364,9 +367,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             justifyContent: 'center',
             gap: '8px',
             cursor: 'pointer',
-            border: 'none',
-            background: mainTab === 'TABLES' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
-            color: mainTab === 'TABLES' ? '#38bdf8' : '#94a3b8',
+            border: mainTab === 'TABLES' ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid transparent',
+            background: mainTab === 'TABLES' ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
+            color: mainTab === 'TABLES' ? 'var(--state-info, #38bdf8)' : 'var(--text-muted)',
             transition: 'all 0.15s ease'
           }}
         >
@@ -386,9 +389,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             justifyContent: 'center',
             gap: '8px',
             cursor: 'pointer',
-            border: 'none',
-            background: mainTab === 'CONCIERGE' ? 'rgba(245, 158, 11, 0.2)' : 'transparent',
-            color: mainTab === 'CONCIERGE' ? '#fbbf24' : '#94a3b8',
+            border: mainTab === 'CONCIERGE' ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid transparent',
+            background: mainTab === 'CONCIERGE' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+            color: mainTab === 'CONCIERGE' ? 'var(--state-hold, #fbbf24)' : 'var(--text-muted)',
             transition: 'all 0.15s ease',
             position: 'relative'
           }}
@@ -397,8 +400,8 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
           <span>Concierge</span>
           {pendingRequestsCount > 0 && (
             <span style={{
-              background: '#ef4444',
-              color: '#ffffff',
+              background: 'var(--state-danger, #ef4444)',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.68rem',
               fontWeight: 800,
               padding: '1px 6px',
@@ -418,7 +421,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
           borderRadius: '10px',
           background: conciergeFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
           border: `1px solid ${conciergeFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-          color: conciergeFeedback.kind === 'success' ? '#34d399' : '#f87171',
+          color: conciergeFeedback.kind === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
           fontSize: '0.8rem',
           display: 'flex',
           alignItems: 'center',
@@ -467,10 +470,10 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: selectedZone === 'all' ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.07)',
-              color: selectedZone === 'all' ? '#38bdf8' : '#e2e8f0',
-              border: selectedZone === 'all' ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.16)',
-              boxShadow: selectedZone === 'all' ? '0 0 12px rgba(56, 189, 248, 0.25)' : 'none',
+              background: selectedZone === 'all' ? 'rgba(56, 189, 248, 0.18)' : 'var(--bg-surface)',
+              color: selectedZone === 'all' ? 'var(--state-info, #38bdf8)' : 'var(--text-main)',
+              border: selectedZone === 'all' ? '1.5px solid var(--state-info, #38bdf8)' : '1px solid var(--border)',
+              boxShadow: selectedZone === 'all' ? '0 0 12px rgba(56, 189, 248, 0.2)' : 'none',
               transition: 'all 0.15s ease'
             }}
           >
@@ -493,10 +496,10 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: selectedZone === z ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.07)',
-                color: selectedZone === z ? '#38bdf8' : '#e2e8f0',
-                border: selectedZone === z ? '1.5px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.16)',
-                boxShadow: selectedZone === z ? '0 0 12px rgba(56, 189, 248, 0.25)' : 'none',
+                background: selectedZone === z ? 'rgba(56, 189, 248, 0.18)' : 'var(--bg-surface)',
+                color: selectedZone === z ? 'var(--state-info, #38bdf8)' : 'var(--text-main)',
+                border: selectedZone === z ? '1.5px solid var(--state-info, #38bdf8)' : '1px solid var(--border)',
+                boxShadow: selectedZone === z ? '0 0 12px rgba(56, 189, 248, 0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
@@ -512,10 +515,10 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
         <div style={{
           textAlign: 'center',
           padding: '48px 24px',
-          background: 'rgba(14, 18, 26, 0.6)',
+          background: 'var(--bg-elevated)',
           borderRadius: '16px',
-          border: '1px dashed rgba(255, 255, 255, 0.1)',
-          color: '#64748b'
+          border: '1px dashed var(--border)',
+          color: 'var(--text-muted)'
         }}>
           <Layers size={36} style={{ margin: '0 auto 12px auto', opacity: 0.5 }} />
           <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>
@@ -532,25 +535,30 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             const minSpend = t.minSpend || 0;
             const progress = minSpend > 0 ? Math.min(100, (consumption / minSpend) * 100) : 0;
 
-            let badgeColor = '#94a3b8';
-            let badgeBg = 'rgba(148, 163, 184, 0.1)';
+            let badgeColor = 'var(--text-muted)';
+            let badgeBg = 'var(--bg-elevated)';
+            let badgeBorder = '1px solid var(--border)';
             let badgeText = 'DISPONIBLE';
 
             if (isInside) {
-              badgeColor = '#34d399';
+              badgeColor = 'var(--state-success, #34d399)';
               badgeBg = 'rgba(52, 211, 153, 0.15)';
+              badgeBorder = '1px solid rgba(52, 211, 153, 0.35)';
               badgeText = 'CLIENTE EN SALA';
             } else if (isSettled) {
-              badgeColor = '#a855f7';
+              badgeColor = 'var(--violet, #a855f7)';
               badgeBg = 'rgba(168, 85, 247, 0.15)';
+              badgeBorder = '1px solid rgba(168, 85, 247, 0.35)';
               badgeText = 'CUENTA CERRADA';
             } else if (isConfirmed) {
-              badgeColor = '#e5b54f';
+              badgeColor = 'var(--gold, #e5b54f)';
               badgeBg = 'rgba(229, 181, 79, 0.15)';
+              badgeBorder = '1px solid rgba(229, 181, 79, 0.35)';
               badgeText = 'RESERVADA';
             } else if (t.state === 'HELD') {
-              badgeColor = '#f59e0b';
+              badgeColor = 'var(--state-hold, #f59e0b)';
               badgeBg = 'rgba(245, 158, 11, 0.15)';
+              badgeBorder = '1px solid rgba(245, 158, 11, 0.35)';
               badgeText = 'HOLD ACTIVO';
             }
 
@@ -559,8 +567,8 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 key={t.resourceId}
                 onClick={() => (isInside || isConfirmed || isSettled) && setSelectedTable(t)}
                 style={{
-                  background: 'linear-gradient(145deg, rgba(16, 20, 30, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%)',
-                  border: isInside ? '1px solid rgba(52, 211, 153, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: 'var(--bg-surface)',
+                  border: isInside ? '1px solid rgba(52, 211, 153, 0.4)' : '1px solid var(--border)',
                   borderRadius: '14px',
                   padding: '16px',
                   display: 'flex',
@@ -575,23 +583,24 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f4f1ea' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-high)' }}>
                         {t.tableCode}
                       </h4>
                       <span style={{
                         fontSize: '0.64rem',
                         fontWeight: 700,
-                        padding: '1px 6px',
+                        padding: '2px 8px',
                         borderRadius: '4px',
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        color: '#94a3b8'
+                        background: 'var(--bg-elevated)',
+                        color: 'var(--text-muted)',
+                        border: '1px solid var(--border)'
                       }}>
                         {t.zone}
                       </span>
                     </div>
                     {t.guestName && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px', fontSize: '0.78rem', color: '#cbd5e1' }}>
-                        <User size={12} style={{ color: '#e5b54f' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        <User size={12} style={{ color: 'var(--gold, #e5b54f)' }} />
                         <span>{t.guestName}</span>
                       </div>
                     )}
@@ -604,7 +613,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                     borderRadius: '999px',
                     background: badgeBg,
                     color: badgeColor,
-                    border: `1px solid ${badgeColor}40`,
+                    border: badgeBorder,
                     letterSpacing: '0.04em'
                   }}>
                     {badgeText}
@@ -613,25 +622,25 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
 
                 {/* Consumption Bar */}
                 {(isInside || isConfirmed || isSettled) && (
-                  <div style={{ background: 'rgba(0, 0, 0, 0.3)', borderRadius: '10px', padding: '10px' }}>
+                  <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '10px', padding: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>
-                        Consumo: <strong style={{ color: '#38bdf8' }}>${consumption.toFixed(2)}</strong>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                        Consumo: <strong style={{ color: 'var(--state-info, #38bdf8)' }}>${consumption.toFixed(2)}</strong>
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
                         Mínimo: ${minSpend.toFixed(2)}
                       </span>
                     </div>
                     <div style={{
                       height: '6px',
-                      background: 'rgba(255, 255, 255, 0.08)',
+                      background: 'var(--border)',
                       borderRadius: '999px',
                       overflow: 'hidden'
                     }}>
                       <div style={{
                         height: '100%',
                         width: `${progress}%`,
-                        background: progress >= 100 ? '#34d399' : 'linear-gradient(90deg, #38bdf8 0%, #e5b54f 100%)',
+                        background: progress >= 100 ? 'var(--state-success, #34d399)' : 'linear-gradient(90deg, var(--state-info, #38bdf8) 0%, var(--gold, #e5b54f) 100%)',
                         borderRadius: '999px',
                         transition: 'width 0.3s ease'
                       }} />
@@ -652,7 +661,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                       border: '1px solid rgba(56, 189, 248, 0.3)',
                       borderRadius: '8px',
                       padding: '8px',
-                      color: '#38bdf8',
+                      color: 'var(--state-info, #38bdf8)',
                       fontSize: '0.78rem',
                       fontWeight: 800,
                       cursor: 'pointer',
@@ -708,9 +717,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: conciergeFilter === f.id ? 'rgba(245, 158, 11, 0.22)' : 'rgba(255, 255, 255, 0.07)',
-                  color: conciergeFilter === f.id ? '#fbbf24' : '#e2e8f0',
-                  border: conciergeFilter === f.id ? '1.5px solid #fbbf24' : '1px solid rgba(255, 255, 255, 0.16)',
+                  background: conciergeFilter === f.id ? 'rgba(245, 158, 11, 0.2)' : 'var(--bg-surface)',
+                  color: conciergeFilter === f.id ? 'var(--state-hold, #fbbf24)' : 'var(--text-main)',
+                  border: conciergeFilter === f.id ? '1.5px solid var(--state-hold, #fbbf24)' : '1px solid var(--border)',
                   boxShadow: conciergeFilter === f.id ? '0 0 12px rgba(245, 158, 11, 0.25)' : 'none',
                   transition: 'all 0.15s ease'
                 }}
@@ -724,16 +733,16 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             <div style={{
               textAlign: 'center',
               padding: '48px 24px',
-              background: 'rgba(14, 18, 26, 0.6)',
+              background: 'var(--bg-elevated)',
               borderRadius: '16px',
-              border: '1px dashed rgba(255, 255, 255, 0.1)',
-              color: '#64748b'
+              border: '1px dashed var(--border)',
+              color: 'var(--text-muted)'
             }}>
-              <Bell size={36} style={{ margin: '0 auto 12px auto', opacity: 0.5, color: '#fbbf24' }} />
-              <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem', color: '#f4f1ea' }}>
+              <Bell size={36} style={{ margin: '0 auto 12px auto', opacity: 0.5, color: 'var(--state-hold, #fbbf24)' }} />
+              <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-high)' }}>
                 No hay peticiones de concierge en este filtro.
               </p>
-              <p style={{ margin: '4px 0 0 0', fontSize: '0.76rem', color: '#94a3b8' }}>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.76rem', color: 'var(--text-muted)' }}>
                 Las solicitudes en vivo de tus zonas asignadas aparecerán aquí.
               </p>
             </div>
@@ -747,25 +756,25 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 const isDone = req.status === 'DONE';
                 const isUpdating = updatingReqId === req.requestId;
 
-                let statusBorder = 'rgba(255, 255, 255, 0.08)';
-                let statusBadgeBg = 'rgba(148, 163, 184, 0.15)';
-                let statusBadgeColor = '#94a3b8';
+                let statusBorder = 'var(--border)';
+                let statusBadgeBg = 'var(--bg-elevated)';
+                let statusBadgeColor = 'var(--text-muted)';
                 let statusText: string = req.status;
 
                 if (isPending) {
                   statusBorder = 'rgba(245, 158, 11, 0.4)';
                   statusBadgeBg = 'rgba(245, 158, 11, 0.15)';
-                  statusBadgeColor = '#fbbf24';
+                  statusBadgeColor = 'var(--state-hold, #fbbf24)';
                   statusText = 'PENDIENTE';
                 } else if (isInProgress) {
                   statusBorder = 'rgba(56, 189, 248, 0.4)';
                   statusBadgeBg = 'rgba(56, 189, 248, 0.15)';
-                  statusBadgeColor = '#38bdf8';
+                  statusBadgeColor = 'var(--state-info, #38bdf8)';
                   statusText = 'EN ATENCIÓN';
                 } else if (isDone) {
                   statusBorder = 'rgba(52, 211, 153, 0.3)';
                   statusBadgeBg = 'rgba(52, 211, 153, 0.15)';
-                  statusBadgeColor = '#34d399';
+                  statusBadgeColor = 'var(--state-success, #34d399)';
                   statusText = 'COMPLETADA';
                 }
 
@@ -773,7 +782,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                   <div
                     key={req.requestId}
                     style={{
-                      background: 'linear-gradient(145deg, rgba(16, 20, 30, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%)',
+                      background: 'var(--bg-surface)',
                       border: `1px solid ${statusBorder}`,
                       borderRadius: '14px',
                       padding: '16px',
@@ -788,7 +797,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                         <span style={{
                           background: 'rgba(229, 181, 79, 0.15)',
                           border: '1px solid rgba(229, 181, 79, 0.3)',
-                          color: '#e5b54f',
+                          color: 'var(--gold, #e5b54f)',
                           fontWeight: 800,
                           fontSize: '0.82rem',
                           padding: '3px 8px',
@@ -798,8 +807,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                         </span>
                         {req.zone && (
                           <span style={{
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            color: '#94a3b8',
+                            background: 'var(--bg-elevated)',
+                            color: 'var(--text-muted)',
+                            border: '1px solid var(--border)',
                             fontWeight: 700,
                             fontSize: '0.72rem',
                             padding: '2px 6px',
@@ -832,6 +842,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                         borderRadius: '6px',
                         background: statusBadgeBg,
                         color: statusBadgeColor,
+                        border: '1px solid var(--border)',
                         letterSpacing: '0.04em',
                         whiteSpace: 'nowrap'
                       }}>
@@ -840,11 +851,11 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                     </div>
 
                     <div style={{
-                      background: 'rgba(0, 0, 0, 0.25)',
-                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid var(--border)',
                       borderRadius: '8px',
                       padding: '10px 12px',
-                      color: '#f4f1ea',
+                      color: 'var(--text-main)',
                       fontSize: '0.86rem',
                       lineHeight: 1.4
                     }}>
@@ -856,18 +867,18 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       fontSize: '0.72rem',
-                      color: '#94a3b8',
+                      color: 'var(--text-muted)',
                       flexWrap: 'wrap',
                       gap: '8px'
                     }}>
                       <div>
                         {req.customerName && (
-                          <span style={{ color: '#cbd5e1', fontWeight: 600 }}>
+                          <span style={{ color: 'var(--text-dim)', fontWeight: 600 }}>
                             Cliente: {req.customerName} {req.customerPhone ? `(${req.customerPhone})` : ''} ·{' '}
                           </span>
                         )}
                         {req.assignedWaiterName && (
-                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>
+                          <span style={{ color: 'var(--state-info, #38bdf8)', fontWeight: 600 }}>
                             Atendido por {req.assignedWaiterName} ·{' '}
                           </span>
                         )}
@@ -883,11 +894,11 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                             disabled={isUpdating}
                             onClick={() => handleUpdateConciergeStatus(req.requestId, 'IN_PROGRESS')}
                             style={{
-                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                              background: 'linear-gradient(135deg, var(--state-hold, #f59e0b) 0%, var(--state-hold, #d97706) 100%)',
                               border: 'none',
                               borderRadius: '8px',
                               padding: '8px 14px',
-                              color: '#0a0d14',
+                              color: 'var(--bg-void, #08080c)',
                               fontSize: '0.78rem',
                               fontWeight: 800,
                               cursor: isUpdating ? 'wait' : 'pointer',
@@ -908,11 +919,11 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                             disabled={isUpdating}
                             onClick={() => handleUpdateConciergeStatus(req.requestId, 'DONE')}
                             style={{
-                              background: 'linear-gradient(135deg, #34d399 0%, #059669 100%)',
+                              background: 'linear-gradient(135deg, var(--state-success, #34d399) 0%, var(--state-success, #059669) 100%)',
                               border: 'none',
                               borderRadius: '8px',
                               padding: '8px 14px',
-                              color: '#0a0d14',
+                              color: 'var(--bg-void, #08080c)',
                               fontSize: '0.78rem',
                               fontWeight: 800,
                               cursor: isUpdating ? 'wait' : 'pointer',
@@ -941,16 +952,15 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(2, 4, 8, 0.85)',
-          backdropFilter: 'blur(10px)',
+          background: 'var(--bg-glass-strong, rgba(2, 4, 8, 0.75))',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
           zIndex: 1000
         }}>
           <div style={{
-            background: 'linear-gradient(180deg, #121722 0%, #080c14 100%)',
-            borderTop: '1px solid rgba(56, 189, 248, 0.3)',
+            background: 'var(--bg-surface)',
+            borderTop: '1px solid var(--border)',
             borderTopLeftRadius: '24px',
             borderTopRightRadius: '24px',
             maxHeight: '90vh',
@@ -959,19 +969,19 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 -16px 48px rgba(0, 0, 0, 0.8)'
+            boxShadow: '0 -16px 48px rgba(0, 0, 0, 0.5)'
           }}>
             {/* Sheet Header */}
             <div style={{
               padding: '16px 20px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              borderBottom: '1px solid var(--border)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#f4f1ea' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high)' }}>
                     {selectedTable.tableCode}
                   </h3>
                   <span style={{
@@ -980,12 +990,12 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                     padding: '2px 6px',
                     borderRadius: '4px',
                     background: 'rgba(56, 189, 248, 0.15)',
-                    color: '#38bdf8'
+                    color: 'var(--state-info, #38bdf8)'
                   }}>
                     {selectedTable.zone}
                   </span>
                 </div>
-                <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                   {selectedTable.guestName || 'Invitado'} · Consumo actual: ${(selectedTable.consumptionTotal || 0).toFixed(2)}
                 </p>
               </div>
@@ -994,15 +1004,15 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 type="button"
                 onClick={() => setSelectedTable(null)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: 'none',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
                   borderRadius: '50%',
                   width: '32px',
                   height: '32px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#94a3b8',
+                  color: 'var(--text-muted)',
                   cursor: 'pointer'
                 }}
               >
@@ -1018,7 +1028,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 borderRadius: '8px',
                 background: orderFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
                 border: `1px solid ${orderFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                color: orderFeedback.kind === 'success' ? '#34d399' : '#f87171',
+                color: orderFeedback.kind === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
                 fontSize: '0.8rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -1058,9 +1068,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: selectedCategory === 'all' ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.07)',
-                    color: selectedCategory === 'all' ? '#e5b54f' : '#e2e8f0',
-                    border: selectedCategory === 'all' ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.16)',
+                    background: selectedCategory === 'all' ? 'rgba(229, 181, 79, 0.2)' : 'var(--bg-elevated)',
+                    color: selectedCategory === 'all' ? 'var(--gold, #e5b54f)' : 'var(--text-main)',
+                    border: selectedCategory === 'all' ? '1.5px solid var(--gold, #e5b54f)' : '1px solid var(--border)',
                     boxShadow: selectedCategory === 'all' ? '0 0 12px rgba(229, 181, 79, 0.25)' : 'none',
                     transition: 'all 0.15s ease'
                   }}
@@ -1084,9 +1094,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: selectedCategory === cat ? 'rgba(229, 181, 79, 0.22)' : 'rgba(255, 255, 255, 0.07)',
-                      color: selectedCategory === cat ? '#e5b54f' : '#e2e8f0',
-                      border: selectedCategory === cat ? '1.5px solid #e5b54f' : '1px solid rgba(255, 255, 255, 0.16)',
+                      background: selectedCategory === cat ? 'rgba(229, 181, 79, 0.2)' : 'var(--bg-elevated)',
+                      color: selectedCategory === cat ? 'var(--gold, #e5b54f)' : 'var(--text-main)',
+                      border: selectedCategory === cat ? '1.5px solid var(--gold, #e5b54f)' : '1px solid var(--border)',
                       boxShadow: selectedCategory === cat ? '0 0 12px rgba(229, 181, 79, 0.25)' : 'none',
                       transition: 'all 0.15s ease'
                     }}
@@ -1098,7 +1108,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
 
               {/* Items List */}
               {catalogLoading ? (
-                <div style={{ textAlign: 'center', padding: '24px 0', color: '#94a3b8', fontSize: '0.84rem' }}>
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
                   Cargando productos de carta...
                 </div>
               ) : (
@@ -1111,8 +1121,8 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                         <div
                           key={it.sku}
                           style={{
-                            background: inCart > 0 ? 'rgba(56, 189, 248, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                            border: inCart > 0 ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid rgba(255, 255, 255, 0.06)',
+                            background: inCart > 0 ? 'rgba(56, 189, 248, 0.08)' : 'var(--bg-elevated)',
+                            border: inCart > 0 ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid var(--border)',
                             borderRadius: '10px',
                             padding: '10px 14px',
                             display: 'flex',
@@ -1121,10 +1131,10 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                           }}
                         >
                           <div>
-                            <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#f4f1ea' }}>
+                            <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-main)' }}>
                               {it.name}
                             </div>
-                            <div style={{ fontSize: '0.74rem', color: '#e5b54f', fontWeight: 700, marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--gold, #e5b54f)', fontWeight: 700, marginTop: '2px' }}>
                               ${it.price.toFixed(2)}
                             </div>
                           </div>
@@ -1139,9 +1149,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                                     width: '28px',
                                     height: '28px',
                                     borderRadius: '6px',
-                                    background: 'rgba(255, 255, 255, 0.06)',
-                                    border: 'none',
-                                    color: '#f4f1ea',
+                                    background: 'var(--bg-surface)',
+                                    border: '1px solid var(--border)',
+                                    color: 'var(--text-main)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -1150,7 +1160,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                                 >
                                   <Minus size={14} />
                                 </button>
-                                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38bdf8', minWidth: '18px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--state-info, #38bdf8)', minWidth: '18px', textAlign: 'center' }}>
                                   {inCart}
                                 </span>
                               </>
@@ -1162,9 +1172,9 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                                 width: '28px',
                                 height: '28px',
                                 borderRadius: '6px',
-                                background: inCart > 0 ? '#38bdf8' : 'rgba(56, 189, 248, 0.15)',
+                                background: inCart > 0 ? 'var(--state-info, #38bdf8)' : 'rgba(56, 189, 248, 0.15)',
                                 border: 'none',
-                                color: inCart > 0 ? '#0a0d14' : '#38bdf8',
+                                color: inCart > 0 ? 'var(--bg-void, #08080c)' : 'var(--state-info, #38bdf8)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1184,17 +1194,17 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
             {/* Sheet Footer with Cart & Send Button */}
             <div style={{
               padding: '16px 20px',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              background: 'rgba(8, 12, 18, 0.95)',
+              borderTop: '1px solid var(--border)',
+              background: 'var(--bg-surface)',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.84rem', color: '#cbd5e1', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                   Total Pedido a Cargar:
                 </span>
-                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#38bdf8' }}>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--state-info, #38bdf8)' }}>
                   ${cartTotal.toFixed(2)} ({cartItemsCount} {cartItemsCount === 1 ? 'ítem' : 'ítems'})
                 </span>
               </div>
@@ -1206,12 +1216,12 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 style={{
                   width: '100%',
                   background: cartItemsCount > 0
-                    ? 'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'
-                    : 'rgba(255, 255, 255, 0.07)',
-                  border: cartItemsCount > 0 ? 'none' : '1px solid rgba(255, 255, 255, 0.14)',
+                    ? 'linear-gradient(135deg, var(--state-info, #38bdf8) 0%, var(--state-info, #0284c7) 100%)'
+                    : 'var(--bg-elevated)',
+                  border: cartItemsCount > 0 ? 'none' : '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '12px',
-                  color: cartItemsCount > 0 ? '#0a0d14' : '#cbd5e1',
+                  color: cartItemsCount > 0 ? 'var(--bg-void, #08080c)' : 'var(--text-dim)',
                   fontSize: '0.9rem',
                   fontWeight: 800,
                   cursor: cartItemsCount > 0 && !addingConsumption ? 'pointer' : 'not-allowed',
@@ -1238,7 +1248,7 @@ export const WaiterPwaApp: React.FC<Props> = ({ session }) => {
                 )}
               </button>
 
-              <div style={{ fontSize: '0.72rem', color: '#94a3b8', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                 El cierre definitivo y cobro se realiza exclusivamente por caja o gerencia.
               </div>
             </div>

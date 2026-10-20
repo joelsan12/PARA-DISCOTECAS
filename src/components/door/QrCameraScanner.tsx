@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Camera, CameraOff, ScanLine, Siren, ShieldCheck, Pause, RefreshCw } from 'lucide-react';
 import { DoorQrCameraScanner, isQrCameraSupported, type QrScannerStatus } from '../../lib/doorQrScanner';
+import { TelemetryBadge } from '../common';
 
 interface Props {
   enabled: boolean;
@@ -62,7 +63,7 @@ export const QrCameraScanner = ({
         borderRadius: '14px',
         background: 'rgba(59, 130, 246, 0.1)',
         border: '1px solid rgba(59, 130, 246, 0.3)',
-        color: '#93c5fd',
+        color: 'var(--state-info, #93c5fd)',
         fontSize: '0.8rem',
         marginBottom: '14px',
         display: 'flex',
@@ -80,15 +81,15 @@ export const QrCameraScanner = ({
     return (
       <div className="door-camera-wrapper">
         <div className="door-camera-viewport door-camera-viewport--blocked">
-          <div className="door-target-corner door-target-corner--tl" style={{ borderColor: '#f43f5e' }} />
-          <div className="door-target-corner door-target-corner--tr" style={{ borderColor: '#f43f5e' }} />
-          <div className="door-target-corner door-target-corner--bl" style={{ borderColor: '#f43f5e' }} />
-          <div className="door-target-corner door-target-corner--br" style={{ borderColor: '#f43f5e' }} />
-          <div className="door-scan-laser" style={{ background: '#f43f5e', boxShadow: '0 0 16px #f43f5e' }} />
+          <div className="door-target-corner door-target-corner--tl" style={{ borderColor: 'var(--state-danger, #f43f5e)' }} />
+          <div className="door-target-corner door-target-corner--tr" style={{ borderColor: 'var(--state-danger, #f43f5e)' }} />
+          <div className="door-target-corner door-target-corner--bl" style={{ borderColor: 'var(--state-danger, #f43f5e)' }} />
+          <div className="door-target-corner door-target-corner--br" style={{ borderColor: 'var(--state-danger, #f43f5e)' }} />
+          <div className="door-scan-laser" style={{ background: 'var(--state-danger, #f43f5e)', boxShadow: '0 0 16px var(--state-danger, #f43f5e)' }} />
 
           <div className="door-aim-guide">
-            <Siren size={44} color="#f43f5e" style={{ marginBottom: '10px' }} />
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fda4af', letterSpacing: '0.04em' }}>
+            <Siren size={44} color="var(--state-danger, #f43f5e)" style={{ marginBottom: '10px' }} />
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--state-danger, #fda4af)', letterSpacing: '0.04em' }}>
               TERMINAL SUSPENDIDA (SOS ACTIVO)
             </div>
             <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center', padding: '0 20px', marginTop: '6px', maxWidth: '320px' }}>
@@ -104,9 +105,9 @@ export const QrCameraScanner = ({
                   padding: '9px 20px',
                   fontSize: '0.82rem',
                   borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  borderColor: '#34d399',
-                  color: '#ffffff',
+                  background: 'var(--grad-success)',
+                  borderColor: 'var(--state-success, #34d399)',
+                  color: 'var(--text-high, #ffffff)',
                   fontWeight: 800,
                   boxShadow: '0 0 18px rgba(16, 185, 129, 0.35)',
                   cursor: 'pointer',
@@ -160,7 +161,7 @@ export const QrCameraScanner = ({
             <div style={{
               fontSize: '1rem',
               fontWeight: 800,
-              color: 'var(--brand-gold, #e5b54f)',
+              color: 'var(--brand-gold, var(--gold, #e5b54f))',
               letterSpacing: '0.05em',
               marginTop: '16px',
               textShadow: '0 0 14px rgba(229, 181, 79, 0.3)'
@@ -190,7 +191,7 @@ export const QrCameraScanner = ({
                 borderRadius: '12px',
                 background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.35) 0%, rgba(229, 181, 79, 0.15) 100%)',
                 border: '1.5px solid rgba(229, 181, 79, 0.6)',
-                color: '#ffffff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.84rem',
                 fontWeight: 800,
                 letterSpacing: '0.04em',
@@ -198,7 +199,7 @@ export const QrCameraScanner = ({
                 pointerEvents: 'none'
               }}
             >
-              <Camera size={17} color="#fbbf24" />
+              <Camera size={17} color="var(--state-hold, #fbbf24)" />
               <span>ACTIVAR CÁMARA</span>
             </div>
           </div>
@@ -207,7 +208,7 @@ export const QrCameraScanner = ({
         <div className="door-camera-footer">
           <span className="badge" style={{
             background: 'rgba(229, 181, 79, 0.12)',
-            color: '#e5b54f',
+            color: 'var(--gold, #e5b54f)',
             border: '1px solid rgba(229, 181, 79, 0.35)',
             fontSize: '0.72rem',
             fontWeight: 700
@@ -267,7 +268,7 @@ export const QrCameraScanner = ({
               padding: '0 16px'
             }}>
               <Camera size={42} color="rgba(229, 181, 79, 0.85)" />
-              <div style={{ fontSize: '0.88rem', color: '#e5b54f', fontWeight: 800, textAlign: 'center' }}>
+              <div style={{ fontSize: '0.88rem', color: 'var(--gold, #e5b54f)', fontWeight: 800, textAlign: 'center' }}>
                 {message || 'Iniciando cámara frontal/posterior…'}
               </div>
             </div>
@@ -285,23 +286,7 @@ export const QrCameraScanner = ({
             alignItems: 'center',
             gap: '8px'
           }}>
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '4px 10px',
-              borderRadius: '9999px',
-              background: 'rgba(5, 5, 8, 0.8)',
-              backdropFilter: 'blur(6px)',
-              border: '1px solid rgba(52, 211, 153, 0.45)',
-              color: '#34d399',
-              fontSize: '0.68rem',
-              fontWeight: 800,
-              letterSpacing: '0.04em'
-            }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
-              EN VIVO
-            </span>
+            <TelemetryBadge status="success" label="EN VIVO" />
           </div>
         )}
       </div>
@@ -309,7 +294,7 @@ export const QrCameraScanner = ({
       <div className="door-camera-footer">
         <span className="badge" style={{
           background: status === 'scanning' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(229, 181, 79, 0.12)',
-          color: status === 'scanning' ? '#34d399' : '#e5b54f',
+          color: status === 'scanning' ? 'var(--state-success, #34d399)' : 'var(--gold, #e5b54f)',
           border: `1px solid ${status === 'scanning' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(229, 181, 79, 0.35)'}`,
           fontSize: '0.72rem',
           fontWeight: 700

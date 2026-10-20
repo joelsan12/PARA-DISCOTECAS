@@ -37,7 +37,7 @@ const getPaymentBadge = (res: Reservation) => {
     return {
       label: 'REEMBOLSO REQ.',
       bg: 'rgba(239, 68, 68, 0.2)',
-      color: '#f87171',
+      color: 'var(--state-danger, #f87171)',
       border: '1px solid rgba(239, 68, 68, 0.4)'
     };
   }
@@ -45,7 +45,7 @@ const getPaymentBadge = (res: Reservation) => {
     return {
       label: 'REEMBOLSADO',
       bg: 'rgba(168, 85, 247, 0.15)',
-      color: '#c084fc',
+      color: 'var(--violet, #c084fc)',
       border: '1px solid rgba(168, 85, 247, 0.3)'
     };
   }
@@ -53,7 +53,7 @@ const getPaymentBadge = (res: Reservation) => {
     return {
       label: 'PAGADO',
       bg: 'rgba(34, 197, 94, 0.15)',
-      color: '#4ade80',
+      color: 'var(--state-success, #4ade80)',
       border: '1px solid rgba(34, 197, 94, 0.3)'
     };
   }
@@ -61,14 +61,14 @@ const getPaymentBadge = (res: Reservation) => {
     return {
       label: 'FALLIDO',
       bg: 'rgba(239, 68, 68, 0.15)',
-      color: '#fca5a5',
+      color: 'var(--state-danger-text, #fca5a5)',
       border: '1px solid rgba(239, 68, 68, 0.3)'
     };
   }
   return {
     label: res.payment_method === 'cash_door' ? 'PUERTA' : 'PENDIENTE',
     bg: 'rgba(234, 179, 8, 0.15)',
-    color: '#facc15',
+    color: 'var(--state-hold, #facc15)',
     border: '1px solid rgba(234, 179, 8, 0.3)'
   };
 };
@@ -125,7 +125,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
               background: 'var(--brand-gold)',
               boxShadow: '0 0 10px rgba(229, 181, 79, 0.6)'
             }} />
-            <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+            <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
               Bitácora Oficial de Reservas &amp; Anticipos
             </h3>
           </div>
@@ -153,7 +153,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
             padding: '4px 10px',
             borderRadius: '6px',
             background: 'rgba(255, 255, 255, 0.04)',
-            color: '#e2e8f0',
+            color: 'var(--text-main, #e2e8f0)',
             border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             {totalGuests} Invitados
@@ -164,7 +164,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
             padding: '4px 10px',
             borderRadius: '6px',
             background: 'rgba(16, 185, 129, 0.12)',
-            color: '#34d399',
+            color: 'var(--state-success, #34d399)',
             border: '1px solid rgba(16, 185, 129, 0.3)'
           }}>
             {formatUsd(totalDeposits)} Recaudados
@@ -181,17 +181,17 @@ export const ReservationsTable = ({ reservations }: Props) => {
         gap: '12px',
         marginBottom: '18px',
         padding: '12px 16px',
-        background: 'rgba(8, 8, 12, 0.75)',
+        background: 'var(--bg-elevated, rgba(8, 8, 12, 0.75))',
         borderRadius: 'var(--radius-sm)',
-        border: '1px solid rgba(229, 181, 79, 0.15)'
+        border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.15))'
       }}>
         {/* Search Input */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+          border: '1px solid var(--border, rgba(255, 255, 255, 0.1))',
           borderRadius: 'var(--radius-xs)',
           padding: '6px 12px',
           flex: '1 1 260px',
@@ -206,7 +206,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#ffffff',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.82rem',
               outline: 'none',
               width: '100%'
@@ -296,14 +296,14 @@ export const ReservationsTable = ({ reservations }: Props) => {
                     }}
                   >
                     <span>#{res.code}</span>
-                    {copiedCode === res.code ? <Check size={11} color="#34d399" /> : <Copy size={11} color="rgba(229, 181, 79, 0.6)" />}
+                    {copiedCode === res.code ? <Check size={11} color="var(--state-success, #34d399)" /> : <Copy size={11} color="rgba(229, 181, 79, 0.6)" />}
                   </button>
                 </td>
 
                 {/* Mesa */}
-                <td style={{ padding: '14px 10px', fontWeight: 700, color: '#ffffff' }}>
+                <td style={{ padding: '14px 10px', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>{res.table_code}</span>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-high, #ffffff)' }}>{res.table_code}</span>
                     <span style={{
                       fontSize: '0.68rem',
                       color: 'var(--text-muted)',
@@ -317,14 +317,14 @@ export const ReservationsTable = ({ reservations }: Props) => {
                 </td>
 
                 {/* Titular */}
-                <td style={{ padding: '14px 10px', color: '#ffffff', fontWeight: 600 }}>
+                <td style={{ padding: '14px 10px', color: 'var(--text-high, #ffffff)', fontWeight: 600 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{
                       width: '26px',
                       height: '26px',
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.25), rgba(8, 8, 12, 0.9))',
-                      border: '1px solid rgba(229, 181, 79, 0.4)',
+                      background: 'var(--accent-subtle, rgba(229, 181, 79, 0.25))',
+                      border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
                       color: 'var(--brand-gold)',
                       fontSize: '0.72rem',
                       fontWeight: 800,
@@ -350,7 +350,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
                         rel="noreferrer"
                         title="Contactar por WhatsApp"
                         style={{
-                          color: '#34d399',
+                          color: 'var(--state-success, #34d399)',
                           display: 'inline-flex',
                           alignItems: 'center'
                         }}
@@ -362,7 +362,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
                 </td>
 
                 {/* Invitados */}
-                <td style={{ padding: '14px 10px', color: '#cbd5e1' }}>
+                <td style={{ padding: '14px 10px', color: 'var(--state-neutral, #cbd5e1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <Users size={13} color="var(--text-dim)" />
                     <span>{res.guest_count} personas</span>
@@ -375,7 +375,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
                   fontFamily: 'var(--font-mono)',
                   fontWeight: 800,
                   fontSize: '0.92rem',
-                  color: res.deposit_amount > 0 ? '#34d399' : 'var(--text-dim)'
+                  color: res.deposit_amount > 0 ? 'var(--state-success, #34d399)' : 'var(--text-dim)'
                 }}>
                   {res.deposit_amount > 0 ? formatUsd(res.deposit_amount) : '—'}
                 </td>
@@ -422,7 +422,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
                   {res.status === 'CHECKED_IN' ? (
                     <span style={{
                       fontSize: '0.75rem',
-                      color: '#34d399',
+                      color: 'var(--state-success, #34d399)',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '5px',
@@ -457,7 +457,7 @@ export const ReservationsTable = ({ reservations }: Props) => {
             color: 'var(--text-muted)'
           }}>
             <Ticket size={36} color="rgba(229, 181, 79, 0.4)" style={{ margin: '0 auto 12px' }} />
-            <h4 style={{ color: '#fff', fontSize: '1rem', fontWeight: 700, margin: '0 0 6px' }}>
+            <h4 style={{ color: 'var(--text-high, #ffffff)', fontSize: '1rem', fontWeight: 700, margin: '0 0 6px' }}>
               No se encontraron reservas
             </h4>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', maxWidth: '400px', margin: '0 auto' }}>

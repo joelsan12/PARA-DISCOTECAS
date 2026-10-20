@@ -86,7 +86,7 @@ export const TenantClubsTable = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {/* Search Input */}
           <div style={{ position: 'relative' }}>
-            <Search size={14} color="#71717a" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={14} color="var(--text-dim, #71717a)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               value={searchTerm}
@@ -155,7 +155,7 @@ export const TenantClubsTable = ({
                 borderRadius: '8px',
                 background: 'rgba(239, 68, 68, 0.12)',
                 border: '1px solid rgba(239, 68, 68, 0.35)',
-                color: '#f87171',
+                color: 'var(--state-danger, #f87171)',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -170,7 +170,7 @@ export const TenantClubsTable = ({
       </div>
       {/* Content: Empty State, Grid View, or Table View */}
       {filteredClubs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 24px', color: '#71717a' }}>
+        <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-dim, #71717a)' }}>
           No se encontraron discotecas que coincidan con la búsqueda o filtro.
         </div>
       ) : viewMode === 'grid' ? (
@@ -216,7 +216,7 @@ export const TenantClubsTable = ({
                       title="Cambiar plan del club (requiere confirmación obligatoria)"
                     >
                       {plans.map(p => (
-                        <option key={p.id} value={p.id} style={{ background: '#0e121a', color: '#fff' }}>
+                        <option key={p.id} value={p.id} style={{ background: 'var(--bg-surface, #0e121a)', color: 'var(--text-high, #ffffff)' }}>
                           {esPlan(p.id)} ({formatUsd(p.monthly_price)}/mes)
                         </option>
                       ))}
@@ -237,7 +237,7 @@ export const TenantClubsTable = ({
                         marginBottom: '4px',
                       }}
                     >
-                      <span style={{ fontSize: '0.72rem', color: '#34d399', fontWeight: 600 }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--state-success, #34d399)', fontWeight: 600 }}>
                         ✨ {club.custom_features.length} Beneficio(s) VIP Exclusivo(s)
                       </span>
                       {onManageCustomFeatures && (
@@ -247,7 +247,7 @@ export const TenantClubsTable = ({
                           style={{
                             background: 'transparent',
                             border: 'none',
-                            color: '#e5b54f',
+                            color: 'var(--gold, #e5b54f)',
                             fontSize: '0.68rem',
                             fontWeight: 700,
                             cursor: 'pointer',
@@ -268,7 +268,7 @@ export const TenantClubsTable = ({
 
                     <div className="dev-club-card__info-item">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Phone size={10} color="#94a3b8" />
+                        <Phone size={10} color="var(--text-muted, #94a3b8)" />
                         <span className="dev-club-card__info-val font-mono" style={{ fontSize: '0.74rem' }}>
                           {formatEcuadorPhone(club.whatsapp_number) || 'Sin línea'}
                         </span>
@@ -311,7 +311,7 @@ export const TenantClubsTable = ({
                         borderRadius: '8px',
                         background: 'rgba(239, 68, 68, 0.1)',
                         border: '1px solid rgba(239, 68, 68, 0.25)',
-                        color: '#f87171',
+                        color: 'var(--state-danger, #f87171)',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -335,7 +335,7 @@ export const TenantClubsTable = ({
               <tr style={{
                 borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                 textAlign: 'left',
-                color: '#94a3b8',
+                color: 'var(--text-muted, #94a3b8)',
                 fontSize: '0.7rem',
                 letterSpacing: '0.06em',
                 fontWeight: 600
@@ -375,26 +375,26 @@ export const TenantClubsTable = ({
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#f5d38a',
+                          color: 'var(--brand-gold-light, #f5d38a)',
                           flexShrink: 0
                         }}>
                           <Building size={14} />
                         </div>
                         <div>
-                          <div className="font-brand" style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.88rem' }}>
+                          <div className="font-brand" style={{ fontWeight: 700, color: 'var(--text-high, #ffffff)', fontSize: '0.88rem' }}>
                             {club.name}
                           </div>
-                          <div style={{ fontSize: '0.66rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>
+                          <div style={{ fontSize: '0.66rem', color: 'var(--text-dim, #71717a)', fontFamily: 'var(--font-mono)' }}>
                             ID: {club.id}
                           </div>
                         </div>
                       </div>
                     </td>
 
-                    <td style={{ padding: '12px 12px', color: '#cbd5e1' }}>
+                    <td style={{ padding: '12px 12px', color: 'var(--text-dim, #cbd5e1)' }}>
                       <div style={{ fontWeight: 500, fontSize: '0.8rem' }}>{club.city}</div>
                       {club.address && (
-                        <div style={{ fontSize: '0.68rem', color: '#71717a', maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-dim, #71717a)', maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {club.address}
                         </div>
                       )}
@@ -408,7 +408,7 @@ export const TenantClubsTable = ({
                         title="Cambiar plan del club (requiere confirmación obligatoria)"
                       >
                         {plans.map(p => (
-                          <option key={p.id} value={p.id} style={{ background: '#0e121a', color: '#fff' }}>
+                          <option key={p.id} value={p.id} style={{ background: 'var(--bg-surface, #0e121a)', color: 'var(--text-high, #ffffff)' }}>
                             {esPlan(p.id)} ({formatUsd(p.monthly_price)}/mes)
                           </option>
                         ))}
@@ -426,13 +426,13 @@ export const TenantClubsTable = ({
                       </button>
                     </td>
 
-                    <td style={{ padding: '12px 12px', fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#ffffff', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '12px 12px', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-high, #ffffff)', whiteSpace: 'nowrap' }}>
                       {tableCount} {tableCount === 1 ? 'mesa' : 'mesas'}
                     </td>
 
-                    <td style={{ padding: '12px 12px', color: '#cbd5e1', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '12px 12px', color: 'var(--text-dim, #cbd5e1)', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <Phone size={11} color="#94a3b8" />
+                        <Phone size={11} color="var(--text-muted, #94a3b8)" />
                         <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)' }}>
                           {formatEcuadorPhone(club.whatsapp_number) || 'Sin registrar'}
                         </span>
@@ -472,7 +472,7 @@ export const TenantClubsTable = ({
                               borderRadius: '6px',
                               background: 'rgba(239, 68, 68, 0.1)',
                               border: '1px solid rgba(239, 68, 68, 0.25)',
-                              color: '#f87171',
+                              color: 'var(--state-danger, #f87171)',
                               cursor: 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',

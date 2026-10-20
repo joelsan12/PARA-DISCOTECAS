@@ -179,7 +179,7 @@ export function BusinessBrandPage() {
                     }}>
                       {evt.day_label || evt.date} · {evt.door_time}
                     </span>
-                    <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#fff', margin: '2px 0 0' }}>
+                    <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '2px 0 0' }}>
                       {evt.title}
                     </h3>
                   </div>
@@ -192,7 +192,7 @@ export function BusinessBrandPage() {
                     )}
                     {evt.dj_guest && (
                       <p style={{ fontSize: '0.78rem', color: 'var(--saas-muted)', margin: 0 }}>
-                        DJ Invitado: <strong style={{ color: '#fff' }}>{evt.dj_guest}</strong>
+                        DJ Invitado: <strong style={{ color: 'var(--text-high, #ffffff)' }}>{evt.dj_guest}</strong>
                       </p>
                     )}
                     {evt.genre && (

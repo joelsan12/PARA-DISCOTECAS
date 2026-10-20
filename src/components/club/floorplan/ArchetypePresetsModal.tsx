@@ -231,8 +231,8 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                     width: '100%',
                     padding: '8px 12px',
                     borderRadius: 'var(--radius-xs)',
-                    background: isCurrent ? 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 100%)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.08))',
-                    color: isCurrent ? '#08080c' : 'var(--text-high, #fff)',
+                    background: isCurrent ? 'var(--grad-gold)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.08))',
+                    color: isCurrent ? 'var(--bg-void, #08080c)' : 'var(--text-high, #ffffff)',
                     border: isCurrent ? 'none' : '1px solid var(--border-light, rgba(255, 255, 255, 0.12))',
                     fontSize: '0.78rem',
                     fontWeight: 800,
@@ -250,7 +250,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
 
         {/* Custom Floor Plan Service Banner */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.12) 0%, rgba(20, 22, 34, 0.8) 100%)',
+          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.12) 0%, var(--bg-elevated) 100%)',
           border: '1.5px solid rgba(229, 181, 79, 0.4)',
           borderRadius: 'var(--radius-sm)',
           padding: '18px 22px',
@@ -262,14 +262,14 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
         }}>
           <div style={{ flex: '1 1 340px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <Sparkles size={16} color="#e5b54f" />
-              <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, color: '#e5b54f', margin: 0 }}>
+              <Sparkles size={16} color="var(--gold, #e5b54f)" />
+              <h3 className="font-brand" style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--gold, #e5b54f)', margin: 0 }}>
                 ¿Tu local tiene una arquitectura única o plano propio?
               </h3>
               <span style={{
                 fontSize: '0.65rem',
                 background: 'rgba(229, 181, 79, 0.2)',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 padding: '2px 6px',
                 borderRadius: '4px',
                 fontWeight: 800
@@ -277,7 +277,7 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
                 SERVICIO A MEDIDA
               </span>
             </div>
-            <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.45', margin: 0 }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.45', margin: 0 }}>
               Si tienes fotos, croquis o el plano de evacuación de tu discoteca, nuestro equipo de soporte técnico modela tu mapa interactivo a escala real con simetría VIP.
             </p>
             <p style={{ fontSize: '0.72rem', color: 'rgba(229, 181, 79, 0.9)', marginTop: '4px', fontWeight: 600 }}>
@@ -294,8 +294,8 @@ export const ArchetypePresetsModal: React.FC<Props> = ({
             style={{
               padding: '10px 18px',
               borderRadius: 'var(--radius-sm)',
-              background: 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 100%)',
-              color: '#08080c',
+              background: 'var(--grad-gold)',
+              color: 'var(--bg-void, #08080c)',
               border: 'none',
               fontSize: '0.82rem',
               fontWeight: 800,

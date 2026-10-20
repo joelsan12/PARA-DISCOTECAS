@@ -117,7 +117,7 @@
 
 .saas-theme-toggle:hover {
   background: var(--saas-gold);
-  color: #07080c;
+  color: var(--saas-text-primary);
   transform: translateY(-1px);
 }
 

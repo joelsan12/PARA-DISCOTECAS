@@ -1,9 +1,9 @@
 /* ── 13. Footer Multipágina Extendido — Haute Nocturne Spacing & Design ── */
 .saas-footer {
   position: relative;
-  padding: 84px 0 60px;
-  margin-top: 72px;
-  border-top: 1px solid var(--saas-border);
+  padding: 96px 0 64px;
+  margin-top: 80px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   background:
     radial-gradient(ellipse 60% 140px at 50% 0%, rgba(229, 181, 79, 0.045) 0%, transparent 100%),
     var(--saas-bg);
@@ -12,6 +12,10 @@
   color: var(--saas-text-muted);
   text-align: left;
   clear: both;
+}
+
+[data-theme="light"] .saas-footer {
+  border-top-color: rgba(0, 0, 0, 0.06);
 }
 
 .saas-footer__top {
@@ -64,7 +68,7 @@
   gap: 8px;
   font-size: 0.74rem;
   font-weight: 600;
-  color: #34d399;
+  color: var(--state-success);
   background: rgba(52, 211, 153, 0.08);
   border: 1px solid rgba(52, 211, 153, 0.24);
   border-radius: 9999px;
@@ -77,7 +81,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #34d399;
+  background: var(--state-success);
   box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
   animation: saasFooterStatusPulse 2.4s infinite ease-in-out;
 }
@@ -226,61 +230,61 @@
 [data-theme="light"] .saas-footer {
   background:
     radial-gradient(ellipse 60% 140px at 50% 0%, rgba(184, 134, 11, 0.05) 0%, transparent 100%),
-    #fbfaf7;
+    var(--saas-bg);
   border-top-color: rgba(0, 0, 0, 0.08);
-  color: #64748b;
+  color: var(--saas-text-muted);
 }
 
 [data-theme="light"] .saas-footer__brand-name {
-  color: #0f172a;
+  color: var(--saas-text-primary);
 }
 
 [data-theme="light"] .saas-footer__brand-desc {
-  color: #475569;
+  color: var(--saas-text-muted);
 }
 
 [data-theme="light"] .saas-footer__col-title {
-  color: #8c6504;
+  color: var(--saas-gold);
 }
 
 [data-theme="light"] .saas-footer__col a {
-  color: #334155;
+  color: var(--saas-text-muted);
 }
 
 [data-theme="light"] .saas-footer__col a:hover {
-  color: #8c6504;
+  color: var(--saas-gold);
 }
 
 [data-theme="light"] .saas-footer__compliance-item {
-  color: #334155;
+  color: var(--saas-text-muted);
 }
 
 [data-theme="light"] .saas-footer__compliance-bullet {
-  background: #8c6504;
+  background: var(--saas-gold);
 }
 
 [data-theme="light"] .saas-footer__badge-pill {
   background: rgba(184, 134, 11, 0.1);
-  color: #8c6504;
+  color: var(--saas-gold);
   border-color: rgba(184, 134, 11, 0.28);
 }
 
 [data-theme="light"] .saas-footer__status-badge {
   background: rgba(16, 185, 129, 0.09);
-  color: #047857;
+  color: var(--state-success);
   border-color: rgba(16, 185, 129, 0.3);
 }
 
 [data-theme="light"] .saas-footer__status-dot {
-  background: #059669;
+  background: var(--state-success);
   box-shadow: 0 0 6px rgba(5, 150, 105, 0.6);
 }
 
 [data-theme="light"] .saas-footer__bottom {
   border-top-color: rgba(0, 0, 0, 0.08);
-  color: #64748b;
+  color: var(--saas-text-muted);
 }
 
 [data-theme="light"] .saas-footer__bottom-right {
-  color: #1e293b;
+  color: var(--saas-text-primary);
 }

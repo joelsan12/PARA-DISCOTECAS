@@ -44,7 +44,7 @@
 .door-venue-title {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   margin: 2px 0 0;
   line-height: 1.2;
 }
@@ -64,7 +64,7 @@
   font-family: var(--font-mono, monospace);
   font-size: 1.6rem;
   font-weight: 800;
-  color: #34d399;
+  color: var(--state-success, #34d399);
   line-height: 1;
   text-shadow: 0 0 16px rgba(52, 211, 153, 0.4);
 }
@@ -123,7 +123,7 @@
   width: 100%;
   height: clamp(360px, 52vh, 460px);
   min-height: 330px;
-  background: radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.06) 0%, #06060a 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.06) 0%, var(--bg-void, #08080c) 100%);
   border-radius: 18px;
   border: 2px solid rgba(229, 181, 79, 0.4);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(229, 181, 79, 0.12), inset 0 0 24px rgba(0, 0, 0, 0.85);
@@ -133,7 +133,7 @@
 
 .door-camera-viewport--standby {
   cursor: pointer;
-  background: radial-gradient(circle at 50% 45%, rgba(229, 181, 79, 0.12) 0%, rgba(12, 12, 18, 0.98) 75%, #050508 100%);
+  background: radial-gradient(circle at 50% 45%, rgba(229, 181, 79, 0.12) 0%, rgba(12, 12, 18, 0.98) 75%, var(--bg-void, #08080c) 100%);
 }
 
 .door-camera-viewport--standby:hover {
@@ -144,7 +144,7 @@
 
 .door-camera-viewport--standby:active {
   transform: scale(0.995);
-  border-color: #fbbf24;
+  border-color: var(--state-hold, #fbbf24);
 }
 
 .door-camera-viewport--scanning {
@@ -155,7 +155,7 @@
 .door-camera-viewport--blocked {
   border-color: rgba(244, 63, 94, 0.6);
   box-shadow: 0 12px 42px rgba(0, 0, 0, 0.85), 0 0 32px rgba(244, 63, 94, 0.25);
-  background: radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.12) 0%, #080608 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.12) 0%, var(--bg-void, #08080c) 100%);
 }
 
 @media (max-width: 768px) {
@@ -192,32 +192,32 @@
 .door-target-corner--tl {
   top: 14px;
   left: 14px;
-  border-top: 3px solid #e5b54f;
-  border-left: 3px solid #e5b54f;
+  border-top: 3px solid var(--gold, #e5b54f);
+  border-left: 3px solid var(--gold, #e5b54f);
   border-top-left-radius: 6px;
 }
 
 .door-target-corner--tr {
   top: 14px;
   right: 14px;
-  border-top: 3px solid #e5b54f;
-  border-right: 3px solid #e5b54f;
+  border-top: 3px solid var(--gold, #e5b54f);
+  border-right: 3px solid var(--gold, #e5b54f);
   border-top-right-radius: 6px;
 }
 
 .door-target-corner--bl {
   bottom: 14px;
   left: 14px;
-  border-bottom: 3px solid #e5b54f;
-  border-left: 3px solid #e5b54f;
+  border-bottom: 3px solid var(--gold, #e5b54f);
+  border-left: 3px solid var(--gold, #e5b54f);
   border-bottom-left-radius: 6px;
 }
 
 .door-target-corner--br {
   bottom: 14px;
   right: 14px;
-  border-bottom: 3px solid #e5b54f;
-  border-right: 3px solid #e5b54f;
+  border-bottom: 3px solid var(--gold, #e5b54f);
+  border-right: 3px solid var(--gold, #e5b54f);
   border-bottom-right-radius: 6px;
 }
 
@@ -227,8 +227,8 @@
   left: 6%;
   right: 6%;
   height: 2.5px;
-  background: linear-gradient(90deg, transparent 0%, #e5b54f 20%, #ffffff 50%, #e5b54f 80%, transparent 100%);
-  box-shadow: 0 0 14px #e5b54f, 0 0 28px rgba(229, 181, 79, 0.6);
+  background: linear-gradient(90deg, transparent 0%, var(--gold, #e5b54f) 20%, var(--text-high, #ffffff) 50%, var(--gold, #e5b54f) 80%, transparent 100%);
+  box-shadow: 0 0 14px var(--gold, #e5b54f), 0 0 28px rgba(229, 181, 79, 0.6);
   z-index: 3;
   pointer-events: none;
   animation: doorLaserSweep 2.2s ease-in-out infinite alternate;
@@ -351,7 +351,7 @@
   border-radius: 10px;
   background: rgba(14, 14, 22, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   font-size: 0.84rem;
   font-family: var(--font-mono, monospace);
   font-weight: 700;
@@ -361,7 +361,7 @@
 }
 
 .door-manual-input:focus {
-  border-color: #e5b54f;
+  border-color: var(--gold, #e5b54f);
   box-shadow: 0 0 14px rgba(229, 181, 79, 0.25);
 }
 

@@ -113,9 +113,6 @@ export const SuperAdminDashboard = ({
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '18px',
-          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 17, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.25)',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)'
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
@@ -132,11 +129,11 @@ export const SuperAdminDashboard = ({
               }}>
                 <ShieldCheck size={18} />
               </div>
-              <h1 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h1 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 Consola de Plataforma &amp; SuperAdministrador · {esRole('SUPER_ADMIN')}
               </h1>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)', margin: 0 }}>
               Aprovisionamiento global de discotecas, planes de suscripción, mando de seguridad y volumen transaccional
             </p>
           </div>
@@ -151,7 +148,7 @@ export const SuperAdminDashboard = ({
                 borderRadius: '6px',
                 background: 'rgba(244, 63, 94, 0.06)',
                 border: '1px solid rgba(244, 63, 94, 0.24)',
-                color: '#fda4af',
+                color: 'var(--state-danger, #fda4af)',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -163,12 +160,12 @@ export const SuperAdminDashboard = ({
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(244, 63, 94, 0.14)';
                 e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.45)';
-                e.currentTarget.style.color = '#fff';
+                e.currentTarget.style.color = 'var(--text-high, #ffffff)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(244, 63, 94, 0.06)';
                 e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.24)';
-                e.currentTarget.style.color = '#fda4af';
+                e.currentTarget.style.color = 'var(--state-danger, #fda4af)';
               }}
             >
               <ShieldAlert size={14} />
@@ -183,7 +180,7 @@ export const SuperAdminDashboard = ({
                 borderRadius: '6px',
                 background: 'rgba(229, 181, 79, 0.12)',
                 border: '1px solid rgba(229, 181, 79, 0.38)',
-                color: '#f5d38a',
+                color: 'var(--brand-gold-light, #f5d38a)',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -195,12 +192,12 @@ export const SuperAdminDashboard = ({
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'rgba(229, 181, 79, 0.22)';
                 e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.6)';
-                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.color = 'var(--text-high, #ffffff)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(229, 181, 79, 0.12)';
                 e.currentTarget.style.borderColor = 'rgba(229, 181, 79, 0.38)';
-                e.currentTarget.style.color = '#f5d38a';
+                e.currentTarget.style.color = 'var(--brand-gold-light, #f5d38a)';
               }}
             >
               <Plus size={15} />
@@ -239,7 +236,7 @@ export const SuperAdminDashboard = ({
             background: activeTab === 'CLUBS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
             borderColor: activeTab === 'CLUBS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
-            color: activeTab === 'CLUBS' ? '#f5d38a' : '#71717a',
+            color: activeTab === 'CLUBS' ? 'var(--brand-gold-light, #f5d38a)' : 'var(--text-dim, #71717a)',
             fontSize: '0.8rem',
             fontWeight: activeTab === 'CLUBS' ? 600 : 500,
             cursor: 'pointer',
@@ -249,7 +246,7 @@ export const SuperAdminDashboard = ({
             transition: 'all 0.15s ease'
           }}
         >
-          <Building size={14} color={activeTab === 'CLUBS' ? '#e5b54f' : '#71717a'} />
+          <Building size={14} color={activeTab === 'CLUBS' ? 'var(--gold, #e5b54f)' : 'var(--text-dim, #71717a)'} />
           <span>Discotecas &amp; Clientes ({store.clubs.length})</span>
         </button>
 
@@ -262,7 +259,7 @@ export const SuperAdminDashboard = ({
             background: activeTab === 'PLANS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
             borderColor: activeTab === 'PLANS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
-            color: activeTab === 'PLANS' ? '#f5d38a' : '#71717a',
+            color: activeTab === 'PLANS' ? 'var(--brand-gold-light, #f5d38a)' : 'var(--text-dim, #71717a)',
             fontSize: '0.8rem',
             fontWeight: activeTab === 'PLANS' ? 600 : 500,
             cursor: 'pointer',
@@ -272,7 +269,7 @@ export const SuperAdminDashboard = ({
             transition: 'all 0.15s ease'
           }}
         >
-          <Layers size={14} color={activeTab === 'PLANS' ? '#e5b54f' : '#71717a'} />
+          <Layers size={14} color={activeTab === 'PLANS' ? 'var(--gold, #e5b54f)' : 'var(--text-dim, #71717a)'} />
           <span>Modelos de Suscripción ({store.plans.length})</span>
         </button>
 
@@ -285,7 +282,7 @@ export const SuperAdminDashboard = ({
             background: activeTab === 'SUBSCRIPTIONS' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
             borderColor: activeTab === 'SUBSCRIPTIONS' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
-            color: activeTab === 'SUBSCRIPTIONS' ? '#f5d38a' : '#71717a',
+            color: activeTab === 'SUBSCRIPTIONS' ? 'var(--brand-gold-light, #f5d38a)' : 'var(--text-dim, #71717a)',
             fontSize: '0.8rem',
             fontWeight: activeTab === 'SUBSCRIPTIONS' ? 600 : 500,
             cursor: 'pointer',
@@ -295,7 +292,7 @@ export const SuperAdminDashboard = ({
             transition: 'all 0.15s ease'
           }}
         >
-          <CreditCard size={14} color={activeTab === 'SUBSCRIPTIONS' ? '#e5b54f' : '#71717a'} />
+          <CreditCard size={14} color={activeTab === 'SUBSCRIPTIONS' ? 'var(--gold, #e5b54f)' : 'var(--text-dim, #71717a)'} />
           <span>Suscripciones &amp; Cobros SaaS</span>
         </button>
 
@@ -308,7 +305,7 @@ export const SuperAdminDashboard = ({
             background: activeTab === 'AUDIT' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
             border: '1px solid',
             borderColor: activeTab === 'AUDIT' ? 'rgba(229, 181, 79, 0.35)' : 'transparent',
-            color: activeTab === 'AUDIT' ? '#f5d38a' : '#71717a',
+            color: activeTab === 'AUDIT' ? 'var(--brand-gold-light, #f5d38a)' : 'var(--text-dim, #71717a)',
             fontSize: '0.8rem',
             fontWeight: activeTab === 'AUDIT' ? 600 : 500,
             cursor: 'pointer',
@@ -318,7 +315,7 @@ export const SuperAdminDashboard = ({
             transition: 'all 0.15s ease'
           }}
         >
-          <History size={14} color={activeTab === 'AUDIT' ? '#e5b54f' : '#71717a'} />
+          <History size={14} color={activeTab === 'AUDIT' ? 'var(--gold, #e5b54f)' : 'var(--text-dim, #71717a)'} />
           <span>Bitácora de Auditoría Global ({store.auditLogs.length})</span>
         </button>
       </div>
@@ -363,7 +360,7 @@ export const SuperAdminDashboard = ({
 
       {activeTab === 'AUDIT' && (
         <div className="glass-card" style={{ padding: '24px' }}>
-          <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', marginBottom: '6px' }}>
+          <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
             Registro de Auditoría Unificado de Plataforma
           </h3>
           <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginBottom: '18px' }}>
@@ -397,7 +394,7 @@ export const SuperAdminDashboard = ({
                   }}>
                     {log.action}
                   </span>
-                  <span style={{ color: '#fff' }}>{log.details}</span>
+                  <span style={{ color: 'var(--text-high, #ffffff)' }}>{log.details}</span>
                   {log.club_id && (
                     <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
                       [Club: {log.club_id}]
@@ -406,7 +403,7 @@ export const SuperAdminDashboard = ({
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-dim)', fontSize: '0.72rem' }}>
-                  <span>Actor: <strong style={{ color: '#cbd5e1' }}>{log.actor}</strong> ({log.role})</span>
+                  <span>Actor: <strong style={{ color: 'var(--text-dim, #cbd5e1)' }}>{log.actor}</strong> ({log.role})</span>
                   <span style={{ fontFamily: 'var(--font-mono)' }}>
                     {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                   </span>

@@ -176,7 +176,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             borderRadius: '10px',
             background: 'rgba(239, 68, 68, 0.12)',
             border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#f87171',
+            color: 'var(--state-danger, #f87171)',
             fontSize: '0.82rem',
             display: 'flex',
             alignItems: 'center',
@@ -195,7 +195,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             borderRadius: '10px',
             background: 'rgba(16, 185, 129, 0.12)',
             border: '1px solid rgba(16, 185, 129, 0.35)',
-            color: '#34d399',
+            color: 'var(--state-success, #34d399)',
             fontSize: '0.82rem',
             display: 'flex',
             alignItems: 'center',
@@ -218,10 +218,10 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
         }}
       >
         <div>
-          <h2 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
             Control de Suscripciones SaaS &amp; Facturación
           </h2>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Supervisa el estado de membresías de los clubes, activa trials, registra transferencias y administra periodos de gracia.
           </p>
         </div>
@@ -234,9 +234,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             style={{
               padding: '8px 14px',
               borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#d4d4d8',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)',
               fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -255,9 +255,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             style={{
               padding: '8px 16px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+              background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
               border: '1px solid rgba(229, 181, 79, 0.6)',
-              color: '#08080c',
+              color: 'var(--bg-void, #08080c)',
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -275,26 +275,26 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
       {/* Tabla de Clubes & Estado de Suscripción */}
       <div
+        className="glass-card"
         style={{
-          background: 'linear-gradient(180deg, #11121c 0%, #0a0b12 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--border)',
           borderRadius: '14px',
           overflow: 'hidden',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
         }}
       >
         <div
           style={{
             padding: '16px 20px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+            borderBottom: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Layers size={16} color="#e5b54f" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff' }}>
+            <Layers size={16} color="var(--gold, #e5b54f)" />
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
               Estado de Membresías por Establecimiento ({clubs.length})
             </span>
           </div>
@@ -303,7 +303,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
             <thead>
-              <tr style={{ background: 'rgba(255, 255, 255, 0.02)', color: 'rgba(255, 255, 255, 0.5)' }}>
+              <tr style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Establecimiento</th>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Plan Actual</th>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Tipo de Acceso</th>
@@ -320,13 +320,13 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                   <tr
                     key={club.id}
                     style={{
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                      borderBottom: '1px solid var(--border)',
                       transition: 'background 0.15s ease',
                     }}
                   >
                     <td style={{ padding: '14px 18px' }}>
-                      <div style={{ fontWeight: 700, color: '#fff' }}>{club.name}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'monospace' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>{club.name}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontFamily: 'monospace' }}>
                         {club.id}
                       </div>
                     </td>
@@ -340,9 +340,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                           fontWeight: 700,
                           background: isFounder
                             ? 'rgba(229, 181, 79, 0.15)'
-                            : 'rgba(255, 255, 255, 0.06)',
-                          color: isFounder ? '#e5b54f' : '#d4d4d8',
-                          border: `1px solid ${isFounder ? 'rgba(229, 181, 79, 0.35)' : 'rgba(255, 255, 255, 0.12)'}`,
+                            : 'var(--bg-elevated)',
+                          color: isFounder ? 'var(--gold, #e5b54f)' : 'var(--text-muted)',
+                          border: `1px solid ${isFounder ? 'rgba(229, 181, 79, 0.35)' : 'var(--border)'}`,
                         }}
                       >
                         {esPlan(club.plan_id)}
@@ -351,15 +351,15 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
                     <td style={{ padding: '14px 18px' }}>
                       {isFounder ? (
-                        <span style={{ color: '#e5b54f', fontSize: '0.76rem', fontWeight: 600 }}>
+                        <span style={{ color: 'var(--gold, #e5b54f)', fontSize: '0.76rem', fontWeight: 600 }}>
                           👑 Fundador Beta (Ilimitado)
                         </span>
                       ) : isFree ? (
-                        <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.76rem' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.76rem' }}>
                           Lounge Free ($0/mes)
                         </span>
                       ) : (
-                        <span style={{ color: '#34d399', fontSize: '0.76rem', fontWeight: 600 }}>
+                        <span style={{ color: 'var(--state-success, #34d399)', fontSize: '0.76rem', fontWeight: 600 }}>
                           Comercial SaaS
                         </span>
                       )}
@@ -373,7 +373,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           background: club.status === 'active' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                          color: club.status === 'active' ? '#34d399' : '#f87171',
+                          color: club.status === 'active' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
                           border: `1px solid ${club.status === 'active' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
                         }}
                       >
@@ -392,7 +392,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                             borderRadius: '6px',
                             background: 'rgba(229, 181, 79, 0.1)',
                             border: '1px solid rgba(229, 181, 79, 0.3)',
-                            color: '#e5b54f',
+                            color: 'var(--gold, #e5b54f)',
                             fontSize: '0.74rem',
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -414,7 +414,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                             borderRadius: '6px',
                             background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.12)',
-                            color: '#d4d4d8',
+                            color: 'var(--text-muted, #d4d4d8)',
                             fontSize: '0.74rem',
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -438,12 +438,12 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
       {/* Historial de Cobros y Ledgers de Plataforma */}
       <div
+        className="glass-card"
         style={{
-          background: 'linear-gradient(180deg, #11121c 0%, #0a0b12 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
           borderRadius: '14px',
           overflow: 'hidden',
-          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
         }}
       >
         <div
@@ -456,25 +456,25 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CreditCard size={16} color="#e5b54f" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff' }}>
+            <CreditCard size={16} color="var(--gold, #e5b54f)" />
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
               Libro Mayor de Cobros SaaS (Platform Ledgers)
             </span>
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
             {records.length} transacciones registradas
           </span>
         </div>
 
         {records.length === 0 ? (
-          <div style={{ padding: '36px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.84rem' }}>
+          <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.84rem' }}>
             No hay registros de cobros aún. Los cobros de PayPhone y transferencias aparecerán aquí.
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
               <thead>
-                <tr style={{ background: 'rgba(255, 255, 255, 0.02)', color: 'rgba(255, 255, 255, 0.5)' }}>
+                <tr style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
                   <th style={{ padding: '12px 18px', fontWeight: 600 }}>Fecha</th>
                   <th style={{ padding: '12px 18px', fontWeight: 600 }}>Establecimiento</th>
                   <th style={{ padding: '12px 18px', fontWeight: 600 }}>Plan / Ciclo</th>
@@ -486,23 +486,23 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               </thead>
               <tbody>
                 {records.map((rec) => (
-                  <tr key={rec.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                    <td style={{ padding: '12px 18px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <tr key={rec.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '12px 18px', color: 'var(--text-main)' }}>
                       {rec.createdAt ? new Date(rec.createdAt).toLocaleDateString('es-EC') : '—'}
                     </td>
-                    <td style={{ padding: '12px 18px', fontWeight: 600, color: '#fff' }}>
+                    <td style={{ padding: '12px 18px', fontWeight: 600, color: 'var(--text-high, #ffffff)' }}>
                       {rec.businessId}
                     </td>
                     <td style={{ padding: '12px 18px' }}>
                       {esPlan(rec.planId)} ({rec.cycle === 'annual' ? 'Anual' : 'Mensual'})
                     </td>
-                    <td style={{ padding: '12px 18px', fontWeight: 700, color: '#e5b54f' }}>
+                    <td style={{ padding: '12px 18px', fontWeight: 700, color: 'var(--gold, #e5b54f)' }}>
                       {formatUsd(rec.amount)}
                     </td>
-                    <td style={{ padding: '12px 18px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <td style={{ padding: '12px 18px', color: 'var(--text-main)' }}>
                       {rec.method === 'transfer' ? 'Transferencia' : rec.method === 'payphone_token' ? 'PayPhone (Token)' : 'PayPhone (Web)'}
                     </td>
-                    <td style={{ padding: '12px 18px', fontFamily: 'monospace', fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                    <td style={{ padding: '12px 18px', fontFamily: 'monospace', fontSize: '0.74rem', color: 'var(--text-dim)' }}>
                       {rec.reference || rec.id}
                     </td>
                     <td style={{ padding: '12px 18px' }}>
@@ -513,7 +513,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                           fontSize: '0.68rem',
                           fontWeight: 700,
                           background: rec.status === 'PAID' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(234, 179, 8, 0.15)',
-                          color: rec.status === 'PAID' ? '#34d399' : '#facc15',
+                          color: rec.status === 'PAID' ? 'var(--state-success, #34d399)' : 'var(--state-hold, #facc15)',
                           border: `1px solid ${rec.status === 'PAID' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(234, 179, 8, 0.3)'}`,
                         }}
                       >
@@ -545,13 +545,13 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
           onClick={() => !submittingTransfer && setTransferModalOpen(false)}
         >
           <div
+            className="modal-content glass-card"
             style={{
               width: '100%',
               maxWidth: '520px',
-              background: 'linear-gradient(180deg, #12131d 0%, #0a0b12 100%)',
-              border: '1px solid rgba(229, 181, 79, 0.4)',
+              border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
               borderRadius: '16px',
-              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5)',
               overflow: 'hidden',
             }}
             onClick={(e) => e.stopPropagation()}
@@ -559,7 +559,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             <div
               style={{
                 padding: '20px 24px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -567,8 +567,8 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DollarSign size={18} color="#e5b54f" />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+                <DollarSign size={18} color="var(--gold, #e5b54f)" />
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   Registrar Cobro por Transferencia
                 </h3>
               </div>
@@ -576,7 +576,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                 type="button"
                 onClick={() => setTransferModalOpen(false)}
                 disabled={submittingTransfer}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <X size={18} />
               </button>
@@ -584,7 +584,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
             <form onSubmit={handleRegisterTransfer} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Establecimiento
                 </label>
                 <select
@@ -594,9 +594,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: '#161726',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -610,7 +610,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                     Plan Contratado
                   </label>
                   <select
@@ -626,9 +626,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      background: '#161726',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#fff',
+                      background: 'var(--bg-input)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.85rem',
                     }}
                   >
@@ -639,7 +639,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                     Ciclo de Facturación
                   </label>
                   <select
@@ -655,9 +655,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      background: '#161726',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#fff',
+                      background: 'var(--bg-input)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.85rem',
                     }}
                   >
@@ -669,7 +669,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                     Monto Cobrado ($ USD)
                   </label>
                   <input
@@ -683,16 +683,16 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#fff',
+                      background: 'var(--bg-input)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.85rem',
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                     Referencia / Comprobante
                   </label>
                   <input
@@ -705,9 +705,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#fff',
+                      background: 'var(--bg-input)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.85rem',
                     }}
                   />
@@ -715,7 +715,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Notas Administrativas (Opcional)
                 </label>
                 <input
@@ -727,9 +727,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 />
@@ -743,9 +743,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                   style={{
                     padding: '10px 16px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.82rem',
                     cursor: 'pointer',
                   }}
@@ -758,9 +758,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                   style={{
                     padding: '10px 20px',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
                     border: '1px solid rgba(229, 181, 79, 0.6)',
-                    color: '#08080c',
+                    color: 'var(--bg-void, #08080c)',
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -791,13 +791,13 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
           onClick={() => !submittingStatus && setStatusModalOpen(false)}
         >
           <div
+            className="modal-content glass-card"
             style={{
               width: '100%',
               maxWidth: '480px',
-              background: 'linear-gradient(180deg, #12131d 0%, #0a0b12 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              border: '1px solid var(--border, rgba(255, 255, 255, 0.2))',
               borderRadius: '16px',
-              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5)',
               overflow: 'hidden',
             }}
             onClick={(e) => e.stopPropagation()}
@@ -805,20 +805,20 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
             <div
               style={{
                 padding: '20px 24px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
             >
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                 Ajustar Periodo &amp; Estado de Suscripción
               </h3>
               <button
                 type="button"
                 onClick={() => setStatusModalOpen(false)}
                 disabled={submittingStatus}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <X size={18} />
               </button>
@@ -826,7 +826,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
 
             <form onSubmit={handleUpdateStatus} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Estado de Suscripción
                 </label>
                 <select
@@ -836,9 +836,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: '#161726',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -850,7 +850,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Extender Periodo (+ Días adicionales)
                 </label>
                 <select
@@ -860,9 +860,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: '#161726',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -876,7 +876,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Plan Asignado
                 </label>
                 <select
@@ -886,9 +886,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: '#161726',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -901,7 +901,7 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Motivo / Notas
                 </label>
                 <input
@@ -913,9 +913,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 />
@@ -929,9 +929,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                   style={{
                     padding: '10px 16px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.82rem',
                     cursor: 'pointer',
                   }}
@@ -944,9 +944,9 @@ export const SuperAdminSubscriptionsView: React.FC<SuperAdminSubscriptionsViewPr
                   style={{
                     padding: '10px 20px',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
                     border: '1px solid rgba(229, 181, 79, 0.6)',
-                    color: '#08080c',
+                    color: 'var(--bg-void, #08080c)',
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',

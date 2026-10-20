@@ -99,9 +99,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     : 'ADMIN CLUB VIP';
 
   const roleBadgeColor = session.role === 'WAITER' || session.staffRole === 'waiter'
-    ? '#38bdf8'
+    ? 'var(--state-info, #38bdf8)'
     : session.role === 'DOOR_CHECKIN'
-    ? '#34d399'
+    ? 'var(--state-success, #34d399)'
     : 'var(--brand-gold)';
 
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
@@ -157,7 +157,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   padding: '1px 5px',
                   borderRadius: '3px',
                   background: 'rgba(229, 181, 79, 0.14)',
-                  color: '#e5b54f',
+                  color: 'var(--gold, #e5b54f)',
                   border: '1px solid rgba(229, 181, 79, 0.35)',
                   letterSpacing: '0.06em',
                 }}>
@@ -234,13 +234,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 paddingTop: '6px',
                 borderTop: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.05))',
                 fontSize: '0.64rem',
-                color: '#10b981'
+                color: 'var(--state-success, #10b981)'
               }}>
                 <span style={{
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
-                  background: '#10b981',
+                  background: 'var(--state-success, #10b981)',
                   boxShadow: '0 0 6px rgba(16, 185, 129, 0.7)'
                 }} />
                 <span style={{ fontWeight: 600, letterSpacing: '0.04em' }}>Sede Oficial Conectada</span>
@@ -448,7 +448,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     className="admin-nav-item-tag"
                     style={{
                       background: 'rgba(229, 181, 79, 0.15)',
-                      color: '#e5b54f',
+                      color: 'var(--gold, #e5b54f)',
                       borderColor: 'rgba(229, 181, 79, 0.35)',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
@@ -548,7 +548,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   </span>
                   <span>Terminal de Mesero</span>
                 </div>
-                <span className="admin-nav-item-tag admin-nav-item-tag--live" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
+                <span className="admin-nav-item-tag admin-nav-item-tag--live" style={{ background: 'rgba(56, 189, 248, 0.15)', color: 'var(--state-info, #38bdf8)', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
                   PWA
                 </span>
               </button>

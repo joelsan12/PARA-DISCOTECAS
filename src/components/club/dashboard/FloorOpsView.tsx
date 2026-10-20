@@ -122,38 +122,38 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
 
       let borderColor = 'rgba(255, 255, 255, 0.15)';
       let backgroundColor = 'rgba(15, 23, 42, 0.85)';
-      let color = '#94a3b8';
+      let color = 'var(--text-muted, #94a3b8)';
       let label = 'Disponible';
 
       switch (state) {
         case 'INSIDE':
-          borderColor = '#34d399';
+          borderColor = 'var(--state-success, #34d399)';
           backgroundColor = 'rgba(6, 40, 23, 0.95)';
-          color = '#34d399';
+          color = 'var(--state-success, #34d399)';
           label = 'Cliente en Sala (INSIDE)';
           break;
         case 'CONFIRMED':
-          borderColor = '#e5b54f';
+          borderColor = 'var(--gold, #e5b54f)';
           backgroundColor = 'rgba(40, 32, 10, 0.95)';
-          color = '#e5b54f';
+          color = 'var(--gold, #e5b54f)';
           label = 'Reserva Confirmada';
           break;
         case 'HELD':
-          borderColor = '#f59e0b';
+          borderColor = 'var(--state-hold, #f59e0b)';
           backgroundColor = 'rgba(40, 24, 8, 0.95)';
-          color = '#fbbf24';
+          color = 'var(--state-hold, #fbbf24)';
           label = 'Hold Activo (12 min)';
           break;
         case 'SETTLED':
-          borderColor = '#a855f7';
+          borderColor = 'var(--violet, #a855f7)';
           backgroundColor = 'rgba(30, 15, 45, 0.95)';
-          color = '#c084fc';
+          color = 'var(--violet, #c084fc)';
           label = 'Cuenta Cerrada (SETTLED)';
           break;
         default:
           borderColor = 'rgba(100, 116, 139, 0.4)';
           backgroundColor = 'rgba(15, 23, 42, 0.85)';
-          color = '#cbd5e1';
+          color = 'var(--text-dim, #cbd5e1)';
           label = 'Disponible';
           break;
       }
@@ -277,15 +277,15 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
   const getConciergeTypeMeta = (type: string) => {
     switch (type) {
       case 'WAITER':
-        return { label: 'Llamar Mesero', color: '#38bdf8', icon: Bell };
+        return { label: 'Llamar Mesero', color: 'var(--state-info, #38bdf8)', icon: Bell };
       case 'BOTTLE':
-        return { label: 'Botella VIP', color: '#a855f7', icon: Wine };
+        return { label: 'Botella VIP', color: 'var(--violet, #a855f7)', icon: Wine };
       case 'HOOKAH':
-        return { label: 'Hookah / Narguile', color: '#f97316', icon: Flame };
+        return { label: 'Hookah / Narguile', color: 'var(--state-hold, #f97316)', icon: Flame };
       case 'SERVICE':
-        return { label: 'Servicio / Hielo', color: '#34d399', icon: Sparkles };
+        return { label: 'Servicio / Hielo', color: 'var(--state-success, #34d399)', icon: Sparkles };
       default:
-        return { label: 'Otro Pedido', color: '#e5b54f', icon: HelpCircle };
+        return { label: 'Otro Pedido', color: 'var(--gold, #e5b54f)', icon: HelpCircle };
     }
   };
 
@@ -298,7 +298,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
           borderRadius: '12px',
           background: actionFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
           border: `1px solid ${actionFeedback.kind === 'success' ? 'rgba(52, 211, 153, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-          color: actionFeedback.kind === 'success' ? '#34d399' : '#f87171',
+          color: actionFeedback.kind === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
           fontSize: '0.84rem',
           display: 'flex',
           alignItems: 'center',
@@ -348,14 +348,14 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--brand-gold, #e5b54f)',
+              color: 'var(--brand-gold, var(--gold, #e5b54f))',
               boxShadow: '0 0 16px rgba(229, 181, 79, 0.15)',
             }}>
               {opsMode === 'MAP' ? <MonitorPlay size={20} /> : <Compass size={20} />}
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
+                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: 'var(--text-high, var(--text-main, #f4f1ea))' }}>
                   {opsMode === 'MAP' ? 'Sala en Vivo · Plano & Mesas' : 'Piso & Concierge · Control de Operaciones'}
                 </h3>
                 <span style={{
@@ -365,13 +365,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                   padding: '2px 7px',
                   borderRadius: '999px',
                   background: 'var(--state-success-subtle, rgba(52, 211, 153, 0.12))',
-                  color: 'var(--state-success, #34d399)',
+                  color: 'var(--state-success, var(--state-success, #34d399))',
                   border: '1px solid var(--state-success-border, rgba(52, 211, 153, 0.3))',
                 }}>
                   LIVE
                 </span>
               </div>
-              <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>
+              <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                 {activeClub.name} · {clubTables.length} mesas configuradas · Sincronización en vivo
               </p>
             </div>
@@ -402,8 +402,8 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                   <span style={{
                     padding: '1px 6px',
                     borderRadius: '999px',
-                    background: '#ef4444',
-                    color: '#fff',
+                    background: 'var(--state-danger, #ef4444)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.65rem',
                     fontWeight: 800,
                     boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)'
@@ -475,7 +475,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, var(--text-main, #f4f1ea))' }}>
                       {selectedTable.table_code}
                     </span>
                     <span style={{
@@ -484,7 +484,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                       padding: '2px 8px',
                       borderRadius: '6px',
                       background: 'rgba(56, 189, 248, 0.15)',
-                      color: '#0284c7'
+                      color: 'var(--state-info, #0284c7)'
                     }}>
                       {selectedTable.zone}
                     </span>
@@ -494,12 +494,12 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                       padding: '2px 8px',
                       borderRadius: '6px',
                       background: 'var(--bg-elevated, rgba(255, 255, 255, 0.06))',
-                      color: 'var(--text-muted, #94a3b8)'
+                      color: 'var(--text-muted, var(--text-muted, #94a3b8))'
                     }}>
                       Capacidad: {selectedTable.capacity} pers.
                     </span>
                   </div>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted, #94a3b8)' }}>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                     Estado actual: <strong style={{ color: tableStateOverrides[selectedTable.id]?.color }}>{tableStateOverrides[selectedTable.id]?.label}</strong>
                   </p>
                 </div>
@@ -516,7 +516,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--text-muted, #94a3b8)',
+                    color: 'var(--text-muted, var(--text-muted, #94a3b8))',
                     cursor: 'pointer'
                   }}
                 >
@@ -537,8 +537,8 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <User size={16} style={{ color: 'var(--brand-gold, #e5b54f)' }} />
-                      <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-high, #f4f1ea)' }}>
+                      <User size={16} style={{ color: 'var(--brand-gold, var(--gold, #e5b54f))' }} />
+                      <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-high, var(--text-main, #f4f1ea))' }}>
                         {selectedOp.guestName || 'Titular de Reserva'}
                       </span>
                     </div>
@@ -554,7 +554,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                           gap: '6px',
                           fontSize: '0.74rem',
                           fontWeight: 700,
-                          color: '#059669',
+                          color: 'var(--state-success, #059669)',
                           background: 'rgba(5, 150, 105, 0.12)',
                           padding: '4px 10px',
                           borderRadius: '6px',
@@ -567,14 +567,14 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                     )}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.74rem', color: 'var(--text-muted, #94a3b8)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.74rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                     <div>
                       <span>Reserva: </span>
-                      <strong style={{ color: 'var(--text-main, #cbd5e1)' }}>{selectedOp.activeReservationId.slice(0, 12)}...</strong>
+                      <strong style={{ color: 'var(--text-main, var(--text-dim, #cbd5e1))' }}>{selectedOp.activeReservationId.slice(0, 12)}...</strong>
                     </div>
                     <div>
                       <span>Presencia: </span>
-                      <strong style={{ color: selectedOp.state === 'INSIDE' ? 'var(--state-success, #059669)' : 'var(--text-muted, #94a3b8)' }}>
+                      <strong style={{ color: selectedOp.state === 'INSIDE' ? 'var(--state-success, var(--state-success, #059669))' : 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                         {selectedOp.state === 'INSIDE' ? 'EN SALA' : 'FUERA / PENDIENTE'}
                       </strong>
                     </div>
@@ -589,10 +589,10 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                     border: '1px solid var(--border-light, rgba(56, 189, 248, 0.2))'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '0.76rem', color: 'var(--text-muted, #94a3b8)' }}>
-                        Consumo: <strong style={{ color: 'var(--brand-gold, #38bdf8)', fontSize: '0.9rem' }}>${(selectedOp.consumptionTotal || 0).toFixed(2)}</strong>
+                      <span style={{ fontSize: '0.76rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
+                        Consumo: <strong style={{ color: 'var(--brand-gold, var(--state-info, #38bdf8))', fontSize: '0.9rem' }}>${(selectedOp.consumptionTotal || 0).toFixed(2)}</strong>
                       </span>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748b)' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, var(--text-dim, #64748b))' }}>
                         Mínimo: ${(selectedOp.minSpend || 0).toFixed(2)}
                       </span>
                     </div>
@@ -607,8 +607,8 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                         height: '100%',
                         width: `${Math.min(100, ((selectedOp.consumptionTotal || 0) / (selectedOp.minSpend || 1)) * 100)}%`,
                         background: (selectedOp.consumptionTotal || 0) >= (selectedOp.minSpend || 0)
-                          ? '#059669'
-                          : 'linear-gradient(90deg, #38bdf8 0%, #e5b54f 100%)',
+                          ? 'var(--state-success, #059669)'
+                          : 'linear-gradient(90deg, var(--state-info, #38bdf8) 0%, var(--gold, #e5b54f) 100%)',
                         borderRadius: '999px'
                       }} />
                     </div>
@@ -626,7 +626,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                               borderRadius: '8px',
                               background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(147, 51, 234, 0.3) 100%)',
                               border: '1px solid rgba(168, 85, 247, 0.4)',
-                              color: 'var(--brand-gold, #c084fc)',
+                              color: 'var(--brand-gold, var(--violet, #c084fc))',
                               fontSize: '0.78rem',
                               fontWeight: 800,
                               cursor: 'pointer',
@@ -650,7 +650,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                             flexDirection: 'column',
                             gap: '10px'
                           }}>
-                            <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
+                            <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-high, var(--text-main, #f4f1ea))' }}>
                               Confirmar Liquidación de Mesa
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
@@ -665,9 +665,9 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                     fontSize: '0.7rem',
                                     fontWeight: 700,
                                     cursor: 'pointer',
-                                    border: settlementMethod === method ? '1px solid #c084fc' : '1px solid var(--border-light, rgba(255, 255, 255, 0.08))',
+                                    border: settlementMethod === method ? '1px solid var(--violet, #c084fc)' : '1px solid var(--border-light, rgba(255, 255, 255, 0.08))',
                                     background: settlementMethod === method ? 'rgba(168, 85, 247, 0.25)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
-                                    color: settlementMethod === method ? 'var(--text-high, #f4f1ea)' : 'var(--text-muted, #94a3b8)'
+                                    color: settlementMethod === method ? 'var(--text-high, var(--text-main, #f4f1ea))' : 'var(--text-muted, var(--text-muted, #94a3b8))'
                                   }}
                                 >
                                   {method === 'cash' ? 'Efectivo' : method === 'card_manual' ? 'Tarjeta' : 'Transferencia'}
@@ -685,7 +685,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                 border: '1px solid var(--border, rgba(255, 255, 255, 0.1))',
                                 borderRadius: '6px',
                                 padding: '6px 10px',
-                                color: 'var(--text-main, #f4f1ea)',
+                                color: 'var(--text-main, var(--text-main, #f4f1ea))',
                                 fontSize: '0.74rem'
                               }}
                             />
@@ -700,7 +700,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                   borderRadius: '6px',
                                   background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
                                   border: '1px solid var(--border-light, transparent)',
-                                  color: 'var(--text-muted, #94a3b8)',
+                                  color: 'var(--text-muted, var(--text-muted, #94a3b8))',
                                   fontSize: '0.74rem',
                                   cursor: 'pointer'
                                 }}
@@ -715,9 +715,9 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                   flex: 2,
                                   padding: '7px',
                                   borderRadius: '6px',
-                                  background: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
+                                  background: 'linear-gradient(135deg, var(--violet, #a855f7) 0%, var(--violet, #7e22ce) 100%)',
                                   border: 'none',
-                                  color: '#fff',
+                                  color: 'var(--text-high, #ffffff)',
                                   fontSize: '0.74rem',
                                   fontWeight: 800,
                                   cursor: isSettlingSubmitting ? 'wait' : 'pointer'
@@ -738,7 +738,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                   borderRadius: '12px',
                   background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
                   border: '1px dashed var(--border-light, rgba(255, 255, 255, 0.08))',
-                  color: 'var(--text-dim, #64748b)',
+                  color: 'var(--text-dim, var(--text-dim, #64748b))',
                   fontSize: '0.8rem',
                   textAlign: 'center'
                 }}>
@@ -748,13 +748,13 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
 
               {/* Solicitudes Concierge de esta mesa */}
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Bell size={14} style={{ color: 'var(--brand-gold, #fbbf24)' }} />
+                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-high, var(--text-main, #f4f1ea))', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Bell size={14} style={{ color: 'var(--brand-gold, var(--state-hold, #fbbf24))' }} />
                   <span>Peticiones de esta Mesa ({selectedTableRequests.length})</span>
                 </div>
 
                 {selectedTableRequests.length === 0 ? (
-                  <p style={{ margin: 0, fontSize: '0.74rem', color: 'var(--text-muted, #64748b)' }}>
+                  <p style={{ margin: 0, fontSize: '0.74rem', color: 'var(--text-muted, var(--text-dim, #64748b))' }}>
                     Sin peticiones activas de concierge.
                   </p>
                 ) : (
@@ -781,11 +781,11 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                             <span style={{ fontSize: '0.72rem', fontWeight: 800, color: meta.color }}>
                               {meta.label}
                             </span>
-                            <span style={{ fontSize: '0.64rem', fontWeight: 800, color: isPending ? '#fbbf24' : '#0284c7' }}>
+                            <span style={{ fontSize: '0.64rem', fontWeight: 800, color: isPending ? 'var(--state-hold, #fbbf24)' : 'var(--state-info, #0284c7)' }}>
                               {req.status}
                             </span>
                           </div>
-                          <div style={{ fontSize: '0.78rem', color: 'var(--text-main, #cbd5e1)' }}>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-main, var(--text-dim, #cbd5e1))' }}>
                             "{req.message}"
                           </div>
                           {(isPending || isInProgress) && (
@@ -800,7 +800,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                     borderRadius: '6px',
                                     background: 'rgba(245, 158, 11, 0.2)',
                                     border: '1px solid rgba(245, 158, 11, 0.4)',
-                                    color: '#b45309',
+                                    color: 'var(--state-hold, #b45309)',
                                     fontSize: '0.7rem',
                                     fontWeight: 800,
                                     cursor: 'pointer'
@@ -819,7 +819,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                                     borderRadius: '6px',
                                     background: 'rgba(5, 150, 105, 0.15)',
                                     border: '1px solid rgba(5, 150, 105, 0.35)',
-                                    color: '#047857',
+                                    color: 'var(--state-success, #047857)',
                                     fontSize: '0.7rem',
                                     fontWeight: 800,
                                     cursor: 'pointer'
@@ -847,11 +847,11 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               borderRadius: '12px',
               background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
               border: '1px solid var(--border-light, rgba(255, 255, 255, 0.06))',
-              color: 'var(--text-muted, #94a3b8)',
+              color: 'var(--text-muted, var(--text-muted, #94a3b8))',
               fontSize: '0.78rem',
               fontWeight: 600,
             }}>
-              <Compass size={14} style={{ color: 'var(--brand-gold, #e5b54f)' }} />
+              <Compass size={14} style={{ color: 'var(--brand-gold, var(--gold, #e5b54f))' }} />
               <span>Toca cualquier mesa en el plano para ver comanda, pedidos y gestionar cuenta.</span>
             </div>
           )}
@@ -880,15 +880,15 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'var(--brand-gold, #fbbf24)'
+                color: 'var(--brand-gold, var(--state-hold, #fbbf24))'
               }}>
                 <Bell size={18} />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
+                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-high, var(--text-main, #f4f1ea))' }}>
                   Cola Concierge en Vivo
                 </h4>
-                <p style={{ margin: '2px 0 0 0', fontSize: '0.72rem', color: 'var(--text-muted, #94a3b8)' }}>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.72rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                   Atención directa de solicitudes de clientes
                 </p>
               </div>
@@ -896,8 +896,8 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
 
             {pendingRequestsCount > 0 && (
               <span style={{
-                background: '#ef4444',
-                color: '#fff',
+                background: 'var(--state-danger, #ef4444)',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.7rem',
                 fontWeight: 800,
                 padding: '2px 8px',
@@ -929,7 +929,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                   whiteSpace: 'nowrap',
                   cursor: 'pointer',
                   background: conciergeFilter === f.id ? 'var(--accent-subtle, rgba(245, 158, 11, 0.2))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
-                  color: conciergeFilter === f.id ? 'var(--brand-gold, #fbbf24)' : 'var(--text-muted, #94a3b8)',
+                  color: conciergeFilter === f.id ? 'var(--brand-gold, var(--state-hold, #fbbf24))' : 'var(--text-muted, var(--text-muted, #94a3b8))',
                   border: conciergeFilter === f.id ? '1px solid var(--brand-gold, rgba(245, 158, 11, 0.4))' : '1px solid var(--border-light, rgba(255, 255, 255, 0.08))'
                 }}
               >
@@ -946,7 +946,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
               background: 'var(--bg-elevated, rgba(0, 0, 0, 0.2))',
               borderRadius: '14px',
               border: '1px dashed var(--border-light, rgba(255, 255, 255, 0.08))',
-              color: 'var(--text-muted, #64748b)'
+              color: 'var(--text-muted, var(--text-dim, #64748b))'
             }}>
               <Bell size={32} style={{ margin: '0 auto 8px auto', opacity: 0.4 }} />
               <p style={{ margin: 0, fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-main, inherit)' }}>
@@ -965,20 +965,20 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
 
                 let statusBorder = 'var(--border-light, rgba(255, 255, 255, 0.08))';
                 let statusBadgeBg = 'var(--bg-elevated, rgba(148, 163, 184, 0.15))';
-                let statusBadgeColor = 'var(--text-muted, #94a3b8)';
+                let statusBadgeColor = 'var(--text-muted, var(--text-muted, #94a3b8))';
 
                 if (isPending) {
                   statusBorder = 'rgba(245, 158, 11, 0.4)';
                   statusBadgeBg = 'rgba(245, 158, 11, 0.15)';
-                  statusBadgeColor = '#b45309';
+                  statusBadgeColor = 'var(--state-hold, #b45309)';
                 } else if (isInProgress) {
                   statusBorder = 'rgba(56, 189, 248, 0.4)';
                   statusBadgeBg = 'rgba(56, 189, 248, 0.15)';
-                  statusBadgeColor = '#0284c7';
+                  statusBadgeColor = 'var(--state-info, #0284c7)';
                 } else if (isDone) {
                   statusBorder = 'rgba(52, 211, 153, 0.3)';
                   statusBadgeBg = 'rgba(52, 211, 153, 0.15)';
-                  statusBadgeColor = '#047857';
+                  statusBadgeColor = 'var(--state-success, #047857)';
                 }
 
                 return (
@@ -995,7 +995,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                         <span style={{
                           background: 'var(--accent-subtle, rgba(229, 181, 79, 0.15))',
                           border: '1px solid var(--border-light, rgba(229, 181, 79, 0.3))',
-                          color: 'var(--brand-gold, #e5b54f)',
+                          color: 'var(--brand-gold, var(--gold, #e5b54f))',
                           fontWeight: 800,
                           fontSize: '0.78rem',
                           padding: '2px 7px',
@@ -1006,7 +1006,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                         {req.zone && (
                           <span style={{
                             background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
-                            color: 'var(--text-muted, #94a3b8)',
+                            color: 'var(--text-muted, var(--text-muted, #94a3b8))',
                             fontSize: '0.7rem',
                             padding: '2px 6px',
                             borderRadius: '4px'
@@ -1047,7 +1047,7 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                       background: 'var(--bg-elevated, rgba(0, 0, 0, 0.25))',
                       borderRadius: '8px',
                       padding: '8px 10px',
-                      color: 'var(--text-high, #f4f1ea)',
+                      color: 'var(--text-high, var(--text-main, #f4f1ea))',
                       fontSize: '0.82rem',
                       lineHeight: 1.4
                     }}>
@@ -1056,14 +1056,14 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
 
                     {/* Cliente / Atendido / Acciones */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted, #94a3b8)' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted, var(--text-muted, #94a3b8))' }}>
                         {req.customerName && (
-                          <span style={{ color: 'var(--text-high, #cbd5e1)', fontWeight: 600 }}>
+                          <span style={{ color: 'var(--text-high, var(--text-dim, #cbd5e1))', fontWeight: 600 }}>
                             {req.customerName} ·{' '}
                           </span>
                         )}
                         {req.assignedWaiterName && (
-                          <span style={{ color: '#0284c7' }}>
+                          <span style={{ color: 'var(--state-info, #0284c7)' }}>
                             Por: {req.assignedWaiterName} ·{' '}
                           </span>
                         )}
@@ -1079,11 +1079,11 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                             disabled={isUpdating}
                             onClick={() => handleUpdateConciergeStatus(req.requestId, 'IN_PROGRESS')}
                             style={{
-                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                              background: 'linear-gradient(135deg, var(--state-hold, #f59e0b) 0%, var(--state-hold, #d97706) 100%)',
                               border: 'none',
                               borderRadius: '6px',
                               padding: '6px 12px',
-                              color: '#0a0d14',
+                              color: 'var(--bg-void, #08080c)',
                               fontSize: '0.74rem',
                               fontWeight: 800,
                               cursor: isUpdating ? 'wait' : 'pointer'
@@ -1098,11 +1098,11 @@ export const FloorOpsView: React.FC<FloorOpsViewProps> = ({ activeClub, session,
                             disabled={isUpdating}
                             onClick={() => handleUpdateConciergeStatus(req.requestId, 'DONE')}
                             style={{
-                              background: 'linear-gradient(135deg, #34d399 0%, #059669 100%)',
+                              background: 'linear-gradient(135deg, var(--state-success, #34d399) 0%, var(--state-success, #059669) 100%)',
                               border: 'none',
                               borderRadius: '6px',
                               padding: '6px 12px',
-                              color: '#0a0d14',
+                              color: 'var(--bg-void, #08080c)',
                               fontSize: '0.74rem',
                               fontWeight: 800,
                               cursor: isUpdating ? 'wait' : 'pointer'

@@ -1,200 +1,464 @@
-/* ── 2. Las 3 Experiencias de Sala (Visuales) ────────────────────────────── */
+/* ── 3 Pilares Arquitectónicos de la Noche (Haute Nocturne Editorial) ──── */
 .saas-experiences-section {
-  padding: 80px 0;
-  border-top: 1px solid var(--saas-border);
+  padding: clamp(64px, 9vh, 120px) 0;
+  position: relative;
+  background: radial-gradient(ellipse 900px 500px at 50% 0%, rgba(229, 181, 79, 0.04) 0%, transparent 70%);
 }
 
+.saas-section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--saas-gold);
+  margin-bottom: 12px;
+}
+
+.saas-section-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--saas-gold);
+  box-shadow: 0 0 6px var(--saas-gold);
+}
+
+.saas-section-title-left {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--text-high, #ffffff) !important;
+  margin: 0 0 14px;
+}
+
+[data-theme="light"] .saas-section-title-left {
+  color: var(--saas-text-primary) !important;
+}
+
+.saas-section-desc-left {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.58);
+  max-width: 660px;
+  margin: 0 0 48px;
+}
+
+[data-theme="light"] .saas-section-desc-left {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Grilla Asimétrica de los 3 Pilares ───────────────────────────────────── */
 .saas-experience-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1040px) {
   .saas-experience-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 
 .saas-exp-card {
-  background: var(--saas-card-bg);
-  border: 1px solid var(--saas-border);
-  border-radius: 14px;
-  padding: 32px 28px;
+  background: linear-gradient(165deg, rgba(16, 20, 32, 0.9) 0%, rgba(9, 11, 18, 0.96) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 22px;
+  padding: 34px 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   text-align: left;
-  transition: all 0.2s ease;
+  box-shadow:
+    0 24px 60px -16px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform var(--dur-base, 0.2s) var(--ease-operational, ease),
+              box-shadow var(--dur-base, 0.2s) var(--ease-operational, ease),
+              border-color var(--dur-base, 0.2s) var(--ease-operational, ease);
 }
 
 .saas-exp-card:hover {
-  border-color: var(--saas-border-gold);
-  transform: translateY(-2px);
-  box-shadow: var(--saas-shadow);
+  transform: translateY(-3px);
+  border-color: rgba(229, 181, 79, 0.3);
+  box-shadow:
+    0 32px 72px -16px rgba(0, 0, 0, 0.9),
+    0 0 36px rgba(229, 181, 79, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .saas-exp-card {
+  background: linear-gradient(165deg, rgba(246, 244, 238, 0.94) 0%, rgba(238, 234, 224, 0.98) 100%);
+  border-color: rgba(184, 134, 11, 0.16);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06);
 }
 
 .saas-exp-tag {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--saas-gold);
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
-}
-
-.saas-exp-card h3 {
-  font-size: 1.22rem;
+  gap: 7px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.66rem;
   font-weight: 700;
-  color: var(--saas-text-primary);
-  margin: 0 0 10px;
-}
-
-.saas-exp-card p {
-  font-size: 0.88rem;
-  color: var(--saas-text-secondary);
-  line-height: 1.6;
-  margin: 0 0 20px;
-}
-
-/* Micro-plano interactivo dentro de la tarjeta */
-.saas-micro-floor {
-  background: var(--saas-surface);
-  border: 1px solid var(--saas-border);
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.saas-micro-table-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  letter-spacing: 0.12em;
+  color: var(--saas-gold);
   margin-bottom: 14px;
 }
 
-.saas-micro-table {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 14px;
-  background: var(--saas-card-bg);
-  border: 1px solid var(--saas-border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: left;
+.saas-exp-card__title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--text-high, #ffffff);
+  margin: 0 0 10px;
+  line-height: 1.2;
 }
 
-.saas-micro-table:hover,
-.saas-micro-table.active {
-  border-color: var(--saas-gold);
-  background: var(--saas-gold-subtle);
-}
-
-.saas-micro-table__info strong {
-  display: block;
-  font-size: 0.82rem;
+[data-theme="light"] .saas-exp-card__title {
   color: var(--saas-text-primary);
 }
 
-.saas-micro-table__info span {
-  font-size: 0.72rem;
-  color: var(--saas-text-secondary);
+.saas-exp-card__desc {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.65;
+  margin: 0 0 24px;
 }
 
-.saas-table-pill {
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 4px;
-  letter-spacing: 0.04em;
+[data-theme="light"] .saas-exp-card__desc {
+  color: rgba(0, 0, 0, 0.58);
 }
 
-.saas-table-pill.avail {
-  background: rgba(52, 211, 153, 0.12);
-  color: #34d399;
+/* ── Pilar 1: Micro Plano Interactivo ─────────────────────────────────────── */
+.saas-micro-floor-pillar {
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 22px;
 }
 
-.saas-table-pill.held {
-  background: rgba(251, 191, 36, 0.12);
-  color: #fbbf24;
-  font-family: monospace;
+[data-theme="light"] .saas-micro-floor-pillar {
+  background: rgba(0, 0, 0, 0.035);
 }
 
-.saas-table-pill.occ {
-  background: rgba(142, 146, 157, 0.12);
-  color: #8e929d;
+.saas-micro-floor-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.saas-micro-floor__action {
+.saas-pillar-table-tile {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-/* Micro-HUD de puerta */
-.saas-micro-hud {
-  background: #050608;
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
-  font-family: monospace;
-  font-size: 0.74rem;
-}
-
-.saas-micro-hud__header {
-  display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 8px;
-  margin-bottom: 10px;
-}
-
-.saas-micro-hud__line {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 6px;
-  color: #c4c7d0;
-}
-
-/* Micro-Dashboard de KPIs */
-.saas-micro-dashboard-preview {
-  background: var(--saas-surface);
-  border: 1px solid var(--saas-border);
+  padding: 10px 14px;
   border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--dur-base, 0.2s) ease;
 }
 
-.saas-micro-kpi-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.saas-pillar-table-tile:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(229, 181, 79, 0.25);
+}
+
+.saas-pillar-table-tile.selected {
+  border-color: rgba(229, 181, 79, 0.5);
+  background: rgba(229, 181, 79, 0.08);
+}
+
+.saas-pillar-table-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.saas-pillar-table-name {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-high, #ffffff);
+}
+
+[data-theme="light"] .saas-pillar-table-name {
+  color: var(--saas-text-primary);
+}
+
+.saas-pillar-table-meta {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+[data-theme="light"] .saas-pillar-table-meta {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.saas-pillar-held-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--saas-gold);
+}
+
+.saas-pillar-status-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.saas-pillar-status-text.avail {
+  color: var(--state-success, #34d399);
+}
+
+.saas-pillar-status-text.occ {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.saas-pillar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.saas-pillar-dot.avail {
+  background: var(--state-success, #34d399);
+  box-shadow: 0 0 6px var(--state-success, #34d399);
+}
+
+.saas-pillar-dot.occ {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.saas-pillar-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="light"] .saas-pillar-note {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.saas-pillar-note-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--saas-gold);
+}
+
+/* ── Pilar 2: Micro HUD de Puerta ─────────────────────────────────────────── */
+.saas-micro-hud-pillar {
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 22px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+}
+
+[data-theme="light"] .saas-micro-hud-pillar {
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.saas-hud-telemetry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .saas-hud-telemetry-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.saas-hud-title-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+[data-theme="light"] .saas-hud-title-line {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.saas-hud-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--state-success, #34d399);
+  box-shadow: 0 0 8px var(--state-success, #34d399);
+}
+
+.saas-hud-latency {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--saas-gold);
+}
+
+.saas-hud-data-lines {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.saas-micro-kpi {
-  background: var(--saas-card-bg);
-  border: 1px solid var(--saas-border);
-  border-radius: 6px;
-  padding: 10px;
+.saas-hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.68rem;
+}
+
+.saas-hud-label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="light"] .saas-hud-label {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.saas-hud-value.mono {
+  color: var(--text-high, #ffffff);
+}
+
+.saas-hud-value.success {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--state-success, #34d399);
+  font-weight: 700;
+}
+
+.saas-hud-value.gold {
+  color: var(--saas-gold);
+}
+
+/* ── Pilar 3: Micro Telemetría KPI ────────────────────────────────────────── */
+.saas-micro-kpi-pillar {
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 22px;
+}
+
+[data-theme="light"] .saas-micro-kpi-pillar {
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.saas-pillar-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.saas-pillar-kpi-cell {
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 10px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
-.saas-micro-kpi span {
+.saas-pillar-kpi-label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 0.62rem;
-  color: var(--saas-text-muted);
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
 }
 
-.saas-micro-kpi strong {
-  font-size: 0.95rem;
+[data-theme="light"] .saas-pillar-kpi-label {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.saas-pillar-kpi-val {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-high, #ffffff);
+  margin: 4px 0 6px;
+}
+
+[data-theme="light"] .saas-pillar-kpi-val {
   color: var(--saas-text-primary);
+}
+
+.saas-pillar-kpi-val.gold {
+  color: var(--saas-gold);
+}
+
+.saas-pillar-kpi-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.saas-pillar-kpi-fill {
+  display: block;
+  height: 100%;
+  background: var(--state-success, #34d399);
+  border-radius: 9999px;
+}
+
+.saas-pillar-kpi-sub {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+[data-theme="light"] .saas-pillar-kpi-sub {
+  color: rgba(0, 0, 0, 0.42);
+}
+
+.saas-pillar-kpi-status-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding-top: 6px;
+}
+
+[data-theme="light"] .saas-pillar-kpi-status-line {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* ── Enlace Inferior a Módulo Dedicado ────────────────────────────────────── */
+.saas-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--saas-gold);
+  text-decoration: none;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.saas-card-link:hover {
+  gap: 12px;
+  color: var(--saas-gold-hover);
 }

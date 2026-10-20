@@ -163,7 +163,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   borderRadius: '8px',
                   padding: '10px 12px',
                   fontSize: '0.8rem',
-                  color: '#fda4af',
+                  color: 'var(--state-danger-text, #fda4af)',
                   marginBottom: '14px',
                   display: 'flex',
                   alignItems: 'center',
@@ -301,7 +301,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   marginTop: '10px',
                   background: 'rgba(37, 211, 102, 0.12)',
                   border: '1px solid rgba(37, 211, 102, 0.4)',
-                  color: '#25d366',
+                  color: 'var(--brand-whatsapp, #25d366)',
                   borderRadius: '8px',
                   fontSize: '0.84rem',
                   fontWeight: 700,
@@ -328,12 +328,12 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 12px',
-                  color: '#34d399'
+                  color: 'var(--state-success, #34d399)'
                 }}
               >
                 <CheckCircle2 size={32} />
               </div>
-              <span className="saas-badge-gold" style={{ background: 'rgba(52, 211, 153, 0.15)', borderColor: 'rgba(52, 211, 153, 0.35)', color: '#34d399' }}>
+              <span className="saas-badge-gold" style={{ background: 'rgba(52, 211, 153, 0.15)', borderColor: 'rgba(52, 211, 153, 0.35)', color: 'var(--state-success, #34d399)' }}>
                 ¡CLUB ACTIVADO CON ÉXITO!
               </span>
               <h3 style={{ fontSize: '1.3rem', color: 'var(--saas-text-primary)', fontWeight: 800, marginTop: '6px', marginBottom: '4px' }}>
@@ -341,7 +341,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
               </h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--saas-text-secondary)', margin: 0 }}>
                 {result?.emailSent ? (
-                  <>✉️ Enviamos una copia de tus credenciales a <strong style={{ color: '#fff' }}>{result.credentials.email}</strong>.</>
+                  <>✉️ Enviamos una copia de tus credenciales a <strong style={{ color: 'var(--text-high, #ffffff)' }}>{result.credentials.email}</strong>.</>
                 ) : (
                   <>Tus credenciales temporales han sido generadas. Guárdalas para iniciar sesión:</>
                 )}
@@ -360,8 +360,8 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <Building size={16} color="#e5b54f" />
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#ffffff' }}>
+                <Building size={16} color="var(--gold, #e5b54f)" />
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
                   {result?.clubName} <span style={{ color: 'var(--saas-text-secondary)', fontWeight: 400 }}>({result?.city})</span>
                 </span>
               </div>
@@ -371,7 +371,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   <span style={{ color: 'var(--saas-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Mail size={14} /> Correo / Usuario:
                   </span>
-                  <span style={{ color: '#ffffff', fontWeight: 700, fontFamily: 'monospace' }}>
+                  <span style={{ color: 'var(--text-high, #ffffff)', fontWeight: 700, fontFamily: 'monospace' }}>
                     {result?.credentials.email}
                   </span>
                 </div>
@@ -381,7 +381,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                     <Lock size={14} /> Contraseña:
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#e5b54f', fontWeight: 800, fontFamily: 'monospace', fontSize: '0.92rem', letterSpacing: '0.04em' }}>
+                    <span style={{ color: 'var(--gold, #e5b54f)', fontWeight: 800, fontFamily: 'monospace', fontSize: '0.92rem', letterSpacing: '0.04em' }}>
                       {result?.credentials.temporaryPassword}
                     </span>
                     <button
@@ -393,7 +393,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                         borderColor: copiedKey ? 'rgba(52, 211, 153, 0.4)' : 'rgba(229, 181, 79, 0.3)',
                         borderRadius: '6px',
                         padding: '4px 8px',
-                        color: copiedKey ? '#34d399' : '#e5b54f',
+                        color: copiedKey ? 'var(--state-success, #34d399)' : 'var(--gold, #e5b54f)',
                         cursor: 'pointer',
                         fontSize: '0.72rem',
                         display: 'flex',
@@ -413,7 +413,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   <span style={{ color: 'var(--saas-text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <UserCheck size={14} /> Rol:
                   </span>
-                  <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.78rem' }}>
+                  <span style={{ color: 'var(--state-success, #34d399)', fontWeight: 700, fontSize: '0.78rem' }}>
                     PROPIETARIO (Beta Privada VIP • Acceso Total)
                   </span>
                 </div>
@@ -432,12 +432,12 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <BookOpen size={16} color="#e5b54f" />
-                  <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#e5b54f', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  <BookOpen size={16} color="var(--gold, #e5b54f)" />
+                  <span style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--gold, #e5b54f)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                     Guías Visuales Prácticas (PDF)
                   </span>
                 </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#34d399', background: 'rgba(52, 211, 153, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--state-success, #34d399)', background: 'rgba(52, 211, 153, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
                   INCLUIDAS
                 </span>
               </div>
@@ -460,18 +460,18 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                       border: '1px solid rgba(255, 255, 255, 0.08)',
                       borderRadius: '6px',
                       textDecoration: 'none',
-                      color: '#ffffff',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.78rem',
                       transition: 'all 0.15s ease'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-                      <FileText size={13} color="#e5b54f" style={{ flexShrink: 0 }} />
+                      <FileText size={13} color="var(--gold, #e5b54f)" style={{ flexShrink: 0 }} />
                       <span style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {guide.title}
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.72rem', color: '#e5b54f', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--gold, #e5b54f)', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontWeight: 700 }}>
                       PDF <Download size={11} />
                     </span>
                   </a>
@@ -516,7 +516,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                   padding: '11px',
                   background: 'rgba(37, 211, 102, 0.12)',
                   border: '1px solid rgba(37, 211, 102, 0.35)',
-                  color: '#25d366',
+                  color: 'var(--brand-whatsapp, #25d366)',
                   borderRadius: '8px',
                   fontSize: '0.84rem',
                   fontWeight: 700,

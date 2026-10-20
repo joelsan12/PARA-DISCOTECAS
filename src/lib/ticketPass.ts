@@ -504,7 +504,7 @@ export function useTicketPass(params: TicketPassParams): TicketPassView {
       cancelled = true;
       window.clearInterval(interval);
     };
-  }, [params.ticketId, params.enabled, performRotation, attempt]);
+  }, [params.ticketId, params.enabled, performRotation, attempt, view.status]);
 
   useEffect(() => {
     let cancelled = false;

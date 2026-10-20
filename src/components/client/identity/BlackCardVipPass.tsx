@@ -1,3 +1,4 @@
+import { BorderBeam } from '../../common/ui/BorderBeam';
 import { Fingerprint, KeyRound, QrCode, RefreshCw, ShieldCheck, ShieldAlert } from 'lucide-react';
 import type { Reservation, Club, ClubEvent } from '../../../types';
 import { formatUsd } from '../../../lib/formatUsd';
@@ -54,16 +55,16 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
   const showQr = Boolean(pass.qrDataUrl);
 
   return (
-    <div style={{
-      background: 'linear-gradient(145deg, #131926 0%, #080b12 100%)',
-      border: '1px solid rgba(245, 158, 11, 0.4)',
-      borderRadius: 'var(--radius-md)',
-      padding: '20px',
-      marginBottom: '18px',
-      boxShadow: '0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(245, 158, 11, 0.15)',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
+    <BorderBeam style={{ marginBottom: '18px' }}>
+      <div style={{
+        background: 'linear-gradient(145deg, var(--bg-surface) 0%, var(--bg-void) 100%)',
+        borderRadius: 'calc(var(--radius-md) - 1px)',
+        padding: '20px',
+        boxShadow: '0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(229, 181, 79, 0.15)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+
       {/* Metallic Top Sheen */}
       <div style={{
         position: 'absolute',
@@ -71,7 +72,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
         left: 0,
         right: 0,
         height: '2px',
-        background: 'linear-gradient(90deg, transparent, #f5d38a, #e5b54f, transparent)'
+        background: 'linear-gradient(90deg, transparent, var(--gold-hover), var(--gold), transparent)'
       }} />
 
       {/* Club Header & Code */}
@@ -86,7 +87,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <NightflowLogoMark size={20} theme="gold" />
-            <span className="font-brand" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#fff', letterSpacing: '0.02em' }}>
+            <span className="font-brand" style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-high)', letterSpacing: '0.02em' }}>
               {club.name}
             </span>
           </div>
@@ -98,7 +99,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
           <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block' }}>
             Reserva #
           </span>
-          <span className="font-mono" style={{ fontSize: '0.92rem', color: '#e5b54f', fontWeight: 800 }}>
+          <span className="font-mono" style={{ fontSize: '0.92rem', color: 'var(--gold)', fontWeight: 800 }}>
             {reservation.code}
           </span>
         </div>
@@ -108,7 +109,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
         <div>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Mesa asignada</span>
-          <div className="font-brand" style={{ fontSize: '1.1rem', color: '#e5b54f', fontWeight: 800 }}>
+          <div className="font-brand" style={{ fontSize: '1.1rem', color: 'var(--gold)', fontWeight: 800 }}>
             {reservation.table_code}
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{esTableZone(reservation.zone)}</span>
@@ -116,7 +117,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
 
         <div>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Invitados</span>
-          <div style={{ fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>
+          <div style={{ fontSize: '1.1rem', color: 'var(--text-high)', fontWeight: 700 }}>
             {reservation.guest_count} personas
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Mesa Completa</span>
@@ -124,7 +125,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
 
         <div>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Evento y fecha</span>
-          <div style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-high)', fontWeight: 600 }}>
             {formatEventDate(event.date)}
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Puertas: {formatEventTime(event.door_time)}</span>
@@ -132,10 +133,10 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
 
         <div>
           <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Titular</span>
-          <div style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-high)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {reservation.customer_name}
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--state-success)', fontWeight: 600 }}>
             Anticipo pagado: {formatUsd(reservation.deposit_amount)}
           </span>
         </div>
@@ -156,7 +157,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
             gap: '6px',
             background: 'rgba(251, 191, 36, 0.14)',
             border: '1px solid rgba(251, 191, 36, 0.45)',
-            color: '#fbbf24',
+            color: 'var(--state-hold)',
             borderRadius: '9999px',
             padding: '4px 12px',
             fontSize: '0.66rem',
@@ -171,7 +172,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
 
         {showQr ? (
           <div style={{
-            background: '#fff',
+            background: 'var(--text-high)',
             display: 'inline-block',
             padding: '10px',
             borderRadius: '8px',
@@ -197,7 +198,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
               top: 8,
               right: 8,
               background: 'rgba(0, 0, 0, 0.7)',
-              color: '#fff',
+              color: 'var(--text-high)',
   fontSize: '0.6rem',
   padding: '2px 6px',
   borderRadius: '9999px',
@@ -220,7 +221,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
             border: '1px dashed rgba(255, 255, 255, 0.16)',
             padding: '12px'
           }}>
-            <QrCode size={30} color={pass.status === 'loading' ? 'var(--accent)' : '#71717a'} />
+            <QrCode size={30} color={pass.status === 'loading' ? 'var(--accent)' : 'var(--text-muted)'} />
             <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', lineHeight: 1.4 }}>
               {pass.status === 'loading'
                 ? 'Generando pase rotativo seguro…'
@@ -254,7 +255,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
               width: `${progressPercent}%`,
               height: '100%',
               borderRadius: '9999px',
-              background: 'linear-gradient(90deg, #e5b54f, #f5d38a)',
+              background: 'linear-gradient(90deg, var(--gold), var(--gold-hover))',
               boxShadow: '0 0 10px rgba(229, 181, 79, 0.6)',
               transition: 'width 1s linear'
             }} />
@@ -263,7 +264,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
             <span style={{ color: 'var(--accent)', fontWeight: 700 }}>
               RENUEVA {pass.secondsToRotate}s · {ROTATION_SECONDS}s
             </span>
-            <span style={{ color: pass.secondsToExpire <= 10 ? '#f43f5e' : 'var(--text-dim)', fontWeight: 700 }}>
+            <span style={{ color: pass.secondsToExpire <= 10 ? 'var(--state-danger)' : 'var(--text-dim)', fontWeight: 700 }}>
               EXPIRA {pass.secondsToExpire}s · {TOKEN_TTL_SECONDS}s
             </span>
           </div>
@@ -277,7 +278,7 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
             </span>
           )}
           {pass.status === 'active' && !pass.verifiedLocally && (
-            <span className="badge" style={{ background: 'rgba(244, 63, 94, 0.14)', color: '#fda4af', fontSize: '0.64rem' }}>
+            <span className="badge" style={{ background: 'rgba(244, 63, 94, 0.14)', color: 'var(--state-danger-text)', fontSize: '0.64rem' }}>
               <ShieldAlert size={11} />
               SIN VERIFICACIÓN CRIPTOGRÁFICA
             </span>
@@ -335,5 +336,8 @@ export const BlackCardVipPass = ({ reservation, club, event }: Props) => {
         </div>
       </div>
     </div>
-  );
+  </BorderBeam>
+);
 };
+
+

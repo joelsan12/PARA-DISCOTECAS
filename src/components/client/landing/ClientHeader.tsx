@@ -94,7 +94,7 @@ export const ClientHeader = ({
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 fontWeight: 800,
-                color: '#ffffff',
+                color: 'var(--text-high)',
                 margin: 0,
                 fontFamily: 'var(--font-brand)',
                 whiteSpace: 'nowrap',
@@ -123,8 +123,8 @@ export const ClientHeader = ({
                   width: '4px',
                   height: '4px',
                   borderRadius: '50%',
-                  background: '#10b981',
-                  boxShadow: '0 0 6px #10b981',
+                  background: 'var(--state-success)',
+                  boxShadow: '0 0 6px var(--state-success)',
                   flexShrink: 0,
                 }}
               />
@@ -160,7 +160,7 @@ export const ClientHeader = ({
                 height: '5px',
                 borderRadius: '50%',
                 background: 'var(--brand-gold, #e5b54f)',
-                boxShadow: '0 0 6px #e5b54f',
+                boxShadow: '0 0 6px var(--gold)',
                 flexShrink: 0,
               }}
             />
@@ -185,7 +185,7 @@ export const ClientHeader = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#38bdf8',
+                color: 'var(--state-info)',
                 flexShrink: 0,
               }}
             >
@@ -222,8 +222,8 @@ export const ClientHeader = ({
                     width: '20px',
                     height: '20px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #ca8100 100%)',
-                    color: '#0e0b04',
+                    background: 'linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 100%)',
+                    color: 'var(--bg-void)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -240,7 +240,7 @@ export const ClientHeader = ({
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    color: '#ffb95f',
+                    color: 'var(--gold)',
                   }}
                 >
                   {clientUser.name.split(' ')[0]}
@@ -339,8 +339,8 @@ export const ClientHeader = ({
                   borderRadius: '9999px',
                   fontSize: '0.62rem',
                   fontWeight: isActive ? 700 : 500,
-                  background: isActive ? 'linear-gradient(135deg, #e5b54f, #ca8100)' : 'rgba(255, 255, 255, 0.04)',
-                  color: isActive ? '#0e0b04' : 'rgba(255, 255, 255, 0.5)',
+                  background: isActive ? 'linear-gradient(135deg, var(--gold-hover), var(--gold))' : 'rgba(255, 255, 255, 0.04)',
+                  color: isActive ? 'var(--bg-void)' : 'rgba(255, 255, 255, 0.5)',
                   border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -402,7 +402,7 @@ export const ClientHeader = ({
               width: '7px',
               height: '7px',
               borderRadius: '50%',
-              background: '#ffb95f',
+              background: 'var(--gold)',
               boxShadow: '0 0 8px rgba(255, 185, 95, 0.85)',
               flexShrink: 0,
             }}
@@ -410,7 +410,7 @@ export const ClientHeader = ({
           <span
             style={{
               fontSize: '0.64rem',
-              color: '#ffb95f',
+              color: 'var(--gold)',
               fontWeight: 800,
               letterSpacing: '0.02em',
             }}
@@ -429,7 +429,7 @@ export const ClientHeader = ({
               width: '7px',
               height: '7px',
               borderRadius: '50%',
-              background: '#f59e0b',
+              background: 'var(--gold)',
               border: '1px solid rgba(245, 158, 11, 0.8)',
               boxShadow: '0 0 6px rgba(245, 158, 11, 0.6)',
               flexShrink: 0,
@@ -438,7 +438,7 @@ export const ClientHeader = ({
           <span
             style={{
               fontSize: '0.64rem',
-              color: '#fbbf24',
+              color: 'var(--gold)',
               fontWeight: 700,
               letterSpacing: '0.02em',
             }}

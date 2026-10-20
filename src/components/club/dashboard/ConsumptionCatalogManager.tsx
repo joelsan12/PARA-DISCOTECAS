@@ -52,7 +52,10 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
   }, [activeClub.id]);
 
   useEffect(() => {
-    void loadCatalog();
+    const timer = setTimeout(() => {
+      void loadCatalog();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadCatalog]);
 
   const handleAddItem = (e: React.FormEvent) => {
@@ -106,16 +109,15 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
   };
 
   return (
-    <div style={{
-      background: 'linear-gradient(180deg, rgba(14, 18, 28, 0.95) 0%, rgba(8, 10, 16, 0.98) 100%)',
-      border: '1px solid rgba(229, 181, 79, 0.25)',
-      borderRadius: '18px',
-      padding: '28px',
-      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px'
-    }}>
+    <div
+      className="glass-card"
+      style={{
+        padding: '28px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px'
+      }}
+    >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -128,13 +130,13 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#e5b54f'
+            color: 'var(--gold, #e5b54f)'
           }}>
             <Wine size={22} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#f4f1ea' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main, #f4f1ea)' }}>
                 Catálogo de Consumo en Sala
               </h3>
               <span style={{
@@ -143,13 +145,13 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
                 padding: '2px 8px',
                 borderRadius: '6px',
                 background: 'rgba(229, 181, 79, 0.12)',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 border: '1px solid rgba(229, 181, 79, 0.25)'
               }}>
                 {items.length} PRODUCTOS
               </span>
             </div>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted, #94a3b8)' }}>
               Carta disponible para los meseros al registrar pedidos y comandas en mesas reservadas.
             </p>
           </div>
@@ -161,8 +163,8 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
             onClick={handleSaveCatalog}
             disabled={saving}
             style={{
-              background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
-              color: '#0a0d14',
+              background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c49535) 100%)',
+              color: 'var(--bg-void, #08080c)',
               border: 'none',
               borderRadius: '10px',
               padding: '10px 18px',
@@ -187,7 +189,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
           borderRadius: '10px',
           background: feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.1)' : 'rgba(239, 68, 68, 0.1)',
           border: `1px solid ${feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-          color: feedback.kind === 'success' ? '#34d399' : '#f87171',
+          color: feedback.kind === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)',
           fontSize: '0.82rem',
           display: 'flex',
           alignItems: 'center',
@@ -201,8 +203,8 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
       {/* Add New Item Row (Managers only) */}
       {isManagerOrOwner && (
         <form onSubmit={handleAddItem} style={{
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+          border: '1px solid var(--border, rgba(255, 255, 255, 0.06))',
           borderRadius: '12px',
           padding: '14px 16px',
           display: 'grid',
@@ -211,7 +213,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
           alignItems: 'end'
         }}>
           <div>
-            <label htmlFor={itemNameId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+            <label htmlFor={itemNameId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '4px' }}>
               NOMBRE DEL PRODUCTO
             </label>
             <input
@@ -222,11 +224,11 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
               placeholder="Ej: Tequila Clase Azul Reposado 750ml"
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                 borderRadius: '8px',
                 padding: '8px 12px',
-                color: '#f4f1ea',
+                color: 'var(--text-main, #f4f1ea)',
                 fontSize: '0.82rem',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -235,7 +237,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
           </div>
 
           <div>
-            <label htmlFor={itemCategoryId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+            <label htmlFor={itemCategoryId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '4px' }}>
               CATEGORÍA
             </label>
             <select
@@ -244,11 +246,11 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
               onChange={e => setNewCategory(e.target.value)}
               style={{
                 width: '100%',
-                background: '#0a0d14',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'var(--bg-input, #08080c)',
+                border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                 borderRadius: '8px',
                 padding: '8px 10px',
-                color: '#f4f1ea',
+                color: 'var(--text-main, #f4f1ea)',
                 fontSize: '0.82rem',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -261,7 +263,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
           </div>
 
           <div>
-            <label htmlFor={itemPriceId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', marginBottom: '4px' }}>
+            <label htmlFor={itemPriceId} style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '4px' }}>
               PRECIO ($)
             </label>
             <input
@@ -273,11 +275,11 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
               placeholder="180.00"
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                 borderRadius: '8px',
                 padding: '8px 10px',
-                color: '#f4f1ea',
+                color: 'var(--text-main, #f4f1ea)',
                 fontSize: '0.82rem',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -292,7 +294,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
               border: '1px solid rgba(56, 189, 248, 0.35)',
               borderRadius: '8px',
               padding: '8px 14px',
-              color: '#38bdf8',
+              color: 'var(--state-info, #38bdf8)',
               fontSize: '0.82rem',
               fontWeight: 800,
               cursor: 'pointer',
@@ -310,7 +312,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
 
       {/* Catalog Table */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '32px 0', color: '#94a3b8', fontSize: '0.84rem' }}>
+        <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted, #94a3b8)', fontSize: '0.84rem' }}>
           Cargando catálogo...
         </div>
       ) : (
@@ -318,15 +320,15 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
           maxHeight: '440px',
           overflowY: 'auto',
           borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.06)'
+          border: '1px solid var(--border, rgba(255, 255, 255, 0.06))'
         }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
             <thead>
-              <tr style={{ background: 'rgba(255, 255, 255, 0.04)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <th style={{ padding: '12px 16px', color: '#94a3b8', fontWeight: 700, fontSize: '0.72rem' }}>PRODUCTO</th>
-                <th style={{ padding: '12px 16px', color: '#94a3b8', fontWeight: 700, fontSize: '0.72rem' }}>CATEGORÍA</th>
-                <th style={{ padding: '12px 16px', color: '#94a3b8', fontWeight: 700, fontSize: '0.72rem' }}>PRECIO VENTA</th>
-                {isManagerOrOwner && <th style={{ padding: '12px 16px', textAlign: 'right', color: '#94a3b8', fontWeight: 700, fontSize: '0.72rem' }}>ACCIÓN</th>}
+              <tr style={{ background: 'var(--bg-elevated, rgba(255, 255, 255, 0.04))', borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.08))' }}>
+                <th style={{ padding: '12px 16px', color: 'var(--text-muted, #94a3b8)', fontWeight: 700, fontSize: '0.72rem' }}>PRODUCTO</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-muted, #94a3b8)', fontWeight: 700, fontSize: '0.72rem' }}>CATEGORÍA</th>
+                <th style={{ padding: '12px 16px', color: 'var(--text-muted, #94a3b8)', fontWeight: 700, fontSize: '0.72rem' }}>PRECIO VENTA</th>
+                {isManagerOrOwner && <th style={{ padding: '12px 16px', textAlign: 'right', color: 'var(--text-muted, #94a3b8)', fontWeight: 700, fontSize: '0.72rem' }}>ACCIÓN</th>}
               </tr>
             </thead>
             <tbody>
@@ -334,11 +336,11 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
                 <tr
                   key={`${it.sku}-${idx}`}
                   style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                    borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.04))',
                     background: idx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.015)'
                   }}
                 >
-                  <td style={{ padding: '12px 16px', color: '#f4f1ea', fontWeight: 600 }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--text-main, #f4f1ea)', fontWeight: 600 }}>
                     {it.name}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -348,13 +350,13 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
                       padding: '2px 8px',
                       borderRadius: '4px',
                       background: 'rgba(56, 189, 248, 0.1)',
-                      color: '#38bdf8',
+                      color: 'var(--state-info, #38bdf8)',
                       border: '1px solid rgba(56, 189, 248, 0.2)'
                     }}>
                       {it.category}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#e5b54f', fontWeight: 800, fontFamily: 'monospace' }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--gold, #e5b54f)', fontWeight: 800, fontFamily: 'monospace' }}>
                     ${it.price.toFixed(2)}
                   </td>
                   {isManagerOrOwner && (
@@ -367,7 +369,7 @@ export const ConsumptionCatalogManager: React.FC<Props> = ({ activeClub, session
                           border: 'none',
                           borderRadius: '6px',
                           padding: '6px',
-                          color: '#f87171',
+                          color: 'var(--state-danger, #f87171)',
                           cursor: 'pointer'
                         }}
                       >

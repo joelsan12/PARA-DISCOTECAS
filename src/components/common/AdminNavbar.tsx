@@ -20,10 +20,10 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
       : 'ADMIN CLUB';
 
   const roleBadgeColor = session.isSuperAdmin
-    ? '#a855f7'
+    ? 'var(--violet, #a855f7)'
     : session.role === 'DOOR_CHECKIN'
-      ? '#34d399'
-      : '#e5b54f';
+      ? 'var(--state-success, #34d399)'
+      : 'var(--gold, #e5b54f)';
 
   const canAccessDashboard = session.isSuperAdmin || session.role === 'CLUB_ADMIN';
   const canAccessDoor = session.isSuperAdmin || session.role === 'CLUB_ADMIN' || session.role === 'DOOR_CHECKIN';
@@ -54,7 +54,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
                 fontWeight: 800,
                 fontSize: '1.02rem',
                 letterSpacing: '0.12em',
-                background: 'linear-gradient(135deg, #ffffff 40%, #e5b54f 100%)',
+                background: 'linear-gradient(135deg, var(--text-high, #ffffff) 40%, var(--gold, #e5b54f) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
@@ -66,7 +66,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
                 padding: '1px 5px',
                 borderRadius: '3px',
                 background: 'rgba(229, 181, 79, 0.12)',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 border: '1px solid rgba(229, 181, 79, 0.35)',
                 letterSpacing: '0.06em',
               }}>
@@ -103,7 +103,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               onChange={(e) => store.setActiveClub(e.target.value)}
               style={{
                 background: 'transparent',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 border: 'none',
                 fontSize: '0.82rem',
                 fontWeight: 600,
@@ -113,7 +113,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               }}
             >
               {store.clubs.map(club => (
-                <option key={club.id} value={club.id} style={{ background: '#0e121a', color: '#fff' }}>
+                <option key={club.id} value={club.id} style={{ background: 'var(--bg-card, #0e121a)', color: 'var(--text-high, #ffffff)' }}>
                   {club.name} ({club.city})
                 </option>
               ))}
@@ -169,7 +169,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               background: currentView === 'DOOR'
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.15) 100%)'
                 : 'rgba(255, 255, 255, 0.03)',
-              color: currentView === 'DOOR' ? '#34d399' : 'rgba(255, 255, 255, 0.7)',
+              color: currentView === 'DOOR' ? 'var(--state-success, #34d399)' : 'rgba(255, 255, 255, 0.7)',
               border: currentView === 'DOOR'
                 ? '1px solid rgba(16, 185, 129, 0.4)'
                 : '1px solid rgba(255, 255, 255, 0.08)',
@@ -186,7 +186,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               padding: '1px 5px',
               borderRadius: '9999px',
               background: 'rgba(16, 185, 129, 0.2)',
-              color: '#34d399',
+              color: 'var(--state-success, #34d399)',
               border: '1px solid rgba(16, 185, 129, 0.3)',
             }}>
               EN VIVO
@@ -209,7 +209,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
               background: currentView === 'SUPER_ADMIN'
                 ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(147, 51, 234, 0.15) 100%)'
                 : 'rgba(255, 255, 255, 0.03)',
-              color: currentView === 'SUPER_ADMIN' ? '#c084fc' : 'rgba(255, 255, 255, 0.7)',
+              color: currentView === 'SUPER_ADMIN' ? 'var(--violet, #c084fc)' : 'rgba(255, 255, 255, 0.7)',
               border: currentView === 'SUPER_ADMIN'
                 ? '1px solid rgba(168, 85, 247, 0.4)'
                 : '1px solid rgba(255, 255, 255, 0.08)',
@@ -264,7 +264,7 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
           <span style={{
             fontSize: '0.74rem',
             fontWeight: 600,
-            color: '#e2e8f0',
+            color: 'var(--text-main, #e2e8f0)',
             maxWidth: '120px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -291,15 +291,15 @@ export const AdminNavbar = ({ currentView, onSelectView, session, onSignOut }: A
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: 'var(--text-muted)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               padding: '2px',
               marginLeft: '4px'
             }}
-            onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--state-danger, #ef4444)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             <LogOut size={13} />
           </button>

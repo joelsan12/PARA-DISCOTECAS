@@ -32,8 +32,6 @@ export const PricingManager = ({
         style={{
           padding: '48px 32px',
           textAlign: 'center',
-          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 16, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.25)',
           borderRadius: '18px',
         }}
       >
@@ -54,7 +52,7 @@ export const PricingManager = ({
           <Coins size={28} />
         </div>
 
-        <h3 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '0 0 8px' }}>
+        <h3 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '0 0 8px' }}>
           Sin mesas configuradas para tarifar
         </h3>
         <p style={{ fontSize: '0.88rem', color: 'var(--text-dim)', maxWidth: '500px', margin: '0 auto 24px', lineHeight: 1.5 }}>
@@ -116,7 +114,7 @@ export const PricingManager = ({
               background: 'var(--brand-gold)',
               boxShadow: '0 0 10px rgba(229, 181, 79, 0.6)'
             }} />
-            <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+            <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
               Tarifario &amp; Anticipos Dinámicos
             </h3>
           </div>
@@ -137,7 +135,7 @@ export const PricingManager = ({
             borderRadius: 'var(--radius-sm)'
           }}>
             <Coins size={15} color="var(--brand-gold)" />
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
               {activeEvent.day_label} — {activeEvent.title}
             </span>
           </div>
@@ -219,14 +217,12 @@ export const PricingManager = ({
           return (
             <div
               key={t.id}
+              className="glass-card"
               style={{
-                background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.9) 0%, rgba(8, 8, 12, 0.95) 100%)',
-                border: '1px solid rgba(229, 181, 79, 0.18)',
                 borderTop: `3px solid ${tierColor}`,
                 borderRadius: 'var(--radius-sm)',
                 padding: '18px',
                 position: 'relative',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
                 transition: 'all 0.2s ease'
               }}
             >
@@ -241,7 +237,7 @@ export const PricingManager = ({
                       background: tierColor,
                       boxShadow: `0 0 8px ${tierColor}`
                     }} />
-                    <span className="font-brand" style={{ fontWeight: 800, fontSize: '1.15rem', color: '#fff' }}>
+                    <span className="font-brand" style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-high, #ffffff)' }}>
                       {t.table_code}
                     </span>
                   </div>
@@ -297,7 +293,7 @@ export const PricingManager = ({
                       gap: '5px',
                       fontSize: '0.72rem',
                       fontWeight: 700,
-                      color: '#fde68a',
+                      color: 'var(--state-hold, #fde68a)',
                       marginBottom: '4px'
                     }}>
                       <DollarSign size={12} />
@@ -315,9 +311,9 @@ export const PricingManager = ({
                       style={{
                         width: '100%',
                         padding: '8px 12px',
-                        background: 'rgba(8, 8, 12, 0.85)',
-                        border: '1px solid rgba(229, 181, 79, 0.4)',
-                        color: '#fff',
+                        background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                        border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
+                        color: 'var(--text-main, #ffffff)',
                         borderRadius: 'var(--radius-xs)',
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 700,
@@ -374,9 +370,9 @@ export const PricingManager = ({
                       style={{
                         width: '100%',
                         padding: '8px 12px',
-                        background: 'rgba(8, 8, 12, 0.85)',
-                        border: '1px solid rgba(229, 181, 79, 0.4)',
-                        color: '#fff',
+                        background: 'var(--bg-input, rgba(8, 8, 12, 0.85))',
+                        border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
+                        color: 'var(--text-main, #ffffff)',
                         borderRadius: 'var(--radius-xs)',
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 700,
@@ -419,7 +415,7 @@ export const PricingManager = ({
                         borderRadius: 'var(--radius-xs)',
                         background: 'rgba(255, 255, 255, 0.06)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
-                        color: '#cbd5e1',
+                        color: 'var(--state-neutral, #cbd5e1)',
                         fontSize: '0.78rem',
                         fontWeight: 600,
                         cursor: isSaving ? 'not-allowed' : 'pointer',
@@ -440,9 +436,9 @@ export const PricingManager = ({
                         flex: 1,
                         padding: '7px',
                         borderRadius: 'var(--radius-xs)',
-                        background: 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 55%, #cfa038 100%)',
+                        background: 'var(--grad-gold)',
                         border: '1px solid rgba(255, 255, 255, 0.25)',
-                        color: '#08080c',
+                        color: 'var(--bg-void, #08080c)',
                         fontSize: '0.78rem',
                         fontWeight: 800,
                         cursor: isSaving ? 'wait' : 'pointer',
@@ -464,8 +460,8 @@ export const PricingManager = ({
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
                   gap: '10px',
-                  background: 'rgba(8, 8, 12, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  background: 'var(--bg-elevated, rgba(8, 8, 12, 0.75))',
+                  border: '1px solid var(--border, rgba(255, 255, 255, 0.06))',
                   padding: '12px 14px',
                   borderRadius: 'var(--radius-xs)'
                 }}>
@@ -473,7 +469,7 @@ export const PricingManager = ({
                     <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Consumo Mín.
                     </div>
-                    <div className="font-mono" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fde68a', marginTop: '2px' }}>
+                    <div className="font-mono" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--state-hold, #fde68a)', marginTop: '2px' }}>
                       {formatUsd(currentMinSpend)}
                     </div>
                   </div>

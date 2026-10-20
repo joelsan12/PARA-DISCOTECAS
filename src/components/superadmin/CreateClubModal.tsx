@@ -102,7 +102,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={16} color="var(--accent)" />
-              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 Aprovisionar nueva discoteca
               </h3>
             </div>
@@ -132,13 +132,13 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
             borderRadius: 'var(--radius-sm)',
             background: 'rgba(239, 68, 68, 0.12)',
             border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#fca5a5',
+            color: 'var(--state-danger-text, #fca5a5)',
             fontSize: '0.82rem',
             lineHeight: 1.4
           }}>
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
             <div>
-              <strong style={{ display: 'block', fontWeight: 700, color: '#ef4444', marginBottom: '2px' }}>
+              <strong style={{ display: 'block', fontWeight: 700, color: 'var(--state-danger, #ef4444)', marginBottom: '2px' }}>
                 Error de aprovisionamiento
               </strong>
               <span>{error}</span>
@@ -164,7 +164,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                 borderRadius: 'var(--radius-sm)',
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.88rem',
                 fontWeight: 600
               }}
@@ -186,7 +186,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.84rem',
                   fontWeight: 600,
                   cursor: 'pointer'
@@ -217,7 +217,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.88rem',
                   fontWeight: 600
                 }}
@@ -241,7 +241,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                 borderRadius: 'var(--radius-sm)',
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.84rem'
               }}
             />
@@ -266,7 +266,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                 borderRadius: 'var(--radius-sm)',
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.88rem'
               }}
             />
@@ -286,7 +286,7 @@ export const CreateClubModal = ({ isOpen, plans, onClose, onCreate }: Props) => 
                 borderRadius: 'var(--radius-sm)',
                 background: 'var(--bg-input)',
                 border: '1px solid var(--border)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.88rem',
                 fontWeight: 600,
                 cursor: 'pointer'

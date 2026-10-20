@@ -13,16 +13,16 @@ export const CustomFloorPlanSuccessView: React.FC<Props> = ({ onClose }) => {
         height: '56px',
         borderRadius: '50%',
         background: 'rgba(16, 185, 129, 0.15)',
-        border: '1.5px solid #10b981',
+        border: '1.5px solid var(--state-success, #10b981)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         margin: '0 auto 16px',
-        color: '#10b981'
+        color: 'var(--state-success, #10b981)'
       }}>
         <CheckCircle2 size={32} />
       </div>
-      <h3 className="font-brand" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>
+      <h3 className="font-brand" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', marginBottom: '8px' }}>
         ¡Solicitud Enviada a Soporte!
       </h3>
       <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '20px' }}>

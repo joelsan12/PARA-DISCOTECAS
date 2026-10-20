@@ -96,7 +96,7 @@ _Acepto la tarifa única de configuración y calibración arquitectónica (${for
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#fff',
+            color: 'var(--text-high, #ffffff)',
             cursor: 'pointer'
           }}
         >
@@ -110,8 +110,8 @@ _Acepto la tarifa única de configuración y calibración arquitectónica (${for
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <div style={{
-                background: 'linear-gradient(135deg, #f5d38a 0%, #e5b54f 100%)',
-                color: '#08080c',
+                background: 'var(--grad-gold)',
+                color: 'var(--bg-void, #08080c)',
                 padding: '6px',
                 borderRadius: '8px',
                 display: 'flex',
@@ -121,7 +121,7 @@ _Acepto la tarifa única de configuración y calibración arquitectónica (${for
                 <Building2 size={20} />
               </div>
               <div>
-                <h2 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+                <h2 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                   Solicitar Plano a Medida de tu Local
                 </h2>
                 <p style={{ fontSize: '0.74rem', color: 'var(--brand-gold)', margin: 0, fontWeight: 600 }}>
@@ -139,17 +139,17 @@ _Acepto la tarifa única de configuración y calibración arquitectónica (${for
               marginTop: '14px',
               marginBottom: '16px',
               fontSize: '0.76rem',
-              color: 'rgba(255, 255, 255, 0.9)',
+              color: 'var(--text-main)',
               lineHeight: '1.4'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <span style={{ fontWeight: 800, color: '#e5b54f' }}>Tarifa única de configuración: {formatUsd(49)}</span>
+                <span style={{ fontWeight: 800, color: 'var(--gold, #e5b54f)' }}>Tarifa única de configuración: {formatUsd(49)}</span>
                 <span style={{
                   fontSize: '0.66rem',
                   background: 'rgba(229, 181, 79, 0.2)',
                   padding: '1px 6px',
                   borderRadius: '3px',
-                  color: '#e5b54f',
+                  color: 'var(--gold, #e5b54f)',
                   fontWeight: 800
                 }}>
                   PAGO ÚNICO
@@ -163,17 +163,17 @@ _Acepto la tarifa única de configuración y calibración arquitectónica (${for
             {!hasInteractivePlan && (
               <div style={{
                 background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid #ef4444',
+                border: '1px solid var(--state-danger, #ef4444)',
                 borderRadius: 'var(--radius-xs)',
                 padding: '8px 12px',
                 marginBottom: '14px',
                 fontSize: '0.74rem',
-                color: '#fca5a5',
+                color: 'var(--state-danger-text, #fca5a5)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                <ShieldAlert size={16} color="#ef4444" />
+                <ShieldAlert size={16} color="var(--state-danger, #ef4444)" />
                 <span>Tu plan actual no incluye mapa interactivo. Al solicitar este servicio se activará el plan {esPlan('pro')}.</span>
               </div>
             )}

@@ -168,20 +168,20 @@ export function SaasSimulatorPage() {
                   <div className="stage-phone-qr-bay">
                     <div className="stage-phone-qr-frame">
                       <svg viewBox="0 0 100 100" aria-label="Código QR Dinámico">
-                        <rect width="100" height="100" fill="#ffffff" rx="8" />
-                        <rect x="8" y="8" width="30" height="30" fill="#07080c" rx="3" />
-                        <rect x="14" y="14" width="18" height="18" fill="#ffffff" />
-                        <rect x="18" y="18" width="10" height="10" fill="#07080c" />
-                        <rect x="62" y="8" width="30" height="30" fill="#07080c" rx="3" />
-                        <rect x="68" y="14" width="18" height="18" fill="#ffffff" />
-                        <rect x="72" y="18" width="10" height="10" fill="#07080c" />
-                        <rect x="8" y="62" width="30" height="30" fill="#07080c" rx="3" />
-                        <rect x="14" y="68" width="18" height="18" fill="#ffffff" />
-                        <rect x="18" y="72" width="10" height="10" fill="#07080c" />
-                        <rect x="44" y="14" width="12" height="20" fill="#07080c" rx="2" />
-                        <rect x="44" y="66" width="12" height="18" fill="#07080c" rx="2" />
+                        <rect width="100" height="100" fill="var(--text-high, #ffffff)" rx="8" />
+                        <rect x="8" y="8" width="30" height="30" fill="var(--bg-void, #07080c)" rx="3" />
+                        <rect x="14" y="14" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                        <rect x="18" y="18" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                        <rect x="62" y="8" width="30" height="30" fill="var(--bg-void, #07080c)" rx="3" />
+                        <rect x="68" y="14" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                        <rect x="72" y="18" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                        <rect x="8" y="62" width="30" height="30" fill="var(--bg-void, #07080c)" rx="3" />
+                        <rect x="14" y="68" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                        <rect x="18" y="72" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                        <rect x="44" y="14" width="12" height="20" fill="var(--bg-void, #07080c)" rx="2" />
+                        <rect x="44" y="66" width="12" height="18" fill="var(--bg-void, #07080c)" rx="2" />
                         <circle cx="50" cy="50" r="8" fill="var(--saas-gold)" />
-                        <circle cx="50" cy="50" r="4" fill="#07080c" />
+                        <circle cx="50" cy="50" r="4" fill="var(--bg-void, #07080c)" />
                       </svg>
                       <div className={`stage-laser-line ${isScanning ? 'scanning' : ''}`} />
                     </div>
@@ -283,10 +283,10 @@ export function SaasSimulatorPage() {
                               borderRadius: '50%',
                               background:
                                 t.status === 'AVAILABLE'
-                                  ? '#34d399'
+                                  ? 'var(--state-success, #34d399)'
                                   : t.status === 'HELD'
-                                  ? '#fbbf24'
-                                  : '#8e929d',
+                                  ? 'var(--state-hold, #fbbf24)'
+                                  : 'var(--text-dim, #8e929d)',
                             }}
                           />
                         </div>

@@ -74,9 +74,9 @@ interface Props {
 
 export const AuditLogsView = ({ auditLogs }: Props) => {
   return (
-    <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)', border: '1px solid rgba(229, 181, 79, 0.2)' }}>
+    <div className="glass-card" style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+        <h3 className="font-brand" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
           Registro Inmutable de Eventos del Sistema
         </h3>
         <span
@@ -86,9 +86,9 @@ export const AuditLogsView = ({ auditLogs }: Props) => {
             letterSpacing: '0.05em',
             padding: '3px 8px',
             borderRadius: '4px',
-            background: 'rgba(229, 181, 79, 0.12)',
+            background: 'var(--accent-subtle, rgba(229, 181, 79, 0.12))',
             color: 'var(--brand-gold)',
-            border: '1px solid rgba(229, 181, 79, 0.28)',
+            border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.28))',
           }}
         >
           BITÁCORA SEGURA AGENTS §2.1
@@ -99,10 +99,10 @@ export const AuditLogsView = ({ auditLogs }: Props) => {
           <div
             key={log.id}
             style={{
-              background: 'rgba(255, 255, 255, 0.025)',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.025))',
               padding: '12px 16px',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--border, rgba(255, 255, 255, 0.05))',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -114,7 +114,7 @@ export const AuditLogsView = ({ auditLogs }: Props) => {
               <span className="badge" style={{ background: 'rgba(229, 181, 79, 0.12)', color: 'var(--brand-gold)', border: '1px solid rgba(229, 181, 79, 0.25)', fontSize: '0.72rem' }}>
                 {formatAuditAction(log.action)}
               </span>
-              <span style={{ color: '#e2e8f0', marginLeft: '12px' }}>{formatAuditDetails(log.details)}</span>
+              <span style={{ color: 'var(--text-main, #e2e8f0)', marginLeft: '12px' }}>{formatAuditDetails(log.details)}</span>
             </div>
             <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
               {new Date(log.timestamp).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'America/Guayaquil' })}

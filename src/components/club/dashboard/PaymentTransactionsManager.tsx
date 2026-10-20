@@ -217,10 +217,6 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
         className="glass-card"
         style={{
           padding: '24px',
-          borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.22)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
         }}
       >
         <div
@@ -250,7 +246,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
               <History size={22} />
             </div>
             <div>
-              <h2 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+              <h2 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                 Historial de Cobros &amp; Reembolsos
               </h2>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '3px 0 0 0' }}>
@@ -265,9 +261,9 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                 fontSize: '0.74rem',
                 padding: '4px 10px',
                 borderRadius: '9999px',
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
                 color: 'var(--text-muted)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
                 fontFamily: 'var(--font-mono)',
               }}
             >
@@ -307,17 +303,17 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
             style={{
               padding: '16px',
               borderRadius: '8px',
-              background: 'rgba(34, 197, 94, 0.05)',
-              border: '1px solid rgba(34, 197, 94, 0.2)',
+              background: 'var(--state-success-subtle, rgba(34, 197, 94, 0.05))',
+              border: '1px solid var(--state-success-border, rgba(34, 197, 94, 0.2))',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4ade80', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--state-success, #4ade80)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 Cobrado en Pasarela
               </span>
-              <ArrowDownLeft size={16} color="#4ade80" />
+              <ArrowDownLeft size={16} color="var(--state-success, #4ade80)" />
             </div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: '#34d399' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--state-success, #34d399)' }}>
               {formatUsd(stats.totalCollected)}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -330,17 +326,17 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
             style={{
               padding: '16px',
               borderRadius: '8px',
-              background: 'rgba(168, 85, 247, 0.05)',
-              border: '1px solid rgba(168, 85, 247, 0.2)',
+              background: 'var(--violet-subtle, rgba(168, 85, 247, 0.05))',
+              border: '1px solid var(--border-focus, rgba(168, 85, 247, 0.2))',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#c084fc', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--violet, #c084fc)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 Reembolsos Devueltos
               </span>
-              <ArrowUpRight size={16} color="#c084fc" />
+              <ArrowUpRight size={16} color="var(--violet, #c084fc)" />
             </div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: '#c084fc' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--violet, #c084fc)' }}>
               {formatUsd(stats.totalRefunded)}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -353,17 +349,17 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
             style={{
               padding: '16px',
               borderRadius: '8px',
-              background: stats.refundRequiredCount > 0 ? 'rgba(239, 68, 68, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-              border: stats.refundRequiredCount > 0 ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(255, 255, 255, 0.08)',
+              background: stats.refundRequiredCount > 0 ? 'var(--state-danger-subtle, rgba(239, 68, 68, 0.08))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+              border: stats.refundRequiredCount > 0 ? '1px solid var(--state-danger-border, rgba(239, 68, 68, 0.35))' : '1px solid var(--border, rgba(255, 255, 255, 0.08))',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: stats.refundRequiredCount > 0 ? '#f87171' : 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: stats.refundRequiredCount > 0 ? 'var(--state-danger, #f87171)' : 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 Reembolsos Pendientes
               </span>
-              <ShieldAlert size={16} color={stats.refundRequiredCount > 0 ? '#f87171' : 'var(--text-muted)'} />
+              <ShieldAlert size={16} color={stats.refundRequiredCount > 0 ? 'var(--state-danger, #f87171)' : 'var(--text-muted)'} />
             </div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: stats.refundRequiredCount > 0 ? '#f87171' : '#fff' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: stats.refundRequiredCount > 0 ? 'var(--state-danger, #f87171)' : 'var(--text-high, #ffffff)' }}>
               {stats.refundRequiredCount}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -379,9 +375,9 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
           style={{
             padding: '12px 16px',
             borderRadius: '8px',
-            background: 'rgba(34, 197, 94, 0.12)',
-            border: '1px solid rgba(34, 197, 94, 0.35)',
-            color: '#4ade80',
+            background: 'var(--state-success-subtle, rgba(34, 197, 94, 0.12))',
+            border: '1px solid var(--state-success-border, rgba(34, 197, 94, 0.35))',
+            color: 'var(--state-success, #4ade80)',
             fontSize: '0.8rem',
             display: 'flex',
             alignItems: 'center',
@@ -395,7 +391,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
           <button
             type="button"
             onClick={() => setRefundSuccess(null)}
-            style={{ background: 'none', border: 'none', color: '#4ade80', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--state-success, #4ade80)', cursor: 'pointer' }}
           >
             <X size={14} />
           </button>
@@ -407,9 +403,9 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
           style={{
             padding: '12px 16px',
             borderRadius: '8px',
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#f87171',
+            background: 'var(--state-danger-subtle, rgba(239, 68, 68, 0.12))',
+            border: '1px solid var(--state-danger-border, rgba(239, 68, 68, 0.35))',
+            color: 'var(--state-danger-text, var(--state-danger, #f87171))',
             fontSize: '0.8rem',
             display: 'flex',
             alignItems: 'center',
@@ -426,7 +422,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
               setTxError(null);
               setRefundError(null);
             }}
-            style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--state-danger, #f87171)', cursor: 'pointer' }}
           >
             <X size={14} />
           </button>
@@ -439,9 +435,6 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
         style={{
           padding: '24px',
           borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(180deg, rgba(14, 14, 21, 0.95) 0%, rgba(8, 8, 12, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.22)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
         }}
       >
         {/* Barra de Filtros y Búsqueda */}
@@ -477,9 +470,9 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                     borderRadius: '6px',
                     fontSize: '0.74rem',
                     fontWeight: active ? 700 : 500,
-                    background: active ? 'rgba(229, 181, 79, 0.16)' : 'rgba(255, 255, 255, 0.04)',
+                    background: active ? 'var(--accent-subtle, rgba(229, 181, 79, 0.16))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
                     color: active ? 'var(--brand-gold)' : 'var(--text-muted)',
-                    border: active ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                    border: active ? '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))' : '1px solid var(--border, rgba(255, 255, 255, 0.08))',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}
@@ -513,9 +506,9 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                 width: '100%',
                 padding: '6px 10px 6px 32px',
                 borderRadius: '6px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#fff',
+                background: 'var(--bg-input, rgba(255, 255, 255, 0.05))',
+                border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
+                color: 'var(--text-main, #ffffff)',
                 fontSize: '0.76rem',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -554,12 +547,12 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
               padding: '44px 20px',
               textAlign: 'center',
               borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px dashed rgba(229, 181, 79, 0.2)',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+              border: '1px dashed var(--border, rgba(229, 181, 79, 0.2))',
             }}
           >
             <History size={38} color="rgba(229, 181, 79, 0.35)" style={{ marginBottom: '12px' }} />
-            <h4 style={{ fontSize: '0.94rem', color: '#fff', margin: '0 0 6px 0', fontWeight: 700 }}>
+            <h4 style={{ fontSize: '0.94rem', color: 'var(--text-high, #ffffff)', margin: '0 0 6px 0', fontWeight: 700 }}>
               {transactions.length === 0
                 ? 'No hay transacciones registradas'
                 : 'No se encontraron resultados con los filtros actuales'}
@@ -576,7 +569,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
               <thead>
                 <tr
                   style={{
-                    borderBottom: '1px solid rgba(229, 181, 79, 0.2)',
+                    borderBottom: '1px solid var(--border, rgba(229, 181, 79, 0.2))',
                     textAlign: 'left',
                     color: 'var(--text-muted)',
                     fontSize: '0.68rem',
@@ -606,14 +599,14 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                     <tr
                       key={tx.id}
                       style={{
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                        borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.05))',
                         transition: 'background 0.15s ease',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(229, 181, 79, 0.04)')}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--accent-subtle, rgba(229, 181, 79, 0.04))')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                     >
                       {/* Fecha */}
-                      <td style={{ padding: '12px 8px', color: '#e2e8f0', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '12px 8px', color: 'var(--text-main, #e2e8f0)', whiteSpace: 'nowrap' }}>
                         {formatTxDate(tx.createdAt || tx.updatedAt)}
                       </td>
 
@@ -626,7 +619,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                             fontSize: '0.74rem',
                             padding: '2px 6px',
                             borderRadius: '4px',
-                            background: 'rgba(255, 255, 255, 0.05)',
+                            background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
                             color: 'var(--brand-gold)',
                           }}
                         >
@@ -635,7 +628,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                       </td>
 
                       {/* Monto */}
-                      <td style={{ padding: '12px 8px', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#34d399' }}>
+                      <td style={{ padding: '12px 8px', fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--state-success, #34d399)' }}>
                         {formatUsd(tx.amount || 0)}
                       </td>
 
@@ -666,14 +659,14 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                                 : 'rgba(234, 179, 8, 0.15)',
                             color:
                               isPaid
-                                ? '#4ade80'
+                                ? 'var(--state-success, #4ade80)'
                                 : isRefunded
-                                ? '#c084fc'
+                                ? 'var(--violet, #c084fc)'
                                 : isRefundRequired
-                                ? '#f87171'
+                                ? 'var(--state-danger, #f87171)'
                                 : tx.status === 'FAILED'
-                                ? '#fca5a5'
-                                : '#facc15',
+                                ? 'var(--state-danger, #fca5a5)'
+                                : 'var(--state-hold, #facc15)',
                             border: `1px solid ${
                               isPaid
                                 ? 'rgba(34, 197, 94, 0.3)'
@@ -700,7 +693,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                       {/* Hold Asociado */}
                       <td style={{ padding: '12px 8px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                         {tx.holdState ? (
-                          <span style={{ color: tx.holdState === 'CONFIRMED' ? '#4ade80' : '#f59e0b' }}>
+                          <span style={{ color: tx.holdState === 'CONFIRMED' ? 'var(--state-success, #4ade80)' : 'var(--state-hold, #f59e0b)' }}>
                             {tx.holdState}
                           </span>
                         ) : (
@@ -719,7 +712,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                               borderRadius: '4px',
                               background: 'rgba(239, 68, 68, 0.1)',
                               border: '1px solid rgba(239, 68, 68, 0.3)',
-                              color: '#f87171',
+                              color: 'var(--state-danger, #f87171)',
                               fontSize: '0.72rem',
                               fontWeight: 700,
                               cursor: 'pointer',
@@ -737,7 +730,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                         )}
 
                         {isRefunded && (
-                          <span style={{ fontSize: '0.7rem', color: '#c084fc', fontStyle: 'italic' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--violet, #c084fc)', fontStyle: 'italic' }}>
                             {tx.refundId ? `#${tx.refundId.slice(0, 10)}` : 'Devuelto'}
                           </span>
                         )}
@@ -786,7 +779,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
               padding: '24px',
               borderRadius: 'var(--radius-md)',
               border: '1px solid rgba(239, 68, 68, 0.3)',
-              background: '#0d0f17',
+              background: 'var(--bg-surface, #0d0f17)',
               boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
             }}
           >
@@ -801,13 +794,13 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#f87171',
+                  color: 'var(--state-danger, #f87171)',
                 }}
               >
                 <RotateCcw size={18} />
               </div>
               <div>
-                <h3 className="font-brand" style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, color: '#fff' }}>
+                <h3 className="font-brand" style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)' }}>
                   Confirmar Reembolso Irreversible
                 </h3>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -823,7 +816,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                 background: 'rgba(239, 68, 68, 0.08)',
                 border: '1px solid rgba(239, 68, 68, 0.25)',
                 fontSize: '0.78rem',
-                color: '#fca5a5',
+                color: 'var(--state-danger, #fca5a5)',
                 lineHeight: '1.45',
                 marginBottom: '16px',
               }}
@@ -845,13 +838,13 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Monto a devolver:</span>
-                <span style={{ color: '#34d399', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                <span style={{ color: 'var(--state-success, #34d399)', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
                   {formatUsd(refundConfirmTx.amount || 0)}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>ID Transacción:</span>
-                <span className="font-mono" style={{ color: '#fff', fontSize: '0.74rem' }}>
+                <span className="font-mono" style={{ color: 'var(--text-high, #ffffff)', fontSize: '0.74rem' }}>
                   {refundConfirmTx.id}
                 </span>
               </div>
@@ -880,7 +873,7 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.8rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -909,8 +902,8 @@ export const PaymentTransactionsManager = ({ activeClub, session }: Props) => {
                 style={{
                   padding: '8px 18px',
                   borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, var(--state-danger, #ef4444), var(--state-danger, #dc2626))',
+                  color: 'var(--text-high, #ffffff)',
                   border: 'none',
                   fontSize: '0.78rem',
                   fontWeight: 800,

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  CheckCircle2,
   AlertTriangle,
   RotateCw,
   Zap,
@@ -160,7 +159,7 @@ export function SaasVipPassMockup() {
   return (
     <div className="saas-hero-specimen">
       <div className="saas-interactive-console">
-        {/* Selector de pestañas interactivas */}
+        {/* Selector de pestañas interactivas sin cajas rígidas */}
         <div className="saas-console-tabs" role="tablist">
           <button
             type="button"
@@ -168,7 +167,7 @@ export function SaasVipPassMockup() {
             onClick={() => setActiveTab('pass')}
           >
             <CreditCard size={14} />
-            <span>Entrada VIP Anti-Captura</span>
+            <span>Pase VIP Anti-Captura</span>
           </button>
           <button
             type="button"
@@ -180,7 +179,7 @@ export function SaasVipPassMockup() {
           </button>
         </div>
 
-        {/* ── MODO 1: PASE VIP HOLOGRÁFICO CON TILT 3D ── */}
+        {/* ── MODO 1: PASE VIP MODERNO CON RELIEVE Y TITULAR CENTRADO ── */}
         {activeTab === 'pass' && (
           <div
             ref={cardRef}
@@ -199,18 +198,31 @@ export function SaasVipPassMockup() {
               }}
             />
 
-            {/* Cabecera de la tarjeta con relieve metálico */}
+            {/* Cabecera de la tarjeta: Enclave & Monograma */}
             <div className="saas-vip-card__top">
               <div className="saas-vip-card__emblem">
-                <span className="saas-vip-card__chip" />
+                <span className="saas-vip-card__chip" aria-hidden="true" />
                 <div>
                   <strong className="saas-vip-card__brand">NIGHTFLOW VIP</strong>
-                  <span className="saas-vip-card__sub">ENTRADA DIGITAL SEGURA #8842-v{tokenVersion}</span>
+                  <span className="saas-vip-card__sub">ENCLAVE SHA-256 · Nº 8842-v{tokenVersion}</span>
                 </div>
               </div>
-              <div className="saas-vip-card__status-tag">
-                <span className="saas-pulse-indicator" />
-                <span>ACTIVO</span>
+              <div className="saas-vip-card__status-dot">
+                <span className="saas-pulse-indicator" aria-hidden="true" />
+                <span>TOKEN ACTIVO</span>
+              </div>
+            </div>
+
+            {/* Núcleo del titular centrado con jerarquía de autor */}
+            <div className="saas-vip-card__holder-hero">
+              <span className="saas-vip-card__holder-label">TITULAR EXCLUSIVO //</span>
+              <h3 className="saas-vip-card__holder-name">SEBASTIÁN MORALES</h3>
+              <div className="saas-vip-card__holder-meta">
+                <span>Suite Privé 01</span>
+                <span className="saas-vip-sep" aria-hidden="true">·</span>
+                <span>15 pax</span>
+                <span className="saas-vip-sep" aria-hidden="true">·</span>
+                <strong className="saas-vip-card__holder-amount">$380 USD</strong>
               </div>
             </div>
 
@@ -218,21 +230,21 @@ export function SaasVipPassMockup() {
             <div className="saas-vip-qr-wrapper">
               <div className={`saas-vip-qr-frame ${laserActive ? 'scanning-laser' : ''}`}>
                 <svg viewBox="0 0 100 100" className="saas-vip-qr-svg" aria-label="Código QR Dinámico">
-                  <rect width="100" height="100" fill="#ffffff" rx="8" />
-                  <rect x="8" y="8" width="30" height="30" fill="#07080c" rx="3" />
-                  <rect x="14" y="14" width="18" height="18" fill="#ffffff" />
-                  <rect x="18" y="18" width="10" height="10" fill="#07080c" />
-                  <rect x="62" y="8" width="30" height="30" fill="#07080c" rx="3" />
-                  <rect x="68" y="14" width="18" height="18" fill="#ffffff" />
-                  <rect x="72" y="18" width="10" height="10" fill="#07080c" />
-                  <rect x="8" y="62" width="30" height="30" fill="#07080c" rx="3" />
-                  <rect x="14" y="68" width="18" height="18" fill="#ffffff" />
-                  <rect x="18" y="72" width="10" height="10" fill="#07080c" />
-                  <rect x="44" y="14" width="12" height="20" fill="#07080c" rx="2" />
-                  <rect x="44" y="66" width="12" height="18" fill="#07080c" rx="2" />
+                  <rect width="100" height="100" fill="var(--text-high, #ffffff)" rx="10" />
+                  <rect x="8" y="8" width="30" height="30" fill="var(--bg-void, #07080c)" rx="4" />
+                  <rect x="14" y="14" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                  <rect x="18" y="18" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                  <rect x="62" y="8" width="30" height="30" fill="var(--bg-void, #07080c)" rx="4" />
+                  <rect x="68" y="14" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                  <rect x="72" y="18" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                  <rect x="8" y="62" width="30" height="30" fill="var(--bg-void, #07080c)" rx="4" />
+                  <rect x="14" y="68" width="18" height="18" fill="var(--text-high, #ffffff)" />
+                  <rect x="18" y="72" width="10" height="10" fill="var(--bg-void, #07080c)" />
+                  <rect x="44" y="14" width="12" height="20" fill="var(--bg-void, #07080c)" rx="2" />
+                  <rect x="44" y="66" width="12" height="18" fill="var(--bg-void, #07080c)" rx="2" />
                   {/* Núcleo dorado con micro pulso */}
                   <circle cx="50" cy="50" r="8" fill="var(--saas-gold)" />
-                  <circle cx="50" cy="50" r="4" fill="#07080c" />
+                  <circle cx="50" cy="50" r="4" fill="var(--bg-void, #07080c)" />
                 </svg>
 
                 {/* Haz de luz láser animado */}
@@ -241,49 +253,41 @@ export function SaasVipPassMockup() {
 
               {/* Contador de rotación del token */}
               <div className="saas-vip-qr-timer">
-                <RotateCw size={12} className="saas-spin-icon" color="var(--saas-gold)" />
+                <RotateCw size={12} className="saas-spin-icon" />
                 <span>
-                  El código cambia en <strong>00:{qrCountdown.toString().padStart(2, '0')}s</strong> · Evita capturas
+                  ROTACIÓN <strong>00:{qrCountdown.toString().padStart(2, '0')}s</strong> · ANTI-SCREENSHOT
                 </span>
                 <button
                   type="button"
                   onClick={handleForceRotate}
                   className="saas-refresh-btn"
                   title="Regenerar código ahora"
+                  aria-label="Regenerar código"
                 >
                   <Sparkles size={11} />
                 </button>
               </div>
             </div>
 
-            {/* Tira del titular de la reserva */}
-            <div className="saas-vip-card__strip">
-              <span className="saas-vip-holder">Sebastián Morales</span>
-              <span className="saas-vip-sep">·</span>
-              <span className="saas-vip-loc">Suite Privé 01</span>
-              <span className="saas-vip-sep">·</span>
-              <span className="saas-vip-pax">15 pax ($380)</span>
-            </div>
-
-            {/* Botones de acción interactivos */}
+            {/* Acciones de Validación Operativa */}
             <div className="saas-vip-card__actions">
               <button
                 type="button"
                 onClick={handleTestLegit}
                 disabled={isScanning}
-                className="btn-gold saas-btn-compact"
+                className="saas-btn-action saas-btn-action--primary"
               >
                 <Zap size={13} fill="currentColor" />
-                <span>{isScanning ? 'Verificando...' : 'Escanear Entrada'}</span>
+                <span>{isScanning ? 'Verificando JWS...' : 'Simular Escaneo Válido'}</span>
               </button>
               <button
                 type="button"
                 onClick={handleTestFraud}
                 disabled={isScanning}
-                className="btn-secondary saas-btn-compact saas-btn-fraud"
+                className="saas-btn-action saas-btn-action--ghost"
               >
                 <AlertTriangle size={13} />
-                <span>Probar Entrada Falsa</span>
+                <span>Probar Captura Reenviada</span>
               </button>
             </div>
 
@@ -291,20 +295,20 @@ export function SaasVipPassMockup() {
             {scanResult === 'success' && (
               <div className="saas-scan-feedback success">
                 <div className="saas-feedback-header">
-                  <CheckCircle2 size={16} />
-                  <strong>ENTRADA VÁLIDA · ACCESO PERMITIDO</strong>
+                  <span className="saas-feedback-dot success" />
+                  <strong>JWS ED25519 VÁLIDO · ACCESO AUTORIZADO</strong>
                 </div>
-                <span>Entrada 100% auténtica y pagada. Los invitados pueden pasar a su mesa.</span>
+                <span>Entrada 100% auténtica y pagada. Los 15 invitados pueden ingresar a Suite Privé 01.</span>
               </div>
             )}
 
             {scanResult === 'fraud' && (
               <div className="saas-scan-feedback fraud">
                 <div className="saas-feedback-header">
-                  <AlertTriangle size={16} />
-                  <strong>ACCESO RECHAZADO · CAPTURA DETECTADA</strong>
+                  <span className="saas-feedback-dot fraud" />
+                  <strong>RECHAZADO · CAPTURA O TOKEN EXPIRADO</strong>
                 </div>
-                <span>El código es una captura de pantalla reenviada por chat o ya fue utilizado anteriormente.</span>
+                <span>Firma no coincide con el enclave de hardware original. Acceso denegado en puerta.</span>
               </div>
             )}
           </div>
@@ -318,9 +322,9 @@ export function SaasVipPassMockup() {
                 <strong className="saas-tables-title">Mapa de Mesas en Vivo</strong>
                 <span className="saas-tables-sub">Toca una mesa para apartarla durante 12 minutos</span>
               </div>
-              <div className="saas-hold-badge">
-                <Clock size={12} />
-                <span>12 MIN PARA PAGAR</span>
+              <div className="saas-hold-indicator">
+                <span className="saas-hold-pulse-dot" aria-hidden="true" />
+                <span>HOLD ATÓMICO · 12 MIN</span>
               </div>
             </div>
 
@@ -355,8 +359,16 @@ export function SaasVipPassMockup() {
                       </div>
                     )}
 
-                    {isOccupied && <span className="saas-table-occ-tag">EN SALA</span>}
-                    {table.status === 'AVAILABLE' && <span className="saas-table-avail-tag">LIBRE</span>}
+                    {isOccupied && (
+                      <span className="saas-table-status-tag occ">
+                        <span className="saas-table-dot occ" /> EN SALA
+                      </span>
+                    )}
+                    {table.status === 'AVAILABLE' && (
+                      <span className="saas-table-status-tag avail">
+                        <span className="saas-table-dot avail" /> LIBRE
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -379,7 +391,7 @@ export function SaasVipPassMockup() {
                   type="button"
                   onClick={() => handleToggleHold(selectedTable.id)}
                   disabled={selectedTable.status === 'OCCUPIED'}
-                  className={`btn-gold saas-btn-compact ${
+                  className={`saas-btn-action saas-btn-action--primary ${
                     selectedTable.status === 'HELD' ? 'held-active' : ''
                   }`}
                 >
@@ -400,8 +412,8 @@ export function SaasVipPassMockup() {
 
             {/* Garantía de protección contra sobreventa */}
             <div className="saas-tables-footer-note">
-              <ShieldCheck size={13} color="var(--saas-gold)" />
-              <span>Protección total: si dos personas intentan comprar la misma mesa, el sistema solo se la da a una. Cero mesas duplicadas.</span>
+              <ShieldCheck size={13} />
+              <span>Transacción aislada: al iniciar checkout, el stock se bloquea durante 12 minutos. Cero mesas duplicadas.</span>
             </div>
           </div>
         )}

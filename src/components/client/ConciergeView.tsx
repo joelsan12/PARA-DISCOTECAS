@@ -113,10 +113,10 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
       width: '100%',
       maxWidth: '480px',
       margin: '0 auto',
-      background: 'linear-gradient(180deg, #090A0F 0%, #050608 100%)',
+      background: 'linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-void) 100%)',
       display: 'flex',
       flexDirection: 'column',
-      color: '#fff',
+      color: 'var(--text-high)',
       overflow: 'hidden'
     }}>
       {/* Header */}
@@ -140,7 +140,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               borderRadius: '50%',
               background: 'rgba(255, 255, 255, 0.06)',
               border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#cbd5e1',
+              color: 'var(--text-muted)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -150,7 +150,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
             <ChevronLeft size={20} />
           </button>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#fff' }}>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--text-high)' }}>
               Concierge en Sala
             </h3>
             <span style={{ fontSize: '0.68rem', color: 'var(--brand-gold)', fontWeight: 700 }}>
@@ -175,7 +175,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               background: 'rgba(229, 181, 79, 0.08)',
               border: '1px solid rgba(229, 181, 79, 0.28)',
               cursor: 'pointer',
-              color: '#e5b54f',
+              color: 'var(--gold)',
               fontSize: '0.64rem',
               fontWeight: 700,
               transition: 'all 0.15s ease',
@@ -191,7 +191,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
             padding: '3px 8px',
             borderRadius: '9999px',
             background: 'rgba(56, 189, 248, 0.12)',
-            color: '#38bdf8',
+            color: 'var(--state-info)',
             border: '1px solid rgba(56, 189, 248, 0.3)'
           }}>
             ATENCIÓN EN VIVO
@@ -223,7 +223,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               alignItems: 'center',
               justifyContent: 'space-between',
               textDecoration: 'none',
-              color: '#25d366',
+              color: 'var(--brand-whatsapp, #25d366)',
               fontSize: '0.78rem',
               fontWeight: 700
             }}
@@ -265,7 +265,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                     border: `1px solid ${isSelected ? 'var(--brand-gold)' : 'rgba(255, 255, 255, 0.08)'}`,
                     borderRadius: '10px',
                     padding: '10px 8px',
-                    color: isSelected ? 'var(--brand-gold)' : '#94a3b8',
+                    color: isSelected ? 'var(--brand-gold)' : 'var(--text-muted)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -285,7 +285,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
 
           {/* Mensaje opcional */}
           <div>
-            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+            <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
               DETALLES O INSTRUCCIÓN (OPCIONAL)
             </label>
             <textarea
@@ -299,14 +299,14 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: '10px',
                 padding: '10px 12px',
-                color: '#fff',
+                color: 'var(--text-high)',
                 fontSize: '0.82rem',
                 outline: 'none',
                 boxSizing: 'border-box',
                 resize: 'none'
               }}
             />
-            <div style={{ textAlign: 'right', fontSize: '0.65rem', color: '#64748b', marginTop: '4px' }}>
+            <div style={{ textAlign: 'right', fontSize: '0.65rem', color: 'var(--text-dim)', marginTop: '4px' }}>
               {message.length} / 300 caracteres
             </div>
           </div>
@@ -317,7 +317,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               borderRadius: '8px',
               background: feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(239, 68, 68, 0.12)',
               border: `1px solid ${feedback.kind === 'success' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
-              color: feedback.kind === 'success' ? '#34d399' : '#f87171',
+              color: feedback.kind === 'success' ? 'var(--state-success)' : 'var(--state-danger)',
               fontSize: '0.78rem',
               display: 'flex',
               alignItems: 'center',
@@ -332,8 +332,8 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
             type="submit"
             disabled={isSubmitting}
             style={{
-              background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
-              color: '#0a0d14',
+              background: 'linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 100%)',
+              color: 'var(--bg-void)',
               border: 'none',
               borderRadius: '10px',
               padding: '12px',
@@ -355,10 +355,10 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
         {/* Sección: Mis Solicitudes en Vivo */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#cbd5e1' }}>
+            <span style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--text-muted)' }}>
               MIS SOLICITUDES EN SALA
             </span>
-            <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>
               {myRequests.length} registradas
             </span>
           </div>
@@ -370,7 +370,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
               background: 'rgba(255, 255, 255, 0.015)',
               borderRadius: '12px',
               border: '1px dashed rgba(255, 255, 255, 0.08)',
-              color: '#64748b',
+              color: 'var(--text-dim)',
               fontSize: '0.8rem'
             }}>
               No tienes solicitudes activas. Al enviar una, verás aquí el estado en vivo del mesero.
@@ -384,20 +384,20 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                 const isCancelled = req.status === 'CANCELLED';
 
                 let statusLabel = 'PENDIENTE';
-                let statusColor = '#fbbf24';
+                let statusColor = 'var(--state-hold)';
                 let statusBg = 'rgba(251, 191, 36, 0.12)';
 
                 if (isInProgress) {
                   statusLabel = req.assignedWaiterName ? `EN ATENCIÓN (${req.assignedWaiterName})` : 'EN ATENCIÓN';
-                  statusColor = '#38bdf8';
+                  statusColor = 'var(--state-info)';
                   statusBg = 'rgba(56, 189, 248, 0.15)';
                 } else if (isDone) {
                   statusLabel = 'ATENDIDA';
-                  statusColor = '#34d399';
+                  statusColor = 'var(--state-success)';
                   statusBg = 'rgba(52, 211, 153, 0.12)';
                 } else if (isCancelled) {
                   statusLabel = 'CANCELADA';
-                  statusColor = '#94a3b8';
+                  statusColor = 'var(--text-muted)';
                   statusBg = 'rgba(148, 163, 184, 0.1)';
                 }
 
@@ -416,7 +416,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fff' }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-high)' }}>
                           {req.type}
                         </span>
                         {req.tableCode && (
@@ -439,12 +439,12 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                       </span>
                     </div>
 
-                    <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1' }}>
+                    <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                       {req.message}
                     </p>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                      <span style={{ fontSize: '0.65rem', color: '#64748b' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>
                         {req.createdAt ? new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Hoy'}
                       </span>
 
@@ -455,7 +455,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                           style={{
                             background: 'transparent',
                             border: 'none',
-                            color: '#f87171',
+                            color: 'var(--state-danger)',
                             fontSize: '0.7rem',
                             fontWeight: 700,
                             cursor: 'pointer',
@@ -495,13 +495,13 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <MessageSquare size={18} color="#e5b54f" />
+                <MessageSquare size={18} color="var(--gold)" />
               </div>
               <div>
-                <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: 800, color: '#fff' }}>
+                <h4 style={{ margin: 0, fontSize: '0.86rem', fontWeight: 800, color: 'var(--text-high)' }}>
                   Feedback de la Beta VIP
                 </h4>
-                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>
+                <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                   Envía tus sugerencias o reporta errores al equipo técnico
                 </p>
               </div>
@@ -515,7 +515,7 @@ export const ConciergeView: React.FC<Props> = ({ onBack }) => {
                 border: '1px solid rgba(229, 181, 79, 0.35)',
                 borderRadius: '8px',
                 padding: '8px 12px',
-                color: '#e5b54f',
+                color: 'var(--gold)',
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 cursor: 'pointer',

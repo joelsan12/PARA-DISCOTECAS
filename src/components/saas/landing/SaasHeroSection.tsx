@@ -35,6 +35,24 @@ export function SaasHeroSection({ onOpenModal }: SaasHeroSectionProps) {
                 <span>Solicitar Acceso Beta</span>
               </button>
             </div>
+
+            {/* Micro-telemetría de confianza y garantías operativas */}
+            <div className="saas-hero__trust">
+              <span className="saas-hero__trust-item">
+                <span className="saas-hero__trust-dot" aria-hidden="true" />
+                <span>HOLDS ATÓMICOS 12 MIN</span>
+              </span>
+              <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
+              <span className="saas-hero__trust-item">
+                <span className="saas-hero__trust-dot" aria-hidden="true" />
+                <span>OFFLINE ED25519 &lt;50MS</span>
+              </span>
+              <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
+              <span className="saas-hero__trust-item">
+                <span className="saas-hero__trust-dot" aria-hidden="true" />
+                <span>SRI + 15% IVA COMPLIANT</span>
+              </span>
+            </div>
           </div>
 
           {/* Columna Derecha: Tarjeta VIP Black Card compacta */}

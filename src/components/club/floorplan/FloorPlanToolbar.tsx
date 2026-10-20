@@ -176,9 +176,9 @@ export const FloorPlanToolbar: React.FC<Props> = ({
             style={{
               padding: '6px 13px',
               borderRadius: '6px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: 'var(--grad-success)',
               border: '1px solid rgba(16, 185, 129, 0.5)',
-              color: '#ffffff',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: isSaving ? 'not-allowed' : 'pointer',
@@ -216,8 +216,8 @@ export const FloorPlanToolbar: React.FC<Props> = ({
         <div
           style={{
             background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.25) 100%)',
-            border: '1px solid #10b981',
-            color: '#34d399',
+            border: '1px solid var(--state-success, #10b981)',
+            color: 'var(--state-success, #34d399)',
             padding: '12px 20px',
             borderRadius: 'var(--radius-sm)',
             fontSize: '0.88rem',
@@ -229,7 +229,7 @@ export const FloorPlanToolbar: React.FC<Props> = ({
             animation: 'fadeIn 0.2s ease-out',
           }}
         >
-          <CheckCircle2 size={20} color="#34d399" />
+          <CheckCircle2 size={20} color="var(--state-success, #34d399)" />
           <span>{saveToast}</span>
         </div>
       )}

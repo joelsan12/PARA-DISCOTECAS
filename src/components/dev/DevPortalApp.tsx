@@ -107,7 +107,7 @@ export function DevPortalApp() {
             {/* Header del Login */}
             <div className="dev-head">
               <div className="dev-head__mark">
-                <Terminal size={24} color="#e4e4e7" strokeWidth={1.8} />
+                <Terminal size={24} color="var(--text-main, #e4e4e7)" strokeWidth={1.8} />
               </div>
               <h1 className="dev-title">Consola de Desarrollador</h1>
               <p className="dev-sub">Gestión de Plataforma &amp; Multi-Tenant</p>
@@ -267,7 +267,7 @@ export function DevPortalApp() {
                 <span>Propuestas &amp; Upgrades</span>
               </div>
               {pendingProposalsCount > 0 && (
-                <span className="dev-sidebar__counter" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24' }}>
+                <span className="dev-sidebar__counter" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--state-hold, #fbbf24)' }}>
                   {pendingProposalsCount}
                 </span>
               )}
@@ -389,7 +389,7 @@ export function DevPortalApp() {
                 borderRadius: '8px',
                 background: 'rgba(229, 181, 79, 0.08)',
                 border: '1px solid rgba(229, 181, 79, 0.3)',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -493,7 +493,7 @@ export function DevPortalApp() {
                       className="dev-link-card__copy-btn"
                       title="Copiar enlace"
                     >
-                      {copiedKey === 'client' ? <Check size={14} color="#e5b54f" /> : <Copy size={14} />}
+                      {copiedKey === 'client' ? <Check size={14} color="var(--gold, #e5b54f)" /> : <Copy size={14} />}
                     </button>
                   </div>
 
@@ -530,7 +530,7 @@ export function DevPortalApp() {
                       className="dev-link-card__copy-btn"
                       title="Copiar enlace"
                     >
-                      {copiedKey === 'admin' ? <Check size={14} color="#e5b54f" /> : <Copy size={14} />}
+                      {copiedKey === 'admin' ? <Check size={14} color="var(--gold, #e5b54f)" /> : <Copy size={14} />}
                     </button>
                   </div>
 
@@ -567,7 +567,7 @@ export function DevPortalApp() {
                       className="dev-link-card__copy-btn"
                       title="Copiar enlace"
                     >
-                      {copiedKey === 'dev' ? <Check size={14} color="#e5b54f" /> : <Copy size={14} />}
+                      {copiedKey === 'dev' ? <Check size={14} color="var(--gold, #e5b54f)" /> : <Copy size={14} />}
                     </button>
                   </div>
 
@@ -586,7 +586,7 @@ export function DevPortalApp() {
               {/* Accesos Directos a Firebase Console */}
               <div className="dev-cloud-box">
                 <div className="dev-cloud-box__header">
-                  <Database size={15} color="#e5b54f" />
+                  <Database size={15} color="var(--gold, #e5b54f)" />
                   <span>Accesos directos a Google Cloud / Firebase Console</span>
                 </div>
 
@@ -726,7 +726,7 @@ export function DevPortalApp() {
               borderRadius: '999px',
               background: 'rgba(0, 0, 0, 0.75)',
               border: '1px solid rgba(255, 255, 255, 0.25)',
-              color: '#fff',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.74rem',
               fontWeight: 700,
               cursor: 'pointer',

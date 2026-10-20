@@ -58,11 +58,11 @@
   border-color: rgba(229, 181, 79, 0.7);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 26px rgba(229, 181, 79, 0.32);
   transform: translateY(-2px);
-  color: #fff;
+  color: var(--text-high, #ffffff);
 }
 
 .beta-feedback-trigger:focus-visible {
-  box-shadow: var(--focus-ring, 0 0 0 2px #08080c, 0 0 0 4px rgba(229, 181, 79, 0.75));
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--bg-void, #08080c), 0 0 0 4px rgba(229, 181, 79, 0.75));
 }
 
 .beta-feedback-trigger__badge {
@@ -86,14 +86,14 @@
   width: min(440px, calc(100vw - 32px));
   max-height: calc(100vh - 48px);
   overflow-y: auto;
-  background: #0d0f17;
-  background: linear-gradient(180deg, #12141e 0%, #0a0b11 100%);
+  background: var(--bg-card, #0d0f17);
+  background: linear-gradient(180deg, var(--bg-surface, #12141e) 0%, var(--bg-void, #0a0b11) 100%);
   border: 1px solid rgba(229, 181, 79, 0.28);
   border-top: 2px solid var(--accent, #e5b54f);
   border-radius: 20px;
   padding: 22px 24px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(229, 181, 79, 0.14);
-  color: #f4f4f5;
+  color: var(--text-main, #f4f4f5);
   z-index: 1000;
   animation: feedbackPanelSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -138,14 +138,14 @@
 .beta-feedback-title {
   font-size: 1.18rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   margin: 0 0 4px;
   letter-spacing: -0.01em;
 }
 
 .beta-feedback-subtitle {
   font-size: 0.8rem;
-  color: #9d9da8;
+  color: var(--text-muted, #9d9da8);
   margin: 0;
   line-height: 1.45;
 }
@@ -153,7 +153,7 @@
 .beta-feedback-close {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #a1a1aa;
+  color: var(--text-muted, #a1a1aa);
   cursor: pointer;
   padding: 6px;
   border-radius: 8px;
@@ -165,7 +165,7 @@
 }
 
 .beta-feedback-close:hover {
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -179,7 +179,7 @@
   display: block;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #8e8ea0;
+  color: var(--text-muted, #8e8ea0);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 8px;
@@ -232,7 +232,7 @@
   gap: 8px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.09);
-  color: #9e9ea7;
+  color: var(--text-muted, #9e9ea7);
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 0.78rem;
@@ -244,7 +244,7 @@
 
 .beta-feedback-chip:hover {
   border-color: rgba(229, 181, 79, 0.4);
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   background: rgba(229, 181, 79, 0.06);
 }
 
@@ -269,13 +269,13 @@
 .beta-feedback-textarea {
   width: 100%;
   box-sizing: border-box;
-  background: #08090f;
+  background: var(--bg-void, #08090f);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 11px 13px;
   font-family: inherit;
   font-size: 0.83rem;
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   resize: vertical;
   min-height: 84px;
   line-height: 1.45;
@@ -286,19 +286,19 @@
 .beta-feedback-textarea:focus {
   border-color: var(--gold, #e5b54f);
   box-shadow: 0 0 0 3px rgba(229, 181, 79, 0.15);
-  background: #090b12;
+  background: var(--bg-card, #090b12);
 }
 
 .beta-feedback-input {
   width: 100%;
   box-sizing: border-box;
-  background: #08090f;
+  background: var(--bg-void, #08090f);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 10px 13px;
   font-family: inherit;
   font-size: 0.82rem;
-  color: #ffffff;
+  color: var(--text-high, #ffffff);
   transition: all 0.18s ease;
   outline: none;
 }
@@ -306,14 +306,14 @@
 .beta-feedback-input:focus {
   border-color: var(--gold, #e5b54f);
   box-shadow: 0 0 0 3px rgba(229, 181, 79, 0.15);
-  background: #090b12;
+  background: var(--bg-card, #090b12);
 }
 
 .beta-feedback-char-count {
   display: block;
   text-align: right;
   font-size: 0.68rem;
-  color: #71717a;
+  color: var(--text-dim, #71717a);
   margin-top: 4px;
 }
 
@@ -332,8 +332,8 @@
   justify-content: center;
   gap: 8px;
   padding: 11px 16px;
-  background: linear-gradient(135deg, #e5b54f 0%, #c8952d 100%);
-  color: #08080c;
+  background: var(--grad-gold);
+  color: var(--bg-void, #08080c);
   font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -365,7 +365,7 @@
   padding: 9px 14px;
   background: rgba(37, 211, 102, 0.08);
   border: 1px solid rgba(37, 211, 102, 0.28);
-  color: #34d399;
+  color: var(--state-success, #34d399);
   font-size: 0.8rem;
   font-weight: 700;
   border-radius: 10px;
@@ -377,7 +377,7 @@
 .beta-feedback-btn-whatsapp:hover {
   background: rgba(37, 211, 102, 0.16);
   border-color: rgba(37, 211, 102, 0.55);
-  color: #4ade80;
+  color: var(--state-success, #4ade80);
 }
 
 /* Status Notifications */
@@ -393,7 +393,7 @@
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 0.78rem;
-  color: #fda4af;
+  color: var(--state-danger, #fda4af);
   margin-bottom: 12px;
   display: flex;
   align-items: center;
@@ -436,11 +436,11 @@
 }
 
 [data-theme="light"] .beta-feedback-panel {
-  background: #ffffff;
+  background: var(--text-high, #ffffff);
   border: 1px solid rgba(184, 134, 11, 0.3);
   border-top: 2px solid var(--brand-gold, #b8860b);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 25px rgba(184, 134, 11, 0.1);
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .beta-feedback-header {
@@ -448,40 +448,40 @@
 }
 
 [data-theme="light"] .beta-feedback-title {
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .beta-feedback-desc {
-  color: #4a4f5d;
+  color: var(--text-muted, #4a4f5d);
 }
 
 [data-theme="light"] .beta-feedback-label {
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .beta-feedback-chip {
-  background: #fbfaf7;
+  background: var(--bg-base, #fbfaf7);
   border-color: rgba(0, 0, 0, 0.12);
-  color: #4a4f5d;
+  color: var(--text-muted, #4a4f5d);
 }
 
 [data-theme="light"] .beta-feedback-chip:hover {
   background: rgba(184, 134, 11, 0.08);
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .beta-feedback-chip.is-active {
   background: rgba(184, 134, 11, 0.15);
   border-color: var(--brand-gold, #b8860b);
-  color: #8c6504;
+  color: var(--brand-gold-dark, #8c6504);
   box-shadow: 0 0 8px rgba(184, 134, 11, 0.2);
 }
 
 [data-theme="light"] .beta-feedback-textarea,
 [data-theme="light"] .beta-feedback-input {
-  background: #ffffff;
+  background: var(--text-high, #ffffff);
   border-color: rgba(0, 0, 0, 0.16);
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }
 
 [data-theme="light"] .beta-feedback-textarea:focus,
@@ -491,26 +491,26 @@
 }
 
 [data-theme="light"] .beta-feedback-char-count {
-  color: #717786;
+  color: var(--text-dim, #717786);
 }
 
 [data-theme="light"] .beta-feedback-btn-whatsapp {
   background: rgba(37, 211, 102, 0.12);
-  color: #059669;
+  color: var(--state-success, #059669);
   border-color: rgba(37, 211, 102, 0.35);
 }
 
 [data-theme="light"] .beta-feedback-btn-whatsapp:hover {
   background: rgba(37, 211, 102, 0.2);
-  color: #047857;
+  color: var(--state-success, #047857);
 }
 
 [data-theme="light"] .beta-feedback-close {
   background: rgba(0, 0, 0, 0.04);
-  color: #555b6d;
+  color: var(--text-dim, #555b6d);
 }
 
 [data-theme="light"] .beta-feedback-close:hover {
   background: rgba(0, 0, 0, 0.08);
-  color: #0e1118;
+  color: var(--text-main, #0e1118);
 }

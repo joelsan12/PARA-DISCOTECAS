@@ -73,15 +73,15 @@ export const PlatformEmergencyModal = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#f43f5e'
+              color: 'var(--state-danger, #f43f5e)'
             }}>
               <ShieldAlert size={22} />
             </div>
             <div>
-              <h3 className="font-brand" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h3 className="font-brand" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 Mando de Emergencia y Revocación Escalonada
               </h3>
-              <span style={{ fontSize: '0.74rem', color: '#fda4af' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--state-danger-text, #fda4af)' }}>
                 Diseño AGENTS §8 · intervención de nivel SuperAdmin · ejecución local pendiente de backend
               </span>
             </div>
@@ -113,8 +113,8 @@ export const PlatformEmergencyModal = ({
             <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Versión Criptográfica de Revocación Activa
             </span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-mono)' }}>
-              revocationVersion: <span style={{ color: '#f43f5e' }}>{revocationVersion}</span>
+            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>
+              revocationVersion: <span style={{ color: 'var(--state-danger, #f43f5e)' }}>{revocationVersion}</span>
             </div>
           </div>
 
@@ -140,12 +140,12 @@ export const PlatformEmergencyModal = ({
             borderRadius: '8px',
             background: 'rgba(34, 197, 94, 0.12)',
             border: '1px solid rgba(34, 197, 94, 0.35)',
-            color: '#86efac',
+            color: 'var(--state-success, #86efac)',
             fontSize: '0.8rem',
             marginBottom: '18px',
             lineHeight: 1.4
           }}>
-            <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#4ade80' }} />
+            <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--state-success, #4ade80)' }} />
             <span>{actionFeedback}</span>
           </div>
         )}
@@ -158,8 +158,8 @@ export const PlatformEmergencyModal = ({
           border: '1px solid rgba(255, 255, 255, 0.08)',
           marginBottom: '16px'
         }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Lock size={15} color="#e5b54f" />
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Lock size={15} color="var(--gold, #e5b54f)" />
             <span>1. Revocación Selectiva por Establecimiento</span>
           </h4>
           <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.4 }}>
@@ -176,7 +176,7 @@ export const PlatformEmergencyModal = ({
                 borderRadius: '6px',
                 background: 'rgba(8, 8, 12, 0.95)',
                 border: '1px solid rgba(229, 181, 79, 0.3)',
-                color: '#fff',
+                color: 'var(--text-high, #ffffff)',
                 fontSize: '0.82rem',
                 fontWeight: 600,
                 cursor: 'pointer'
@@ -219,11 +219,11 @@ export const PlatformEmergencyModal = ({
           border: '1px solid rgba(244, 63, 94, 0.25)',
           marginBottom: '20px'
         }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fda4af', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertTriangle size={16} color="#f43f5e" />
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--state-danger-text, #fda4af)', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={16} color="var(--state-danger, #f43f5e)" />
             <span>2. Revocación Global de Emergencia (Plataforma Completa)</span>
           </h4>
-          <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0 0 14px', lineHeight: 1.4 }}>
+          <p style={{ fontSize: '0.76rem', color: 'var(--state-neutral, #cbd5e1)', margin: '0 0 14px', lineHeight: 1.4 }}>
             <strong>Acción Crítica:</strong> Eleva la versión global de revocación. Todos los pases de acceso activo en toda la plataforma son forzados a refresh con la autoridad de validación.
           </p>
 
@@ -236,7 +236,7 @@ export const PlatformEmergencyModal = ({
                 borderRadius: '6px',
                 background: 'rgba(244, 63, 94, 0.18)',
                 border: '1px solid rgba(244, 63, 94, 0.45)',
-                color: '#f43f5e',
+                color: 'var(--state-danger, #f43f5e)',
                 fontSize: '0.82rem',
                 fontWeight: 800,
                 cursor: 'pointer',
@@ -255,9 +255,9 @@ export const PlatformEmergencyModal = ({
               padding: '12px',
               borderRadius: '6px',
               background: 'rgba(244, 63, 94, 0.2)',
-              border: '1px solid #f43f5e'
+              border: '1px solid var(--state-danger, #f43f5e)'
             }}>
-              <span style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700, flex: 1, display: 'flex', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-high, #ffffff)', fontWeight: 700, flex: 1, display: 'flex', alignItems: 'center' }}>
                 ¿Confirmas elevar la versión global de seguridad?
               </span>
               <button
@@ -274,9 +274,9 @@ export const PlatformEmergencyModal = ({
                 style={{
                   padding: '6px 14px',
                   borderRadius: '6px',
-                  background: '#f43f5e',
+                  background: 'var(--state-danger, #f43f5e)',
                   border: 'none',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.78rem',
                   fontWeight: 900,
                   cursor: 'pointer'
@@ -313,7 +313,7 @@ export const PlatformEmergencyModal = ({
                     fontSize: '0.72rem'
                   }}
                 >
-                  <span style={{ color: '#cbd5e1' }}>{log.details}</span>
+                  <span style={{ color: 'var(--state-neutral, #cbd5e1)' }}>{log.details}</span>
                   <span style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.66rem' }}>
                     {log.action}
                   </span>

@@ -22,6 +22,7 @@ import type { AdminStaffSession } from '../../../lib/adminAuth';
 import { callFunctions } from '../../../lib/functionsClient';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
+import { TelemetryBadge } from '../../common';
 
 export interface StaffItem {
   uid: string;
@@ -54,11 +55,11 @@ interface Props {
 }
 
 const ROLE_LABELS: Record<StaffItem['role'], { label: string; color: string; bg: string }> = {
-  waiter: { label: 'Mesero de Sala', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' },
-  door: { label: 'Control de Puerta', color: '#34d399', bg: 'rgba(52, 211, 153, 0.12)' },
-  finance: { label: 'Finanzas & Cierres', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' },
-  manager: { label: 'Gerente General', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.12)' },
-  owner: { label: 'Propietario / Socio', color: '#e5b54f', bg: 'rgba(229, 181, 79, 0.14)' }
+  waiter: { label: 'Mesero de Sala', color: 'var(--state-info, var(--state-info, #38bdf8))', bg: 'rgba(56, 189, 248, 0.12)' },
+  door: { label: 'Control de Puerta', color: 'var(--state-success, var(--state-success, #34d399))', bg: 'rgba(52, 211, 153, 0.12)' },
+  finance: { label: 'Finanzas & Cierres', color: 'var(--state-hold, #f59e0b)', bg: 'rgba(245, 158, 11, 0.12)' },
+  manager: { label: 'Gerente General', color: 'var(--violet, #a855f7)', bg: 'rgba(168, 85, 247, 0.12)' },
+  owner: { label: 'Propietario / Socio', color: 'var(--gold, var(--gold, #e5b54f))', bg: 'rgba(229, 181, 79, 0.14)' }
 };
 
 export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
@@ -145,7 +146,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
   }, [activeClub.id]);
 
   useEffect(() => {
-    void loadStaff();
+    const timer = setTimeout(() => {
+      void loadStaff();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadStaff]);
 
   const handleOpenAdd = () => {
@@ -302,18 +306,20 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* 1. Header Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(16, 20, 30, 0.85) 0%, rgba(8, 10, 16, 0.95) 100%)',
-        border: '1px solid rgba(229, 181, 79, 0.25)',
-        borderRadius: '16px',
-        padding: '24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.36)'
-      }}>
+      <div
+        className="glass-card"
+        style={{
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.25))',
+          borderRadius: '16px',
+          padding: '24px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
             width: '48px',
@@ -324,13 +330,13 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#e5b54f'
+            color: 'var(--gold, #e5b54f)'
           }}>
             <Users size={24} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f4f1ea', margin: 0 }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)', margin: 0 }}>
                 Equipo &amp; Personal de Sala
               </h2>
               <span style={{
@@ -339,13 +345,13 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                 padding: '2px 8px',
                 borderRadius: '6px',
                 background: 'rgba(56, 189, 248, 0.15)',
-                color: '#38bdf8',
+                color: 'var(--state-info, #38bdf8)',
                 border: '1px solid rgba(56, 189, 248, 0.3)'
               }}>
                 {staffList.filter(s => s.status === 'ACTIVE').length} / 50 ACTIVOS
               </span>
             </div>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted, #94a3b8)' }}>
               Control granular de roles (meseros, puerta, finanzas y gerencia) con asignación de zonas operativas.
             </p>
           </div>
@@ -355,8 +361,8 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           type="button"
           onClick={handleOpenAdd}
           style={{
-            background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
-            color: '#0a0d14',
+            background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c49535) 100%)',
+            color: 'var(--bg-void, #08080c)',
             border: 'none',
             borderRadius: '10px',
             padding: '10px 18px',
@@ -394,9 +400,9 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               borderRadius: '8px',
               fontSize: '0.78rem',
               fontWeight: 700,
-              background: filterRole === tab.key ? 'rgba(229, 181, 79, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-              color: filterRole === tab.key ? '#e5b54f' : '#94a3b8',
-              border: filterRole === tab.key ? '1px solid rgba(229, 181, 79, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+              background: filterRole === tab.key ? 'var(--accent-subtle, rgba(229, 181, 79, 0.18))' : 'var(--bg-elevated, rgba(255, 255, 255, 0.04))',
+              color: filterRole === tab.key ? 'var(--gold, #e5b54f)' : 'var(--text-muted, #94a3b8)',
+              border: filterRole === tab.key ? '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))' : '1px solid var(--border, rgba(255, 255, 255, 0.08))',
               cursor: 'pointer'
             }}
           >
@@ -407,7 +413,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
 
       {/* 3. Staff List or Empty */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8', fontSize: '0.9rem' }}>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted, #94a3b8)', fontSize: '0.9rem' }}>
           Consultando plantilla de personal...
         </div>
       ) : error ? (
@@ -416,7 +422,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           borderRadius: '12px',
           background: 'rgba(239, 68, 68, 0.08)',
           border: '1px solid rgba(239, 68, 68, 0.25)',
-          color: '#f87171',
+          color: 'var(--state-danger, #f87171)',
           fontSize: '0.86rem',
           display: 'flex',
           justifyContent: 'space-between',
@@ -425,7 +431,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           gap: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertTriangle size={18} color="#ef4444" />
+            <AlertTriangle size={18} color="var(--state-danger, #ef4444)" />
             <span>{error}</span>
           </div>
           <button
@@ -439,7 +445,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               borderRadius: '8px',
               background: 'rgba(239, 68, 68, 0.15)',
               border: '1px solid rgba(239, 68, 68, 0.35)',
-              color: '#ffffff',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.78rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -451,14 +457,16 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           </button>
         </div>
       ) : filteredStaff.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '48px 24px',
-          background: 'rgba(12, 16, 24, 0.6)',
-          border: '1px dashed rgba(255, 255, 255, 0.1)',
-          borderRadius: '16px',
-          color: '#64748b'
-        }}>
+        <div
+          className="glass-card"
+          style={{
+            textAlign: 'center',
+            padding: '48px 24px',
+            border: '1px dashed var(--border, rgba(255, 255, 255, 0.1))',
+            borderRadius: '16px',
+            color: 'var(--text-dim, #64748b)'
+          }}
+        >
           <Users size={36} style={{ margin: '0 auto 12px auto', opacity: 0.5 }} />
           <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>No hay colaboradores en esta categoría.</p>
         </div>
@@ -467,7 +475,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           {filteredStaff.map(member => {
             const roleInfo = ROLE_LABELS[member.role] || {
               label: member.role,
-              color: '#94a3b8',
+              color: 'var(--text-muted, #94a3b8)',
               bg: 'rgba(148, 163, 184, 0.1)'
             };
             const isRevoked = member.status === 'REVOKED';
@@ -475,9 +483,9 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
             return (
               <div
                 key={member.uid}
+                className="glass-card"
                 style={{
-                  background: 'linear-gradient(145deg, rgba(14, 18, 28, 0.9) 0%, rgba(10, 12, 18, 0.95) 100%)',
-                  border: isRevoked ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  border: isRevoked ? '1px solid var(--state-danger-border, rgba(239, 68, 68, 0.3))' : '1px solid var(--border, rgba(255, 255, 255, 0.08))',
                   borderRadius: '14px',
                   padding: '18px',
                   display: 'flex',
@@ -495,7 +503,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       height: '40px',
                       borderRadius: '10px',
                       background: isRevoked ? 'rgba(239, 68, 68, 0.15)' : roleInfo.bg,
-                      color: isRevoked ? '#f87171' : roleInfo.color,
+                      color: isRevoked ? 'var(--state-danger, #f87171)' : roleInfo.color,
                       border: `1px solid ${isRevoked ? 'rgba(239, 68, 68, 0.4)' : roleInfo.color}`,
                       display: 'flex',
                       alignItems: 'center',
@@ -506,7 +514,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       {member.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: '0.94rem', fontWeight: 700, color: '#f4f1ea' }}>
+                      <h4 style={{ margin: 0, fontSize: '0.94rem', fontWeight: 700, color: 'var(--text-high, #f4f1ea)' }}>
                         {member.name}
                       </h4>
                       <span style={{
@@ -526,24 +534,14 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                     </div>
                   </div>
 
-                  <span style={{
-                    fontSize: '0.64rem',
-                    fontWeight: 800,
-                    padding: '2px 8px',
-                    borderRadius: '999px',
-                    background: isRevoked ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)',
-                    color: isRevoked ? '#f87171' : '#34d399',
-                    border: isRevoked ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(52, 211, 153, 0.3)'
-                  }}>
-                    {isRevoked ? 'REVOCADO' : 'ACTIVO'}
-                  </span>
+                  <TelemetryBadge status={isRevoked ? 'danger' : 'success'} label={isRevoked ? 'REVOCADO' : 'ACTIVO'} />
                 </div>
 
                 {/* Details (Email, WhatsApp) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem', color: '#94a3b8' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem', color: 'var(--text-muted, #94a3b8)' }}>
                   {member.email && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Mail size={13} style={{ color: '#64748b' }} />
+                      <Mail size={13} style={{ color: 'var(--text-muted, #64748b)' }} />
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {member.email}
                       </span>
@@ -551,7 +549,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   )}
                   {member.whatsapp && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Smartphone size={13} style={{ color: '#64748b' }} />
+                      <Smartphone size={13} style={{ color: 'var(--text-muted, #64748b)' }} />
                       <span>{member.whatsapp}</span>
                     </div>
                   )}
@@ -559,10 +557,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
 
                 {/* Zones (chips) for waiteros */}
                 {member.role === 'waiter' && (
-                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '10px' }}>
+                  <div style={{ borderTop: '1px solid var(--border, rgba(255, 255, 255, 0.05))', paddingTop: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                      <Layers size={12} style={{ color: '#38bdf8' }} />
-                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#38bdf8', letterSpacing: '0.04em' }}>
+                      <Layers size={12} style={{ color: 'var(--state-info, #38bdf8)' }} />
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--state-info, #38bdf8)', letterSpacing: '0.04em' }}>
                         ZONAS ASIGNADAS
                       </span>
                     </div>
@@ -577,7 +575,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                               padding: '2px 6px',
                               borderRadius: '4px',
                               background: 'rgba(56, 189, 248, 0.08)',
-                              color: '#93c5fd',
+                              color: 'var(--state-info, #93c5fd)',
                               border: '1px solid rgba(56, 189, 248, 0.2)'
                             }}
                           >
@@ -586,7 +584,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                         ))}
                       </div>
                     ) : (
-                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim, #64748b)', fontStyle: 'italic' }}>
                         Todas las zonas (sin restricción)
                       </span>
                     )}
@@ -599,7 +597,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                     display: 'flex',
                     justifyContent: 'flex-end',
                     gap: '8px',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderTop: '1px solid var(--border, rgba(255, 255, 255, 0.05))',
                     paddingTop: '10px',
                     marginTop: 'auto'
                   }}>
@@ -607,11 +605,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       type="button"
                       onClick={() => handleOpenEdit(member)}
                       style={{
-                        background: 'rgba(229, 181, 79, 0.08)',
-                        border: '1px solid rgba(229, 181, 79, 0.25)',
+                        background: 'var(--accent-subtle, rgba(229, 181, 79, 0.08))',
+                        border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.25))',
                         borderRadius: '6px',
                         padding: '6px 12px',
-                        color: '#e5b54f',
+                        color: 'var(--gold, #e5b54f)',
                         fontSize: '0.74rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -628,11 +626,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       type="button"
                       onClick={() => handleOpenEdit(member)}
                       style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
+                        border: '1px solid var(--border, rgba(255, 255, 255, 0.1))',
                         borderRadius: '6px',
                         padding: '6px 12px',
-                        color: '#cbd5e1',
+                        color: 'var(--text-main, #cbd5e1)',
                         fontSize: '0.74rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -649,11 +647,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                         type="button"
                         onClick={() => handleRevoke(member)}
                         style={{
-                          background: 'rgba(239, 68, 68, 0.08)',
-                          border: '1px solid rgba(239, 68, 68, 0.25)',
+                          background: 'var(--state-danger-subtle, rgba(239, 68, 68, 0.08))',
+                          border: '1px solid var(--state-danger-border, rgba(239, 68, 68, 0.25))',
                           borderRadius: '6px',
                           padding: '6px 12px',
-                          color: '#f87171',
+                          color: 'var(--state-danger, #f87171)',
                           fontSize: '0.74rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -687,25 +685,27 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           zIndex: 1000,
           padding: '16px'
         }}>
-          <div style={{
-            background: 'linear-gradient(145deg, #0e121a 0%, #07090f 100%)',
-            border: '1px solid rgba(229, 181, 79, 0.3)',
-            borderRadius: '18px',
-            width: '100%',
-            maxWidth: '520px',
-            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.7)',
-            overflow: 'hidden'
-          }}>
+          <div
+            className="modal-content glass-card"
+            style={{
+              border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.3))',
+              borderRadius: '18px',
+              width: '100%',
+              maxWidth: '520px',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.5)',
+              overflow: 'hidden'
+            }}
+          >
             <div style={{
               padding: '18px 24px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              borderBottom: '1px solid var(--border, rgba(255, 255, 255, 0.08))',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Shield size={18} style={{ color: '#e5b54f' }} />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f4f1ea' }}>
+                <Shield size={18} style={{ color: 'var(--gold, #e5b54f)' }} />
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
                   {editingStaff ? 'Modificar Personal' : 'Nuevo Colaborador de Sala'}
                 </h3>
               </div>
@@ -715,7 +715,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#94a3b8',
+                  color: 'var(--text-muted, #94a3b8)',
                   cursor: 'pointer'
                 }}
               >
@@ -730,7 +730,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   borderRadius: '8px',
                   background: 'rgba(239, 68, 68, 0.1)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#f87171',
+                  color: 'var(--state-danger, #f87171)',
                   fontSize: '0.82rem'
                 }}>
                   {formError}
@@ -738,7 +738,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               )}
 
               <div>
-                <label htmlFor={staffNameId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+                <label htmlFor={staffNameId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '6px' }}>
                   NOMBRE COMPLETO
                 </label>
                 <input
@@ -750,11 +750,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   required
                   style={{
                     width: '100%',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                     borderRadius: '8px',
                     padding: '10px 14px',
-                    color: '#f4f1ea',
+                    color: 'var(--text-main, #f4f1ea)',
                     fontSize: '0.86rem',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -763,7 +763,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               </div>
 
               <div>
-                <label htmlFor={staffEmailId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+                <label htmlFor={staffEmailId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '6px' }}>
                   CORREO ELECTRÓNICO (IDENTIDAD)
                 </label>
                 <input
@@ -776,11 +776,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   required
                   style={{
                     width: '100%',
-                    background: editingStaff ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: editingStaff ? 'var(--bg-elevated, rgba(255, 255, 255, 0.02))' : 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                     borderRadius: '8px',
                     padding: '10px 14px',
-                    color: editingStaff ? '#64748b' : '#f4f1ea',
+                    color: editingStaff ? 'var(--text-dim, #64748b)' : 'var(--text-main, #f4f1ea)',
                     fontSize: '0.86rem',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -791,7 +791,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               {/* Contraseña de Acceso (Credencial) */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <label htmlFor={staffPasswordId} style={{ fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8' }}>
+                  <label htmlFor={staffPasswordId} style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)' }}>
                     {editingStaff ? 'ESTABLECER NUEVA CONTRASEÑA (OPCIONAL)' : 'CONTRASEÑA DE ACCESO'}
                   </label>
                   <button
@@ -802,7 +802,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       border: '1px solid rgba(229, 181, 79, 0.35)',
                       borderRadius: '6px',
                       padding: '3px 8px',
-                      color: '#e5b54f',
+                      color: 'var(--gold, #e5b54f)',
                       fontSize: '0.68rem',
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -825,11 +825,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                     placeholder={editingStaff ? 'Dejar vacío para conservar contraseña actual' : 'Ej: Portero2026! (mín. 6 caracteres)'}
                     style={{
                       width: '100%',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                      border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                       borderRadius: '8px',
                       padding: '10px 42px 10px 14px',
-                      color: '#f4f1ea',
+                      color: 'var(--text-main, #f4f1ea)',
                       fontSize: '0.86rem',
                       fontFamily: showPassword ? 'monospace' : 'inherit',
                       letterSpacing: showPassword ? '0.04em' : 'normal',
@@ -848,7 +848,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                       transform: 'translateY(-50%)',
                       background: 'transparent',
                       border: 'none',
-                      color: '#94a3b8',
+                      color: 'var(--text-muted, #94a3b8)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -858,7 +858,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.7rem', color: '#64748b' }}>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.7rem', color: 'var(--text-dim, #64748b)' }}>
                   {editingStaff
                     ? 'Escribe una nueva contraseña para actualizar las credenciales de este usuario.'
                     : 'Ingresa la contraseña del colaborador o haz clic en «Generar Segura». Si la dejas vacía, se generará una automáticamente.'}
@@ -866,7 +866,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               </div>
 
               <div>
-                <label htmlFor={staffWhatsappId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+                <label htmlFor={staffWhatsappId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '6px' }}>
                   WHATSAPP DE CONTACTO (OPCIONAL)
                 </label>
                 <input
@@ -877,11 +877,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   placeholder="+593 99 123 4567"
                   style={{
                     width: '100%',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    background: 'var(--bg-input, rgba(255, 255, 255, 0.04))',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.12))',
                     borderRadius: '8px',
                     padding: '10px 14px',
-                    color: '#f4f1ea',
+                    color: 'var(--text-main, #f4f1ea)',
                     fontSize: '0.86rem',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -890,7 +890,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               </div>
 
               <div>
-                <label htmlFor={staffRoleId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', marginBottom: '6px' }}>
+                <label htmlFor={staffRoleId} style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)', marginBottom: '6px' }}>
                   ROL DE OPERACIONES
                 </label>
                 <select
@@ -899,11 +899,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   onChange={e => setFormRole(e.target.value as StaffItem['role'])}
                   style={{
                     width: '100%',
-                    background: '#0a0d14',
-                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    background: 'var(--bg-input, #08080c)',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.14))',
                     borderRadius: '8px',
                     padding: '10px 14px',
-                    color: '#f4f1ea',
+                    color: 'var(--text-main, #f4f1ea)',
                     fontSize: '0.86rem',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -920,10 +920,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               {/* Zonas Asignadas (Crucial para meseros) */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-muted, #94a3b8)' }}>
                     ZONAS SALA ASIGNADAS ({formZones.length}/9)
                   </span>
-                  <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-dim, #64748b)' }}>
                     {formRole === 'waiter' ? 'Filtra las mesas de su PWA móvil' : 'Informativo para este rol'}
                   </span>
                 </div>
@@ -941,9 +941,9 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                           padding: '5px 10px',
                           borderRadius: '6px',
                           cursor: 'pointer',
-                          background: selected ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                          color: selected ? '#38bdf8' : '#94a3b8',
-                          border: selected ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                          background: selected ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-elevated, rgba(255, 255, 255, 0.03))',
+                          color: selected ? 'var(--state-info, #38bdf8)' : 'var(--text-muted, #94a3b8)',
+                          border: selected ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid var(--border, rgba(255, 255, 255, 0.08))',
                           transition: 'all 0.15s ease'
                         }}
                       >
@@ -960,10 +960,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   onClick={() => setIsModalOpen(false)}
                   style={{
                     background: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    border: '1px solid var(--border, rgba(255, 255, 255, 0.1))',
                     borderRadius: '8px',
                     padding: '10px 18px',
-                    color: '#94a3b8',
+                    color: 'var(--text-muted, #94a3b8)',
                     fontSize: '0.84rem',
                     cursor: 'pointer'
                   }}
@@ -974,11 +974,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                   type="submit"
                   disabled={submitting}
                   style={{
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c49535) 100%)',
                     border: 'none',
                     borderRadius: '8px',
                     padding: '10px 22px',
-                    color: '#0a0d14',
+                    color: 'var(--bg-void, #08080c)',
                     fontSize: '0.84rem',
                     fontWeight: 800,
                     cursor: submitting ? 'wait' : 'pointer',
@@ -1006,30 +1006,32 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
           zIndex: 1100,
           padding: '16px'
         }}>
-          <div style={{
-            background: 'linear-gradient(145deg, #121824 0%, #080c14 100%)',
-            border: '1px solid rgba(229, 181, 79, 0.4)',
-            borderRadius: '18px',
-            width: '100%',
-            maxWidth: '460px',
-            padding: '24px',
-            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8)'
-          }}>
+          <div
+            className="modal-content glass-card"
+            style={{
+              border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.4))',
+              borderRadius: '18px',
+              width: '100%',
+              maxWidth: '460px',
+              padding: '24px',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.5)'
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-              <Key size={22} style={{ color: '#e5b54f' }} />
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f4f1ea' }}>
+              <Key size={22} style={{ color: 'var(--gold, #e5b54f)' }} />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-high, #f4f1ea)' }}>
                 Credenciales Asignadas con Éxito
               </h3>
             </div>
 
-            <p style={{ margin: '0 0 16px 0', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: '1.4' }}>
+            <p style={{ margin: '0 0 16px 0', fontSize: '0.84rem', color: 'var(--text-muted, #cbd5e1)', lineHeight: '1.4' }}>
               Se han configurado las credenciales para <strong>{tempPasswordModal.name}</strong> ({tempPasswordModal.role}).
               Comparte estos datos para que inicie sesión en <strong>{getPortalUrl()}/</strong>:
             </p>
 
             <div style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              border: '1px solid rgba(229, 181, 79, 0.3)',
+              background: 'var(--bg-elevated, rgba(0, 0, 0, 0.4))',
+              border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.3))',
               borderRadius: '12px',
               padding: '14px',
               display: 'flex',
@@ -1038,15 +1040,15 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               marginBottom: '18px'
             }}>
               <div>
-                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700 }}>USUARIO (CORREO)</span>
-                <div style={{ fontSize: '0.9rem', color: '#f4f1ea', fontWeight: 600 }}>{tempPasswordModal.email}</div>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted, #94a3b8)', fontWeight: 700 }}>USUARIO (CORREO)</span>
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-main, #f4f1ea)', fontWeight: 600 }}>{tempPasswordModal.email}</div>
               </div>
               <div>
-                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700 }}>CONTRASEÑA DE ACCESO</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--text-muted, #94a3b8)', fontWeight: 700 }}>CONTRASEÑA DE ACCESO</span>
                 <div style={{
                   fontSize: '1.05rem',
                   fontFamily: 'monospace',
-                  color: '#e5b54f',
+                  color: 'var(--gold, #e5b54f)',
                   fontWeight: 800,
                   letterSpacing: '0.08em'
                 }}>
@@ -1061,7 +1063,7 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
               gap: '8px',
               marginBottom: '20px',
               fontSize: '0.74rem',
-              color: '#34d399'
+              color: 'var(--state-success, #34d399)'
             }}>
               <Check size={15} />
               <span>Credenciales sincronizadas en Firebase Authentication para este establecimiento.</span>
@@ -1074,10 +1076,10 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                 style={{
                   flex: 1,
                   background: copiedPass ? 'rgba(52, 211, 153, 0.2)' : 'rgba(56, 189, 248, 0.15)',
-                  border: `1px solid ${copiedPass ? '#34d399' : '#38bdf8'}`,
+                  border: `1px solid ${copiedPass ? 'var(--state-success, #34d399)' : 'var(--state-info, #38bdf8)'}`,
                   borderRadius: '10px',
                   padding: '10px',
-                  color: copiedPass ? '#34d399' : '#38bdf8',
+                  color: copiedPass ? 'var(--state-success, #34d399)' : 'var(--state-info, #38bdf8)',
                   fontSize: '0.84rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -1094,11 +1096,11 @@ export const StaffManager: React.FC<Props> = ({ activeClub, session }) => {
                 type="button"
                 onClick={() => setTempPasswordModal(null)}
                 style={{
-                  background: 'linear-gradient(135deg, #e5b54f 0%, #c49535 100%)',
+                  background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c49535) 100%)',
                   border: 'none',
                   borderRadius: '10px',
                   padding: '10px 20px',
-                  color: '#0a0d14',
+                  color: 'var(--bg-void, #08080c)',
                   fontSize: '0.84rem',
                   fontWeight: 800,
                   cursor: 'pointer'

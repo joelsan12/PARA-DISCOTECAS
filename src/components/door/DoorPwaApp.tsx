@@ -16,6 +16,7 @@ import {
   WifiOff
 } from 'lucide-react';
 import { auth } from '../../lib/firebase';
+import { TelemetryBadge } from '../common';
 import { callFunctions, FunctionsClientError } from '../../lib/functionsClient';
 import {
   ensureDoorDevice,
@@ -159,7 +160,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
   }, [result]);
 
   const modeLabel = configured ? 'CLOUD RUN ACTIVO' : devMode ? 'DEMO LOCAL' : 'SERVICIO NO CONFIGURADO';
-  const modeColor = configured ? '#34d399' : devMode ? '#fbbf24' : '#f43f5e';
+  const modeColor = configured ? 'var(--state-success, #34d399)' : devMode ? 'var(--state-hold, #fbbf24)' : 'var(--state-danger, #f43f5e)';
 
   const applyLocalTransition = useCallback(async (
     ticketId: string,
@@ -723,7 +724,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </span>
         <span className="door-status-pill" style={{
           background: online ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)',
-          color: online ? '#34d399' : '#fda4af',
+          color: online ? 'var(--state-success, #34d399)' : 'var(--state-danger, #fda4af)',
           border: `1px solid ${online ? 'rgba(16,185,129,0.35)' : 'rgba(244,63,94,0.35)'}`
         }}>
           {online ? <Wifi size={12} /> : <WifiOff size={12} />}
@@ -735,7 +736,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </span>
         <span className="door-status-pill" style={{
           background: emergency.blocked ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.1)',
-          color: emergency.blocked ? '#fda4af' : '#34d399',
+          color: emergency.blocked ? 'var(--state-danger, #fda4af)' : 'var(--state-success, #34d399)',
           border: `1px solid ${emergency.blocked ? 'rgba(244,63,94,0.4)' : 'rgba(16,185,129,0.3)'}`
         }}>
           {emergency.blocked ? <ShieldAlert size={12} /> : <ShieldCheck size={12} />}
@@ -748,20 +749,18 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
         </span>
         <span className="door-status-pill" style={{
           background: edgeState === 'connected' ? 'rgba(16,185,129,0.12)' : edgeState === 'disabled' ? 'rgba(255,255,255,0.05)' : 'rgba(245,158,11,0.12)',
-          color: edgeState === 'connected' ? '#34d399' : edgeState === 'disabled' ? 'var(--text-dim)' : '#fbbf24',
+          color: edgeState === 'connected' ? 'var(--state-success, #34d399)' : edgeState === 'disabled' ? 'var(--text-dim)' : 'var(--state-hold, #fbbf24)',
           border: `1px solid ${edgeState === 'connected' ? 'rgba(16,185,129,0.35)' : edgeState === 'disabled' ? 'rgba(255,255,255,0.1)' : 'rgba(245,158,11,0.35)'}`
         }}>
           EDGE {edgeState.toUpperCase()}
           {edgeDetail ? ` · ${edgeDetail.slice(0, 18)}` : ''}
         </span>
         {typeof localVerifyMs === 'number' && (
-          <span className="door-status-pill" style={{
-            background: localVerifyMs < 50 ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
-            color: localVerifyMs < 50 ? '#34d399' : '#fbbf24',
-            border: `1px solid ${localVerifyMs < 50 ? 'rgba(16,185,129,0.35)' : 'rgba(245,158,11,0.35)'}`
-          }}>
-            JWS {localVerifyMs.toFixed(1)} ms
-          </span>
+          <TelemetryBadge
+            status={localVerifyMs < 50 ? 'success' : 'hold'}
+            label="JWS"
+            value={`${localVerifyMs.toFixed(1)} ms`}
+          />
         )}
       </div>
 
@@ -777,7 +776,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
           alignItems: 'center',
           gap: '10px',
           flexWrap: 'wrap',
-          color: '#fda4af',
+          color: 'var(--state-danger, #fda4af)',
           fontSize: '0.84rem',
           fontWeight: 700
         }}>
@@ -792,7 +791,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
             style={{
               padding: '6px 14px',
               fontSize: '0.76rem',
-              color: '#34d399',
+              color: 'var(--state-success, #34d399)',
               borderColor: 'rgba(52, 211, 153, 0.45)',
               background: 'rgba(16, 185, 129, 0.18)',
               borderRadius: '8px',
@@ -823,8 +822,8 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
             onClick={handleClearEmergency}
             style={{
               gridColumn: '1 / -1',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#ffffff',
+              background: 'linear-gradient(135deg, var(--state-success, #10b981) 0%, var(--state-success, #059669) 100%)',
+              color: 'var(--text-high, #ffffff)',
               border: '1px solid rgba(52, 211, 153, 0.6)',
               boxShadow: '0 0 20px rgba(16, 185, 129, 0.35)',
               fontSize: '0.86rem',
@@ -851,8 +850,8 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
               onClick={() => void handlePanic()}
               disabled={busy}
               style={{
-                borderColor: panicArmed ? '#f43f5e' : undefined,
-                color: panicArmed ? '#fff' : undefined,
+                borderColor: panicArmed ? 'var(--state-danger, #f43f5e)' : undefined,
+                color: panicArmed ? 'var(--text-high, #ffffff)' : undefined,
                 background: panicArmed ? 'rgba(244, 63, 94, 0.45)' : undefined
               }}
             >
@@ -902,7 +901,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
             className="btn-secondary door-btn-touch"
             onClick={() => void handleExit()}
             disabled={busy}
-            style={{ flex: '1 1 140px', minHeight: '40px', fontSize: '0.78rem', borderColor: '#f59e0b' }}
+            style={{ flex: '1 1 140px', minHeight: '40px', fontSize: '0.78rem', borderColor: 'var(--state-hold, #f59e0b)' }}
           >
             <LogOut size={14} />
             <span>Salida temporal</span>
@@ -923,7 +922,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
       </div>
 
       {typeof pendingWindow === 'number' && pending?.session.state === 'OUTSIDE_TEMPORARY' && (
-        <div style={{ fontSize: '0.74rem', color: passkeyWindowOk(pendingWindow, nowMs) ? '#34d399' : '#fda4af', marginBottom: '12px', fontWeight: 700 }}>
+        <div style={{ fontSize: '0.74rem', color: passkeyWindowOk(pendingWindow, nowMs) ? 'var(--state-success, #34d399)' : 'var(--state-danger, #fda4af)', marginBottom: '12px', fontWeight: 700 }}>
           {passkeyWindowOk(pendingWindow, nowMs)
             ? `Ventana de reingreso activa · expira en ${Math.max(0, Math.ceil((pendingWindow - nowMs) / 60000))} min`
             : 'La ventana de reingreso de 30 minutos expiró'}
@@ -933,12 +932,12 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
       {/* Tarjeta de resultado con feedback visual de alto impacto */}
       {result && (() => {
         const palette = result.tone === 'granted'
-          ? { border: '#10b981', glow: 'rgba(16, 185, 129, 0.35)', bg: 'linear-gradient(145deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 40, 24, 0.35) 100%)', title: '#34d399', icon: <UserCheck size={32} color="#10b981" /> }
+          ? { border: 'var(--state-success, #10b981)', glow: 'rgba(16, 185, 129, 0.35)', bg: 'linear-gradient(145deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 40, 24, 0.35) 100%)', title: 'var(--state-success, #34d399)', icon: <UserCheck size={32} color="var(--state-success, #10b981)" /> }
           : result.tone === 'demo'
-            ? { border: '#fbbf24', glow: 'rgba(251, 191, 36, 0.35)', bg: 'linear-gradient(145deg, rgba(251, 191, 36, 0.18) 0%, rgba(45, 30, 6, 0.35) 100%)', title: '#fbbf24', icon: <ScanLine size={32} color="#fbbf24" /> }
+            ? { border: 'var(--state-hold, #fbbf24)', glow: 'rgba(251, 191, 36, 0.35)', bg: 'linear-gradient(145deg, rgba(251, 191, 36, 0.18) 0%, rgba(45, 30, 6, 0.35) 100%)', title: 'var(--state-hold, #fbbf24)', icon: <ScanLine size={32} color="var(--state-hold, #fbbf24)" /> }
             : result.tone === 'review'
-              ? { border: '#e5b54f', glow: 'rgba(229, 181, 79, 0.35)', bg: 'linear-gradient(145deg, rgba(229, 181, 79, 0.18) 0%, rgba(45, 34, 8, 0.35) 100%)', title: '#fde68a', icon: <ShieldAlert size={32} color="#e5b54f" /> }
-              : { border: '#f43f5e', glow: 'rgba(244, 63, 94, 0.4)', bg: 'linear-gradient(145deg, rgba(244, 63, 94, 0.22) 0%, rgba(45, 10, 18, 0.35) 100%)', title: '#fda4af', icon: <ShieldAlert size={32} color="#f43f5e" /> };
+              ? { border: 'var(--gold, #e5b54f)', glow: 'rgba(229, 181, 79, 0.35)', bg: 'linear-gradient(145deg, rgba(229, 181, 79, 0.18) 0%, rgba(45, 34, 8, 0.35) 100%)', title: 'var(--brand-gold-light, #fde68a)', icon: <ShieldAlert size={32} color="var(--gold, #e5b54f)" /> }
+              : { border: 'var(--state-danger, #f43f5e)', glow: 'rgba(244, 63, 94, 0.4)', bg: 'linear-gradient(145deg, rgba(244, 63, 94, 0.22) 0%, rgba(45, 10, 18, 0.35) 100%)', title: 'var(--state-danger, #fda4af)', icon: <ShieldAlert size={32} color="var(--state-danger, #f43f5e)" /> };
         return (
           <div className="glass-card door-result-card" style={{
             border: `2px solid ${palette.border}`,
@@ -955,10 +954,10 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
                   <div style={{ display: 'flex', gap: '6px' }}>
                     {result.synced && <span className="badge badge-checkedin">SINCRONIZADO</span>}
                     {result.queued && <span className="badge badge-held">EN COLA OFFLINE</span>}
-                    {result.tone === 'demo' && <span className="badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>DEMO</span>}
+                    {result.tone === 'demo' && <span className="badge" style={{ background: 'rgba(251,191,36,0.15)', color: 'var(--state-hold, #fbbf24)' }}>DEMO</span>}
                   </div>
                 </div>
-                <p style={{ fontSize: '0.92rem', color: '#ffffff', margin: '6px 0 0', fontWeight: 600, lineHeight: 1.35 }}>{result.message}</p>
+                <p style={{ fontSize: '0.92rem', color: 'var(--text-high, #ffffff)', margin: '6px 0 0', fontWeight: 600, lineHeight: 1.35 }}>{result.message}</p>
                 {result.detail && (
                   <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.75)', margin: '6px 0 0', lineHeight: 1.3 }}>{result.detail}</p>
                 )}
@@ -985,7 +984,7 @@ export const DoorPwaApp = ({ demoReservations = [] }: DoorPwaAppProps) => {
                 style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: 'var(--radius-xs)' }}
               >
                 <span className="font-mono" style={{ color: 'var(--accent)', fontWeight: 700 }}>#{reservation.code}</span>
-                <span style={{ color: '#fff' }}>· Mesa {reservation.table_code} ({reservation.customer_name})</span>
+                <span style={{ color: 'var(--text-high, #ffffff)' }}>· Mesa {reservation.table_code} ({reservation.customer_name})</span>
               </button>
             ))}
           </div>

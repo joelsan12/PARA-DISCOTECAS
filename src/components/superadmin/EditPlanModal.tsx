@@ -93,9 +93,6 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
           width: '94%',
           maxHeight: '90vh',
           overflowY: 'auto',
-          background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.98) 0%, rgba(10, 11, 16, 0.99) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.3)',
-          boxShadow: '0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 181, 79, 0.1)',
           padding: '28px'
         }}
       >
@@ -116,7 +113,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
               <Sparkles size={18} />
             </div>
             <div>
-              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              <h3 className="font-brand" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                 {isNew ? 'Crear Nuevo Plan de Suscripción' : `Modificar Plan: ${esPlan(plan.id)}`}
               </h3>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
@@ -146,7 +143,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
             borderRadius: 'var(--radius-sm)',
             background: 'rgba(239, 68, 68, 0.15)',
             border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#fca5a5',
+            color: 'var(--state-danger-text, #fca5a5)',
             fontSize: '0.8rem'
           }}>
             <AlertCircle size={15} style={{ flexShrink: 0 }} />
@@ -173,7 +170,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: isNew ? 'rgba(8, 8, 12, 0.85)' : 'rgba(255, 255, 255, 0.04)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: isNew ? '#fff' : 'var(--text-dim)',
+                  color: isNew ? 'var(--text-high, #ffffff)' : 'var(--text-dim)',
                   fontSize: '0.85rem',
                   fontFamily: 'var(--font-mono)',
                   cursor: isNew ? 'text' : 'not-allowed'
@@ -197,7 +194,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.88rem',
                   fontWeight: 600
                 }}
@@ -223,7 +220,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.35)',
-                  color: '#fbbf24',
+                  color: 'var(--state-hold, #fbbf24)',
                   fontSize: '0.95rem',
                   fontWeight: 800,
                   fontFamily: 'var(--font-mono)'
@@ -248,7 +245,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.9rem',
                   fontWeight: 700,
                   fontFamily: 'var(--font-mono)'
@@ -269,7 +266,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(229, 181, 79, 0.25)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer'
@@ -312,7 +309,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                   borderRadius: '6px',
                   background: 'rgba(8, 8, 12, 0.85)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#fff',
+                  color: 'var(--text-high, #ffffff)',
                   fontSize: '0.82rem'
                 }}
               />
@@ -340,7 +337,7 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                     background: 'rgba(255, 255, 255, 0.03)',
                     border: '1px solid rgba(255, 255, 255, 0.06)',
                     fontSize: '0.78rem',
-                    color: '#e2e8f0'
+                    color: 'var(--text-main, #e2e8f0)'
                   }}
                 >
                   <span>{feat}</span>
@@ -351,14 +348,14 @@ export const EditPlanModal = ({ plan, isOpen, onClose, onSave }: Props) => {
                     style={{
                       background: 'transparent',
                       border: 'none',
-                      color: 'rgba(255, 255, 255, 0.4)',
+                      color: 'var(--text-dim)',
                       cursor: 'pointer',
                       padding: '2px 4px',
                       display: 'flex',
                       alignItems: 'center'
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)')}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--state-danger, #ef4444)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-dim)')}
                   >
                     <Trash2 size={13} />
                   </button>

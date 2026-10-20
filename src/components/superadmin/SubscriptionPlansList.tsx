@@ -32,7 +32,7 @@ export const SubscriptionPlansList = ({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={18} color="var(--brand-gold)" />
-            <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+            <h3 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
               Modelos y Tarifas de Suscripción SaaS ({plans.length})
             </h3>
           </div>
@@ -67,25 +67,23 @@ export const SubscriptionPlansList = ({
           return (
             <div
               key={p.id}
+              className="glass-card"
               style={{
-                background: isPro
-                  ? 'linear-gradient(180deg, rgba(229, 181, 79, 0.08) 0%, rgba(14, 15, 23, 0.95) 100%)'
-                  : 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(12, 13, 19, 0.95) 100%)',
-                border: `1px solid ${isPro ? 'rgba(229, 181, 79, 0.4)' : 'rgba(255, 255, 255, 0.1)'}`,
+                border: `1px solid ${isPro ? 'var(--border-focus, rgba(229, 181, 79, 0.4))' : 'var(--border, rgba(255, 255, 255, 0.1))'}`,
                 borderRadius: 'var(--radius-md, 12px)',
                 padding: '22px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
-                boxShadow: isPro ? '0 10px 30px rgba(229, 181, 79, 0.1)' : '0 6px 20px rgba(0, 0, 0, 0.4)'
+                boxShadow: isPro ? '0 10px 30px rgba(229, 181, 79, 0.1)' : '0 6px 20px rgba(0, 0, 0, 0.1)'
               }}
             >
               <div>
                 {/* Plan Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <h4 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+                    <h4 className="font-brand" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
                       {esPlan(p.id)}
                     </h4>
                     <span style={{ fontSize: '0.66rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
@@ -110,7 +108,7 @@ export const SubscriptionPlansList = ({
 
                 {/* Price Display */}
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '14px' }}>
-                  <span className="font-mono" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#fff' }}>
+                  <span className="font-mono" style={{ fontSize: '1.9rem', fontWeight: 900, color: 'var(--text-high, #ffffff)' }}>
                     {formatUsd(p.monthly_price)}
                   </span>
                   <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>/ mes</span>
@@ -127,19 +125,19 @@ export const SubscriptionPlansList = ({
                   marginBottom: '16px',
                   fontSize: '0.74rem'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--state-neutral, #cbd5e1)' }}>
                     <Users size={13} color="var(--brand-gold)" />
                     <span><strong>{subscriberCount}</strong> {subscriberCount === 1 ? 'discoteca' : 'discotecas'}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1' }}>
-                    <DollarSign size={13} color="#4ade80" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--state-neutral, #cbd5e1)' }}>
+                    <DollarSign size={13} color="var(--state-success, #4ade80)" />
                     <span><strong>{formatUsd(monthlyRevenue)}</strong>/mes recurrente</span>
                   </div>
                 </div>
 
                 {/* Limits & Features */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', fontWeight: 600 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-high, #ffffff)', fontWeight: 600 }}>
                     <Check size={14} color="var(--brand-gold)" style={{ flexShrink: 0 }} />
                     <span>Hasta {p.max_events_per_month} eventos mensuales</span>
                   </div>
@@ -202,7 +200,7 @@ export const SubscriptionPlansList = ({
                       borderRadius: '6px',
                       background: 'rgba(239, 68, 68, 0.1)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#f87171',
+                      color: 'var(--state-danger, #f87171)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',

@@ -32,7 +32,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
+  background: var(--state-success);
   box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
 }
 
@@ -62,7 +62,7 @@
 .stage-phone-mock {
   width: 100%;
   max-width: 320px;
-  background: linear-gradient(155deg, #131722 0%, #080a0f 100%);
+  background: linear-gradient(155deg, var(--saas-surface-elevated) 0%, var(--saas-card-bg) 100%);
   border: 1px solid rgba(229, 181, 79, 0.28);
   border-radius: 22px;
   padding: 24px 22px;
@@ -77,7 +77,7 @@
 }
 
 [data-theme="light"] .stage-phone-mock {
-  background: linear-gradient(155deg, #ffffff 0%, #f7f4ed 100%);
+  background: linear-gradient(155deg, var(--saas-surface) 0%, var(--saas-surface-elevated) 100%);
   border-color: rgba(184, 134, 11, 0.3);
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08),
@@ -100,7 +100,7 @@
 .stage-phone-chip {
   width: 26px;
   height: 18px;
-  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+  background: linear-gradient(135deg, var(--saas-gold-hover) 0%, var(--saas-gold) 100%);
   border-radius: 3px;
   display: inline-block;
   box-shadow: 0 2px 6px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
@@ -120,7 +120,7 @@
   gap: 6px;
   font-size: 0.65rem;
   font-weight: 800;
-  color: #34d399;
+  color: var(--state-success);
   letter-spacing: 0.08em;
   background: rgba(52, 211, 153, 0.09);
   padding: 3px 8px;
@@ -132,8 +132,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 8px #34d399;
+  background: var(--state-success);
+  box-shadow: 0 0 8px var(--state-success);
   animation: saas-pulse-glow 1.8s infinite ease-in-out;
 }
 
@@ -156,7 +156,7 @@
 .stage-phone-qr-frame {
   width: 130px;
   height: 130px;
-  background: #ffffff;
+  background: var(--saas-card-bg);
   border-radius: 10px;
   padding: 8px;
   position: relative;
@@ -176,15 +176,15 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--saas-gold), #ffffff, var(--saas-gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--saas-gold), var(--text-high), var(--saas-gold), transparent);
   box-shadow: 0 0 12px 2px var(--saas-gold);
   opacity: 0.7;
   animation: stage-laser-scan 2.6s infinite ease-in-out;
 }
 
 .stage-laser-line.scanning {
-  background: linear-gradient(90deg, transparent, #34d399, #ffffff, #34d399, transparent);
-  box-shadow: 0 0 16px 3px #34d399;
+  background: linear-gradient(90deg, transparent, var(--state-success), var(--text-high), var(--state-success), transparent);
+  box-shadow: 0 0 16px 3px var(--state-success);
   animation: stage-laser-scan 0.4s infinite ease-in-out;
   opacity: 1;
 }
@@ -241,7 +241,7 @@
 .stage-btn-fraud {
   background: rgba(251, 113, 133, 0.08) !important;
   border: 1px solid rgba(251, 113, 133, 0.3) !important;
-  color: #fb7185 !important;
+  color: var(--state-danger) !important;
   transition: all 0.2s ease !important;
 }
 
@@ -266,13 +266,13 @@
 .stage-result-banner.success {
   background: rgba(52, 211, 153, 0.1);
   border: 1px solid rgba(52, 211, 153, 0.35);
-  color: #34d399;
+  color: var(--state-success);
 }
 
 .stage-result-banner.fraud {
   background: rgba(251, 113, 133, 0.1);
   border: 1px solid rgba(251, 113, 133, 0.35);
-  color: #fb7185;
+  color: var(--state-danger);
 }
 
 .stage-right-panel {
@@ -363,7 +363,7 @@
 }
 
 .stage-floor-item-timer {
-  color: #fbbf24;
+  color: var(--state-hold);
   font-family: monospace;
   font-weight: 700;
 }

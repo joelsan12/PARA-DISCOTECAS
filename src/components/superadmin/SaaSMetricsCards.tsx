@@ -50,7 +50,7 @@ export const SaaSMetricsCards = ({
             {activeClubs}
           </span>
           <span className="dev-hud-cell__badge dev-hud-cell__badge--neutral">
-            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: '#10b981', marginRight: '4px' }} />
+            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: 'var(--state-success, #10b981)', marginRight: '4px' }} />
             {activeClubs} de {totalClubs} activas
           </span>
         </div>
@@ -91,7 +91,7 @@ export const SaaSMetricsCards = ({
             {reservationsCount}
           </span>
           <span className="dev-hud-cell__badge dev-hud-cell__badge--neutral">
-            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: '#e5b54f', marginRight: '4px' }} />
+            <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: 'var(--gold, #e5b54f)', marginRight: '4px' }} />
             JWS Ed25519
           </span>
         </div>

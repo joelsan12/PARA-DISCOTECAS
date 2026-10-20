@@ -93,15 +93,15 @@ export const DigitalPassModal = ({
       width: '100%',
       minHeight: '100vh',
       height: '100%',
-      backgroundColor: '#08080c',
-      background: 'radial-gradient(ellipse at top, #161224 0%, #08080c 80%)',
+      backgroundColor: 'var(--bg-void)',
+      background: 'radial-gradient(ellipse at top, var(--bg-surface) 0%, var(--bg-void) 80%)',
       zIndex: 9999,
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
       overflowY: 'auto',
       overflowX: 'hidden',
-      color: '#ffffff',
+      color: 'var(--text-high)',
       fontFamily: '"Outfit", -apple-system, BlinkMacSystemFont, sans-serif'
     }}>
       {/* ── BARRA SUPERIOR PANTALLA COMPLETA ── */}
@@ -123,7 +123,7 @@ export const DigitalPassModal = ({
             gap: '6px',
             background: 'rgba(255, 255, 255, 0.06)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: '#e5b54f',
+            color: 'var(--gold)',
             borderRadius: '10px',
             padding: '7px 12px',
             fontSize: '12px',
@@ -145,7 +145,7 @@ export const DigitalPassModal = ({
           borderRadius: '9999px',
           fontSize: '11px',
           fontWeight: 700,
-          color: '#34d399'
+          color: 'var(--state-success)'
         }}>
           <CheckCircle size={13} />
           <span>RESERVA CONFIRMADA</span>
@@ -163,7 +163,7 @@ export const DigitalPassModal = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#a1a1aa',
+            color: 'var(--text-muted)',
             cursor: 'pointer'
           }}
         >
@@ -201,9 +201,9 @@ export const DigitalPassModal = ({
               textDecoration: 'none',
               padding: '13px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
+              background: 'linear-gradient(135deg, var(--state-success) 0%, var(--state-success-border) 100%)',
               boxShadow: '0 4px 18px rgba(34, 197, 94, 0.4)',
-              color: '#ffffff',
+              color: 'var(--text-high)',
               fontSize: '12px',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -254,7 +254,7 @@ export const DigitalPassModal = ({
         fontSize: '11px',
         color: 'rgba(255, 255, 255, 0.35)'
       }}>
-        <ShieldCheck size={13} color="#e5b54f" />
+        <ShieldCheck size={13} color="var(--gold)" />
         <span>Pase Digital Nominativo • Acceso Puerta VIP</span>
       </footer>
     </div>

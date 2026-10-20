@@ -19,6 +19,7 @@ import type { Club, SubscriptionPlanId } from '../../../types';
 import { esPlan } from '../../../lib/esLabels';
 import { formatUsd } from '../../../lib/formatUsd';
 import { callFunctions } from '../../../lib/functionsClient';
+import { SpotlightCard, TelemetryBadge } from '../../common';
 
 interface ClubPlanAndProposalsViewProps {
   activeClub: Club;
@@ -280,9 +281,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '1200px', margin: '0 auto', paddingBottom: '40px' }}>
       {/* 1. Header Banner & Status */}
       <div
+        className="glass-card"
         style={{
-          background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.12) 0%, rgba(17, 18, 26, 0.95) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.35)',
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.35))',
           borderRadius: '16px',
           padding: '28px 32px',
           display: 'flex',
@@ -290,7 +291,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '20px',
-          boxShadow: '0 12px 36px rgba(0, 0, 0, 0.5)',
+          boxShadow: '0 12px 36px rgba(0, 0, 0, 0.15)',
         }}
       >
         <div style={{ maxWidth: '640px' }}>
@@ -304,13 +305,13 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 padding: '3px 8px',
                 borderRadius: '4px',
                 background: 'rgba(229, 181, 79, 0.15)',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 border: '1px solid rgba(229, 181, 79, 0.35)',
               }}
             >
               Membresía SaaS &amp; Operaciones
             </span>
-            <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {activeClub.name}
             </span>
           </div>
@@ -320,7 +321,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               margin: '0 0 8px',
               fontSize: '1.6rem',
               fontWeight: 800,
-              color: '#fff',
+              color: 'var(--text-high, #ffffff)',
               letterSpacing: '-0.02em',
               display: 'flex',
               alignItems: 'center',
@@ -329,7 +330,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             }}
           >
             <span>Plan Vigente:</span>
-            <span style={{ color: '#e5b54f' }}>{esPlan(subDetails?.planId || activeClub.plan_id)}</span>
+            <span style={{ color: 'var(--gold, #e5b54f)' }}>{esPlan(subDetails?.planId || activeClub.plan_id)}</span>
 
             {/* Badges de estado */}
             {isFounder && (
@@ -339,7 +340,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   padding: '4px 10px',
                   borderRadius: '6px',
                   background: 'rgba(229, 181, 79, 0.2)',
-                  color: '#f5d38a',
+                  color: 'var(--brand-gold-light, #f5d38a)',
                   border: '1px solid rgba(229, 181, 79, 0.5)',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -359,7 +360,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   padding: '4px 10px',
                   borderRadius: '6px',
                   background: 'rgba(59, 130, 246, 0.2)',
-                  color: '#60a5fa',
+                  color: 'var(--state-info, #60a5fa)',
                   border: '1px solid rgba(59, 130, 246, 0.4)',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -379,7 +380,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   padding: '4px 10px',
                   borderRadius: '6px',
                   background: 'rgba(234, 179, 8, 0.2)',
-                  color: '#facc15',
+                  color: 'var(--state-hold, #facc15)',
                   border: '1px solid rgba(234, 179, 8, 0.5)',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -399,7 +400,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   padding: '4px 10px',
                   borderRadius: '6px',
                   background: 'rgba(239, 68, 68, 0.2)',
-                  color: '#f87171',
+                  color: 'var(--state-danger, #f87171)',
                   border: '1px solid rgba(239, 68, 68, 0.5)',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -413,7 +414,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             )}
           </h1>
 
-          <p style={{ margin: 0, fontSize: '0.86rem', lineHeight: 1.5, color: 'rgba(255, 255, 255, 0.75)' }}>
+          <p style={{ margin: 0, fontSize: '0.86rem', lineHeight: 1.5, color: 'var(--text-muted)' }}>
             {isFounder
               ? 'Tu discoteca cuenta con el plan preferencial de Beta Privada. Todas las funcionalidades, reservas y escáneres están 100% desbloqueados de por vida para fundadores.'
               : isTrial
@@ -431,9 +432,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             style={{
               padding: '11px 20px',
               borderRadius: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: '#fff',
+              border: '1px solid var(--border-light, rgba(255, 255, 255, 0.15))',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.05))',
+              color: 'var(--text-high, #ffffff)',
               fontSize: '0.82rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -443,7 +444,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               transition: 'all 0.15s ease',
             }}
           >
-            <Sparkles size={16} color="#e5b54f" />
+            <Sparkles size={16} color="var(--gold, #e5b54f)" />
             Solicitar Módulo a Medida
           </button>
         </div>
@@ -460,7 +461,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            color: '#34d399',
+            color: 'var(--state-success, #34d399)',
             fontSize: '0.86rem',
             fontWeight: 600,
           }}
@@ -475,11 +476,10 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
       <div
         className="glass-card"
         style={{
-          background: 'linear-gradient(135deg, rgba(17, 18, 27, 0.95) 0%, rgba(10, 11, 18, 0.98) 100%)',
-          border: '1px solid rgba(229, 181, 79, 0.22)',
+          border: '1px solid var(--border-focus, rgba(229, 181, 79, 0.22))',
           borderRadius: '14px',
           padding: '20px 24px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
         }}
       >
         {/* Cabecera limpia */}
@@ -495,7 +495,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Crown size={17} color="var(--brand-gold)" />
-            <h3 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: '#fff', letterSpacing: '-0.01em' }}>
+            <h3 style={{ fontSize: '0.98rem', fontWeight: 800, margin: 0, color: 'var(--text-high, #ffffff)', letterSpacing: '-0.01em' }}>
               Tu Plan &amp; Facturación
             </h3>
           </div>
@@ -507,14 +507,14 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               padding: '3px 10px',
               borderRadius: '9999px',
               background: 'rgba(34, 197, 94, 0.12)',
-              color: '#34d399',
+              color: 'var(--state-success, #34d399)',
               border: '1px solid rgba(34, 197, 94, 0.3)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
             }}
           >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--state-success, #34d399)', boxShadow: '0 0 6px var(--state-success, #34d399)' }} />
             <span>{isFounder ? 'VITALICIO FUNDADOR' : isTrial ? 'PRUEBA GRATUITA' : isPastDue ? 'PAGO PENDIENTE' : 'ACTIVO / AL DÍA'}</span>
           </span>
         </div>
@@ -530,8 +530,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           {/* Bloque 1: Plan Actual */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(229, 181, 79, 0.15)',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+              border: '1px solid var(--border, rgba(229, 181, 79, 0.15))',
               borderRadius: '10px',
               padding: '16px',
               display: 'flex',
@@ -544,14 +544,14 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-gold)' }}>
                 PLAN ACTUAL
               </span>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '4px 0 2px' }}>
                 {esPlan(activePlanId)}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0 }}>
                 Modalidad {isAnnualPlan ? 'Anual' : 'Mensual'} &bull; {isFounder || planRawAmount === 0 ? 'USD 0.00 (Vitalicio)' : isAnnualPlan ? `${formatUsd(planRawAmount)} / año` : `${formatUsd(planRawAmount)} / mes`}
               </p>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.45)' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
               {isFounder ? 'Acceso permanente para fundadores' : `Suscripción para ${activeClub.name}`}
             </div>
           </div>
@@ -559,8 +559,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           {/* Bloque 2: Tiempo Restante */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(59, 130, 246, 0.15)',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+              border: '1px solid var(--border, rgba(59, 130, 246, 0.15))',
               borderRadius: '10px',
               padding: '16px',
               display: 'flex',
@@ -570,27 +570,27 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             }}
           >
             <div>
-              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#60a5fa' }}>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--state-info, #60a5fa)' }}>
                 TIEMPO RESTANTE
               </span>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isFounder ? '#34d399' : '#60a5fa', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isFounder ? 'var(--state-success, #34d399)' : 'var(--state-info, #60a5fa)', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
                 {isFounder ? 'VITALICIO' : `${effectiveDaysLeft} DÍAS`}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0 }}>
                 {isFounder ? 'Sin fecha de vencimiento asignada' : `Próximo corte: ${formatEcuadorDate(periodEndTimestamp)}`}
               </p>
             </div>
 
             {/* Barra fina de progreso */}
             <div>
-              <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: 'rgba(255, 255, 255, 0.06)', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: 'var(--border, rgba(255, 255, 255, 0.06))', overflow: 'hidden' }}>
                 <div
                   style={{
                     width: `${percentUsed}%`,
                     height: '100%',
                     background: isFounder
-                      ? 'linear-gradient(90deg, #e5b54f, #34d399)'
-                      : 'linear-gradient(90deg, #38bdf8, #e5b54f)',
+                      ? 'linear-gradient(90deg, var(--gold, #e5b54f), var(--state-success, #34d399))'
+                      : 'linear-gradient(90deg, var(--state-info, #38bdf8), var(--gold, #e5b54f))',
                     borderRadius: '2px',
                   }}
                 />
@@ -601,8 +601,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           {/* Bloque 3: Factura SRI */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(229, 181, 79, 0.18)',
+              background: 'var(--bg-elevated, rgba(255, 255, 255, 0.02))',
+              border: '1px solid var(--border, rgba(229, 181, 79, 0.18))',
               borderRadius: '10px',
               padding: '16px',
               display: 'flex',
@@ -616,14 +616,14 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-gold)' }}>
                   COMPROBANTE SRI
                 </span>
-                <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: 'rgba(234, 179, 8, 0.15)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
+                <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', background: 'rgba(234, 179, 8, 0.15)', color: 'var(--state-hold, #facc15)', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
                   PRUEBA / BETA
                 </span>
               </div>
-              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)', margin: '4px 0 2px' }}>
                 {invoiceNumber}
               </div>
-              <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', margin: 0 }}>
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0 }}>
                 Total: {formatUsd(totalAmount)} USD &bull; IVA 15% incluido
               </p>
             </div>
@@ -679,12 +679,12 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             style={{
               maxWidth: '740px',
               width: '100%',
-              background: '#0d0f17',
+              background: 'var(--bg-surface, #0d0f17)',
               border: '1px solid rgba(229, 181, 79, 0.4)',
               borderRadius: '16px',
               boxShadow: '0 25px 70px rgba(0, 0, 0, 0.85)',
               padding: '28px',
-              color: '#fff',
+              color: 'var(--text-high, #ffffff)',
               position: 'relative',
               maxHeight: '90vh',
               overflowY: 'auto',
@@ -697,20 +697,20 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '16px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                borderBottom: '1px solid var(--border)',
                 paddingBottom: '14px',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Receipt size={22} color="var(--brand-gold)" />
                 <div>
-                  <h3 className="font-brand" style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <h3 className="font-brand" style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <span>Comprobante Electrónico SRI — Factura</span>
-                    <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', background: 'rgba(234, 179, 8, 0.15)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.35)' }}>
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', background: 'rgba(234, 179, 8, 0.15)', color: 'var(--state-hold, #facc15)', border: '1px solid rgba(234, 179, 8, 0.35)' }}>
                       FASE BETA • MODO PRUEBA
                     </span>
                   </h3>
-                  <span style={{ fontSize: '0.72rem', color: '#facc15', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--state-hold, #facc15)', fontWeight: 600 }}>
                     DOCUMENTO DE SIMULACIÓN — DATOS NO VÁLIDOS TRIBUTARIAMENTE ANTE EL SRI
                   </span>
                 </div>
@@ -725,7 +725,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     borderRadius: '6px',
                     background: 'rgba(229, 181, 79, 0.15)',
                     border: '1px solid rgba(229, 181, 79, 0.4)',
-                    color: '#e5b54f',
+                    color: 'var(--gold, #e5b54f)',
                     fontSize: '0.76rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -769,10 +769,10 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 fontSize: '0.74rem',
               }}
             >
-              <AlertTriangle size={18} color="#facc15" style={{ flexShrink: 0 }} />
+              <AlertTriangle size={18} color="var(--state-hold, #facc15)" style={{ flexShrink: 0 }} />
               <div>
-                <strong style={{ color: '#facc15' }}>COMPROBANTE DE PRUEBA (NO VÁLIDO PARA DECLARACIÓN FISCAL):</strong>{' '}
-                <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+                <strong style={{ color: 'var(--state-hold, #facc15)' }}>COMPROBANTE DE PRUEBA (NO VÁLIDO PARA DECLARACIÓN FISCAL):</strong>{' '}
+                <span style={{ color: 'var(--text-main)' }}>
                   Este comprobante es una maqueta de demostración visual en fase beta de desarrollo. No constituye una factura electrónica real emitida ni autorizada formalmente por el SRI del Ecuador.
                 </span>
               </div>
@@ -781,8 +781,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             {/* Cuerpo de la Factura Estilo SRI */}
             <div
               style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
                 borderRadius: '12px',
                 padding: '20px',
                 fontSize: '0.78rem',
@@ -795,7 +795,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                   gap: '20px',
                   marginBottom: '20px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderBottom: '1px solid var(--border)',
                   paddingBottom: '16px',
                 }}
               >
@@ -825,12 +825,12 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--brand-gold)', textTransform: 'uppercase' }}>
                     FACTURA ELECTRÓNICA
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>
                     N° {invoiceNumber}
                   </div>
                   <div style={{ marginTop: '6px', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                     <strong>CLAVE DE ACCESO / AUTORIZACIÓN:</strong>
-                    <div style={{ fontFamily: 'var(--font-mono)', wordBreak: 'break-all', color: '#e2e8f0', marginTop: '2px' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', wordBreak: 'break-all', color: 'var(--text-main, #e2e8f0)', marginTop: '2px' }}>
                       {accessKeySri}
                     </div>
                   </div>
@@ -846,8 +846,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   marginBottom: '20px',
                   padding: '12px 14px',
                   borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
                   lineHeight: '1.5',
                 }}
               >
@@ -857,19 +857,19 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Razón Social: </span>
-                    <strong style={{ color: '#fff' }}>{activeClub.legal_profile?.legalName || activeClub.name}</strong>
+                    <strong style={{ color: 'var(--text-high, #ffffff)' }}>{activeClub.legal_profile?.legalName || activeClub.name}</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>RUC / Cédula: </span>
-                    <strong style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{activeClub.legal_profile?.ruc || '0999999999001'}</strong>
+                    <strong style={{ color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>{activeClub.legal_profile?.ruc || '0999999999001'}</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Dirección: </span>
-                    <span style={{ color: '#fff' }}>{activeClub.legal_profile?.taxAddress || activeClub.address || `${activeClub.city}, Ecuador`}</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)' }}>{activeClub.legal_profile?.taxAddress || activeClub.address || `${activeClub.city}, Ecuador`}</span>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Correo: </span>
-                    <span style={{ color: '#fff' }}>{activeClub.legal_profile?.supportEmail || `admin@${activeClub.slug || 'club'}.com`}</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)' }}>{activeClub.legal_profile?.supportEmail || `admin@${activeClub.slug || 'club'}.com`}</span>
                   </div>
                 </div>
               </div>
@@ -888,21 +888,21 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '10px 8px', fontFamily: 'var(--font-mono)', color: 'var(--brand-gold)' }}>
                         SUB-{activePlanId.toUpperCase()}-{isAnnualPlan ? 'ANUAL' : 'MEN'}
                       </td>
-                      <td style={{ padding: '10px 8px', color: '#fff' }}>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-high, #ffffff)' }}>
                         Suscripción SaaS NIGHTFLOW VIP — Plan {esPlan(activePlanId)} ({isAnnualPlan ? 'Cobertura 12 Meses / Facturación Anual' : 'Cobertura 30 Días / Facturación Mensual'})
                       </td>
-                      <td style={{ padding: '10px 8px', textAlign: 'center', color: '#fff' }}>1</td>
-                      <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: '#fff' }}>
+                      <td style={{ padding: '10px 8px', textAlign: 'center', color: 'var(--text-high, #ffffff)' }}>1</td>
+                      <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-high, #ffffff)' }}>
                         {formatUsd(subtotalAmount)}
                       </td>
                       <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                         $0.00
                       </td>
-                      <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: '#34d399', fontWeight: 800 }}>
+                      <td style={{ padding: '10px 8px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--state-success, #34d399)', fontWeight: 800 }}>
                         {formatUsd(subtotalAmount)}
                       </td>
                     </tr>
@@ -919,14 +919,14 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   <div><strong>Periodo cubierto:</strong> Hasta el {formatEcuadorDate(periodEndTimestamp)}</div>
                   <div><strong>Forma de pago:</strong> Otros con utilización del sistema financiero (20)</div>
                   <div><strong>Plazo:</strong> 0 días (Liquidado de contado)</div>
-                  <div style={{ marginTop: '6px', fontSize: '0.68rem', color: '#facc15', fontWeight: 600 }}>
+                  <div style={{ marginTop: '6px', fontSize: '0.68rem', color: 'var(--state-hold, #facc15)', fontWeight: 600 }}>
                     Comprobante de simulación generado en ambiente de pruebas (Fase Beta). Datos no válidos ante el SRI.
                   </div>
                 </div>
 
                 <div
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'var(--bg-elevated)',
                     borderRadius: '8px',
                     padding: '12px 14px',
                     display: 'flex',
@@ -937,19 +937,19 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-muted)' }}>SUBTOTAL 15%:</span>
-                    <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{formatUsd(subtotalAmount)}</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>{formatUsd(subtotalAmount)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-muted)' }}>SUBTOTAL 0%:</span>
-                    <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>$0.00</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>$0.00</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-muted)' }}>SUBTOTAL SIN IMPUESTOS:</span>
-                    <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{formatUsd(subtotalAmount)}</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>{formatUsd(subtotalAmount)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-muted)' }}>IVA 15%:</span>
-                    <span style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{formatUsd(ivaAmount)}</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)', fontFamily: 'var(--font-mono)' }}>{formatUsd(ivaAmount)}</span>
                   </div>
                   <div
                     style={{
@@ -962,8 +962,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                       fontWeight: 800,
                     }}
                   >
-                    <span style={{ color: '#fff' }}>VALOR TOTAL:</span>
-                    <span style={{ color: '#34d399', fontFamily: 'var(--font-mono)' }}>{formatUsd(totalAmount)} USD</span>
+                    <span style={{ color: 'var(--text-high, #ffffff)' }}>VALOR TOTAL:</span>
+                    <span style={{ color: 'var(--state-success, #34d399)', fontFamily: 'var(--font-mono)' }}>{formatUsd(totalAmount)} USD</span>
                   </div>
                 </div>
               </div>
@@ -985,9 +985,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 style={{
                   padding: '8px 20px',
                   borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                  background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
                   border: 'none',
-                  color: '#08080c',
+                  color: 'var(--bg-void, #08080c)',
                   fontSize: '0.78rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -1015,10 +1015,10 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           }}
         >
           <div>
-            <h2 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
               Planes Disponibles &amp; Contratación Directa
             </h2>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               Facturación transparente en USD sin comisiones ocultas por entrada.
             </p>
           </div>
@@ -1026,8 +1026,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
           {/* Selector de Ciclo */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border)',
               borderRadius: '10px',
               padding: '4px',
               display: 'inline-flex',
@@ -1043,7 +1043,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 borderRadius: '8px',
                 border: 'none',
                 background: billingCycle === 'monthly' ? 'rgba(229, 181, 79, 0.2)' : 'transparent',
-                color: billingCycle === 'monthly' ? '#e5b54f' : 'rgba(255, 255, 255, 0.6)',
+                color: billingCycle === 'monthly' ? 'var(--gold, #e5b54f)' : 'var(--text-muted)',
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -1060,7 +1060,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 borderRadius: '8px',
                 border: 'none',
                 background: billingCycle === 'annual' ? 'rgba(229, 181, 79, 0.2)' : 'transparent',
-                color: billingCycle === 'annual' ? '#e5b54f' : 'rgba(255, 255, 255, 0.6)',
+                color: billingCycle === 'annual' ? 'var(--gold, #e5b54f)' : 'var(--text-muted)',
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -1076,8 +1076,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   fontSize: '0.65rem',
                   padding: '2px 6px',
                   borderRadius: '4px',
-                  background: '#e5b54f',
-                  color: '#08080c',
+                  background: 'var(--gold, #e5b54f)',
+                  color: 'var(--bg-void, #08080c)',
                   fontWeight: 800,
                 }}
               >
@@ -1097,56 +1097,44 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               const periodLabel = billingCycle === 'annual' ? '/ año' : '/ mes';
 
               return (
-                <div
+                <SpotlightCard
                   key={plan.id}
+                  className="glass-card"
+                  spotlightColor="rgba(229, 181, 79, 0.12)"
                   style={{
                     background: isCurrent
-                      ? 'linear-gradient(180deg, rgba(229, 181, 79, 0.08) 0%, #0d0f18 100%)'
-                      : 'linear-gradient(180deg, #10111a 0%, #0a0b10 100%)',
-                    border: `1px solid ${isCurrent ? 'rgba(229, 181, 79, 0.5)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      ? 'linear-gradient(180deg, rgba(229, 181, 79, 0.08) 0%, var(--bg-surface, #0d0f18) 100%)'
+                      : 'var(--bg-surface, #10111a)',
+                    border: `1px solid ${isCurrent ? 'rgba(229, 181, 79, 0.5)' : 'var(--border)'}`,
                     borderRadius: '16px',
                     padding: '24px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    boxShadow: isCurrent ? '0 12px 32px rgba(229, 181, 79, 0.12)' : '0 8px 24px rgba(0, 0, 0, 0.4)',
+                    boxShadow: isCurrent ? '0 12px 32px rgba(229, 181, 79, 0.12)' : 'var(--shadow-card, 0 8px 24px rgba(0, 0, 0, 0.08))',
                     position: 'relative',
                     overflow: 'hidden',
                   }}
                 >
                   {isCurrent && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '12px',
-                        right: '14px',
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        background: 'rgba(229, 181, 79, 0.2)',
-                        border: '1px solid rgba(229, 181, 79, 0.4)',
-                        color: '#e5b54f',
-                        fontSize: '0.68rem',
-                        fontWeight: 800,
-                        letterSpacing: '0.06em',
-                      }}
-                    >
-                      PLAN ACTUAL
+                    <div style={{ position: 'absolute', top: '12px', right: '14px' }}>
+                      <TelemetryBadge status="gold" label="PLAN ACTUAL" />
                     </div>
                   )}
 
                   <div>
-                    <h3 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>
+                    <h3 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
                       {esPlan(plan.id)}
                     </h3>
-                    <p style={{ margin: '0 0 16px', fontSize: '0.76rem', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.4 }}>
+                    <p style={{ margin: '0 0 16px', fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
                       {plan.description}
                     </p>
 
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '16px' }}>
-                      <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#e5b54f' }}>
+                      <span style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--gold, #e5b54f)' }}>
                         {formatUsd(price)}
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         {periodLabel}
                       </span>
                     </div>
@@ -1166,13 +1154,13 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                           key={idx}
                           style={{
                             fontSize: '0.8rem',
-                            color: 'rgba(255, 255, 255, 0.8)',
+                            color: 'var(--text-main)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
                           }}
                         >
-                          <Check size={14} color="#e5b54f" />
+                          <Check size={14} color="var(--gold, #e5b54f)" />
                           <span>{feat}</span>
                         </li>
                       ))}
@@ -1188,7 +1176,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                           borderRadius: '8px',
                           background: 'rgba(229, 181, 79, 0.1)',
                           border: '1px solid rgba(229, 181, 79, 0.3)',
-                          color: '#e5b54f',
+                          color: 'var(--gold, #e5b54f)',
                           fontSize: '0.8rem',
                           fontWeight: 700,
                         }}
@@ -1206,7 +1194,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                           borderRadius: '8px',
                           border: '1px solid rgba(229, 181, 79, 0.5)',
                           background: 'linear-gradient(135deg, rgba(229, 181, 79, 0.2) 0%, rgba(229, 181, 79, 0.05) 100%)',
-                          color: '#f5d38a',
+                          color: 'var(--brand-gold-light, #f5d38a)',
                           fontSize: '0.8rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -1227,9 +1215,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                           width: '100%',
                           padding: '10px 16px',
                           borderRadius: '8px',
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          color: '#fff',
+                          border: '1px solid var(--border)',
+                          background: 'var(--bg-elevated)',
+                          color: 'var(--text-high, #ffffff)',
                           fontSize: '0.8rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -1244,7 +1232,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                       </button>
                     )}
                   </div>
-                </div>
+                </SpotlightCard>
               );
             })}
         </div>
@@ -1270,7 +1258,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             style={{
               width: '100%',
               maxWidth: '540px',
-              background: 'linear-gradient(180deg, #12131d 0%, #0a0b12 100%)',
+              background: 'var(--bg-surface, #12131d)',
               border: '1px solid rgba(229, 181, 79, 0.4)',
               borderRadius: '16px',
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85)',
@@ -1281,7 +1269,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             <div
               style={{
                 padding: '20px 24px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -1289,8 +1277,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CreditCard size={18} color="#e5b54f" />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+                <CreditCard size={18} color="var(--gold, #e5b54f)" />
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   Contratar Plan {esPlan(selectedPlanForCheckout)}
                 </h3>
               </div>
@@ -1298,7 +1286,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 type="button"
                 onClick={() => setCheckoutModalOpen(false)}
                 disabled={checkoutSubmitting}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <X size={18} />
               </button>
@@ -1312,7 +1300,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     borderRadius: '8px',
                     background: 'rgba(239, 68, 68, 0.12)',
                     border: '1px solid rgba(239, 68, 68, 0.3)',
-                    color: '#f87171',
+                    color: 'var(--state-danger, #f87171)',
                     fontSize: '0.8rem',
                   }}
                 >
@@ -1325,30 +1313,30 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 style={{
                   padding: '16px',
                   borderRadius: '10px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-high, #ffffff)', fontSize: '0.95rem' }}>
                     {esPlan(selectedPlanForCheckout)} ({billingCycle === 'annual' ? 'Ciclo Anual' : 'Ciclo Mensual'})
                   </div>
-                  <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                     {activeClub.name}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#e5b54f' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--gold, #e5b54f)' }}>
                     {formatUsd(
                       billingCycle === 'annual'
                         ? selectedPlanForCheckout === 'starter' ? 50 : selectedPlanForCheckout === 'club_pro' ? 150 : 450
                         : selectedPlanForCheckout === 'starter' ? 5 : selectedPlanForCheckout === 'club_pro' ? 15 : 45
                     )}
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
                     {billingCycle === 'annual' ? '12 meses' : '30 días'}
                   </div>
                 </div>
@@ -1356,7 +1344,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
 
               {/* Selección de Método de Pago */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', marginBottom: '8px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '8px' }}>
                   Método de Pago
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -1366,9 +1354,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     style={{
                       padding: '12px',
                       borderRadius: '8px',
-                      background: checkoutMethod === 'payphone' ? 'rgba(229, 181, 79, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                      border: `1px solid ${checkoutMethod === 'payphone' ? 'rgba(229, 181, 79, 0.5)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      color: checkoutMethod === 'payphone' ? '#e5b54f' : 'rgba(255, 255, 255, 0.8)',
+                      background: checkoutMethod === 'payphone' ? 'rgba(229, 181, 79, 0.12)' : 'var(--bg-elevated)',
+                      border: `1px solid ${checkoutMethod === 'payphone' ? 'rgba(229, 181, 79, 0.5)' : 'var(--border)'}`,
+                      color: checkoutMethod === 'payphone' ? 'var(--gold, #e5b54f)' : 'var(--text-main)',
                       textAlign: 'left',
                       cursor: 'pointer',
                     }}
@@ -1376,7 +1364,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     <div style={{ fontWeight: 700, fontSize: '0.82rem', marginBottom: '4px' }}>
                       💳 PayPhone
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                       Tarjeta de crédito/débito nacional o internacional
                     </div>
                   </button>
@@ -1387,9 +1375,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     style={{
                       padding: '12px',
                       borderRadius: '8px',
-                      background: checkoutMethod === 'transfer' ? 'rgba(229, 181, 79, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                      border: `1px solid ${checkoutMethod === 'transfer' ? 'rgba(229, 181, 79, 0.5)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      color: checkoutMethod === 'transfer' ? '#e5b54f' : 'rgba(255, 255, 255, 0.8)',
+                      background: checkoutMethod === 'transfer' ? 'rgba(229, 181, 79, 0.12)' : 'var(--bg-elevated)',
+                      border: `1px solid ${checkoutMethod === 'transfer' ? 'rgba(229, 181, 79, 0.5)' : 'var(--border)'}`,
+                      color: checkoutMethod === 'transfer' ? 'var(--gold, #e5b54f)' : 'var(--text-main)',
                       textAlign: 'left',
                       cursor: 'pointer',
                     }}
@@ -1397,7 +1385,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     <div style={{ fontWeight: 700, fontSize: '0.82rem', marginBottom: '4px' }}>
                       🏦 Transferencia
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                       Depósito bancario directo en Ecuador
                     </div>
                   </button>
@@ -1410,21 +1398,21 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   style={{
                     padding: '14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
                     fontSize: '0.78rem',
-                    color: 'rgba(255, 255, 255, 0.8)',
+                    color: 'var(--text-main)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '6px',
                   }}
                 >
-                  <div style={{ fontWeight: 700, color: '#e5b54f' }}>Datos Bancarios NIGHTFLOW VIP:</div>
+                  <div style={{ fontWeight: 700, color: 'var(--gold, #e5b54f)' }}>Datos Bancarios NIGHTFLOW VIP:</div>
                   <div><strong>Banco:</strong> Banco Pichincha (Ecuador)</div>
                   <div><strong>Tipo de Cuenta:</strong> Corriente # 2100892341</div>
                   <div><strong>Titular:</strong> NIGHTFLOW VIP S.A.S. (RUC 1793198421001)</div>
-                  <div><strong>Referencia obligatoria:</strong> <code style={{ color: '#e5b54f' }}>NF-{activeClub.id.slice(-6)}-{selectedPlanForCheckout.slice(0,3).toUpperCase()}</code></div>
-                  <div style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.5)', marginTop: '4px' }}>
+                  <div><strong>Referencia obligatoria:</strong> <code style={{ color: 'var(--gold, #e5b54f)' }}>NF-{activeClub.id.slice(-6)}-{selectedPlanForCheckout.slice(0,3).toUpperCase()}</code></div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     Una vez realizada la transferencia, haz clic en «Notificar Transferencia» y el equipo activará tu plan de inmediato.
                   </div>
                 </div>
@@ -1438,9 +1426,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   style={{
                     padding: '10px 16px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.82rem',
                     cursor: 'pointer',
                   }}
@@ -1453,9 +1441,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   style={{
                     padding: '10px 22px',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
                     border: '1px solid rgba(229, 181, 79, 0.6)',
-                    color: '#08080c',
+                    color: 'var(--bg-void, #08080c)',
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -1493,7 +1481,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             style={{
               width: '100%',
               maxWidth: '620px',
-              background: 'linear-gradient(180deg, #11111a 0%, #090a0f 100%)',
+              background: 'var(--bg-surface, #11111a)',
               border: '1px solid rgba(229, 181, 79, 0.4)',
               borderRadius: '16px',
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85)',
@@ -1504,7 +1492,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             <div
               style={{
                 padding: '20px 24px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -1512,15 +1500,15 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Sparkles size={18} color="#e5b54f" />
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>
+                <Sparkles size={18} color="var(--gold, #e5b54f)" />
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   Solicitar Módulo Exclusivo para {activeClub.name}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowProposalForm(false)}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <X size={18} />
               </button>
@@ -1528,7 +1516,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
 
             <form onSubmit={handleSubmitProposal} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.75)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Título del Módulo o Integración Solicitada
                 </label>
                 <input
@@ -1541,16 +1529,16 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.75)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Plan que Deseas Asociar o Contratar
                 </label>
                 <select
@@ -1560,9 +1548,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: '#161726',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 >
@@ -1577,7 +1565,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.75)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Descripción Técnica Detallada
                 </label>
                 <textarea
@@ -1590,16 +1578,16 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255, 255, 255, 0.75)', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
                   Impacto Operativo Esperado
                 </label>
                 <input
@@ -1612,9 +1600,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.85rem',
                   }}
                 />
@@ -1627,9 +1615,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   style={{
                     padding: '10px 16px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.82rem',
                     cursor: 'pointer',
                   }}
@@ -1641,9 +1629,9 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   style={{
                     padding: '10px 20px',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #d4a33d 100%)',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #d4a33d) 100%)',
                     border: '1px solid rgba(229, 181, 79, 0.6)',
-                    color: '#08080c',
+                    color: 'var(--bg-void, #08080c)',
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -1660,17 +1648,17 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
       {/* 5. Historial de Propuestas del Club */}
       <div
         style={{
-          background: 'linear-gradient(180deg, #10111a 0%, #0a0b10 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'var(--bg-surface, #10111a)',
+          border: '1px solid var(--border)',
           borderRadius: '16px',
           padding: '24px',
         }}
       >
         <div style={{ marginBottom: '16px' }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-high, #ffffff)' }}>
             Historial de Solicitudes y Propuestas de {activeClub.name}
           </h2>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
             Seguimiento de tus solicitudes de upgrade y módulos exclusivos desarrollados por la plataforma.
           </p>
         </div>
@@ -1680,12 +1668,12 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
             style={{
               padding: '36px 20px',
               textAlign: 'center',
-              background: 'rgba(255, 255, 255, 0.02)',
+              background: 'var(--bg-elevated)',
               borderRadius: '10px',
-              border: '1px dashed rgba(255, 255, 255, 0.1)',
+              border: '1px dashed var(--border)',
             }}
           >
-            <p style={{ margin: '0 0 8px', fontSize: '0.84rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+            <p style={{ margin: '0 0 8px', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
               No has enviado propuestas o solicitudes de desarrollo a medida aún.
             </p>
             <button
@@ -1694,7 +1682,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#e5b54f',
+                color: 'var(--gold, #e5b54f)',
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -1712,8 +1700,8 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                 style={{
                   padding: '16px 20px',
                   borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
@@ -1721,7 +1709,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                       {prop.title}
                     </span>
                     {prop.requested_plan_id && (
@@ -1731,7 +1719,7 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                           padding: '2px 8px',
                           borderRadius: '4px',
                           background: 'rgba(229, 181, 79, 0.12)',
-                          color: '#e5b54f',
+                          color: 'var(--gold, #e5b54f)',
                           border: '1px solid rgba(229, 181, 79, 0.3)',
                         }}
                       >
@@ -1764,12 +1752,12 @@ export const ClubPlanAndProposalsView: React.FC<ClubPlanAndProposalsViewProps> =
                   </div>
                 </div>
 
-                <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-main)', lineHeight: 1.45 }}>
                   {prop.description}
                 </p>
 
                 {prop.proposed_benefit && (
-                  <div style={{ fontSize: '0.75rem', color: '#e5b54f' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--gold, #e5b54f)' }}>
                     <strong>Beneficio esperado:</strong> {prop.proposed_benefit}
                   </div>
                 )}

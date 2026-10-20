@@ -409,8 +409,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             alignItems: 'center',
             gap: '8px',
             background: feedback.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-            border: feedback.type === 'success' ? '1px solid #10b981' : '1px solid #ef4444',
-            color: feedback.type === 'success' ? '#34d399' : '#f87171'
+            border: feedback.type === 'success' ? '1px solid var(--state-success, #10b981)' : '1px solid var(--state-danger, #ef4444)',
+            color: feedback.type === 'success' ? 'var(--state-success, #34d399)' : 'var(--state-danger, #f87171)'
           }}>
             {feedback.type === 'success' ? <Check size={16} /> : <AlertCircle size={16} />}
             <span style={{ lineHeight: 1.4 }}>{feedback.message}</span>
@@ -470,11 +470,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     height: '28px',
                     borderRadius: '50%',
                     background: 'var(--brand-gold)',
-                    border: '2px solid #080c14',
+                    border: '2px solid var(--bg-void, #080c14)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#080c14',
+                    color: 'var(--bg-void, #080c14)',
                     cursor: 'pointer',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.5)'
                   }}
@@ -485,7 +485,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
               {/* Actions */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#ffffff' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   Foto de Perfil
                 </div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -510,7 +510,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         background: 'rgba(239, 68, 68, 0.1)',
                         border: '1px solid rgba(239, 68, 68, 0.3)',
                         borderRadius: '6px',
-                        color: '#f87171',
+                        color: 'var(--state-danger, #f87171)',
                         fontSize: '0.74rem',
                         cursor: 'pointer',
                         display: 'flex',
@@ -571,7 +571,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   borderRadius: '10px',
                   background: 'rgba(239, 68, 68, 0.15)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#f87171',
+                  color: 'var(--state-danger, #f87171)',
                   fontWeight: 800,
                   display: 'flex',
                   alignItems: 'center',
@@ -642,7 +642,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 flexDirection: 'column',
                 gap: '8px'
               }}>
-                <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#fbbf24' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--state-hold, #fbbf24)' }}>
                   Ingresa tu Contraseña Actual para confirmar nuevo correo:
                 </label>
                 <input
@@ -778,7 +778,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     background: 'rgba(8, 10, 16, 0.85)',
                     border: '1px solid rgba(229, 181, 79, 0.3)',
                     borderRadius: '10px',
-                    color: '#ffffff',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.84rem'
                   }}
                 />
@@ -798,7 +798,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               gap: '12px'
             }}>
               <div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#ffffff' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)' }}>
                   ¿Olvidaste tu contraseña actual?
                 </div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>

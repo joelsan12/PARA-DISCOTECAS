@@ -10,7 +10,7 @@
 }
 
 body {
-  background-color: #08080c;
+  background-color: var(--bg-void, #08080c);
   background-image: linear-gradient(180deg, rgba(229, 181, 79, 0.045) 0%, rgba(8, 8, 12, 0) 320px);
   background-attachment: fixed;
   color: var(--text-main);

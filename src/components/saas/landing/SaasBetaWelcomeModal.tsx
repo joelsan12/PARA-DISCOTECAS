@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
   X,
-  MonitorPlay,
-  ScanLine,
   Crown,
-  Wine,
-  LayoutGrid,
   Star,
   Send,
   MessageCircle,
@@ -14,12 +9,13 @@ import {
   Sparkles,
   Bug,
   CheckCircle2,
-  Check,
   ArrowRight,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
 import { submitBetaFeedback, type FeedbackCategory } from '../../../lib/betaIntake';
+import { BETA_MODULES } from './betaModules.data';
+import { BetaModuleCard } from './SaasBetaModuleCard';
 
 interface SaasBetaWelcomeModalProps {
   isOpen: boolean;
@@ -118,84 +114,6 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
     }
   };
 
-  const modules = [
-    {
-      id: 'floor-ops',
-      name: 'Consola de Sala en Vivo',
-      roleTag: 'MANAGER & BARRA',
-      icon: MonitorPlay,
-      desc: 'Controla el mapa interactivo de mesas, aforo en sala sincronizado y conciliación de cuentas al instante.',
-      features: [
-        'Mapa cenital en vivo con códigos de color por ocupación',
-        'Conciliación de consumos y cobros de barra',
-        'Alertas de servicio y llamadas de concierge VIP',
-      ],
-      primaryLink: '/software/pantallas',
-      primaryLabel: 'Probar Consola',
-      badge: 'PROBAR DEMO',
-    },
-    {
-      id: 'door-scanner',
-      name: 'Escáner de Puerta Offline',
-      roleTag: 'PUERTA & SEGURIDAD',
-      icon: ScanLine,
-      desc: 'Lectura de pases con cámara en 0.04s. Detección criptográfica infalible de capturas de pantalla reenviadas.',
-      features: [
-        'Validación instantánea con firmas Ed25519',
-        'Rechazo automático de fotos de WhatsApp',
-        'Opera sin internet guardando encriptado local',
-      ],
-      primaryLink: '/software/simulador',
-      primaryLabel: 'Probar Escáner',
-      badge: 'INTERACTIVO',
-    },
-    {
-      id: 'vip-client',
-      name: 'Portal del Invitado & Black Card',
-      roleTag: 'EXPERIENCIA CLIENTE',
-      icon: Crown,
-      desc: 'El cliente toca su mesa favorita en el mapa cenital, abona su anticipo y recibe un pase digital rotativo.',
-      features: [
-        'Reserva visual en plano arquitectónico 3D',
-        'Hold automático de 12 min anti-sobreventas',
-        'Pase Black Card con QR dinámico cada 30s',
-      ],
-      primaryLink: '/negocios',
-      primaryLabel: 'Probar Reserva',
-      badge: 'VIP ACCESS',
-    },
-    {
-      id: 'waiter-terminal',
-      name: 'Terminal PWA de Meseros',
-      roleTag: 'SERVICIO DE PISO',
-      icon: Wine,
-      desc: 'Comandas digitales directas a barra, asignación de botellas a la mesa y estado de gasto mínimo.',
-      features: [
-        'Menú digital rápido de licores y botellas VIP',
-        'Cero tickets impresos o pedidos perdidos',
-        'Cierre de cuenta asistido para cajero o capitán',
-      ],
-      primaryLink: '/software/pantallas',
-      primaryLabel: 'Ver Meseros',
-      badge: 'PWA SPEED',
-    },
-    {
-      id: 'blueprint-editor',
-      name: 'Diseñador de Planos de Discoteca',
-      roleTag: 'ARQUITECTURA DEL LOCAL',
-      icon: LayoutGrid,
-      desc: 'Personaliza la distribución exacta de tu discoteca: suites, palcos, cabina DJ, barras y terrazas.',
-      features: [
-        'Diseño cenital adaptado a las medidas de tu local',
-        'Calibración de anticipos y consumos mínimos',
-        'Aislamiento multi-tenant 100% privado',
-      ],
-      primaryLink: '/software/arquitectura',
-      primaryLabel: 'Ver Arquitectura',
-      badge: 'CAD BLUEPRINT',
-    },
-  ];
-
   return (
     <div
       className="saas-beta-modal-backdrop"
@@ -207,18 +125,18 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
       aria-labelledby="beta-modal-title"
     >
       <div className="saas-beta-modal-dialog">
-        {/* Barra Superior con Badge de Bienvenida y Botón de Cierre */}
+        {/* Barra Superior con Telemetría de Kernel y Botón de Cierre */}
         <div className="saas-beta-modal-header">
           <div className="saas-beta-modal-header-left">
             <div className="saas-beta-badge-row">
               <span className="saas-beta-pulse-dot" />
-              <span className="saas-beta-badge-text">FASE BETA ABIERTA 2026 · ENTORNO DE PRUEBAS EN VIVO</span>
+              <span className="saas-beta-badge-text">KERNEL v2.6.4 // NIGHTFLOW VIP SUITE · ACCESO DIRECTO AL SISTEMA</span>
             </div>
             <h2 id="beta-modal-title" className="saas-beta-modal-title">
-              Prueba Cada Módulo en Vivo y <span>Ayúdanos a Mejorar</span>
+              Cockpit de Mando VIP <span>& Control de Alta Concurrencia</span>
             </h2>
             <p className="saas-beta-modal-subtitle">
-              Tienes acceso completo a toda la plataforma. Explora libremente la consola de sala, el escáner de puerta y las reservas móviles. Puedes cerrar esta ventana cuando desees para explorar la web.
+              Acceso directo a los 5 motores centrales de la plataforma: telemetría cenital de sala, verificación asimétrica en puerta en 0.04s, tokenización Black Card anti-screenshot y despacho instantáneo de botellería a barra.
             </p>
           </div>
 
@@ -240,32 +158,35 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('modules')}
-              className={`saas-beta-modal-tab-btn ${activeTab === 'modules' ? 'active' : ''}`}
+              className={`saas-beta-modal-tab ${activeTab === 'modules' ? 'active' : ''}`}
             >
-              <Zap size={15} />
-              <span>5 Módulos Operativos</span>
-              <span className="saas-beta-modal-tab-count">En Vivo</span>
+              <Zap size={14} />
+              <span>5 Terminales de Mando</span>
+              <span className="saas-beta-tab-live-dot" aria-hidden="true" />
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('feedback')}
-              className={`saas-beta-modal-tab-btn ${activeTab === 'feedback' ? 'active' : ''}`}
+              className={`saas-beta-modal-tab ${activeTab === 'feedback' ? 'active' : ''}`}
             >
-              <Lightbulb size={15} />
-              <span>Dejar Sugerencia o Feedback</span>
-              <span className="saas-beta-modal-tab-badge">VIP</span>
+              <Lightbulb size={14} />
+              <span>Mesa de Requerimientos VIP</span>
             </button>
           </div>
 
-          <div className="saas-beta-modal-stats-pills">
-            <span className="saas-beta-stat-pill">
-              <ShieldCheck size={13} color="#34d399" />
-              100% en Navegador
+          <div className="saas-beta-modal-metrics">
+            <span className="saas-beta-tel-metric">
+              <ShieldCheck size={12} />
+              LATENCIA &lt; 50ms
             </span>
-            <span className="saas-beta-stat-pill">
-              <Sparkles size={13} color="#e5b54f" />
-              Sin Instalación Requerida
+            <span className="saas-beta-tel-metric">
+              <Sparkles size={12} />
+              ENCLAVE Ed25519
+            </span>
+            <span className="saas-beta-tel-metric">
+              <Crown size={12} />
+              MULTI-TENANT AISLADO
             </span>
           </div>
         </div>
@@ -275,63 +196,23 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
           {activeTab === 'modules' ? (
             <div className="saas-beta-modal-modules-section">
               <div className="saas-beta-modal-modules-grid">
-                {modules.map((mod) => {
-                  const IconComp = mod.icon;
-                  return (
-                    <div key={mod.id} className="saas-beta-module-card">
-                      <div>
-                        <div className="saas-beta-module-top">
-                          <div className="saas-beta-module-icon-wrap">
-                            <IconComp size={20} />
-                          </div>
-                          <span className="saas-beta-module-tag">{mod.roleTag}</span>
-                        </div>
-
-                        <h3 className="saas-beta-module-title">{mod.name}</h3>
-                        <p className="saas-beta-module-desc">{mod.desc}</p>
-
-                        <div className="saas-beta-module-features">
-                          {mod.features.map((feat, idx) => (
-                            <div key={idx} className="saas-beta-module-feature-item">
-                              <Check size={13} />
-                              <span>{feat}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="saas-beta-module-actions">
-                        <Link
-                          to={mod.primaryLink}
-                          onClick={onClose}
-                          className="saas-beta-btn-action saas-beta-btn-action--primary"
-                        >
-                          <span>{mod.primaryLabel}</span>
-                          <ArrowRight size={13} />
-                        </Link>
-
-                        <button
-                          type="button"
-                          onClick={() => handleSelectModuleFeedback(mod.name)}
-                          className="saas-beta-btn-action saas-beta-btn-action--ghost"
-                          title={`Dejar sugerencia sobre ${mod.name}`}
-                        >
-                          <Lightbulb size={13} />
-                          <span>Sugerir</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {BETA_MODULES.map((mod) => (
+                  <BetaModuleCard
+                    key={mod.id}
+                    mod={mod}
+                    onSuggest={handleSelectModuleFeedback}
+                    onNavigate={onClose}
+                  />
+                ))}
               </div>
 
               {/* Banner de llamada rápida al feedback dentro de la vista de módulos */}
               <div className="saas-beta-modal-feedback-banner">
                 <div className="saas-beta-modal-feedback-banner-text">
-                  <Sparkles size={18} style={{ color: 'var(--saas-gold)' }} />
+                  <Crown size={18} style={{ color: 'var(--brand-gold, #e5b54f)' }} />
                   <div>
-                    <strong>¿Tienes una sugerencia o encontraste un detalle al probar?</strong>
-                    <span>Tu aporte ayuda a construir la mejor plataforma nocturna de la región.</span>
+                    <strong>¿Operas un club o discoteca con requerimientos de flujo particulares?</strong>
+                    <span>Nuestro equipo de ingeniería diseña adaptaciones a medida para locales de alta concurrencia.</span>
                   </div>
                 </div>
                 <button
@@ -341,7 +222,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
                   style={{ fontSize: '0.84rem', padding: '9px 18px' }}
                 >
                   <MessageCircle size={14} />
-                  <span>Escribir Sugerencia</span>
+                  <span>Abrir Mesa Técnica</span>
                 </button>
               </div>
             </div>
@@ -353,18 +234,18 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
                 <div className="saas-beta-feedback-intro">
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-gold, #e5b54f)', marginBottom: '8px', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     <Sparkles size={14} />
-                    <span>Buzón VIP de Mejora Continua</span>
+                    <span>Mesa Técnica de Directores VIP</span>
                   </div>
 
-                  <h3>¿Qué función te gustaría ver en tu discoteca?</h3>
+                  <h3>¿Qué requerimiento operativo necesita tu establecimiento?</h3>
                   <p>
-                    Diseñamos este software para solucionar los cuellos de botella reales de la noche. Si probaste los módulos y tienes una idea o requerimiento particular, compártelo aquí.
+                    Arquitecturamos NIGHTFLOW VIP para erradicar los cuellos de botella de la noche: colas de puerta, sobreventas de mesas, comandas perdidas y descontrol de botellería. Plantea tus escenarios críticos aquí.
                   </p>
 
                   <div className="saas-beta-reward-card">
                     <Crown size={20} />
                     <span>
-                      Los dueños de clubes y usuarios que aporten feedback activo obtienen <strong>acceso prioritario y beneficios VIP exclusivos</strong> en el lanzamiento oficial.
+                      Los directores de club que aporten requerimientos operativos obtienen <strong>incorporación prioritaria con SLA de soporte nocturno exclusivo</strong>.
                     </span>
                   </div>
 
@@ -376,7 +257,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
                       style={{ fontSize: '0.8rem', padding: '8px 16px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                     >
                       <Zap size={14} />
-                      <span>Volver a la Lista de Módulos</span>
+                      <span>Volver a la Consola de Módulos</span>
                     </button>
                   </div>
                 </div>
@@ -385,7 +266,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
                 <div className="saas-beta-feedback-form-wrap">
                   {status === 'success' ? (
                     <div className="saas-beta-success-message">
-                      <CheckCircle2 size={44} color="#34d399" />
+                      <CheckCircle2 size={44} color="var(--state-success, #34d399)" />
                       <h4>¡Muchas gracias por tu sugerencia!</h4>
                       <p>
                         Tu aporte ha sido registrado en nuestro sistema. El equipo de ingeniería lo revisará en la próxima ronda de optimización.
@@ -443,7 +324,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
 
                       {/* Selector de Categorías de Feedback */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255, 255, 255, 0.65)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           Tipo de Aporte:
                         </label>
                         <div className="saas-beta-categories">
@@ -472,7 +353,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
 
                       {/* Campo de Mensaje */}
                       <div>
-                        <label htmlFor="modal-feedback-message" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255, 255, 255, 0.65)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <label htmlFor="modal-feedback-message" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           Tu Sugerencia o Comentario: <span style={{ color: 'var(--brand-gold, #e5b54f)' }}>*</span>
                         </label>
                         <textarea
@@ -488,7 +369,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
 
                       {/* Campo Opcional de Contacto */}
                       <div>
-                        <label htmlFor="modal-feedback-contact" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'rgba(255, 255, 255, 0.65)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <label htmlFor="modal-feedback-contact" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           Tu WhatsApp o Correo (Opcional, para darte respuesta):
                         </label>
                         <input
@@ -541,7 +422,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
         {/* Barra Inferior del Modal: Botón de Cierre y Continuación */}
         <div className="saas-beta-modal-footer">
           <div className="saas-beta-modal-footer-hint">
-            <span>¿Prefieres ver la presentación oficial? Puedes volver a abrir esta consola cuando quieras.</span>
+            <span>¿Deseas examinar la propuesta ejecutiva? Puedes regresar a este cockpit interactivo en cualquier momento.</span>
           </div>
 
           <div className="saas-beta-modal-footer-actions">
@@ -550,7 +431,7 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
               onClick={onClose}
               className="saas-beta-modal-btn-dismiss"
             >
-              <span>Explorar la Web Completa</span>
+              <span>Ver Presentación Ejecutiva</span>
               <ArrowRight size={14} />
             </button>
           </div>
@@ -559,3 +440,4 @@ export const SaasBetaWelcomeModal: React.FC<SaasBetaWelcomeModalProps> = ({
     </div>
   );
 };
+

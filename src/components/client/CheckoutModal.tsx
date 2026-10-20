@@ -325,12 +325,12 @@ export const CheckoutModal = ({
               background: 'rgba(245, 158, 11, 0.12)',
               border: '1px solid rgba(245, 158, 11, 0.35)'
             }}>
-              <Clock size={18} color="#f59e0b" />
+              <Clock size={18} color="var(--state-hold)" />
               <div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fde68a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--state-hold)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Pago pendiente de confirmación
                 </div>
-                <div style={{ fontSize: '0.82rem', color: '#fff', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-high)', marginTop: '2px' }}>
                   Mesa {table.table_code} bloqueada por 12 minutos
                 </div>
               </div>
@@ -349,7 +349,7 @@ export const CheckoutModal = ({
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                 <span>Referencia de reserva</span>
-                <span className="font-mono" style={{ color: '#fff', fontWeight: 700 }}>{hold.holdId}</span>
+                <span className="font-mono" style={{ color: 'var(--text-high)', fontWeight: 700 }}>{hold.holdId}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                 <span>Anticipo</span>
@@ -357,11 +357,11 @@ export const CheckoutModal = ({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                 <span>Estado del pago</span>
-                <span style={{ color: '#fbbf24', fontWeight: 700 }}>PENDIENTE</span>
+                <span style={{ color: 'var(--state-hold)', fontWeight: 700 }}>PENDIENTE</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                 <span>Moneda</span>
-                <span style={{ color: '#fff', fontWeight: 700 }}>USD · Ecuador</span>
+                <span style={{ color: 'var(--text-high)', fontWeight: 700 }}>USD · Ecuador</span>
               </div>
               <div style={{
                 display: 'flex',
@@ -383,7 +383,7 @@ export const CheckoutModal = ({
               background: 'rgba(245, 158, 11, 0.08)',
               border: '1px solid rgba(245, 158, 11, 0.28)',
               fontSize: '0.75rem',
-              color: '#fef3c7',
+              color: 'var(--state-hold)',
               lineHeight: 1.5
             }}>
               <strong>Ventana estricta de 12 minutos:</strong> Completa tu pago en la pasarela antes de que expire la cuenta regresiva. Si el pago se procesa después de que la mesa haya sido liberada por timeout, el sistema registrará la transacción en estado de <em>Reembolso Requerido</em> y el administrador emitirá la devolución o reubicación inmediata vía soporte.
@@ -395,7 +395,7 @@ export const CheckoutModal = ({
               background: isDevMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255, 255, 255, 0.03)',
               border: `1px solid ${isDevMode ? 'rgba(59, 130, 246, 0.35)' : 'rgba(255, 255, 255, 0.08)'}`,
               fontSize: '0.73rem',
-              color: isDevMode ? '#93c5fd' : 'var(--text-muted)',
+              color: isDevMode ? 'var(--state-info)' : 'var(--text-muted)',
               lineHeight: 1.45
             }}>
               {isDevMode
@@ -413,7 +413,7 @@ export const CheckoutModal = ({
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-              <ShieldCheck size={13} color="#10b981" />
+              <ShieldCheck size={13} color="var(--state-success)" />
               <span>Hold idempotente · Liberación automática a los 12 minutos</span>
             </div>
           </div>
@@ -438,7 +438,7 @@ export const CheckoutModal = ({
             border: '1px solid rgba(229, 181, 79, 0.3)',
             marginBottom: '14px',
             fontSize: '0.75rem',
-            color: '#e5b54f',
+            color: 'var(--gold)',
           }}>
             <ShieldCheck size={16} />
             <span>
@@ -458,7 +458,7 @@ export const CheckoutModal = ({
             border: '1px solid rgba(239, 68, 68, 0.3)',
             marginBottom: '14px',
             fontSize: '0.78rem',
-            color: '#fca5a5'
+            color: 'var(--state-danger-text)'
           }} role="alert">
             <AlertCircle size={15} style={{ flexShrink: 0, marginTop: '1px' }} />
             <span>{holdError}</span>
@@ -483,7 +483,7 @@ export const CheckoutModal = ({
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high)',
                   fontSize: '0.88rem',
                   fontWeight: 600
                 }}
@@ -507,7 +507,7 @@ export const CheckoutModal = ({
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high)',
                   fontSize: '0.88rem',
                   fontWeight: 600
                 }}
@@ -531,7 +531,7 @@ export const CheckoutModal = ({
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high)',
                   fontSize: '0.88rem'
                 }}
               />
@@ -550,14 +550,14 @@ export const CheckoutModal = ({
                   borderRadius: 'var(--radius-sm)',
                   background: 'var(--bg-input)',
                   border: '1px solid var(--border)',
-                  color: '#fff',
+                  color: 'var(--text-high)',
                   fontSize: '0.88rem',
                   fontWeight: 600,
                   cursor: 'pointer'
                 }}
               >
                 {Array.from({ length: table.capacity }, (_, i) => i + 1).map(n => (
-                  <option key={n} value={n} style={{ background: '#0e121a' }}>
+                  <option key={n} value={n} style={{ background: 'var(--bg-surface)' }}>
                     {n} personas
                   </option>
                 ))}
@@ -602,7 +602,7 @@ export const CheckoutModal = ({
             background: backendEnabled ? 'rgba(16, 185, 129, 0.08)' : 'rgba(59, 130, 246, 0.1)',
             border: `1px solid ${backendEnabled ? 'rgba(16, 185, 129, 0.25)' : 'rgba(59, 130, 246, 0.3)'}`,
             fontSize: '0.74rem',
-            color: backendEnabled ? '#6ee7b7' : '#93c5fd',
+            color: backendEnabled ? 'var(--state-success)' : 'var(--state-info)',
             lineHeight: 1.4
           }}>
             <ShieldCheck size={14} style={{ flexShrink: 0 }} />
@@ -628,7 +628,7 @@ export const CheckoutModal = ({
           }}>
             <div>
               <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Organizador y Vendedor:</span>{' '}
-              <span style={{ color: '#fff' }}>{activeClub?.legal_profile?.legalName || activeClub?.name || 'Club Establecimiento'}</span>
+              <span style={{ color: 'var(--text-high)' }}>{activeClub?.legal_profile?.legalName || activeClub?.name || 'Club Establecimiento'}</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>RUC:</span>{' '}
@@ -687,7 +687,7 @@ export const CheckoutModal = ({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-            <ShieldCheck size={13} color="#10b981" />
+            <ShieldCheck size={13} color="var(--state-success)" />
             <span>Encriptación Bancaria SSL · Hold de 12 minutos · USD</span>
           </div>
         </form>

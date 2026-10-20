@@ -43,7 +43,7 @@ export const FloorPlanArchetypePills: React.FC<Props> = ({ layoutType, onPresetC
                 borderRadius: '5px',
                 background: isActive ? 'var(--brand-gold, #e5b54f)' : 'transparent',
                 border: 'none',
-                color: isActive ? '#08080c' : 'var(--text-muted, #cbd5e1)',
+                color: isActive ? 'var(--bg-void, #08080c)' : 'var(--text-muted, #cbd5e1)',
                 fontSize: '0.76rem',
                 fontWeight: isActive ? 800 : 600,
                 cursor: 'pointer',

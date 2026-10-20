@@ -51,7 +51,7 @@
 [data-theme="light"] .saas-badge-gold {
   background: transparent;
   border: none;
-  color: #8c6504;
+  color: var(--saas-gold);
 }
 
 /* Contenedor amplio (no centrado en cajita estrecha) */

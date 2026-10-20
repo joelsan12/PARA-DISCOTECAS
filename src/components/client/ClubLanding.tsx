@@ -105,7 +105,7 @@ export const ClubLanding = ({ hideClubSelector = false, onBack, onSignOut }: Clu
       width: '100%',
       display: 'flex',
       flexDirection: 'column',
-      background: '#090A0F',
+      background: 'var(--bg-void)',
       overflow: 'hidden',
       maxWidth: '480px',
       margin: '0 auto',

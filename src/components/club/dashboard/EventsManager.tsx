@@ -207,7 +207,7 @@ export const EventsManager = ({ activeClub }: Props) => {
               <CalendarDays size={12} /> Cartelera en Vivo
             </span>
           </div>
-          <h2 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+          <h2 className="font-brand" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: 0 }}>
             Programación y Eventos Oficiales
           </h2>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.84rem', margin: '4px 0 0' }}>
@@ -227,8 +227,8 @@ export const EventsManager = ({ activeClub }: Props) => {
             borderRadius: '10px',
             fontWeight: 700,
             fontSize: '0.86rem',
-            background: 'linear-gradient(135deg, #e5b54f 0%, #c99833 100%)',
-            color: '#08080c',
+            background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c99833) 100%)',
+            color: 'var(--bg-void, #08080c)',
             border: 'none',
             cursor: 'pointer',
             boxShadow: '0 4px 16px rgba(229, 181, 79, 0.25)',
@@ -246,10 +246,7 @@ export const EventsManager = ({ activeClub }: Props) => {
           style={{
             padding: '56px 32px',
             textAlign: 'center',
-            background: 'linear-gradient(180deg, rgba(16, 17, 26, 0.95) 0%, rgba(10, 11, 16, 0.98) 100%)',
-            border: '1px solid rgba(229, 181, 79, 0.25)',
             borderRadius: '18px',
-            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)'
           }}
         >
           <span
@@ -271,7 +268,7 @@ export const EventsManager = ({ activeClub }: Props) => {
             style={{
               fontSize: '1.45rem',
               fontWeight: 800,
-              color: '#ffffff',
+              color: 'var(--text-high, #ffffff)',
               marginBottom: '10px'
             }}
           >
@@ -302,8 +299,8 @@ export const EventsManager = ({ activeClub }: Props) => {
               borderRadius: '10px',
               fontWeight: 800,
               fontSize: '0.92rem',
-              background: 'linear-gradient(135deg, #e5b54f 0%, #c99833 100%)',
-              color: '#08080c',
+              background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c99833) 100%)',
+              color: 'var(--bg-void, #08080c)',
               border: 'none',
               cursor: 'pointer',
               boxShadow: '0 6px 20px rgba(229, 181, 79, 0.3)'
@@ -329,10 +326,9 @@ export const EventsManager = ({ activeClub }: Props) => {
                 style={{
                   borderRadius: '16px',
                   overflow: 'hidden',
-                  background: 'linear-gradient(180deg, rgba(18, 19, 28, 0.95) 0%, rgba(10, 11, 16, 0.98) 100%)',
                   border: isActiveInConsole
                     ? '1.5px solid var(--brand-gold)'
-                    : '1px solid rgba(255, 255, 255, 0.08)',
+                    : '1px solid var(--border)',
                   boxShadow: isActiveInConsole
                     ? '0 8px 30px rgba(229, 181, 79, 0.18)'
                     : '0 4px 20px rgba(0, 0, 0, 0.3)',
@@ -359,7 +355,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                         padding: '3px 8px',
                         borderRadius: '4px',
                         background: 'rgba(16, 185, 129, 0.9)',
-                        color: '#fff',
+                        color: 'var(--text-high, #ffffff)',
                         fontSize: '0.64rem',
                         fontWeight: 800,
                         letterSpacing: '0.06em',
@@ -375,7 +371,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                         padding: '3px 8px',
                         borderRadius: '4px',
                         background: 'rgba(234, 179, 8, 0.9)',
-                        color: '#08080c',
+                        color: 'var(--bg-void, #08080c)',
                         fontSize: '0.64rem',
                         fontWeight: 800,
                         letterSpacing: '0.06em',
@@ -392,7 +388,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                         padding: '3px 8px',
                         borderRadius: '4px',
                         background: 'rgba(229, 181, 79, 0.9)',
-                        color: '#08080c',
+                        color: 'var(--bg-void, #08080c)',
                         fontSize: '0.64rem',
                         fontWeight: 800,
                         letterSpacing: '0.06em',
@@ -425,7 +421,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                       margin: '2px 0 0',
                       fontSize: '1.2rem',
                       fontWeight: 800,
-                      color: '#fff',
+                      color: 'var(--text-high, #ffffff)',
                       lineHeight: 1.2
                     }}>
                       {evt.title}
@@ -436,7 +432,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 {/* Body Card */}
                 <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {evt.subtitle && (
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       {evt.subtitle}
                     </p>
                   )}
@@ -447,31 +443,31 @@ export const EventsManager = ({ activeClub }: Props) => {
                     gap: '8px',
                     padding: '10px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
                     fontSize: '0.76rem'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-dim)' }}>
                       <Clock size={12} color="var(--brand-gold)" />
-                      <span>Puerta: <strong style={{ color: '#fff' }}>{evt.door_time}</strong></span>
+                      <span>Puerta: <strong style={{ color: 'var(--text-high, #ffffff)' }}>{evt.door_time}</strong></span>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-dim)' }}>
                       <DollarSign size={12} color="var(--brand-gold)" />
-                      <span>Cover: <strong style={{ color: '#10b981' }}>{formatUsd(evt.cover_price)}</strong></span>
+                      <span>Cover: <strong style={{ color: 'var(--state-success, #10b981)' }}>{formatUsd(evt.cover_price)}</strong></span>
                     </div>
 
                     {evt.dj_guest && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-dim)', gridColumn: 'span 2' }}>
                         <User size={12} color="var(--brand-gold)" />
-                        <span>DJ: <strong style={{ color: '#fff' }}>{evt.dj_guest}</strong></span>
+                        <span>DJ: <strong style={{ color: 'var(--text-high, #ffffff)' }}>{evt.dj_guest}</strong></span>
                       </div>
                     )}
 
                     {evt.genre && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-dim)', gridColumn: 'span 2' }}>
                         <Music size={12} color="var(--brand-gold)" />
-                        <span>Género: <strong style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{evt.genre}</strong></span>
+                        <span>Género: <strong style={{ color: 'var(--text-high, #ffffff)' }}>{evt.genre}</strong></span>
                       </div>
                     )}
                   </div>
@@ -513,7 +509,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                           borderRadius: '6px',
                           fontSize: '0.74rem',
                           background: 'rgba(255, 255, 255, 0.06)',
-                          color: evt.is_published ? '#10b981' : '#eab308',
+                          color: evt.is_published ? 'var(--state-success, #10b981)' : 'var(--state-hold, #eab308)',
                           border: '1px solid rgba(255, 255, 255, 0.1)',
                           cursor: 'pointer',
                           display: 'flex',
@@ -566,17 +562,14 @@ export const EventsManager = ({ activeClub }: Props) => {
           padding: '20px'
         }}>
           <div
-            className="glass-card"
+            className="glass-card modal-content"
             style={{
               width: '100%',
               maxWidth: '560px',
               maxHeight: '90vh',
               overflowY: 'auto',
               borderRadius: '18px',
-              background: 'linear-gradient(180deg, rgba(20, 21, 30, 0.98) 0%, rgba(12, 13, 20, 0.99) 100%)',
-              border: '1px solid rgba(229, 181, 79, 0.3)',
               padding: '28px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.7)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -590,7 +583,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 }}>
                   {editingEvent ? 'Edición de Evento' : 'Nueva Fecha en Cartelera'}
                 </span>
-                <h3 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', margin: '2px 0 0' }}>
+                <h3 className="font-brand" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-high, #ffffff)', margin: '2px 0 0' }}>
                   {editingEvent ? editingEvent.title : 'Crear Evento Oficial'}
                 </h3>
               </div>
@@ -601,7 +594,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'var(--text-muted)',
                   cursor: 'pointer',
                   padding: '6px'
                 }}
@@ -616,7 +609,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 borderRadius: '8px',
                 background: 'rgba(239, 68, 68, 0.12)',
                 border: '1px solid rgba(239, 68, 68, 0.35)',
-                color: '#f87171',
+                color: 'var(--state-danger, #f87171)',
                 fontSize: '0.82rem',
                 marginBottom: '16px',
                 display: 'flex',
@@ -634,7 +627,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 borderRadius: '8px',
                 background: 'rgba(16, 185, 129, 0.12)',
                 border: '1px solid rgba(16, 185, 129, 0.35)',
-                color: '#34d399',
+                color: 'var(--state-success, #34d399)',
                 fontSize: '0.82rem',
                 marginBottom: '16px',
                 display: 'flex',
@@ -648,7 +641,7 @@ export const EventsManager = ({ activeClub }: Props) => {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                   Nombre del Evento *
                 </label>
                 <input
@@ -663,14 +656,14 @@ export const EventsManager = ({ activeClub }: Props) => {
                     borderRadius: '8px',
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.86rem'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                   Subtítulo / Temática
                 </label>
                 <input
@@ -684,7 +677,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                     borderRadius: '8px',
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.86rem'
                   }}
                 />
@@ -692,7 +685,7 @@ export const EventsManager = ({ activeClub }: Props) => {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                     Fecha del Evento *
                   </label>
                   <input
@@ -706,7 +699,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                       borderRadius: '8px',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      color: '#fff',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.86rem',
                       colorScheme: 'dark'
                     }}
@@ -714,7 +707,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                     Hora de Apertura
                   </label>
                   <input
@@ -727,7 +720,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                       borderRadius: '8px',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      color: '#fff',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.86rem',
                       colorScheme: 'dark'
                     }}
@@ -737,7 +730,7 @@ export const EventsManager = ({ activeClub }: Props) => {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                     Precio Cover General (USD)
                   </label>
                   <input
@@ -752,14 +745,14 @@ export const EventsManager = ({ activeClub }: Props) => {
                       borderRadius: '8px',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      color: '#fff',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.86rem'
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                     DJ Invitado / Artista
                   </label>
                   <input
@@ -773,7 +766,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                       borderRadius: '8px',
                       background: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.12)',
-                      color: '#fff',
+                      color: 'var(--text-high, #ffffff)',
                       fontSize: '0.86rem'
                     }}
                   />
@@ -781,7 +774,7 @@ export const EventsManager = ({ activeClub }: Props) => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                   Género Musical
                 </label>
                 <input
@@ -795,14 +788,14 @@ export const EventsManager = ({ activeClub }: Props) => {
                     borderRadius: '8px',
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.86rem'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', marginBottom: '6px' }}>
                   URL del Flyer / Imagen Promocional
                 </label>
                 <input
@@ -816,7 +809,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                     borderRadius: '8px',
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#fff',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.86rem'
                   }}
                 />
@@ -839,7 +832,7 @@ export const EventsManager = ({ activeClub }: Props) => {
                   onChange={e => setFormData({ ...formData, is_published: e.target.checked })}
                   style={{ width: '18px', height: '18px', accentColor: 'var(--brand-gold)', cursor: 'pointer' }}
                 />
-                <label htmlFor="event_is_published" style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff', cursor: 'pointer' }}>
+                <label htmlFor="event_is_published" style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-high, #ffffff)', cursor: 'pointer' }}>
                   Publicar evento inmediatamente en la página pública del club
                 </label>
               </div>
@@ -851,9 +844,9 @@ export const EventsManager = ({ activeClub }: Props) => {
                   style={{
                     padding: '10px 18px',
                     borderRadius: '8px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: 'rgba(255, 255, 255, 0.8)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-high, #ffffff)',
                     fontSize: '0.84rem',
                     cursor: 'pointer'
                   }}
@@ -867,8 +860,8 @@ export const EventsManager = ({ activeClub }: Props) => {
                   style={{
                     padding: '10px 22px',
                     borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #e5b54f 0%, #c99833 100%)',
-                    color: '#08080c',
+                    background: 'linear-gradient(135deg, var(--gold, #e5b54f) 0%, var(--gold-hover, #c99833) 100%)',
+                    color: 'var(--bg-void, #08080c)',
                     border: 'none',
                     fontWeight: 800,
                     fontSize: '0.86rem',

@@ -22,7 +22,24 @@ Este documento es la **fuente de verdad absoluta e innegociable** para la arquit
 * **Modo Cliente (VIP / Invitados):** `npm run dev:client` -> Puerto `5173`.
 * **Modo Administrador / Staff:** `npm run dev:admin` -> Puerto `5174`.
 * **Verificación de Tipos / Build:** `npm run build`.
-* **Linter:** `npm run lint`.
+* **Linter & Invariantes:** `npm run lint` (oxlint + boundaries + security + design).
+
+### 1.1 Directrices de Diseño Anti-Slop, Tokens & Microinteracciones (Innegociable)
+* **Dirección Artística:** "Consola Operativa Nocturna" (dark operativo / hardware studio). Base obsidiana profunda (`--bg-void: #08080c`), cristal ahumado (`--bg-glass`), oro champán como acento de lujo (`--gold: #e5b54f`), colores semánticos estrictamente funcionales (`--state-*`), hairlines de 1px sobre sombras difusas excesivas. Cero estética de plantilla o "AI Slop".
+* **Jerarquía Tipográfica (definida en `variables.css`):**
+  * `Cinzel` (`--font-serif`): Exclusividad, monogramas y marca VIP.
+  * `Outfit` (`--font-brand`, `--font-display`): Títulos, displays y cabeceras de impacto.
+  * `Plus Jakarta Sans` (`--font-body`): Textos de lectura general, botones y formularios.
+  * `JetBrains Mono` (`--font-mono`): Telemetría operativa, contadores de hold, aforo, latencias y tokens criptográficos.
+* **Primitivas Visuales en Vanilla CSS Puro (Cero dependencias npm nuevas):**
+  * Toda microinteracción moderna (spotlights, border beams, badges HUD) se implementa mediante CSS puro y custom properties reactivas en componentes ligeros (`SpotlightCard`, `BorderBeam`, `TelemetryBadge`).
+  * **Rendimiento Crítico en Puerta:** La terminal de acceso y el escáner QR (`DoorPwaApp.tsx`, `QrCameraScanner.tsx`) priorizan 60 fps estables en hardware móvil básico. **Prohibido** el uso de `backdrop-filter` pesado, parallax o listeners continuos de `onMouseMove` en la vista de escaneo de puerta.
+  * Todas las animaciones deben supeditarse a `@media (prefers-reduced-motion: reduce)`.
+* **Mecanismo de Enforcement Ratchet:**
+  * Validado en cada ejecución de `npm run lint` vía `scripts/check-design-invariants.mjs`.
+  * Prohibición absoluta de clases de utilidad Tailwind en TSX/TS/HTML.
+  * Prohibición de fondos planos `#fff` o `#e5e7eb` en tema oscuro.
+  * Deuda de colores hexadecimales controlada por `scripts/design-invariants.baseline.json`: ningún archivo puede superar su cuota registrada y los archivos nuevos deben usar tokens de diseño o fallbacks explícitos `var(--token, #fallback)`. La deuda solo se reduce.
 
 ---
 
@@ -269,6 +286,7 @@ Ningún módulo pasa a producción sin superar con éxito las siguientes 12 prue
 * Todo QR alterado, vencido o duplicado debe ser rechazado.
 * Cola offline cifrada y sincronizada una sola vez de forma idempotente.
 * Cloud Run y Cloud Functions sin secretos ni claves privadas expuestas en los bundles públicos.
+* Cero clases Tailwind y baseline de deuda de diseño vacío (`{}`) en `scripts/check-design-invariants.mjs`, con ratchet auto-reforzado que bloquea automáticamente cualquier color hexadecimal crudo no tokenizado.
 
 ---
 

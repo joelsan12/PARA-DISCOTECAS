@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapPin,
-  Lock,
   ArrowRight,
   Cpu,
   Layers,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 
 type TableKey = 'suite' | 'dj' | 'palco';
@@ -13,7 +14,8 @@ type TableKey = 'suite' | 'dj' | 'palco';
 interface TableData {
   id: TableKey;
   name: string;
-  desc: string;
+  pax: number;
+  minSpend: number;
   status: 'AVAILABLE' | 'HELD' | 'OCCUPIED';
   timer: number;
 }
@@ -21,22 +23,25 @@ interface TableData {
 const INITIAL_EXPERIENCE_TABLES: Record<TableKey, TableData> = {
   suite: {
     id: 'suite',
-    name: 'Suite VIP 01',
-    desc: '15 personas · $120 anticipo',
-    status: 'AVAILABLE',
-    timer: 720,
+    name: 'Suite Privé 01',
+    pax: 15,
+    minSpend: 380,
+    status: 'HELD',
+    timer: 684,
   },
   dj: {
     id: 'dj',
     name: 'Cabina DJ VIP',
-    desc: '12 personas · $150 anticipo',
+    pax: 12,
+    minSpend: 250,
     status: 'OCCUPIED',
     timer: 0,
   },
   palco: {
     id: 'palco',
-    name: 'Palco Escenario',
-    desc: '10 personas · $90 anticipo',
+    name: 'Palco Imperial',
+    pax: 10,
+    minSpend: 200,
     status: 'AVAILABLE',
     timer: 720,
   },
@@ -46,7 +51,7 @@ export function SaasExperiencesSection() {
   const [selectedTable, setSelectedTable] = useState<TableKey>('suite');
   const [tables, setTables] = useState<Record<TableKey, TableData>>(INITIAL_EXPERIENCE_TABLES);
 
-  // Temporizador de hold para cualquier mesa en estado HELD
+  // Temporizador de hold para cualquier mesa apartada
   useEffect(() => {
     const timer = setInterval(() => {
       setTables((prev) => {
@@ -66,6 +71,7 @@ export function SaasExperiencesSection() {
   }, []);
 
   const handleToggleHold = (key: TableKey) => {
+    setSelectedTable(key);
     setTables((prev) => {
       const current = prev[key];
       if (current.status === 'AVAILABLE') {
@@ -90,36 +96,45 @@ export function SaasExperiencesSection() {
     });
   };
 
-  const currentTable = tables[selectedTable];
+  const formatTimer = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   return (
     <section className="saas-experiences-section saas-fullscreen-section">
       <div className="saas-wide-shell">
         <div className="saas-section-header-left">
-          <span className="saas-badge-gold">CÓMO FUNCIONA EN TU DISCOTECA</span>
-          <h2 className="saas-section-title-left">Controla tu noche en 3 pasos muy sencillos</h2>
+          <div className="saas-section-eyebrow">
+            <span className="saas-section-eyebrow-dot" aria-hidden="true" />
+            <span>ARQUITECTURA OPERATIVA // TRES MOVIMIENTOS</span>
+          </div>
+          <h2 className="saas-section-title-left">
+            Control total de tu noche en 3 movimientos.
+          </h2>
           <p className="saas-section-desc-left">
-            Olvídate de las listas impresas, las discusiones en la entrada y el caos de coordinar reservas por chats.
+            La venta anticipada, la puerta en hora pico y la barra de consumos sincronizadas en una sola arquitectura sin fricción ni caídas.
           </p>
         </div>
 
         <div className="saas-experience-grid">
-          {/* Experiencia 1: El Plano Cenital Interactivo */}
+          {/* Pilar 1: Reserva Cenital en Vivo */}
           <div className="saas-exp-card">
             <div className="saas-exp-card__head">
               <div className="saas-exp-tag">
-                <MapPin size={14} color="var(--saas-gold)" />
-                <span>01 // RESERVAS POR INTERNET</span>
+                <MapPin size={13} />
+                <span>01 // VENTA EN LÍNEA</span>
               </div>
-              <h3>Mapa de Mesas y Pago Inmediato</h3>
-              <p>
-                Tus clientes eligen su mesa favorita y pagan el anticipo directo a tu cuenta. El sistema aparta la mesa 12 minutos para que nadie más la tome mientras completan el pago.
+              <h3 className="saas-exp-card__title">Plano Cenital &amp; Anticipo Inmediato</h3>
+              <p className="saas-exp-card__desc">
+                Tus clientes tocan su mesa favorita y pagan el anticipo al instante. La mesa se bloquea 12 minutos con un hold atómico en servidor: cero sobreventa a medianoche.
               </p>
             </div>
 
-            {/* Micro-simulador de mesa dentro de la tarjeta */}
-            <div className="saas-micro-floor">
-              <div className="saas-micro-table-row">
+            {/* Micro visualizador interactivo del plano */}
+            <div className="saas-micro-floor-pillar">
+              <div className="saas-micro-floor-tiles">
                 {(Object.keys(tables) as TableKey[]).map((key) => {
                   const t = tables[key];
                   const isSelected = selectedTable === key;
@@ -127,131 +142,136 @@ export function SaasExperiencesSection() {
                     <button
                       key={key}
                       type="button"
-                      className={`saas-micro-table ${isSelected ? 'active' : ''}`}
-                      onClick={() => setSelectedTable(key)}
+                      onClick={() => handleToggleHold(key)}
+                      className={`saas-pillar-table-tile ${t.status.toLowerCase()} ${
+                        isSelected ? 'selected' : ''
+                      }`}
                     >
-                      <div className="saas-micro-table__info">
-                        <strong>{t.name}</strong>
-                        <span>{t.desc}</span>
+                      <div className="saas-pillar-table-main">
+                        <span className="saas-pillar-table-name">{t.name}</span>
+                        <span className="saas-pillar-table-meta">{t.pax} pax · Min. ${t.minSpend}</span>
                       </div>
-                      <span className={`saas-table-pill ${t.status === 'HELD' ? 'held' : t.status === 'OCCUPIED' ? 'occ' : 'avail'}`}>
-                        {t.status === 'HELD'
-                          ? `APARTADA ${Math.floor(t.timer / 60)}:${(t.timer % 60).toString().padStart(2, '0')}`
-                          : t.status === 'OCCUPIED'
-                          ? 'OCUPADA'
-                          : 'DISPONIBLE'}
-                      </span>
+                      <div className="saas-pillar-table-status">
+                        {t.status === 'HELD' && (
+                          <span className="saas-pillar-held-time">
+                            <Clock size={11} />
+                            <span>{formatTimer(t.timer)}</span>
+                          </span>
+                        )}
+                        {t.status === 'AVAILABLE' && (
+                          <span className="saas-pillar-status-text avail">
+                            <span className="saas-pillar-dot avail" /> LIBRE
+                          </span>
+                        )}
+                        {t.status === 'OCCUPIED' && (
+                          <span className="saas-pillar-status-text occ">
+                            <span className="saas-pillar-dot occ" /> EN SALA
+                          </span>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
               </div>
 
-              <div className="saas-micro-floor__action">
-                <button
-                  type="button"
-                  className="btn-gold"
-                  onClick={() => handleToggleHold(selectedTable)}
-                  style={{ fontSize: '0.76rem', padding: '8px 14px' }}
-                >
-                  <Lock size={13} />
-                  <span>
-                    {currentTable.status === 'AVAILABLE'
-                      ? 'Simular Reserva (Apartar 12 min)'
-                      : currentTable.status === 'HELD'
-                      ? `Liberar ${currentTable.name}`
-                      : 'Liberar Mesa Ocupada'}
-                  </span>
-                </button>
-                <span style={{ fontSize: '0.74rem', color: 'var(--saas-text-secondary)' }}>
-                  {currentTable.status === 'HELD'
-                    ? `${currentTable.name} apartada: nadie más puede comprarla.`
-                    : currentTable.status === 'OCCUPIED'
-                    ? 'Esta mesa está ocupada. Puedes liberarla para probar apartarla.'
-                    : `Toca el botón para ver cómo se aparta ${currentTable.name}.`}
-                </span>
+              <div className="saas-pillar-note">
+                <span className="saas-pillar-note-dot" />
+                <span>Toca una mesa para probar el bloqueo atómico de 12 minutos.</span>
               </div>
             </div>
 
             <Link to="/software/simulador" className="saas-card-link">
-              <span>Probar el mapa de mesas en vivo</span>
+              <span>Explorar simulador de reservas</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
-          {/* Experiencia 2: La Puerta Offline a las 02:00 AM */}
+          {/* Pilar 2: Control Criptográfico en Puerta */}
           <div className="saas-exp-card">
             <div className="saas-exp-card__head">
               <div className="saas-exp-tag">
-                <Cpu size={14} color="var(--saas-gold)" />
-                <span>02 // CONTROL EN LA PUERTA</span>
+                <Cpu size={13} />
+                <span>02 // CONTROL DE PUERTA</span>
               </div>
-              <h3>Escáner Rápido que Funciona sin Internet</h3>
-              <p>
-                Tus porteros escanean las entradas con la cámara de su teléfono en menos de un segundo. Aunque tu local esté en un subsuelo o falle el internet, la fila avanza sin parar.
+              <h3 className="saas-exp-card__title">Escáner Óptico Sin Internet</h3>
+              <p className="saas-exp-card__desc">
+                Validación por hardware con la cámara de cualquier teléfono móvil en menos de 50 ms. Aunque el local esté en un subsuelo o falle el internet, la fila avanza sin detenerse.
               </p>
             </div>
 
-            {/* Vista HUD del escáner en puerta */}
-            <div className="saas-micro-hud">
-              <div className="saas-micro-hud__header">
-                <span style={{ color: '#34d399', fontWeight: 700 }}>● ESCÁNER DE ENTRADA // PUERTA 01</span>
-                <span>TIEMPO: AL INSTANTE</span>
+            {/* Micro HUD Óptico */}
+            <div className="saas-micro-hud-pillar">
+              <div className="saas-hud-telemetry-header">
+                <div className="saas-hud-title-line">
+                  <span className="saas-hud-live-dot" />
+                  <span>TERMINAL PUERTA 01 · KMS ED25519</span>
+                </div>
+                <span className="saas-hud-latency">&lt; 0.04s SLA</span>
               </div>
-              <div className="saas-micro-hud__body">
-                <div className="saas-micro-hud__line">
-                  <span>RESERVA:</span>
-                  <strong>#RES-8921-SENSORIAL</strong>
+
+              <div className="saas-hud-data-lines">
+                <div className="saas-hud-row">
+                  <span className="saas-hud-label">CREDENCIAL:</span>
+                  <span className="saas-hud-value mono">#RES-8921-SENSORIAL</span>
                 </div>
-                <div className="saas-micro-hud__line">
-                  <span>ESTADO:</span>
-                  <strong style={{ color: '#34d399' }}>✓ ENTRADA AUTÉNTICA · ACCESO APROBADO</strong>
+                <div className="saas-hud-row verified">
+                  <span className="saas-hud-label">VEREDICTO:</span>
+                  <span className="saas-hud-value success">
+                    <CheckCircle2 size={13} />
+                    <span>ENTRADA AUTÉNTICA · ACCESO PERMITIDO</span>
+                  </span>
                 </div>
-                <div className="saas-micro-hud__line">
-                  <span>CONEXIÓN:</span>
-                  <span style={{ color: 'var(--saas-gold)' }}>FUNCIONA SIN INTERNET · SE GUARDA EN EL TELÉFONO</span>
+                <div className="saas-hud-row">
+                  <span className="saas-hud-label">CONECTIVIDAD:</span>
+                  <span className="saas-hud-value gold">RED LOCAL AISLADA · CERO DEPENDENCIAS</span>
                 </div>
               </div>
             </div>
 
             <Link to="/software/arquitectura" className="saas-card-link">
-              <span>Ver cómo opera la seguridad sin internet</span>
+              <span>Conocer la seguridad sin internet</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
-          {/* Experiencia 3: Consola de Sala en Vivo */}
+          {/* Pilar 3: Consola de Sala & Liquidación */}
           <div className="saas-exp-card">
             <div className="saas-exp-card__head">
               <div className="saas-exp-tag">
-                <Layers size={14} color="var(--saas-gold)" />
-                <span>03 // CONTROL DE TU DINERO</span>
+                <Layers size={13} />
+                <span>03 // CONTROL DE SALA</span>
               </div>
-              <h3>Panel en Vivo para el Gerente y la Barra</h3>
-              <p>
-                Mira en tiempo real desde tu celular o computadora cuántas mesas están ocupadas, cuánto dinero ha entrado por anticipos y cuánta gente está en la sala.
+              <h3 className="saas-exp-card__title">Mando en Vivo para Gerencia y Barra</h3>
+              <p className="saas-exp-card__desc">
+                Monitorea aforo en tiempo real, consumos cargados a la mesa y recaudación de anticipos bancarios directos a tu cuenta con respaldo y facturación SRI al instante.
               </p>
             </div>
 
-            {/* Previsualización de la consola */}
-            <div className="saas-micro-dashboard-preview">
-              <div className="saas-micro-kpi-row">
-                <div className="saas-micro-kpi">
-                  <span>MESAS OCUPADAS</span>
-                  <strong>28 / 30</strong>
+            {/* Micro Dashboard de KPIs */}
+            <div className="saas-micro-kpi-pillar">
+              <div className="saas-pillar-kpi-grid">
+                <div className="saas-pillar-kpi-cell">
+                  <span className="saas-pillar-kpi-label">AFORO EN SALA</span>
+                  <strong className="saas-pillar-kpi-val">214 / 300</strong>
+                  <div className="saas-pillar-kpi-bar">
+                    <span className="saas-pillar-kpi-fill" style={{ width: '71%' }} />
+                  </div>
                 </div>
-                <div className="saas-micro-kpi">
-                  <span>ANTICIPOS COBRADOS</span>
-                  <strong style={{ color: 'var(--saas-gold)' }}>$2,840 USD</strong>
+                <div className="saas-pillar-kpi-cell">
+                  <span className="saas-pillar-kpi-label">ANTICIPOS COBRADOS</span>
+                  <strong className="saas-pillar-kpi-val gold">$2,840 USD</strong>
+                  <span className="saas-pillar-kpi-sub">Directo a tu cuenta</span>
                 </div>
-                <div className="saas-micro-kpi">
-                  <span>CLIENTES EN SALA</span>
-                  <strong>342 PERSONAS</strong>
-                </div>
+              </div>
+
+              <div className="saas-pillar-kpi-status-line">
+                <span className="saas-pillar-dot avail" />
+                <span>Barra y Terminales de Meseros sincronizadas al segundo</span>
               </div>
             </div>
 
             <Link to="/software/pantallas" className="saas-card-link">
-              <span>Ver las pantallas del personal y clientes</span>
+              <span>Ver pantallas de personal y clientes</span>
               <ArrowRight size={14} />
             </Link>
           </div>
