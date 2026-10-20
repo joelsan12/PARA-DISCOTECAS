@@ -10,7 +10,10 @@
     </filter>
   </defs>
 
-  <!-- Símbolos juntos entrelazados (sin caja contenedora) -->
+  <!-- Fondo obsidiana con esquinas redondeadas para contraste óptimo en pestañas -->
+  <rect width="48" height="48" rx="10" fill="#08080C" />
+
+  <!-- Símbolos juntos entrelazados -->
   <g filter="url(#nf-fav-glow)">
     <path d="M14 35C14 20 21 11 25 11C29 11 29 19 24.5 27.5" stroke="url(#nf-fav-gold)" stroke-width="4.2" stroke-linecap="round" />
     <path d="M23.5 20.5C19 29 19 37 23 37C27 37 34 28 34 13" stroke="url(#nf-fav-gold)" stroke-width="4.2" stroke-linecap="round" />

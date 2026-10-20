@@ -242,17 +242,63 @@ const encodePng = (width, height, rgba) => {
 };
 
 // ---------------------------------------------------------------------------
+// Generador de ICO multi-resolución a partir de PNGs
+// ---------------------------------------------------------------------------
+const createIco = (images) => {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0); // reservado
+  header.writeUInt16LE(1, 2); // 1 = ICO
+  header.writeUInt16LE(images.length, 4);
+
+  let offset = 6 + images.length * 16;
+  const entries = [];
+  for (const img of images) {
+    const entry = Buffer.alloc(16);
+    entry.writeUInt8(img.width >= 256 ? 0 : img.width, 0);
+    entry.writeUInt8(img.height >= 256 ? 0 : img.height, 1);
+    entry.writeUInt8(0, 2); // paleta de color (0 = sin paleta)
+    entry.writeUInt8(0, 3); // reservado
+    entry.writeUInt16LE(1, 4); // planos de color
+    entry.writeUInt16LE(32, 6); // bits por pixel
+    entry.writeUInt32LE(img.buffer.length, 8); // tamaño del PNG
+    entry.writeUInt32LE(offset, 12); // desplazamiento
+    entries.push(entry);
+    offset += img.buffer.length;
+  }
+
+  return Buffer.concat([header, ...entries, ...images.map((img) => img.buffer)]);
+};
+
+// ---------------------------------------------------------------------------
 const targets = [
   { file: 'icon-192.png', size: 192, symbolScale: 0.72 },
   { file: 'icon-512.png', size: 512, symbolScale: 0.72 },
   { file: 'icon-maskable-512.png', size: 512, symbolScale: 0.56 },
   { file: 'apple-touch-icon.png', size: 180, symbolScale: 0.66 },
+  { file: 'favicon-32x32.png', size: 32, symbolScale: 0.78 },
+  { file: 'favicon-48x48.png', size: 48, symbolScale: 0.78 },
 ];
 
 mkdirSync(outDir, { recursive: true });
+const generatedPngs = {};
 for (const target of targets) {
   const png = encodePng(target.size, target.size, renderIcon(target.size, target.symbolScale));
   writeFileSync(join(outDir, target.file), png);
+  generatedPngs[target.file] = { size: target.size, buffer: png };
   console.log(`${target.file}: ${target.size}x${target.size}, ${(png.length / 1024).toFixed(1)} KB`);
 }
-console.log('Iconos PWA generados en public/icons/');
+
+// También escribir copias directas en public/ para máxima compatibilidad con navegadores
+const publicDir = join(root, 'public');
+writeFileSync(join(publicDir, 'favicon-32x32.png'), generatedPngs['favicon-32x32.png'].buffer);
+writeFileSync(join(publicDir, 'favicon.png'), generatedPngs['favicon-48x48.png'].buffer);
+
+// Generar favicon.ico con versiones 32x32 y 48x48
+const ico = createIco([
+  { width: 32, height: 32, buffer: generatedPngs['favicon-32x32.png'].buffer },
+  { width: 48, height: 48, buffer: generatedPngs['favicon-48x48.png'].buffer },
+]);
+writeFileSync(join(publicDir, 'favicon.ico'), ico);
+console.log(`favicon.ico: 32x32 + 48x48, ${(ico.length / 1024).toFixed(1)} KB`);
+
+console.log('Iconos PWA y favicons generados exitosamente.');

@@ -6,6 +6,9 @@ const SHELL_URLS = [
   '/index.html',
   '/manifest.webmanifest',
   '/favicon.svg',
+  '/favicon.ico',
+  '/favicon.png',
+  '/favicon-32x32.png',
   '/icons.svg',
   '/nightflow-logo.svg',
   '/icons/icon-192.png',
@@ -108,6 +111,9 @@ self.addEventListener('fetch', event => {
     url.pathname.startsWith('/icons/') ||
     url.pathname === '/manifest.webmanifest' ||
     url.pathname === '/favicon.svg' ||
+    url.pathname === '/favicon.ico' ||
+    url.pathname === '/favicon.png' ||
+    url.pathname === '/favicon-32x32.png' ||
     url.pathname === '/icons.svg' ||
     url.pathname === '/nightflow-logo.svg';
 
