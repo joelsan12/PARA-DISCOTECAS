@@ -41,8 +41,8 @@ class ClubStore {
   proposals: ClubProposal[] = INITIAL_PROPOSALS;
   private logger = createAuditLogger(import.meta.env.DEV ? INITIAL_AUDIT_LOGS : []);
 
-  activeClubId: string = '';
-  activeEventId: string = '';
+  activeClubId: string = INITIAL_CLUBS[0]?.id || '';
+  activeEventId: string = INITIAL_EVENTS[0]?.id || '';
   currentRole: ViewRole = 'CLIENT';
   dashboardTab: string = 'MONITOR';
   customArchetypeLayouts: Record<string, { tables: ClubTable[]; pricings?: EventTablePricing[] }> = {};

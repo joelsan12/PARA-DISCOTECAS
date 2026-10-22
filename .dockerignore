@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-admin
+dist-dev
+.git
+.firebase
+.agents
+.claude
+.kilo
+*.mp4
+*.log
+serviceAccountKey.json
+serviceAccount*.json
+.env.local
+.env.production
+.env*.local

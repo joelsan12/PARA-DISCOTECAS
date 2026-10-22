@@ -183,7 +183,7 @@ export function SaasDirectoryPage() {
               <span className="saas-results-count">
                 {loading && entries.length === 0
                   ? 'Cargando venues…'
-                  : `${results.length} ${results.length === 1 ? 'lugar' : 'lugares'} disponibles`}
+                  : `${results.length} ${results.length === 1 ? 'venue verificado disponible' : 'venues verificados disponibles'}`}
               </span>
             </div>
           </div>

@@ -67,6 +67,10 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // Modo asistido: la activación automática no está disponible (backend caído
+  // o mantenimiento). El lead ya quedó registrado en Firestore y se ofrece
+  // continuar por WhatsApp con los datos del formulario, sin perder el prospecto.
+  const [isAssisted, setIsAssisted] = useState(false);
   const [copiedKey, setCopiedKey] = useState<boolean>(false);
   const [result, setResult] = useState<RegisterBetaClubOnlineResponse | null>(null);
 
@@ -78,6 +82,13 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
     `Hola Nightflow VIP, he activado mi club en la beta:\n• Club: ${clubName.trim() || 'Mi Club'}\n• Ciudad: ${resolvedCity}\n• Responsable: ${ownerName.trim() || 'Propietario'}\n• Correo: ${email.trim() || 'Sin especificar'}\n• Acceso: Beta Privada VIP`
   );
   const whatsappUrl = `https://wa.me/593979116551?text=${whatsappMessage}`;
+
+  // Enlace a la consola con el correo precargado en el login (?email=)
+  const adminLoginUrl = (() => {
+    const base = result?.credentials.adminUrl || 'https://nightflow-admin.web.app';
+    if (!result?.credentials.email) return base;
+    return `${base}${base.includes('?') ? '&' : '?'}email=${encodeURIComponent(result.credentials.email)}`;
+  })();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +103,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
 
     setIsSubmitting(true);
     setErrorMessage(null);
+    setIsAssisted(false);
 
     try {
       const response = await registerBetaClubOnline({
@@ -107,11 +119,19 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
       setIsSubmitted(true);
     } catch (err) {
       console.error('Error al activar club beta:', err);
-      setErrorMessage(
-        err instanceof Error
-          ? err.message
-          : 'No se pudo completar la activación en este momento. Puedes continuar directamente por WhatsApp.'
-      );
+      const raw = err instanceof Error ? err.message : '';
+      // Fallo de conectividad/backend caído: el lead ya quedó guardado en
+      // betaLeads dentro de registerBetaClubOnline. Se degrada con elegancia a
+      // activación asistida por WhatsApp en vez de mostrar un error seco.
+      const isConnectivity =
+        !raw ||
+        /no se pudo activar|no está disponible|no está desplegada|no pudimos conectar|failed to fetch|network|load failed|timed? ?out|unavailable|internal|not[- ]?found|unimplemented|50[0-4]/i.test(raw);
+      if (isConnectivity) {
+        setIsAssisted(true);
+        setErrorMessage(null);
+      } else {
+        setErrorMessage(raw || 'No se pudo completar la activación en este momento. Puedes continuar directamente por WhatsApp.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -285,6 +305,102 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                 </>
               )}
             </button>
+
+            {isAssisted && (
+              <div
+                role="status"
+                style={{
+                  marginTop: '12px',
+                  background: 'rgba(229, 181, 79, 0.06)',
+                  border: '1px solid var(--saas-border-gold)',
+                  borderRadius: '10px',
+                  padding: '14px',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <MessageCircle size={15} color="var(--gold, #e5b54f)" />
+                  <strong style={{ fontSize: '0.82rem', color: 'var(--saas-text-primary)' }}>
+                    Activación asistida disponible
+                  </strong>
+                </div>
+                <p style={{ fontSize: '0.76rem', color: 'var(--saas-text-secondary)', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  El alta automática está en mantenimiento. Tu solicitud quedó registrada con los datos de este formulario: activamos tu consola manualmente en minutos.
+                </p>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    padding: '11px',
+                    background: 'rgba(37, 211, 102, 0.14)',
+                    border: '1px solid rgba(37, 211, 102, 0.45)',
+                    color: 'var(--brand-whatsapp, #25d366)',
+                    borderRadius: '8px',
+                    fontSize: '0.84rem',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <MessageCircle size={16} />
+                  <span>Activar mi consola por WhatsApp</span>
+                </a>
+                <button
+                  type="submit"
+                  onClick={() => setIsAssisted(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    width: '100%',
+                    marginTop: '8px',
+                    padding: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--saas-text-secondary)',
+                    fontSize: '0.74rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <RotateCw size={12} />
+                  <span>Reintentar activación automática</span>
+                </button>
+                <div style={{ marginTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.07)', paddingTop: '9px' }}>
+                  <span style={{ fontSize: '0.66rem', color: 'var(--saas-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
+                    Mientras tanto, explora las guías del producto
+                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+                    {OFFICIAL_VISUAL_GUIDES.map((guide) => (
+                      <a
+                        key={guide.id}
+                        href={guide.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          fontSize: '0.74rem',
+                          color: 'var(--gold, #e5b54f)',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <FileText size={12} />
+                        <span>{guide.title}</span>
+                        <Download size={11} style={{ marginLeft: 'auto', opacity: 0.8 }} />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {errorMessage && (
               <a
@@ -482,7 +598,7 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
             {/* Botones de Acción */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <a
-                href={result?.credentials.adminUrl || 'https://nightflow-admin.web.app'}
+                href={adminLoginUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold"

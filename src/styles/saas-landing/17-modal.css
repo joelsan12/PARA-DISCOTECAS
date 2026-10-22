@@ -21,6 +21,27 @@
   position: relative;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
   text-align: left;
+  /* El contenido de éxito (credenciales + guías + acciones) excede pantallas
+     bajas: sin este tope el flex-centrado corta el encabezado sin poder
+     hacer scroll. En este caso la caja crece hasta el tope y rola hacia
+     adentro para que el check y el título siempre sean alcanzables. */
+  max-height: min(90vh, 920px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--saas-border-gold) transparent;
+}
+
+.saas-modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.saas-modal-box::-webkit-scrollbar-thumb {
+  background: var(--saas-border-gold);
+  border-radius: 3px;
+}
+
+.saas-modal-box::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .saas-modal-close {

@@ -204,15 +204,49 @@ async function fetchPublicDirectory(filters?: DirectoryFilters): Promise<Busines
   try {
     const snapshot = await getDocs(buildPublicDirectoryQuery(filters));
     const entries = mapSnapshot(snapshot);
-    if (entries.length > 0) return entries;
-    return filters?.city || (filters?.venueType && filters.venueType !== 'ALL') ? [] : fallbackDirectory();
+
+    // Fusionar de forma enriquecida: los venues modelo (Sensorial, Barahunda, Velvet, Edificio)
+    // están presentes en el directorio con imágenes y branding de alta resolución,
+    // y los registros creados en Firestore complementan o agregan nuevos clubes.
+    const entriesMap = new Map<string, BusinessDirectoryEntry>();
+    for (const mock of MOCK_DIRECTORY) {
+      entriesMap.set(mock.id, mock);
+    }
+
+    for (const entry of entries) {
+      const existing = entriesMap.get(entry.id) || Array.from(entriesMap.values()).find((m) => m.slug === entry.slug);
+      if (existing) {
+        entriesMap.set(existing.id, {
+          ...existing,
+          ...entry,
+          // Conservar banner y logo de alta fidelidad si el de Firestore está vacío o es un placeholder
+          banner: (entry.banner && !entry.banner.includes('1566737236500') && !entry.banner.includes('1516450360452'))
+            ? entry.banner
+            : existing.banner,
+          logo: entry.logo || existing.logo,
+          tagline: entry.tagline || existing.tagline,
+          city: entry.city || existing.city,
+          name: entry.name || existing.name,
+        });
+      } else {
+        entriesMap.set(entry.id, entry);
+      }
+    }
+
+    const combined = Array.from(entriesMap.values());
+    if (filters?.city || (filters?.venueType && filters.venueType !== 'ALL')) {
+      return filterLocal(combined, '', filters.venueType, filters.city);
+    }
+    return combined;
   } catch (error) {
     if (!import.meta.env.DEV) {
       console.error('[Directorio] Error al cargar directorio desde Firestore:', error);
       return [];
     }
     console.warn('[Directorio] Firestore no respondió; usando respaldo local:', error);
-    return MOCK_DIRECTORY;
+    return filters?.city || (filters?.venueType && filters.venueType !== 'ALL')
+      ? filterLocal(MOCK_DIRECTORY, '', filters.venueType, filters.city)
+      : MOCK_DIRECTORY;
   }
 }
 

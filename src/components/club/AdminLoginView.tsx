@@ -12,7 +12,21 @@ interface Props {
 }
 
 export const AdminLoginView = ({ onSuccess, unauthorizedReason, onSignOut }: Props) => {
-  const [email, setEmail] = useState('');
+  // Precarga del correo cuando el enlace proviene del flujo de activación
+  // (SaasLeadModal enlaza con ?email=). Solo prellena el campo: la
+  // autenticación exige siempre contraseña y se resuelve en el servidor.
+  const [email, setEmail] = useState(() => {
+    try {
+      const paramEmail = new URLSearchParams(window.location.search).get('email');
+      if (!paramEmail) return '';
+      // Se retira el parámetro del historial para no exponerlo en la sesión
+      window.history.replaceState(null, '', window.location.pathname);
+      const normalized = paramEmail.trim().toLowerCase();
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) ? normalized : '';
+    } catch {
+      return '';
+    }
+  });
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

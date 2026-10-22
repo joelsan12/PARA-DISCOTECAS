@@ -11,7 +11,7 @@ export function subscribeToClubLayout(
   clubId: string,
   onUpdate: (data: { tables?: ClubTable[]; layout_type?: ClubLayoutType }) => void
 ): Unsubscribe | null {
-  if (!isFirebaseConfigured || !db) return null;
+  if (!isFirebaseConfigured || !db || !clubId || !clubId.trim()) return null;
 
   try {
     const layoutRef = doc(db, 'businesses', clubId, 'layout', 'main');
@@ -40,7 +40,7 @@ export function subscribeToClubLayout(
 export async function fetchClubLayoutFromFirebase(
   clubId: string
 ): Promise<{ tables: ClubTable[]; layout_type: ClubLayoutType } | null> {
-  if (!isFirebaseConfigured || !db || !clubId) return null;
+  if (!isFirebaseConfigured || !db || !clubId || !clubId.trim()) return null;
   try {
     const layoutRef = doc(db, 'businesses', clubId, 'layout', 'main');
     const snapshot = await getDoc(layoutRef);
@@ -91,8 +91,8 @@ export async function saveClubLayoutToFirebase(
   tables: ClubTable[],
   layoutType?: ClubLayoutType
 ): Promise<SaveClubLayoutResult> {
-  if (!isFirebaseConfigured || !db) {
-    return { success: false, error: 'Firebase no está configurado' };
+  if (!isFirebaseConfigured || !db || !clubId || !clubId.trim()) {
+    return { success: false, error: 'Identificador de club inválido' };
   }
 
   try {

@@ -1,39 +1,82 @@
-/* ── 6. Componentes del Simulador en Vivo ─────────────────────────────────── */
+/* ── 6. Componentes del Simulador en Vivo (Hardware Cockpit) ─────────────────── */
 .saas-stage {
-  background: var(--saas-card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(16, 20, 32, 0.96) 0%, rgba(8, 10, 16, 0.99) 100%);
+  border: 1px solid rgba(229, 181, 79, 0.22);
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 32px 84px -16px rgba(0, 0, 0, 0.95),
+    0 0 1px 1px rgba(255, 255, 255, 0.06),
+    0 0 44px rgba(229, 181, 79, 0.06);
   margin-bottom: 48px;
+  position: relative;
+}
+
+[data-theme="light"] .saas-stage {
+  background: linear-gradient(180deg, var(--saas-surface, #ffffff) 0%, var(--saas-surface-elevated, #f8f9fa) 100%);
+  border-color: rgba(184, 134, 11, 0.28);
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.12),
+    0 0 1px 1px rgba(0, 0, 0, 0.06);
 }
 
 .saas-stage__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 28px;
-  background: var(--saas-surface);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 14px 24px;
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+[data-theme="light"] .saas-stage__header {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom-color: rgba(0, 0, 0, 0.06);
 }
 
 .saas-stage__status {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.76rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--saas-text-primary);
+  letter-spacing: 0.06em;
+  color: var(--text-high, #ffffff);
   text-transform: uppercase;
+}
+
+[data-theme="light"] .saas-stage__status {
+  color: var(--saas-text-primary, #0c0e14);
 }
 
 .saas-stage__dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--state-success);
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+  background: var(--state-success, #34d399);
+  box-shadow: 0 0 10px var(--state-success, #34d399);
+  animation: saas-pulse-glow 2s infinite ease-in-out;
+}
+
+.saas-stage__header-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.65);
+  flex-wrap: wrap;
+}
+
+[data-theme="light"] .saas-stage__header-telemetry {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.saas-stage__header-telemetry strong {
+  color: var(--saas-gold, #e5b54f);
 }
 
 .saas-stage__split {
@@ -42,342 +85,809 @@
   gap: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .saas-stage__split {
     grid-template-columns: 1fr;
   }
 }
 
+/* ── Panel Izquierdo: Teléfono del Cliente & Pase VIP de Autor ─────────────── */
 .stage-left-panel {
-  padding: 36px 32px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: var(--saas-surface);
+  background: rgba(0, 0, 0, 0.22);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Tarjeta Pase VIP Premium Black Card (Sin bordes toscos, acabados de lujo) */
-.stage-phone-mock {
+[data-theme="light"] .stage-left-panel {
+  background: rgba(0, 0, 0, 0.015);
+  border-right-color: rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 1024px) {
+  .stage-left-panel {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}
+
+.stage-panel-headline {
   width: 100%;
-  max-width: 320px;
-  background: linear-gradient(155deg, var(--saas-surface-elevated) 0%, var(--saas-card-bg) 100%);
-  border: 1px solid rgba(229, 181, 79, 0.28);
-  border-radius: 22px;
-  padding: 24px 22px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.stage-panel-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--saas-gold, #e5b54f);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stage-panel-title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: var(--text-high, #ffffff);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="light"] .stage-panel-title {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-panel-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.45;
+}
+
+[data-theme="light"] .stage-panel-desc {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Tarjeta Black Card 3D Interactiva en el Simulador */
+.stage-sim-card-wrap {
+  width: 100%;
+  max-width: 380px;
+  perspective: 900px;
+  margin-bottom: 20px;
+}
+
+.stage-sim-vip-card {
+  width: 100%;
+  background: linear-gradient(165deg, rgba(16, 20, 32, 0.96) 0%, rgba(9, 11, 18, 0.99) 100%);
+  border-radius: 20px;
+  padding: 22px 20px;
   box-shadow:
-    0 24px 50px rgba(0, 0, 0, 0.75),
-    0 0 35px rgba(229, 181, 79, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  margin-bottom: 22px;
+    0 24px 60px -12px rgba(0, 0, 0, 0.9),
+    0 0 1px 1px rgba(255, 255, 255, 0.07),
+    0 0 32px rgba(229, 181, 79, 0.07);
   position: relative;
   overflow: hidden;
   text-align: left;
+  transition: transform 0.14s ease-out, box-shadow 0.2s ease;
+  transform-style: preserve-3d;
+  cursor: grab;
 }
 
-[data-theme="light"] .stage-phone-mock {
-  background: linear-gradient(155deg, var(--saas-surface) 0%, var(--saas-surface-elevated) 100%);
-  border-color: rgba(184, 134, 11, 0.3);
+[data-theme="light"] .stage-sim-vip-card {
+  background: linear-gradient(165deg, var(--saas-surface, #ffffff) 0%, var(--saas-surface-elevated, #f4f5f8) 100%);
+  border: 1px solid rgba(184, 134, 11, 0.25);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.08),
-    0 0 25px rgba(184, 134, 11, 0.12);
+    0 20px 48px -10px rgba(0, 0, 0, 0.12),
+    0 0 25px rgba(184, 134, 11, 0.08);
 }
 
-.stage-phone-top {
+.stage-card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.stage-sim-card-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.stage-phone-brand {
+.stage-sim-card-brand {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.stage-phone-chip {
-  width: 26px;
-  height: 18px;
-  background: linear-gradient(135deg, var(--saas-gold-hover) 0%, var(--saas-gold) 100%);
-  border-radius: 3px;
-  display: inline-block;
-  box-shadow: 0 2px 6px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.stage-phone-brand-title {
+.stage-sim-card-brand strong {
+  display: block;
   font-family: var(--font-serif, 'Cinzel', serif);
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  color: var(--saas-gold);
+  letter-spacing: 0.1em;
+  color: var(--text-high, #ffffff);
 }
 
-.stage-phone-status-tag {
+[data-theme="light"] .stage-sim-card-brand strong {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-sim-card-brand span {
+  display: block;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.62rem;
+  color: var(--saas-gold, #e5b54f);
+  letter-spacing: 0.05em;
+}
+
+.stage-sim-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--state-success);
-  letter-spacing: 0.08em;
-  background: rgba(52, 211, 153, 0.09);
+  gap: 5px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
   padding: 3px 8px;
   border-radius: 999px;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.15);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--state-success, #34d399);
+  letter-spacing: 0.06em;
 }
 
-.stage-phone-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--state-success);
-  box-shadow: 0 0 8px var(--state-success);
-  animation: saas-pulse-glow 1.8s infinite ease-in-out;
+.stage-sim-holder-hero {
+  text-align: center;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-bottom: 14px;
 }
 
-/* Área central QR integrada con marco y escáner láser */
-.stage-phone-qr-bay {
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 16px;
-  padding: 14px 12px;
+[data-theme="light"] .stage-sim-holder-hero {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.stage-sim-holder-label {
+  display: block;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.12em;
+  margin-bottom: 2px;
+}
+
+[data-theme="light"] .stage-sim-holder-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.stage-sim-holder-name {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--text-high, #ffffff);
+  margin: 0 0 4px;
+}
+
+[data-theme="light"] .stage-sim-holder-name {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-sim-holder-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .stage-sim-holder-meta {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.stage-sim-holder-amount {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  color: var(--saas-gold, #e5b54f);
+  font-weight: 800;
+}
+
+/* Bahía de Código QR Dinámico */
+.stage-sim-qr-bay {
+  background: rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 14px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
-[data-theme="light"] .stage-phone-qr-bay {
-  background: rgba(184, 134, 11, 0.05);
+[data-theme="light"] .stage-sim-qr-bay {
+  background: rgba(184, 134, 11, 0.04);
+  border-color: rgba(184, 134, 11, 0.14);
 }
 
-.stage-phone-qr-frame {
-  width: 130px;
-  height: 130px;
-  background: var(--saas-card-bg);
-  border-radius: 10px;
+.stage-sim-qr-frame {
+  width: 142px;
+  height: 142px;
+  background: var(--text-high, #ffffff);
+  border-radius: 12px;
   padding: 8px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  margin-bottom: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
 }
 
-.stage-phone-qr-frame svg {
+.stage-sim-qr-frame svg {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
-.stage-laser-line {
+.stage-sim-laser {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--saas-gold), var(--text-high), var(--saas-gold), transparent);
-  box-shadow: 0 0 12px 2px var(--saas-gold);
-  opacity: 0.7;
+  background: linear-gradient(90deg, transparent, var(--saas-gold, #e5b54f), var(--text-high, #ffffff), var(--saas-gold, #e5b54f), transparent);
+  box-shadow: 0 0 14px 2px var(--saas-gold, #e5b54f);
+  opacity: 0.75;
   animation: stage-laser-scan 2.6s infinite ease-in-out;
+  pointer-events: none;
 }
 
-.stage-laser-line.scanning {
-  background: linear-gradient(90deg, transparent, var(--state-success), var(--text-high), var(--state-success), transparent);
-  box-shadow: 0 0 16px 3px var(--state-success);
-  animation: stage-laser-scan 0.4s infinite ease-in-out;
+.stage-sim-laser.active {
+  background: linear-gradient(90deg, transparent, var(--state-success, #34d399), var(--text-high, #ffffff), var(--state-success, #34d399), transparent);
+  box-shadow: 0 0 18px 4px var(--state-success, #34d399);
+  animation: stage-laser-scan 0.35s infinite ease-in-out;
   opacity: 1;
 }
 
-@keyframes stage-laser-scan {
-  0% { top: 0%; opacity: 0.2; }
-  50% { top: 96%; opacity: 1; }
-  100% { top: 0%; opacity: 0.2; }
-}
-
-.stage-phone-timer {
+.stage-sim-timer-line {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
-  color: var(--saas-text-secondary);
+  justify-content: space-between;
+  width: 100%;
+  max-width: 280px;
+  padding: 0 6px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.65);
 }
 
-.stage-phone-timer strong {
-  color: var(--saas-gold);
+[data-theme="light"] .stage-sim-timer-line {
+  color: rgba(0, 0, 0, 0.65);
 }
 
-/* Tira de datos del titular */
-.stage-phone-strip {
-  display: flex;
+.stage-sim-timer-line strong {
+  color: var(--saas-gold, #e5b54f);
+}
+
+.stage-sim-rotate-btn {
+  background: transparent;
+  border: none;
+  color: var(--saas-gold, #e5b54f);
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.74rem;
-  color: var(--saas-text-primary);
-  text-align: center;
+  gap: 4px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
 }
 
-.stage-phone-strip strong {
-  color: var(--saas-gold);
+.stage-sim-rotate-btn:hover {
+  opacity: 0.8;
 }
 
-.stage-phone-sep {
-  color: var(--saas-text-muted);
-  opacity: 0.5;
-}
-
-.stage-phone-actions {
+/* Botones de Escaneo y Fraude */
+.stage-sim-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  max-width: 320px;
+  max-width: 380px;
+}
+
+.stage-btn-scan {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--saas-gold-hover, #f3cf7a) 0%, var(--saas-gold, #e5b54f) 100%);
+  color: var(--bg-void, #08080c);
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding: 13px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(229, 181, 79, 0.32);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stage-btn-scan:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(229, 181, 79, 0.45);
+}
+
+.stage-btn-scan:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .stage-btn-fraud {
-  background: rgba(251, 113, 133, 0.08) !important;
-  border: 1px solid rgba(251, 113, 133, 0.3) !important;
-  color: var(--state-danger) !important;
-  transition: all 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.32);
+  color: var(--state-danger, #f43f5e);
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.stage-btn-fraud:hover {
-  background: rgba(251, 113, 133, 0.16) !important;
-  border-color: rgba(251, 113, 133, 0.55) !important;
+.stage-btn-fraud:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.16);
+  border-color: rgba(244, 63, 94, 0.6);
   transform: translateY(-1px);
 }
 
-.stage-result-banner {
+/* Feedback Criptográfico */
+.stage-sim-feedback {
   width: 100%;
-  max-width: 320px;
+  max-width: 380px;
   margin-top: 14px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.76rem;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.78rem;
   line-height: 1.45;
   text-align: left;
-  animation: saas-fade-in 0.2s ease;
+  animation: saas-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.stage-result-banner.success {
+.stage-sim-feedback.success {
   background: rgba(52, 211, 153, 0.1);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  color: var(--state-success);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: var(--state-success, #34d399);
 }
 
-.stage-result-banner.fraud {
-  background: rgba(251, 113, 133, 0.1);
-  border: 1px solid rgba(251, 113, 133, 0.35);
-  color: var(--state-danger);
+.stage-sim-feedback.fraud {
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: var(--state-danger, #f43f5e);
 }
 
+.stage-sim-feedback-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.stage-sim-feedback-body {
+  font-size: 0.76rem;
+  opacity: 0.92;
+}
+
+/* ── Panel Derecho: Consola de Sala & Inventario de Mesas ───────────────────── */
 .stage-right-panel {
   padding: 32px 32px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background: var(--saas-card-bg);
+  background: transparent;
   text-align: left;
 }
 
-.stage-floor-header {
-  margin-bottom: 22px;
-  text-align: left;
-}
-
-.stage-floor-header h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--saas-text-primary);
-  margin: 4px 0;
-}
-
-.stage-floor-header p {
-  font-size: 0.84rem;
-  color: var(--saas-text-secondary);
-  margin: 0;
-}
-
-.stage-floor-grid {
+/* Tira de Micro-KPIs en Vivo */
+.stage-metrics-ribbon {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 640px) {
+  .stage-metrics-ribbon {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stage-metric-cell {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+[data-theme="light"] .stage-metric-cell {
+  background: rgba(0, 0, 0, 0.025);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.stage-metric-label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .stage-metric-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.stage-metric-value {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-high, #ffffff);
+}
+
+[data-theme="light"] .stage-metric-value {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-metric-value--gold {
+  color: var(--saas-gold, #e5b54f);
+}
+
+.stage-metric-sub {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.44);
+}
+
+[data-theme="light"] .stage-metric-sub {
+  color: rgba(0, 0, 0, 0.48);
+}
+
+/* Grilla de Mesas VIP Arquitectónica */
+.stage-floor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 1200px) {
   .stage-floor-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.stage-floor-item {
-  background: var(--saas-surface);
-  border: 1px solid var(--saas-border);
-  border-radius: 8px;
-  padding: 14px;
+@media (max-width: 600px) {
+  .stage-floor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stage-table-tile {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 16px 14px;
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.stage-floor-item:hover {
-  border-color: var(--saas-border-gold);
-}
-
-.stage-floor-item.selected {
-  background: var(--saas-gold-subtle);
-  border-color: var(--saas-gold);
-}
-
-.stage-floor-item-title {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--saas-text-primary);
-  margin-bottom: 4px;
+  gap: 10px;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.stage-floor-item-meta {
+[data-theme="light"] .stage-table-tile {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.stage-table-tile:hover {
+  border-color: rgba(229, 181, 79, 0.4);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stage-table-tile.selected {
+  border-color: var(--saas-gold, #e5b54f);
+  background: linear-gradient(145deg, rgba(229, 181, 79, 0.12) 0%, rgba(229, 181, 79, 0.03) 100%);
+  box-shadow: 0 0 20px rgba(229, 181, 79, 0.12), inset 0 0 1px 1px rgba(229, 181, 79, 0.25);
+}
+
+.stage-tile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stage-tile-code {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--saas-gold, #e5b54f);
+  letter-spacing: 0.06em;
+}
+
+[data-theme="light"] .stage-tile-code {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.stage-tile-name {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--text-high, #ffffff);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme="light"] .stage-tile-name {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-tile-zone {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+[data-theme="light"] .stage-tile-zone {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.stage-tile-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 0.74rem;
-  color: var(--saas-text-secondary);
-  margin-bottom: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.stage-floor-item-footer {
-  display: flex;
-  justify-content: space-between;
+[data-theme="light"] .stage-tile-meta-row {
+  border-top-color: rgba(0, 0, 0, 0.05);
+}
+
+.stage-tile-pax {
+  display: inline-flex;
   align-items: center;
-  font-size: 0.74rem;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
 }
 
-.stage-floor-item-deposit {
-  color: var(--saas-gold);
+[data-theme="light"] .stage-tile-pax {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.stage-tile-deposit {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-weight: 700;
+  color: var(--saas-gold, #e5b54f);
 }
 
-.stage-floor-item-timer {
-  color: var(--state-hold);
-  font-family: monospace;
-  font-weight: 700;
+.stage-tile-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.stage-table-control {
-  background: var(--saas-surface);
-  border: 1px solid var(--saas-border);
-  border-radius: 8px;
-  padding: 16px 20px;
+.stage-tile-status-tag--avail {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--state-success, #34d399);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.stage-tile-status-tag--held {
+  background: rgba(251, 191, 36, 0.14);
+  color: var(--state-hold, #fbbf24);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  animation: saas-pulse-glow 1.6s infinite ease-in-out;
+}
+
+.stage-tile-status-tag--confirmed {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--state-info, #38bdf8);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+/* Dock de Control de la Mesa Seleccionada */
+.stage-control-dock {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(229, 181, 79, 0.24);
+  border-radius: 14px;
+  padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 12px;
+  margin-bottom: 16px;
+}
+
+[data-theme="light"] .stage-control-dock {
+  background: rgba(0, 0, 0, 0.025);
+  border-color: rgba(184, 134, 11, 0.25);
+}
+
+.stage-dock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stage-dock-overline {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  color: var(--saas-gold, #e5b54f);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stage-dock-title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-high, #ffffff);
+}
+
+[data-theme="light"] .stage-dock-title {
+  color: var(--saas-text-primary, #0c0e14);
+}
+
+.stage-dock-meta {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme="light"] .stage-dock-meta {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.stage-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stage-btn-hold {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, var(--saas-gold-hover, #f3cf7a) 0%, var(--saas-gold, #e5b54f) 100%);
+  color: var(--bg-void, #08080c);
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(229, 181, 79, 0.28);
+  transition: all 0.2s ease;
+}
+
+.stage-btn-hold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(229, 181, 79, 0.42);
+}
+
+.stage-btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, var(--state-success, #34d399) 0%, rgba(16, 185, 129, 0.9) 100%);
+  color: var(--bg-void, #08080c);
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.25);
+  transition: all 0.2s ease;
+}
+
+.stage-btn-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.38);
+}
+
+.stage-btn-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .stage-btn-free {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.14);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.stage-btn-free:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.stage-guarantee-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.45;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .stage-guarantee-footer {
+  color: rgba(0, 0, 0, 0.55);
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+.stage-guarantee-footer svg {
+  color: var(--saas-gold, #e5b54f);
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 /* ── 7. Tarjetas Técnicas (Simulador) ─────────────────────────────────────── */

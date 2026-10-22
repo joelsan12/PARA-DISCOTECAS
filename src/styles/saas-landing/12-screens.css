@@ -6,51 +6,195 @@
 }
 
 .saas-screen-tab {
-  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-family: var(--font-display, 'Outfit', sans-serif);
   font-size: 0.82rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--saas-text-secondary);
   background: var(--saas-surface);
   border: 1px solid var(--saas-border);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .saas-screen-tab:hover {
   color: var(--saas-text-primary);
   border-color: var(--saas-border-gold);
+  background: rgba(229, 181, 79, 0.06);
 }
 
 .saas-screen-tab.active {
-  color: var(--saas-text-primary);
+  color: var(--bg-void, #07080c);
   background: var(--saas-gold);
   border-color: var(--saas-gold);
   font-weight: 700;
+  box-shadow: 0 4px 20px rgba(229, 181, 79, 0.32);
 }
 
+[data-theme="light"] .saas-screen-tab.active {
+  color: var(--text-high, #ffffff);
+  background: var(--saas-gold);
+  border-color: var(--saas-gold);
+}
+
+/* ── Marco de Dispositivo / Ventana de Sistema ───────────────────────────── */
+.saas-screen-window {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(17, 21, 31, 0.96) 0%, rgba(9, 11, 16, 0.98) 100%);
+  border: 1px solid var(--saas-border-gold);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 64px -12px rgba(0, 0, 0, 0.85),
+    0 0 1px 1px rgba(255, 255, 255, 0.06),
+    0 0 32px rgba(229, 181, 79, 0.06);
+}
+
+[data-theme="light"] .saas-screen-window {
+  background: var(--bg-surface-elevated, #ffffff);
+  box-shadow:
+    0 20px 48px -10px rgba(0, 0, 0, 0.12),
+    0 0 1px 1px rgba(0, 0, 0, 0.06);
+}
+
+.saas-window-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.38);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .saas-window-chrome {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.saas-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.saas-window-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.saas-window-dot--red { background: var(--state-danger, #ff5f56); }
+.saas-window-dot--yellow { background: var(--state-warning, #ffbd2e); }
+.saas-window-dot--green { background: var(--state-success, #27c93f); }
+
+.saas-window-url-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 440px;
+  width: 100%;
+  margin: 0 16px;
+}
+
+[data-theme="light"] .saas-window-url-bar {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.saas-window-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.68rem;
+  color: var(--saas-gold);
+  letter-spacing: 0.04em;
+}
+
+/* Visor de Imagen */
 .saas-screen-viewport {
   width: 100%;
-  background: var(--saas-card-bg);
-  border: 1px solid var(--saas-border);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--saas-shadow);
+  position: relative;
+  background: var(--bg-void, #050608);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.saas-screen-viewport img {
+.saas-screen-viewport--desktop img {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: cover;
+  cursor: zoom-in;
+}
+
+.saas-screen-viewport--mobile {
+  padding: 32px 16px;
+  background: radial-gradient(circle at 50% 50%, rgba(229, 181, 79, 0.05) 0%, var(--bg-void, #050608) 70%);
+}
+
+.saas-screen-viewport--mobile img {
+  max-width: 720px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.9);
+  cursor: zoom-in;
+}
+
+.saas-screen-zoom-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(8, 10, 15, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--saas-border-gold);
+  color: var(--saas-gold);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  z-index: 5;
+}
+
+.saas-screen-zoom-btn:hover {
+  background: var(--saas-gold);
+  color: var(--bg-void, #07080c);
+  box-shadow: 0 4px 16px rgba(229, 181, 79, 0.35);
 }
 
 .saas-screen-caption {
-  padding: 18px 24px;
+  padding: 20px 24px;
   background: var(--saas-surface);
   border-top: 1px solid var(--saas-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .saas-points-grid {
@@ -68,11 +212,87 @@
 .saas-point-card {
   background: var(--saas-surface);
   border: 1px solid var(--saas-border);
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 16px 18px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   font-size: 0.84rem;
+  line-height: 1.5;
   color: var(--saas-text-primary);
+  transition: border-color 0.18s ease;
+}
+
+.saas-point-card:hover {
+  border-color: var(--saas-border-gold);
+}
+
+.saas-point-card svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Lightbox Modal de Pantalla Completa ──────────────────────────────────── */
+.saas-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 8, 0.94);
+  backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.saas-lightbox-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.saas-lightbox-title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-high, #ffffff);
+}
+
+.saas-lightbox-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-high, #ffffff);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.saas-lightbox-close:hover {
+  background: var(--saas-gold);
+  color: var(--bg-void, #07080c);
+  border-color: var(--saas-gold);
+}
+
+.saas-lightbox-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+.saas-lightbox-content img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.9);
 }

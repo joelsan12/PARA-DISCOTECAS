@@ -72,11 +72,24 @@ html {
 
 .saas-hero__title-wide span,
 .saas-hero__title-wide .saas-hero__title-accent {
-  font-family: var(--font-serif, 'Cinzel', serif);
+  font-family: inherit;
+  background: linear-gradient(135deg, var(--gold-bright, #fce5a8) 0%, var(--saas-gold) 55%, var(--gold-deep, #b8860b) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: var(--saas-gold);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 36px rgba(229, 181, 79, 0.35);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: none;
+  filter: drop-shadow(0 0 28px rgba(229, 181, 79, 0.28));
+}
+
+[data-theme="light"] .saas-hero__title-wide span,
+[data-theme="light"] .saas-hero__title-wide .saas-hero__title-accent {
+  background: linear-gradient(135deg, var(--gold-deep, #b8860b) 0%, var(--gold-muted, #8c6304) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--saas-gold);
+  filter: none;
 }
 
 .saas-hero__lead {
