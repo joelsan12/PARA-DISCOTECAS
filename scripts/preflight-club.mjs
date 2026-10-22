@@ -60,7 +60,7 @@ const envProdText = existsSync(resolve(root, '.env.production'))
 const backendMatch = envProdText.match(/VITE_BACKEND_URL=([^\r\n]+)/);
 const doorMatch = envProdText.match(/VITE_DOOR_SERVICE_URL=([^\r\n]+)/);
 
-const defaultBackendUrl = backendMatch ? backendMatch[1].trim() : 'https://nightflow-backend.onrender.com';
+const defaultBackendUrl = backendMatch ? backendMatch[1].trim() : 'https://nightflow-backend-x1an.onrender.com';
 const defaultDoorUrl = doorMatch ? doorMatch[1].trim() : `${defaultBackendUrl}/door`;
 
 const backendUrl = params['backend-url'] || process.env.BACKEND_URL || defaultBackendUrl;

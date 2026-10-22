@@ -23,7 +23,7 @@ const envText = existsSync('.env.production') ? readFileSync('.env.production', 
 const apiKeyMatch = envText.match(/VITE_FIREBASE_API_KEY=([^\r\n]+)/);
 const apiKey = process.env.VITE_FIREBASE_API_KEY || (apiKeyMatch ? apiKeyMatch[1].trim() : '');
 
-const BACKEND_URL = process.env.BACKEND_URL || process.env.VITE_BACKEND_URL || 'https://nightflow-backend.onrender.com';
+const BACKEND_URL = process.env.BACKEND_URL || process.env.VITE_BACKEND_URL || 'https://nightflow-backend-x1an.onrender.com';
 const DOOR_URL = process.env.DOOR_URL || process.env.VITE_DOOR_SERVICE_URL || `${BACKEND_URL}/door`;
 
 const BUSINESS_ID = process.env.SMOKE_BUSINESS_ID || 'club-sensorial';

@@ -119,7 +119,7 @@ export const PaymentGatewayManager = ({ activeClub, session: _session }: Props) 
   const backendBaseUrl =
     typeof window !== 'undefined'
       ? (import.meta.env.VITE_BACKEND_URL as string) || window.location.origin
-      : 'https://nightflow-vip.onrender.com';
+      : 'https://nightflow-backend-x1an.onrender.com';
 
   const webhookPath =
     config.provider === 'payphone'

@@ -558,7 +558,9 @@ export function SaasLeadModal({ isOpen, onClose }: SaasLeadModalProps) {
                 </span>
               </div>
               <p style={{ fontSize: '0.76rem', color: 'var(--saas-text-secondary)', margin: '0 0 10px', lineHeight: 1.45 }}>
-                Enviamos estas guías a tu correo junto con tus credenciales. También puedes descargarlas o abrirlas directamente aquí para tu equipo:
+                {result?.emailSent
+                  ? 'Enviamos estas guías a tu correo junto con tus credenciales. También puedes descargarlas o abrirlas directamente aquí para tu equipo:'
+                  : 'Descarga o abre aquí las guías para tu equipo. Puedes compartirlas por WhatsApp o guardarlas para tu personal:'}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {(result?.guides || OFFICIAL_VISUAL_GUIDES).map((guide) => (

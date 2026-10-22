@@ -18,8 +18,8 @@ const envText = readFileSync('.env.production', 'utf8');
 const apiKeyMatch = envText.match(/VITE_FIREBASE_API_KEY=([^\r\n]+)/);
 const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : '';
 
-const BACKEND_URL = 'https://nightflow-backend.onrender.com';
-const DOOR_URL = 'https://nightflow-backend.onrender.com/door';
+const BACKEND_URL = 'https://nightflow-backend-x1an.onrender.com';
+const DOOR_URL = 'https://nightflow-backend-x1an.onrender.com/door';
 
 const BUSINESS_ID = 'club-sensorial';
 const EVENT_ID = 'event-fri-reggaeton';

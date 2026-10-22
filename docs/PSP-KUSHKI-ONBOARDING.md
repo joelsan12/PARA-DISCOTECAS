@@ -24,7 +24,7 @@ Para que las reservas se confirmen automáticamente al segundo exacto de pagarse
 3. Configura los siguientes campos:
    * **URL de Webhook:**
      ```
-     https://nightflow-backend.onrender.com/v1/payments/webhooks/kushki/{TU_MERCHANT_ID}
+     https://nightflow-backend-x1an.onrender.com/v1/payments/webhooks/kushki/{TU_MERCHANT_ID}
      ```
      *(Reemplaza `{TU_MERCHANT_ID}` por tu Merchant ID exacto obtenido en el paso 1).*
    * **Eventos a suscribir:**

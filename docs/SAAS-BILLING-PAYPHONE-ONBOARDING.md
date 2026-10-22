@@ -60,7 +60,7 @@ En NIGHTFLOW VIP existen **dos flujos monetarios estrictamente separados**:
 En la consola de PayPhone, en la sección **Webhooks / Notificaciones**:
 1. Registrar la URL de callback del servidor en Render:
    ```text
-   https://nightflow-backend.onrender.com/v1/saas/webhooks/payphone
+   https://nightflow-backend-x1an.onrender.com/v1/saas/webhooks/payphone
    ```
 2. **Mecanismo de Verificación:**
    A diferencia de Kushki (que utiliza HMAC-SHA256 con secret compartido), PayPhone envía un identificador de transacción (`id`, `clientTransactionId`). El backend de NIGHTFLOW implementa una **verificación activa fail-closed**: consulta inmediatamente el endpoint oficial de PayPhone `GET /api/Sale/{id}` con el Bearer Token corporativo para validar autenticidad y monto antes de acreditar el periodo.

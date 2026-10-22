@@ -9,8 +9,8 @@ Este documento detalla el paso a paso riguroso para dar de alta, configurar, ver
 Antes de iniciar el onboarding de un nuevo club, verificar que la infraestructura central esté operativa:
 
 - [ ] **1.1 Backend en Línea:**
-  * Endpoint de salud: `GET https://nightflow-backend.onrender.com/health` devuelve `door: true` y `ok: true`.
-  * Verificación de puerta: `GET https://nightflow-backend.onrender.com/health.door` responde `200 OK`.
+  * Endpoint de salud: `GET https://nightflow-backend-x1an.onrender.com/health` devuelve `door: true` y `ok: true`.
+  * Verificación de puerta: `GET https://nightflow-backend-x1an.onrender.com/health.door` responde `200 OK`.
 - [ ] **1.2 Cuenta PayPhone Business de NIGHTFLOW (SaaS):**
   * Cuenta comercial PayPhone verificada para el cobro de planes SaaS a los clubes (consultar [docs/SAAS-BILLING-PAYPHONE-ONBOARDING.md](file:///d:/PROYECTOS/PARA%20DISCOTECAS/docs/SAAS-BILLING-PAYPHONE-ONBOARDING.md)).
   * Variables configuradas en Render: `PAYPHONE_SAAS_TOKEN`, `PAYPHONE_SAAS_STORE_ID`, `PAYPHONE_ENV` (`sandbox` o `production`).
@@ -65,7 +65,7 @@ Para que el club reciba reservas online con tarjeta de crédito/débito directam
   * Seguir la guía detallada [docs/PSP-KUSHKI-ONBOARDING.md](file:///d:/PROYECTOS/PARA%20DISCOTECAS/docs/PSP-KUSHKI-ONBOARDING.md).
   * El dueño del club obtiene sus credenciales en Kushki (Merchant ID, Public Key, Private Key).
   * Registra el webhook en Kushki apuntando a:
-    `https://nightflow-backend.onrender.com/v1/payments/webhooks/kushki/{merchantId}`
+    `https://nightflow-backend-x1an.onrender.com/v1/payments/webhooks/kushki/{merchantId}`
 - [ ] **5.2 Configuración en la Plataforma:**
   * Provisionar la cuenta de pagos del club:
     ```bash

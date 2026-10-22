@@ -3,7 +3,7 @@
 
 services:
   - type: web
-    name: nightflow-backend
+    name: nightflow-backend-x1an
     runtime: node
     plan: free
     buildCommand: npm run build:backend

@@ -327,7 +327,7 @@ async function runGatewaySmoke(businessId, backendUrl, acc) {
 async function run() {
   const params = parseArgs();
   const businessId = params['business-id'] || 'club-sensorial';
-  const backendUrl = params['backend-url'] || process.env.BACKEND_URL || 'https://nightflow-backend.onrender.com';
+  const backendUrl = params['backend-url'] || process.env.BACKEND_URL || 'https://nightflow-backend-x1an.onrender.com';
 
   console.log('1. Verificando configuración de cuenta de pagos...');
   const accountSnap = await db.collection('businesses').doc(businessId).collection('private').doc('paymentAccount').get();
