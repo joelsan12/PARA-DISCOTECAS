@@ -51,13 +51,13 @@ export function SaasFooterBar() {
               <a
                 href="https://nightflow-admin.web.app/"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
               >
                 <span>Consola para Clubes</span>
                 <ArrowUpRight size={13} style={{ opacity: 0.8 }} />
               </a>
-              <a href="/dev" target="_blank" rel="noreferrer">
+              <a href="/dev" target="_blank" rel="noopener noreferrer">
                 <span>Portal Dev &amp; APIs</span>
                 <ArrowUpRight size={13} style={{ opacity: 0.8 }} />
               </a>
@@ -74,11 +74,11 @@ export function SaasFooterBar() {
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
-                <span>SRI Compliant (15% IVA)</span>
+                <span>Desglose de IVA 15% SRI</span>
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
-                <span>Protección LOPDP Art. 15</span>
+                <span>Protección de Datos (LOPDP)</span>
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />

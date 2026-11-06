@@ -5,9 +5,9 @@ interface SaasCtaBannerProps {
 }
 
 const GUARANTEES = [
-  'DESPLIEGUE EN 24H',
-  'SIN TARJETA REQUERIDA',
-  'SOPORTE EN VIVO A LAS 02:00 AM',
+  'CONFIGURACIÓN INICIAL GUIADA',
+  'SIN TARJETA DE CRÉDITO',
+  'SOPORTE OPERATIVO DIRECTO',
 ];
 
 export function SaasCtaBanner({ onOpenModal }: SaasCtaBannerProps) {

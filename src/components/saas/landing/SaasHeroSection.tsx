@@ -36,21 +36,21 @@ export function SaasHeroSection({ onOpenModal }: SaasHeroSectionProps) {
               </button>
             </div>
 
-            {/* Garantías operativas de negocio medibles */}
+            {/* Beneficios operativos verificables */}
             <div className="saas-hero__trust">
               <span className="saas-hero__trust-item">
                 <ShieldCheck size={13} className="saas-hero__trust-icon" />
-                <span>0% MESAS DUPLICADAS</span>
+                <span>UNA MESA, UN SOLO COMPRADOR</span>
               </span>
               <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
               <span className="saas-hero__trust-item">
                 <DoorOpen size={13} className="saas-hero__trust-icon" />
-                <span>ESCÁNER 100% OFFLINE</span>
+                <span>ESCANEA SIN INTERNET</span>
               </span>
               <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
               <span className="saas-hero__trust-item">
                 <Landmark size={13} className="saas-hero__trust-icon" />
-                <span>SRI 15% IVA COMPLIANT</span>
+                <span>DESGLOSE DE IVA 15% SRI</span>
               </span>
             </div>
           </div>

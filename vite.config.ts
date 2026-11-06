@@ -25,7 +25,7 @@ export default defineConfig(({ command, mode }) => {
       port,
       strictPort: false,
       watch: {
-        ignored: ['**/dist/**', '**/dist-*/**', '**/functions/**']
+        ignored: ['**/dist/**', '**/dist-*/**', '**/functions/**', '**/*.md', '**/.backup*/**', '**/.git/**']
       }
     },
     build: {

@@ -14,6 +14,7 @@ dist-dev
 dist-ssr
 *.local
 .firebase/
+.backup_licitacionya/
 
 # Entornos y secretos
 .env

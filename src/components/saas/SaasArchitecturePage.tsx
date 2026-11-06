@@ -132,7 +132,7 @@ export function SaasArchitecturePage() {
                 <div className="saas-feature-point">
                   <Cpu size={18} color="var(--saas-gold)" />
                   <div>
-                    <h4>Escaneo ultra rápido en 0.04s</h4>
+                    <h4>Escaneo instantáneo en el dispositivo</h4>
                     <p>El teléfono del portero verifica la autenticidad de la entrada directamente en su cámara, sin tener que esperar a que un servidor lejano responda. La fila avanza sin pausas.</p>
                   </div>
                 </div>

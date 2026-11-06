@@ -123,7 +123,7 @@ export function SaasExperiencesSection() {
         <div className="saas-section-header-left">
           <div className="saas-section-eyebrow">
             <span className="saas-section-eyebrow-dot" aria-hidden="true" />
-            <span>VENTA DE MESAS EN VIVO</span>
+            <span>VENTA DE MESAS EN VIVO · DEMOSTRACIÓN</span>
           </div>
           <h2 className="saas-section-title-left">
             El fin de las mesas vendidas dos veces.
@@ -138,7 +138,7 @@ export function SaasExperiencesSection() {
           {/* Plano cenital de la sala */}
           <div className="saas-floor-plan">
             <div className="saas-floor-plan__head">
-              <span className="saas-floor-plan__title">Plano de la sala</span>
+              <span className="saas-floor-plan__title">Plano de la sala (Demostración)</span>
               <div className="saas-floor-legend" aria-hidden="true">
                 <span className="saas-floor-legend__item is-free">LIBRE</span>
                 <span className="saas-floor-legend__item is-held">BLOQUEADA</span>

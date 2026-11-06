@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { SaasRoutes } from './components/saas/SaasApp';
-import { AdminPortalApp } from './components/club/AdminPortalApp';
-import { DevPortalApp } from './components/dev/DevPortalApp';
 import { BetaFeedbackWidget } from './components/common/BetaFeedbackWidget';
+
+const AdminPortalApp = lazy(() =>
+  import('./components/club/AdminPortalApp').then((m) => ({ default: m.AdminPortalApp })),
+);
+const DevPortalApp = lazy(() =>
+  import('./components/dev/DevPortalApp').then((m) => ({ default: m.DevPortalApp })),
+);
 
 export type PortalType = 'client' | 'admin' | 'dev';
 
@@ -49,7 +54,9 @@ export function App() {
   if (portalType === 'dev') {
     return (
       <BrowserRouter>
-        <DevPortalApp />
+        <Suspense fallback={<div className="saas-portal-loading" aria-busy="true" />}>
+          <DevPortalApp />
+        </Suspense>
       </BrowserRouter>
     );
   }
@@ -57,7 +64,9 @@ export function App() {
   if (portalType === 'admin') {
     return (
       <BrowserRouter>
-        <AdminPortalApp />
+        <Suspense fallback={<div className="saas-portal-loading" aria-busy="true" />}>
+          <AdminPortalApp />
+        </Suspense>
       </BrowserRouter>
     );
   }

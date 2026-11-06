@@ -59,14 +59,14 @@ export function SaasScreensPage() {
       id: 'door',
       label: '2. Escáner de Puerta PWA',
       icon: Smartphone,
-      title: 'Terminal Criptográfica de Puerta (KMS Ed25519)',
-      desc: 'Interfaz para porteros y guardias de seguridad en cualquier smartphone. Verificación óptica en menos de 0.04s, detección infalible de capturas reenviadas con token dinámico y operación offline ininterrumpida.',
+      title: 'Terminal de Control de Acceso en Puerta',
+      desc: 'Interfaz para porteros y personal de seguridad en cualquier smartphone. Validación óptica instantánea, detección de capturas reenviadas con token dinámico y operación offline ininterrumpida.',
       img: '/showcase/door-scanner-vip.jpg',
       type: 'mobile',
       url: 'https://nightflow.vip/puerta/terminal-01',
-      telemetry: 'OPTICAL RETICLE · KMS Ed25519 · BUFFER IDB 100%',
+      telemetry: 'ESCÁNER ÓPTICO · TOKEN ROTATIVO · COLA OFFLINE SEGURA',
       points: [
-        'Lectura de código QR en 0.04 segundos verificada por hardware KMS.',
+        'Lectura y validación instantánea del código QR directamente en el dispositivo.',
         'Protección anti-screenshot con token dinámico rotativo cada 30 segundos.',
         'Operación 100% offline con almacenamiento en IndexedDB cifrada.',
         'Confirmación de check-in y registro de salida temporal con passkey.'

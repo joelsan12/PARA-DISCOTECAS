@@ -57,7 +57,7 @@ export function SaasComparisonSection() {
         onMouseLeave={() => setActiveIndex(null)}
         onFocus={() => setActiveIndex(index)}
         onBlur={() => setActiveIndex(null)}
-        onClick={() => setActiveIndex(index)}
+        onClick={() => setActiveIndex((prev) => (prev === index ? null : index))}
       >
         <span className="saas-vs-item__index" aria-hidden="true">
           {String(index + 1).padStart(2, '0')}

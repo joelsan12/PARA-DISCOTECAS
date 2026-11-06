@@ -195,9 +195,9 @@ export function SaasSimulatorPage() {
                 <span>Simulador de Alta Concurrencia · Sensorial VIP</span>
               </div>
               <div className="saas-stage__header-telemetry">
-                <span>Latencia: <strong>0.04s SLA</strong></span>
-                <span>Firma: <strong>Ed25519 KMS</strong></span>
-                <span>Modo: <strong>Edge Offline Ready</strong></span>
+                <span>Modo de puerta: <strong>100% Offline</strong></span>
+                <span>Seguridad: <strong>Anticopia Dinámico</strong></span>
+                <span>Operación: <strong>Alta Disponibilidad</strong></span>
                 <span>IVA SRI: <strong>15% Desglosado</strong></span>
               </div>
             </div>
@@ -214,7 +214,7 @@ export function SaasSimulatorPage() {
                     Pase Dinámico Anti-Screenshot
                   </h3>
                   <p className="stage-panel-desc">
-                    Token JWS rotativo firmado asimétricamente cada 30 segundos con clave privada Cloud KMS.
+                    Código QR dinámico que se regenera cada 30 segundos; imposible de falsificar o compartir por captura.
                   </p>
                 </div>
 
@@ -309,7 +309,7 @@ export function SaasSimulatorPage() {
                     className="stage-btn-scan"
                   >
                     <Zap size={15} fill="currentColor" />
-                    <span>{isScanning ? 'Verificando con Clave KMS...' : 'Escanear Pase Legítimo'}</span>
+                    <span>{isScanning ? 'Validando escáner...' : 'Escanear Pase Legítimo'}</span>
                   </button>
 
                   <button
@@ -327,10 +327,10 @@ export function SaasSimulatorPage() {
                   <div className="stage-sim-feedback success">
                     <div className="stage-sim-feedback-top">
                       <CheckCircle2 size={15} />
-                      <span>ACCESO VIP AUTORIZADO (0.04s SLA)</span>
+                      <span>ACCESO VIP AUTORIZADO · ENTRADA FLUIDA</span>
                     </div>
                     <div className="stage-sim-feedback-body">
-                      Firma Ed25519 verificada localmente por el enclave. Titular legítimo y aforo actualizado en puerta en tiempo real.
+                      Código verificado al instante por el escáner. Titular legítimo y aforo de sala actualizado en tiempo real.
                     </div>
                   </div>
                 )}
@@ -339,10 +339,10 @@ export function SaasSimulatorPage() {
                   <div className="stage-sim-feedback fraud">
                     <div className="stage-sim-feedback-top">
                       <XCircle size={15} />
-                      <span>ACCESO DENEGADO // TOKEN DUPLICADO O SCREENSHOT</span>
+                      <span>ACCESO DENEGADO // CÓDIGO EXPIRADO O SCREENSHOT</span>
                     </div>
                     <div className="stage-sim-feedback-body">
-                      Firma temporal de 30s expirada o pase reenviado vía WhatsApp/captura. La passkey no coincide con el hardware emisor.
+                      Código expirado o pase reenviado vía captura de pantalla. El acceso fue rechazado por el personal de puerta.
                     </div>
                   </div>
                 )}
@@ -479,7 +479,7 @@ export function SaasSimulatorPage() {
                 <div className="stage-guarantee-footer">
                   <ShieldCheck size={16} />
                   <span>
-                    <strong>Garantía de Cero Sobreventa:</strong> Los holds de 12 minutos son atómicos con Cloud Tasks y transacciones Firestore. Si dos clientes intentan reservar la misma mesa a las 02:00 AM, solo uno adquiere el bloqueo; el segundo recibe notificación inmediata de disponibilidad en tiempo real sin colisión.
+                    <strong>Garantía de Cero Sobreventa:</strong> El bloqueo de 12 minutos aparta la mesa en exclusiva. Si dos clientes intentan comprar la misma mesa a las 02:00 AM, solo el primero la adquiere; el segundo ve la disponibilidad real sin sobreventas ni reclamos en recepción.
                   </span>
                 </div>
               </div>
@@ -490,23 +490,23 @@ export function SaasSimulatorPage() {
           <div className="saas-tech-grid">
             <div className="saas-tech-card">
               <Zap size={20} color="var(--saas-gold)" />
-              <h4>Validación Criptográfica en 0.04s</h4>
+              <h4>Lectura Rápida sin Internet</h4>
               <p>
-                Cada pase es un token JWS firmado con Ed25519. El escáner verifica la firma localmente sin necesidad de consultar bases de datos remotas en cada lectura.
+                Cada pase se verifica directamente en el dispositivo del portero. La fila no se detiene aunque el internet del club falle o haya saturación de señal celular.
               </p>
             </div>
             <div className="saas-tech-card">
               <ShieldCheck size={20} color="var(--saas-gold)" />
               <h4>Prevención del Doble Ingreso</h4>
               <p>
-                El token incluye un identificador único (JTI). Si se detecta un intento simultáneo en dos puertas, el sistema genera de inmediato un incidente de seguridad.
+                Cada pase cuenta con un identificador único intransferible. Si alguien intenta entrar por dos puertas con el mismo boleto, el sistema alerta al instante al equipo de seguridad.
               </p>
             </div>
             <div className="saas-tech-card">
               <Lock size={20} color="var(--saas-gold)" />
-              <h4>Reserva Atómica con Google Cloud Tasks</h4>
+              <h4>Protección contra Mesas Duplicadas</h4>
               <p>
-                Cuando un invitado inicia la compra, la mesa se bloquea exactamente durante 12 minutos. Si la pasarela falla o se abandona el checkout, el stock se libera al segundo.
+                Cuando un invitado inicia la compra, la mesa se aparta exactamente durante 12 minutos. Si la pasarela falla o se abandona el checkout, el stock vuelve a estar a la venta al instante.
               </p>
             </div>
           </div>

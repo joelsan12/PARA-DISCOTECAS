@@ -75,7 +75,7 @@ export function SaasVipPassMockup() {
 
         {/* Datos de la Reserva */}
         <div className="saas-vip-card__holder-hero">
-          <span className="saas-vip-card__holder-label">RESERVA VIP //</span>
+          <span className="saas-vip-card__holder-label">DEMOSTRACIÓN INTERACTIVA //</span>
           <h3 className="saas-vip-card__holder-name">SEBASTIÁN MORALES</h3>
           <div className="saas-vip-card__holder-meta">
             <span>Suite Privé 01</span>
@@ -154,10 +154,10 @@ export function SaasVipPassMockup() {
           <div className="saas-scan-feedback success" role="status">
             <div className="saas-feedback-header">
               <CheckCircle2 size={14} className="saas-feedback-icon" />
-              <strong>ACCESO CONFIRMADO · PUERTA 1</strong>
+              <strong>ACCESO CONFIRMADO · PUERTA 1 (DEMO)</strong>
             </div>
             <p className="saas-feedback-meta">
-              Código verificado en puerta. Sebastián Morales + 14 acompañantes autorizados.
+              Simulación de verificación en puerta: pase validado para 15 personas.
             </p>
           </div>
         )}
