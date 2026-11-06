@@ -69,7 +69,7 @@ export function SaasArchitecturePage() {
                   <span>El cliente paga con tarjeta o transferencia segura. El anticipo va directo a la cuenta bancaria de tu club.</span>
                 </div>
                 <div className="saas-arch-step-item success">
-                  <strong>4. CONFIRMADA AL 100%</strong>
+                  <strong>4. CONFIRMADA</strong>
                   <span>Mesa vendida. El cliente recibe en su teléfono su pase VIP oficial listo para ingresar por la puerta.</span>
                 </div>
               </div>

@@ -195,10 +195,10 @@ export function SaasSimulatorPage() {
                 <span>Simulador de Alta Concurrencia · Sensorial VIP</span>
               </div>
               <div className="saas-stage__header-telemetry">
-                <span>Modo de puerta: <strong>100% Offline</strong></span>
-                <span>Seguridad: <strong>Anticopia Dinámico</strong></span>
-                <span>Operación: <strong>Alta Disponibilidad</strong></span>
-                <span>IVA SRI: <strong>15% Desglosado</strong></span>
+                <span>Operación en puerta: <strong>Escanea sin internet</strong></span>
+                <span>Inventario: <strong>Una mesa, un solo comprador</strong></span>
+                <span>Pases VIP: <strong>QR dinámico con rotación</strong></span>
+                <span>Tributario: <strong>Desglose de IVA 15% SRI</strong></span>
               </div>
             </div>
 

@@ -14,12 +14,12 @@ export function SaasFaqPage() {
     {
       cat: 'Operación en Puerta & Emergencias',
       q: '¿Qué ocurre exactamente si se corta el internet en la discoteca a las 02:00 AM?',
-      a: 'El sistema no se detiene bajo ninguna circunstancia. El personal de puerta utiliza la terminal PWA con soporte NIGHTFLOW Edge. La verificación criptográfica del pase se calcula localmente en el procesador del teléfono en 0.04 segundos. Los ingresos se guardan cifrados en el dispositivo y se sincronizan automáticamente con la consola central en cuanto la conexión a internet regresa.'
+      a: 'El sistema no se detiene. El personal de puerta utiliza la aplicación web en su teléfono y la verificación del pase se procesa directamente en el dispositivo sin depender de internet. Los ingresos quedan guardados de forma segura en la memoria del teléfono y se sincronizan automáticamente con la consola central en cuanto la conexión regresa.'
     },
     {
       cat: 'Seguridad & Anti-Fraude',
       q: '¿Cómo impide el sistema que un cliente comparta su pase por WhatsApp a varios amigos?',
-      a: 'El código QR de cada pase no es una imagen estática: es un token dinámico que cambia de clave criptográfica cada 30 segundos. Si un invitado toma una captura de pantalla y se la reenvía a sus amigos, el código ya habrá expirado cuando lleguen a la puerta y el escáner del portero emitirá una alerta visual roja y sonora de rechazo.'
+      a: 'El código QR de cada pase no es una imagen estática: se actualiza dinámicamente cada 30 segundos en la pantalla del titular. Si un invitado toma una captura de pantalla y se la reenvía a sus amigos, el código ya habrá expirado cuando lleguen a la puerta y el escáner del portero emitirá una alerta visual roja y sonora de rechazo.'
     },
     {
       cat: 'Finanzas & Pasarela',
@@ -34,12 +34,12 @@ export function SaasFaqPage() {
     {
       cat: 'Capacitación & Tiempos',
       q: '¿Cuánto tiempo toma cargar el plano de mi local y empezar a operar?',
-      a: 'Menos de 24 horas. Nos envías un croquis, plano en PDF o foto del mapa de mesas de tu discoteca con sus capacidades y precios mínimos de consumo. Nuestro equipo dibuja el plano cenital en la plataforma y capacita a tus capitanes de meseros y guardias en una sesión rápida de 30 minutos.'
+      a: 'El proceso es guiado y ágil. Nos envías un croquis, plano en PDF o foto del mapa de mesas de tu discoteca con sus capacidades y consumos mínimos. Nuestro equipo configura el plano en la plataforma y capacita a tus capitanes de meseros y personal de puerta en una sesión práctica.'
     },
     {
       cat: 'Facturación & Normativa',
-      q: '¿El software cumple con los requisitos tributarios de Ecuador?',
-      a: 'Sí. Los precios están estipulados en dólares estadounidenses (USD) y la plataforma contempla la emisión y registro con el 15% de IVA según las disposiciones del Servicio de Rentas Internas (SRI). Además, se apega estrictamente a la Ley Orgánica de Protección de Datos Personales (LOPDP).'
+      q: '¿El software contempla los requisitos tributarios de Ecuador?',
+      a: 'Sí. Los precios están estipulados en dólares estadounidenses (USD) y la plataforma contempla el desglose con el 15% de IVA según las disposiciones del Servicio de Rentas Internas (SRI). Además, se apega a la Ley Orgánica de Protección de Datos Personales (LOPDP).'
     }
   ];
 
@@ -122,8 +122,8 @@ export function SaasFaqPage() {
           {/* CTA Footer */}
           <div className="saas-page-cta" style={{ marginTop: '56px' }}>
             <div>
-              <h3>Listo para eliminar el caos en tu puerta este fin de semana</h3>
-              <p>Postula a la beta y comienza a operar tu sala con el protocolo NIGHTFLOW VIP.</p>
+              <h3>Tu discoteca lista para operar</h3>
+              <p>Solicita tu credencial de acceso y comienza a operar tu sala con NIGHTFLOW VIP.</p>
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <Link to="/software/simulador" className="btn-secondary" style={{ padding: '12px 22px' }}>
@@ -135,7 +135,7 @@ export function SaasFaqPage() {
                 onClick={() => setIsModalOpen(true)}
                 style={{ padding: '12px 26px' }}
               >
-                <span>Solicitar Acceso Beta</span>
+                <span>Solicitar Credencial de Acceso</span>
                 <ArrowRight size={15} />
               </button>
             </div>

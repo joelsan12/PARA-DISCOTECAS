@@ -68,7 +68,7 @@ export function SaasScreensPage() {
       points: [
         'Lectura y validación instantánea del código QR directamente en el dispositivo.',
         'Protección anti-screenshot con token dinámico rotativo cada 30 segundos.',
-        'Operación 100% offline con almacenamiento en IndexedDB cifrada.',
+        'Operación local sin internet con almacenamiento seguro en el dispositivo.',
         'Confirmación de check-in y registro de salida temporal con passkey.'
       ]
     },
