@@ -163,6 +163,11 @@ html {
   gap: 7px;
 }
 
+.saas-hero__trust-icon {
+  color: var(--saas-gold);
+  flex-shrink: 0;
+}
+
 .saas-hero__trust-dot {
   width: 5px;
   height: 5px;

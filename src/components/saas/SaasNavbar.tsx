@@ -5,16 +5,14 @@ import { useSaasTheme } from './useSaasTheme';
 
 interface SaasNavbarProps {
   onOpenModal?: (plan?: string) => void;
-  onOpenBetaModal?: () => void;
 }
 
-export function SaasNavbar({ onOpenModal, onOpenBetaModal }: SaasNavbarProps) {
+export function SaasNavbar({ onOpenModal }: SaasNavbarProps) {
   const location = useLocation();
   const { theme, toggleTheme } = useSaasTheme();
 
   const navLinks = [
     { to: '/software', label: 'Inicio' },
-    { to: '/software#beta', label: 'Probar Beta', isBeta: true },
     { to: '/software/simulador', label: 'Simulador' },
     { to: '/software/pantallas', label: 'Pantallas' },
     { to: '/software/arquitectura', label: 'Arquitectura' },
@@ -24,20 +22,6 @@ export function SaasNavbar({ onOpenModal, onOpenBetaModal }: SaasNavbarProps) {
   const handleCta = () => {
     if (onOpenModal) {
       onOpenModal('Beta Privada');
-    }
-  };
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
-    if (to.includes('#beta')) {
-      e.preventDefault();
-      if (onOpenBetaModal) {
-        onOpenBetaModal();
-      } else {
-        const el = document.getElementById('beta-playground');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
     }
   };
 
@@ -56,8 +40,7 @@ export function SaasNavbar({ onOpenModal, onOpenBetaModal }: SaasNavbarProps) {
               <Link
                 key={link.to}
                 to={link.to}
-                onClick={(e) => handleLinkClick(e, link.to)}
-                className={`saas-nav__link ${isActive ? 'active' : ''} ${link.isBeta ? 'saas-nav__link--beta' : ''}`}
+                className={`saas-nav__link ${isActive ? 'active' : ''}`}
               >
                 {link.label}
               </Link>
@@ -97,7 +80,7 @@ export function SaasNavbar({ onOpenModal, onOpenBetaModal }: SaasNavbarProps) {
             onClick={handleCta}
             className="btn-gold"
           >
-            Acceso Beta
+            Solicitar Acceso
           </button>
         </div>
       </div>

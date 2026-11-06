@@ -20,7 +20,7 @@ export function SaasFooterBar() {
 
             <div className="saas-footer__status-badge">
               <span className="saas-footer__status-dot" />
-              <span>SLA 99.9% · Noche 02:00 AM Ready</span>
+              <span>Sistemas Operativos · 02:00 AM Ready</span>
             </div>
 
             <div className="saas-footer__tags">
@@ -38,20 +38,15 @@ export function SaasFooterBar() {
           <div className="saas-footer__links-grid">
             <div className="saas-footer__col">
               <span className="saas-footer__col-title">Plataforma</span>
-              <Link to="/software">Inicio / Resumen</Link>
+              <Link to="/software">Inicio</Link>
               <Link to="/software/simulador">Simulador en Vivo</Link>
-              <Link to="/software/precios">Tarifario y Planes</Link>
-              <Link to="/software/arquitectura">Arquitectura &amp; Edge</Link>
               <Link to="/software/pantallas">Galería de Interfaces</Link>
+              <Link to="/software/arquitectura">Arquitectura &amp; Edge</Link>
+              <Link to="/software/faq">Preguntas Frecuentes</Link>
             </div>
 
             <div className="saas-footer__col">
               <span className="saas-footer__col-title">Ecosistema</span>
-              <Link to="/software" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <span>Acceso Beta Privada</span>
-                <span className="saas-footer__badge-pill">Activa</span>
-              </Link>
-              <Link to="/software/faq">Preguntas Frecuentes</Link>
               <Link to="/negocios">Directorio de Clubes</Link>
               <a
                 href="https://nightflow-admin.web.app/"
@@ -62,7 +57,10 @@ export function SaasFooterBar() {
                 <span>Consola para Clubes</span>
                 <ArrowUpRight size={13} style={{ opacity: 0.8 }} />
               </a>
-              <Link to="/dev">Portal Dev &amp; APIs</Link>
+              <a href="/dev" target="_blank" rel="noreferrer">
+                <span>Portal Dev &amp; APIs</span>
+                <ArrowUpRight size={13} style={{ opacity: 0.8 }} />
+              </a>
             </div>
 
             <div className="saas-footer__col">
@@ -76,7 +74,7 @@ export function SaasFooterBar() {
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
-                <span>SRI Compliant (+15% IVA)</span>
+                <span>SRI Compliant (15% IVA)</span>
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
@@ -84,11 +82,11 @@ export function SaasFooterBar() {
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
-                <span>Criptografía Ed25519</span>
+                <span>Códigos QR Dinámicos</span>
               </span>
               <span className="saas-footer__compliance-item">
                 <span className="saas-footer__compliance-bullet" />
-                <span>Passkey Biométrica</span>
+                <span>Reingreso con Passkey</span>
               </span>
             </div>
           </div>
@@ -101,7 +99,7 @@ export function SaasFooterBar() {
             <span className="saas-footer__cities">Quito · Guayaquil · Cuenca · Latam</span>
           </div>
           <div className="saas-footer__bottom-right">
-            <span>Desarrollado para la noche que opera sin fallos a las 02:00 AM.</span>
+            <span>Diseñado para la noche que opera sin fallos a las 02:00 AM.</span>
           </div>
         </div>
       </div>

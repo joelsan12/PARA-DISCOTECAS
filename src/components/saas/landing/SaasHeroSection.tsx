@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Zap, ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight, ShieldCheck, DoorOpen, Landmark } from 'lucide-react';
 import { SaasVipPassMockup } from './SaasVipPassMockup';
 
 interface SaasHeroSectionProps {
@@ -14,11 +14,11 @@ export function SaasHeroSection({ onOpenModal }: SaasHeroSectionProps) {
           {/* Columna Izquierda Editorial */}
           <div className="saas-hero-content">
             <h1 className="saas-hero__title-wide">
-              Vende tus mesas VIP por internet y <span>controla la puerta sin enredos</span>.
+              Tus mesas VIP vendidas antes de abrir. <span>Tu puerta bajo control.</span>
             </h1>
 
             <p className="saas-hero__lead">
-              Tus clientes eligen su mesa en un mapa y pagan su anticipo al instante. Sin mesas vendidas dos veces, sin entradas clonadas por capturas de pantalla y con un escáner que funciona incluso si se cae el internet.
+              Tus clientes eligen su mesa en un mapa y pagan su anticipo al instante. Sin mesas vendidas dos veces, sin entradas clonadas por WhatsApp y con un escáner que funciona incluso si se cae el internet.
             </p>
 
             <div className="saas-hero__btn-row">
@@ -32,30 +32,30 @@ export function SaasHeroSection({ onOpenModal }: SaasHeroSectionProps) {
                 onClick={() => onOpenModal?.('Beta Privada')}
                 className="btn-secondary"
               >
-                <span>Solicitar Acceso Beta</span>
+                <span>Solicitar Acceso Privado</span>
               </button>
             </div>
 
-            {/* Micro-telemetría de confianza y garantías operativas */}
+            {/* Garantías operativas de negocio medibles */}
             <div className="saas-hero__trust">
               <span className="saas-hero__trust-item">
-                <span className="saas-hero__trust-dot" aria-hidden="true" />
-                <span>HOLDS ATÓMICOS 12 MIN</span>
+                <ShieldCheck size={13} className="saas-hero__trust-icon" />
+                <span>0% MESAS DUPLICADAS</span>
               </span>
               <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
               <span className="saas-hero__trust-item">
-                <span className="saas-hero__trust-dot" aria-hidden="true" />
-                <span>OFFLINE ED25519 &lt;50MS</span>
+                <DoorOpen size={13} className="saas-hero__trust-icon" />
+                <span>ESCÁNER 100% OFFLINE</span>
               </span>
               <span className="saas-hero__trust-sep" aria-hidden="true">·</span>
               <span className="saas-hero__trust-item">
-                <span className="saas-hero__trust-dot" aria-hidden="true" />
-                <span>SRI + 15% IVA COMPLIANT</span>
+                <Landmark size={13} className="saas-hero__trust-icon" />
+                <span>SRI 15% IVA COMPLIANT</span>
               </span>
             </div>
           </div>
 
-          {/* Columna Derecha: Tarjeta VIP Black Card compacta */}
+          {/* Columna Derecha: Tarjeta VIP limpia con interacción memorable */}
           <SaasVipPassMockup />
         </div>
       </div>

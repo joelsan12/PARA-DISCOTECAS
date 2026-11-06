@@ -1,106 +1,121 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  MapPin,
-  ArrowRight,
-  Cpu,
-  Layers,
-  Clock,
-  CheckCircle2,
-} from 'lucide-react';
+import { ArrowRight, Clock, RotateCcw } from 'lucide-react';
 
-type TableKey = 'suite' | 'dj' | 'palco';
+type ZoneKey = 'palcos' | 'vip' | 'pista';
+type TableStatus = 'AVAILABLE' | 'HELD' | 'OCCUPIED';
 
 interface TableData {
-  id: TableKey;
+  id: string;
   name: string;
+  zone: ZoneKey;
   pax: number;
   minSpend: number;
-  status: 'AVAILABLE' | 'HELD' | 'OCCUPIED';
+  status: TableStatus;
   timer: number;
 }
 
-const INITIAL_EXPERIENCE_TABLES: Record<TableKey, TableData> = {
-  suite: {
-    id: 'suite',
-    name: 'Suite Privé 01',
-    pax: 15,
-    minSpend: 380,
-    status: 'HELD',
-    timer: 684,
-  },
-  dj: {
-    id: 'dj',
-    name: 'Cabina DJ VIP',
-    pax: 12,
-    minSpend: 250,
-    status: 'OCCUPIED',
-    timer: 0,
-  },
-  palco: {
-    id: 'palco',
-    name: 'Palco Imperial',
-    pax: 10,
-    minSpend: 200,
-    status: 'AVAILABLE',
-    timer: 720,
-  },
+const HOLD_SECONDS = 12 * 60;
+
+const INITIAL_TABLES: TableData[] = [
+  { id: 'palco-norte', name: 'Palco Norte', zone: 'palcos', pax: 10, minSpend: 200, status: 'AVAILABLE', timer: HOLD_SECONDS },
+  { id: 'palco-sur', name: 'Palco Sur', zone: 'palcos', pax: 12, minSpend: 240, status: 'AVAILABLE', timer: HOLD_SECONDS },
+  { id: 'suite-01', name: 'Suite Privé 01', zone: 'vip', pax: 15, minSpend: 380, status: 'OCCUPIED', timer: 0 },
+  { id: 'suite-02', name: 'Suite Privé 02', zone: 'vip', pax: 12, minSpend: 300, status: 'AVAILABLE', timer: HOLD_SECONDS },
+  { id: 'pista-01', name: 'Mesa Pista 01', zone: 'pista', pax: 8, minSpend: 90, status: 'AVAILABLE', timer: HOLD_SECONDS },
+];
+
+const formatTimer = (sec: number) => {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+};
+
+const STATUS_LABEL: Record<TableStatus, string> = {
+  AVAILABLE: 'LIBRE',
+  HELD: 'BLOQUEADA',
+  OCCUPIED: 'EN SALA',
 };
 
 export function SaasExperiencesSection() {
-  const [selectedTable, setSelectedTable] = useState<TableKey>('suite');
-  const [tables, setTables] = useState<Record<TableKey, TableData>>(INITIAL_EXPERIENCE_TABLES);
+  const [tables, setTables] = useState<TableData[]>(INITIAL_TABLES);
+  const [selectedId, setSelectedId] = useState<string>(INITIAL_TABLES[0].id);
 
-  // Temporizador de hold para cualquier mesa apartada
+  // Cuenta regresiva del bloqueo de 12 minutos
   useEffect(() => {
-    const timer = setInterval(() => {
+    const interval = setInterval(() => {
       setTables((prev) => {
-        let hasHeld = false;
-        const updated = { ...prev };
-        for (const key of Object.keys(updated) as TableKey[]) {
-          if (updated[key].status === 'HELD') {
-            hasHeld = true;
-            const nextTime = updated[key].timer > 0 ? updated[key].timer - 1 : 720;
-            updated[key] = { ...updated[key], timer: nextTime };
-          }
-        }
-        return hasHeld ? updated : prev;
+        if (!prev.some((t) => t.status === 'HELD')) return prev;
+        return prev.map((t) => {
+          if (t.status !== 'HELD') return t;
+          if (t.timer > 1) return { ...t, timer: t.timer - 1 };
+          // El hold vence y la mesa vuelve a estar a la venta
+          return { ...t, status: 'AVAILABLE' as TableStatus, timer: HOLD_SECONDS };
+        });
       });
     }, 1000);
-    return () => clearInterval(timer);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleToggleHold = (key: TableKey) => {
-    setSelectedTable(key);
-    setTables((prev) => {
-      const current = prev[key];
-      if (current.status === 'AVAILABLE') {
-        return {
-          ...prev,
-          [key]: { ...current, status: 'HELD', timer: 720 },
-        };
-      }
-      if (current.status === 'HELD') {
-        return {
-          ...prev,
-          [key]: { ...current, status: 'AVAILABLE', timer: 720 },
-        };
-      }
-      if (current.status === 'OCCUPIED') {
-        return {
-          ...prev,
-          [key]: { ...current, status: 'AVAILABLE', timer: 720 },
-        };
-      }
-      return prev;
-    });
+  const handleTableClick = (table: TableData) => {
+    setSelectedId(table.id);
+    if (table.status !== 'AVAILABLE') return;
+    setTables((prev) =>
+      prev.map((t) =>
+        t.id === table.id ? { ...t, status: 'HELD' as TableStatus, timer: HOLD_SECONDS } : t,
+      ),
+    );
   };
 
-  const formatTimer = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  const handleReset = () => {
+    setTables(INITIAL_TABLES);
+    setSelectedId(INITIAL_TABLES[0].id);
   };
+
+  const selected = tables.find((t) => t.id === selectedId) ?? tables[0];
+  const heldCount = tables.filter((t) => t.status === 'HELD').length;
+
+  const renderTile = (table: TableData) => {
+    const isSelected = selectedId === table.id;
+    const stateClass =
+      table.status === 'HELD'
+        ? 'is-held'
+        : table.status === 'OCCUPIED'
+          ? 'is-occupied'
+          : 'is-free';
+    return (
+      <button
+        key={table.id}
+        type="button"
+        onClick={() => handleTableClick(table)}
+        aria-pressed={isSelected}
+        className={`saas-floor-tile ${stateClass} ${isSelected ? 'is-selected' : ''}`}
+      >
+        <span className="saas-floor-tile__name">{table.name}</span>
+        <span className="saas-floor-tile__meta">
+          {table.pax} pax · mín. ${table.minSpend}
+        </span>
+        <span className={`saas-floor-tile__state ${stateClass}`}>
+          {table.status === 'HELD' && (
+            <>
+              <Clock size={11} aria-hidden="true" />
+              <span>{formatTimer(table.timer)}</span>
+            </>
+          )}
+          {table.status !== 'HELD' && <span>{STATUS_LABEL[table.status]}</span>}
+        </span>
+      </button>
+    );
+  };
+
+  const renderZone = (zone: ZoneKey, label: string) => (
+    <div className={`saas-floor-zone ${zone === 'pista' ? 'saas-floor-zone--pista' : ''}`}>
+      <span className="saas-floor-zone__label">{label}</span>
+      <div className="saas-floor-zone__tables">
+        {tables.filter((t) => t.zone === zone).map(renderTile)}
+      </div>
+    </div>
+  );
 
   return (
     <section className="saas-experiences-section saas-fullscreen-section">
@@ -108,173 +123,116 @@ export function SaasExperiencesSection() {
         <div className="saas-section-header-left">
           <div className="saas-section-eyebrow">
             <span className="saas-section-eyebrow-dot" aria-hidden="true" />
-            <span>ARQUITECTURA OPERATIVA // TRES MOVIMIENTOS</span>
+            <span>VENTA DE MESAS EN VIVO</span>
           </div>
           <h2 className="saas-section-title-left">
-            Control total de tu noche en 3 movimientos.
+            El fin de las mesas vendidas dos veces.
           </h2>
           <p className="saas-section-desc-left">
-            La venta anticipada, la puerta en hora pico y la barra de consumos sincronizadas en una sola arquitectura sin fricción ni caídas.
+            Cuando un cliente toca una mesa, queda bloqueada por 12 minutos para él. Nadie
+            más puede comprarla mientras el pago se procesa.
           </p>
         </div>
 
         <div className="saas-experience-grid">
-          {/* Pilar 1: Reserva Cenital en Vivo */}
-          <div className="saas-exp-card">
-            <div className="saas-exp-card__head">
-              <div className="saas-exp-tag">
-                <MapPin size={13} />
-                <span>01 // VENTA EN LÍNEA</span>
+          {/* Plano cenital de la sala */}
+          <div className="saas-floor-plan">
+            <div className="saas-floor-plan__head">
+              <span className="saas-floor-plan__title">Plano de la sala</span>
+              <div className="saas-floor-legend" aria-hidden="true">
+                <span className="saas-floor-legend__item is-free">LIBRE</span>
+                <span className="saas-floor-legend__item is-held">BLOQUEADA</span>
+                <span className="saas-floor-legend__item is-occupied">EN SALA</span>
               </div>
-              <h3 className="saas-exp-card__title">Plano Cenital &amp; Anticipo Inmediato</h3>
-              <p className="saas-exp-card__desc">
-                Tus clientes tocan su mesa favorita y pagan el anticipo al instante. La mesa se bloquea 12 minutos con un hold atómico en servidor: cero sobreventa a medianoche.
+            </div>
+
+            <div className="saas-floor-zones" aria-label="Plano de mesas del club">
+              {renderZone('palcos', 'PALCOS')}
+              {renderZone('vip', 'ZONA VIP')}
+              <div className="saas-floor-zone saas-floor-zone--pista">
+                <span className="saas-floor-zone__label">PISTA</span>
+                <div className="saas-floor-pista-body">
+                  <div className="saas-floor-dancefloor" aria-hidden="true" />
+                  <div className="saas-floor-zone__tables">
+                    {tables.filter((t) => t.zone === 'pista').map(renderTile)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="saas-floor-footnote">
+              <span className="saas-floor-note-dot" aria-hidden="true" />
+              <p>
+                Toca una mesa libre: se bloquea al instante y nadie más puede comprarla
+                durante 12 minutos.
               </p>
+              <button type="button" className="saas-floor-reset" onClick={handleReset}>
+                <RotateCcw size={12} aria-hidden="true" />
+                <span>Reiniciar</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Visor de liquidación y control */}
+          <aside className="saas-floor-panel">
+            <div className="saas-floor-panel__head">
+              <span className="saas-floor-panel__label">LIQUIDACIÓN</span>
+              <span className="saas-floor-panel__count">
+                {heldCount} {heldCount === 1 ? 'BLOQUEADA' : 'BLOQUEADAS'}
+              </span>
             </div>
 
-            {/* Micro visualizador interactivo del plano */}
-            <div className="saas-micro-floor-pillar">
-              <div className="saas-micro-floor-tiles">
-                {(Object.keys(tables) as TableKey[]).map((key) => {
-                  const t = tables[key];
-                  const isSelected = selectedTable === key;
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => handleToggleHold(key)}
-                      className={`saas-pillar-table-tile ${t.status.toLowerCase()} ${
-                        isSelected ? 'selected' : ''
-                      }`}
-                    >
-                      <div className="saas-pillar-table-main">
-                        <span className="saas-pillar-table-name">{t.name}</span>
-                        <span className="saas-pillar-table-meta">{t.pax} pax · Min. ${t.minSpend}</span>
-                      </div>
-                      <div className="saas-pillar-table-status">
-                        {t.status === 'HELD' && (
-                          <span className="saas-pillar-held-time">
-                            <Clock size={11} />
-                            <span>{formatTimer(t.timer)}</span>
-                          </span>
-                        )}
-                        {t.status === 'AVAILABLE' && (
-                          <span className="saas-pillar-status-text avail">
-                            <span className="saas-pillar-dot avail" /> LIBRE
-                          </span>
-                        )}
-                        {t.status === 'OCCUPIED' && (
-                          <span className="saas-pillar-status-text occ">
-                            <span className="saas-pillar-dot occ" /> EN SALA
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+            <h3 className="saas-floor-panel__table">{selected.name}</h3>
 
-              <div className="saas-pillar-note">
-                <span className="saas-pillar-note-dot" />
-                <span>Toca una mesa para probar el bloqueo atómico de 12 minutos.</span>
+            <div className="saas-panel-rows">
+              <div className="saas-panel-row">
+                <span className="saas-panel-row__label">Aforo</span>
+                <span className="saas-panel-row__value">{selected.pax} personas</span>
+              </div>
+              <div className="saas-panel-row">
+                <span className="saas-panel-row__label">Mínimo de mesa</span>
+                <span className="saas-panel-row__value">${selected.minSpend}</span>
+              </div>
+              <div className="saas-panel-row">
+                <span className="saas-panel-row__label">Estado</span>
+                <span className={`saas-panel-row__value is-${selected.status.toLowerCase()}`}>
+                  {STATUS_LABEL[selected.status]}
+                </span>
               </div>
             </div>
+
+            {selected.status === 'HELD' && (
+              <div className="saas-panel-hold">
+                <span className="saas-panel-hold__label">
+                  BLOQUEADA PARA ESTE CLIENTE
+                </span>
+                <span className="saas-panel-hold__timer">
+                  {formatTimer(selected.timer)}
+                </span>
+                <p className="saas-panel-hold__text">
+                  Nadie más puede comprarla mientras el pago se procesa. Si el pago falla,
+                  la mesa vuelve a estar a la venta.
+                </p>
+              </div>
+            )}
+
+            {selected.status === 'AVAILABLE' && (
+              <p className="saas-panel-hint">
+                Toca una mesa del plano para bloquearla al instante durante 12 minutos.
+              </p>
+            )}
+
+            {selected.status === 'OCCUPIED' && (
+              <p className="saas-panel-hint">
+                Esta mesa ya está ocupada y no está a la venta esta noche.
+              </p>
+            )}
 
             <Link to="/software/simulador" className="saas-card-link">
               <span>Explorar simulador de reservas</span>
               <ArrowRight size={14} />
             </Link>
-          </div>
-
-          {/* Pilar 2: Control Criptográfico en Puerta */}
-          <div className="saas-exp-card">
-            <div className="saas-exp-card__head">
-              <div className="saas-exp-tag">
-                <Cpu size={13} />
-                <span>02 // CONTROL DE PUERTA</span>
-              </div>
-              <h3 className="saas-exp-card__title">Escáner Óptico Sin Internet</h3>
-              <p className="saas-exp-card__desc">
-                Validación por hardware con la cámara de cualquier teléfono móvil en menos de 50 ms. Aunque el local esté en un subsuelo o falle el internet, la fila avanza sin detenerse.
-              </p>
-            </div>
-
-            {/* Micro HUD Óptico */}
-            <div className="saas-micro-hud-pillar">
-              <div className="saas-hud-telemetry-header">
-                <div className="saas-hud-title-line">
-                  <span className="saas-hud-live-dot" />
-                  <span>TERMINAL PUERTA 01 · KMS ED25519</span>
-                </div>
-                <span className="saas-hud-latency">&lt; 0.04s SLA</span>
-              </div>
-
-              <div className="saas-hud-data-lines">
-                <div className="saas-hud-row">
-                  <span className="saas-hud-label">CREDENCIAL:</span>
-                  <span className="saas-hud-value mono">#RES-8921-SENSORIAL</span>
-                </div>
-                <div className="saas-hud-row verified">
-                  <span className="saas-hud-label">VEREDICTO:</span>
-                  <span className="saas-hud-value success">
-                    <CheckCircle2 size={13} />
-                    <span>ENTRADA AUTÉNTICA · ACCESO PERMITIDO</span>
-                  </span>
-                </div>
-                <div className="saas-hud-row">
-                  <span className="saas-hud-label">CONECTIVIDAD:</span>
-                  <span className="saas-hud-value gold">RED LOCAL AISLADA · CERO DEPENDENCIAS</span>
-                </div>
-              </div>
-            </div>
-
-            <Link to="/software/arquitectura" className="saas-card-link">
-              <span>Conocer la seguridad sin internet</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          {/* Pilar 3: Consola de Sala & Liquidación */}
-          <div className="saas-exp-card">
-            <div className="saas-exp-card__head">
-              <div className="saas-exp-tag">
-                <Layers size={13} />
-                <span>03 // CONTROL DE SALA</span>
-              </div>
-              <h3 className="saas-exp-card__title">Mando en Vivo para Gerencia y Barra</h3>
-              <p className="saas-exp-card__desc">
-                Monitorea aforo en tiempo real, consumos cargados a la mesa y recaudación de anticipos bancarios directos a tu cuenta con respaldo y facturación SRI al instante.
-              </p>
-            </div>
-
-            {/* Micro Dashboard de KPIs */}
-            <div className="saas-micro-kpi-pillar">
-              <div className="saas-pillar-kpi-grid">
-                <div className="saas-pillar-kpi-cell">
-                  <span className="saas-pillar-kpi-label">AFORO EN SALA</span>
-                  <strong className="saas-pillar-kpi-val">214 / 300</strong>
-                  <div className="saas-pillar-kpi-bar">
-                    <span className="saas-pillar-kpi-fill" style={{ width: '71%' }} />
-                  </div>
-                </div>
-                <div className="saas-pillar-kpi-cell">
-                  <span className="saas-pillar-kpi-label">ANTICIPOS COBRADOS</span>
-                  <strong className="saas-pillar-kpi-val gold">$2,840 USD</strong>
-                  <span className="saas-pillar-kpi-sub">Directo a tu cuenta</span>
-                </div>
-              </div>
-
-              <div className="saas-pillar-kpi-status-line">
-                <span className="saas-pillar-dot avail" />
-                <span>Barra y Terminales de Meseros sincronizadas al segundo</span>
-              </div>
-            </div>
-
-            <Link to="/software/pantallas" className="saas-card-link">
-              <span>Ver pantallas de personal y clientes</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
+          </aside>
         </div>
       </div>
     </section>
